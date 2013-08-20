@@ -29,5 +29,16 @@
   },
   "engines": {
     "node": ">= 0.10.0"
-  }
+  },
+  "devDependencies": {
+        "mocha": "*",
+        "chai": "*"
+    },
+    "files": [
+        "server.js"
+    ],
+    "main": "./server.js",
+    "scripts": {
+        "test": "./node_modules/mocha/bin/mocha tests"
+    }
 }

@@ -1,3 +1,5 @@
+[![Build Status](https://travis-ci.org/miataru/miataru-server.png)](https://travis-ci.org/miataru/miataru-server)
+
 # miataru-server
 
 This is the source code of a Miataru server side implementation. You can get more information [here](http://www.miataru.com).
