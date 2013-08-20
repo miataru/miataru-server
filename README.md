@@ -18,3 +18,7 @@ By default Miataru does only store the last known location. And it only does tha
 
 With it's simple API it allows you to use Miataru to your own needs and practices.
 
+
+## Dependencies
+
+Miataru server uses NodeJS, Redis and ExpressJS
