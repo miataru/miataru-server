@@ -32,7 +32,8 @@
   },
   "devDependencies": {
         "mocha": "*",
-        "chai": "*"
+        "chai": "*",
+        "fakeredis": "*"
     },
     "files": [
         "server.js"

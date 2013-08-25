@@ -15,11 +15,11 @@
  */
 
 // redis
-var redis = require('redis');
-var db = redis.createClient(null, null, {detect_buffers: true});
-
-var maximum_number_of_history_items = 1023; // keep in mind that this is +1 (starts with 0)
-var redis_miataru_namespace= "miad";
+var redis = require('redis'),
+	db = redis.createClient(null, null, {detect_buffers: true});
+	
+var maximum_number_of_history_items = 1023, // keep in mind that this is +1 (starts with 0)
+    redis_miataru_namespace= "miad";
 
 // UpdateLocation
 // This method is used to update the last known location and the location history of a particular device.
