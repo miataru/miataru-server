@@ -3,10 +3,10 @@
  * 
  * 
  */
-
 var express = require('express');
 var routes = require('./routes');
 var location = require('./routes/location');
+
 var http = require('http');
 var path = require('path');
 
@@ -32,7 +32,10 @@ if ('development' == app.get('env')) {
 }
 
 app.get('/', routes.index);
+
+// where POSTs go
 app.post('/UpdateLocation', location.update);
+app.post('/GetLocation', location.get);
 
 http.createServer(app).listen(app.get('port'), function(){
   console.log('miataru server listening on port ' + app.get('port'));
