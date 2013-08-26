@@ -26,7 +26,8 @@
     "redis": "~0.8.4",
     "ejs": "~0.8.4",
     "stylus": "~0.37.0",
-    "cloneextend": "0.0.3"
+    "cloneextend": "0.0.3",
+    "seq": "~0.3.5"
   },
   "engines": {
     "node": ">= 0.10.0"
