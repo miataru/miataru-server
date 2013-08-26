@@ -8,13 +8,13 @@ var path = require('path');
 
 var express = require('express');
 
+var configuration = require('./lib/configuration');
 var routes = require('./routes');
 var location = require('./routes/location');
 
 var app = express();
 
 // all environments
-app.set('port', process.env.PORT || 3000);
 app.set('views', __dirname + '/views');
 app.set('view engine', 'ejs');
 app.use(express.favicon());
@@ -38,6 +38,6 @@ app.get('/', routes.index);
 app.post('/UpdateLocation', location.update);
 app.post('/GetLocation', location.get);
 
-http.createServer(app).listen(app.get('port'), function(){
-  console.log('miataru server listening on port ' + app.get('port'));
-});
+app.listen(configuration.port);
+
+console.log('miataru server is listening to: ' + configuration.port);

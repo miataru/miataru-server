@@ -1,41 +1,47 @@
 {
-    "name":"miataru-server",
-    "version":"0.0.1",
-    "description":"this is the reference implementation of a miataru.com server",
-    "homepage":"http://www.miataru.com",
-    "bugs":"https://github.com/miataru/miataru-server/issues",
-    "contributors":[
-        {
-            "name": "Daniel Kirstenpfad",
-            "email": "bietiekay@gmail.com"
-        }
-    ],
-    "keywords":["location", "tracking", "position", "gps"],
-    "repository":{
-        "type":"git",
-        "url":"git://github.com/miataru/miataru-server.git"
-    },
-    "license":"BSD 2-clause",
-    "dependencies":{
-        "express":"~3.3.5",
-        "redis":"~0.8.4",
-        "ejs":"~0.8.4",
-        "stylus":"~0.37.0"
-    },
-    "engines":{
-        "node":">= 0.10.0"
-    },
-    "devDependencies":{
-        "mocha":"*",
-        "chai":"*",
-        "fakeredis":"*"
-    },
-    "files":[
-        "server.js"
-    ],
-    "main":"./server.js",
-    "scripts":{
-        "start":"node app.js",
-        "test":"./node_modules/mocha/bin/mocha tests"
+  "name": "miataru-server",
+  "version": "0.0.1",
+  "description": "this is the reference implementation of a miataru.com server",
+  "homepage": "http://www.miataru.com",
+  "bugs": "https://github.com/miataru/miataru-server/issues",
+  "contributors": [
+    {
+      "name": "Daniel Kirstenpfad",
+      "email": "bietiekay@gmail.com"
     }
+  ],
+  "keywords": [
+    "location",
+    "tracking",
+    "position",
+    "gps"
+  ],
+  "repository": {
+    "type": "git",
+    "url": "git://github.com/miataru/miataru-server.git"
+  },
+  "license": "BSD 2-clause",
+  "dependencies": {
+    "express": "~3.3.5",
+    "redis": "~0.8.4",
+    "ejs": "~0.8.4",
+    "stylus": "~0.37.0",
+    "cloneextend": "0.0.3"
+  },
+  "engines": {
+    "node": ">= 0.10.0"
+  },
+  "devDependencies": {
+    "mocha": "*",
+    "chai": "*",
+    "fakeredis": "*"
+  },
+  "files": [
+    "server.js"
+  ],
+  "main": "./server.js",
+  "scripts": {
+    "start": "node app.js",
+    "test": "./node_modules/mocha/bin/mocha tests"
+  }
 }
