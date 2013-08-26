@@ -9,11 +9,15 @@ var middlewares = require('./lib/middlewares');
 
 var app = express();
 
-// all environments
 app.use(express.logger('dev'));
+app.use(express.bodyParser());
 
 middlewares.install(app);
 routes.install(app);
+
+app.use(function(error, req, res, next) {
+    res.end('damn, something went wrong: ' + error.message);
+});
 
 app.listen(configuration.port);
 
