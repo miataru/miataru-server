@@ -3,12 +3,13 @@
  * 
  * 
  */
-var express = require('express');
-var routes = require('./routes');
-var location = require('./routes/location');
-
 var http = require('http');
 var path = require('path');
+
+var express = require('express');
+
+var routes = require('./routes');
+var location = require('./routes/location');
 
 var app = express();
 
