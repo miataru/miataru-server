@@ -1,4 +1,4 @@
-//this is actually a example user config, it only extends (and propably overwrites some values)
+//this is actually a example user config, it only extends (and propably overwrites) some values
 
 module.exports = {
     database: {
