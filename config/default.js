@@ -1,3 +1,7 @@
+//the default configuration is a configuration that will *not* be used in production
+//the sole purpose is to feature each and every relevant key and to provide a "ready-to-go" configuration
+//so that a developer can run the application locally
+
 module.exports = {
 
     //which port should the server bind to
