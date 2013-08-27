@@ -5,4 +5,4 @@ install-packages:
 	npm install
 
 run-unit-tests:
-	@NODE_ENV=test $(MOCHA) ./tests
+	@NODE_ENV=test $(MOCHA) ./tests/unit

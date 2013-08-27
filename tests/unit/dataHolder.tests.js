@@ -1,6 +1,6 @@
 var expect = require('chai').expect;
 
-var RequestConfig = require('../lib/models/RequestConfig');
+var RequestConfig = require('../../lib/models/RequestConfig');
 
 describe('dataHolders', function() {
 

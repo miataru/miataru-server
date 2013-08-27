@@ -1,6 +1,6 @@
 var expect = require('chai').expect;
 
-var keyBuilder = require('../lib/utils/keyBuilder');
+var keyBuilder = require('../../lib/utils/keyBuilder');
 
 describe('stuff', function() {
 
