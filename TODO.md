@@ -13,16 +13,16 @@
 
 ### integration
 
-* UpdateLocation
-  Expected Redis Keys are created (with and without History)
-  Error handling for wrong formatted inputs
-* GetLocation
-  Correct answer when no data is available / nolocation
-  correct formatted output when data is available
-* GetLocationHistory
-  Correct number of overall locations
-  Correct number of requested locations
-  correct formated output when data is available
+* __UpdateLocation__    
+  Expected Redis Keys are created (with and without History)    
+  Error handling for wrong formatted inputs    
+* __GetLocation__    
+  Correct answer when no data is available / nolocation    
+  correct formatted output when data is available    
+* __GetLocationHistory__    
+  Correct number of overall locations    
+  Correct number of requested locations    
+  correct formated output when data is available    
 
 ### Specification
 * Security and Authentification for methods
