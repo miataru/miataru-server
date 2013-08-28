@@ -9,14 +9,17 @@ var middlewares = require('./lib/middlewares');
 
 var app = express();
 
-app.use(express.logger('dev'));
 app.use(express.bodyParser());
 
 middlewares.install(app);
 routes.install(app);
 
+app.all('*', function(req, res, next) {
+    res.send(404, {error: 'Not found: ' + req.method + '_' + req.path});
+});
+
 app.use(function(error, req, res, next) {
-    res.end('damn, something went wrong: ' + error.message);
+    res.send(error.statusCode || 500, {error: error.message});
 });
 
 app.listen(configuration.port);
