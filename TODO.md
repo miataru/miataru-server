@@ -2,9 +2,9 @@
 
 ## features
 
-* versionising
+* logging
 
-## more tests
+## tests
 
 ### unit
 
