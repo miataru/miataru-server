@@ -6,3 +6,6 @@ install-packages:
 
 run-unit-tests:
 	@NODE_ENV=test $(MOCHA) ./tests/unit
+
+run-all-tests:
+	@$(MAKE) run-unit-tests
