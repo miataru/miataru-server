@@ -1,11 +1,11 @@
-var OneMinute = {
+var NoHistoryOneMinuteRetention = {
     "MiataruConfig":{
         "EnableLocationHistory":"False",
         "LocationDataRetentionTime":"1"
     },
     "MiataruLocation":[
         {
-            "Device":"7b8e6e0ee5296db345162dc2ef652c1350761823",
+            "Device":"foo",
             "Timestamp":"1376735651302",
             "Longitude":"10.837502",
             "Latitude":"49.828925",
@@ -14,14 +14,14 @@ var OneMinute = {
     ]
 };
 
-var OneLocation = {
+var History15MinuteRetention = {
     "MiataruConfig":{
         "EnableLocationHistory":"True",
         "LocationDataRetentionTime":"15"
     },
     "MiataruLocation":[
         {
-            "Device":"7b8e6e0ee5296db345162dc2ef652c1350761823",
+            "Device":"bar",
             "Timestamp":"1376735651302",
             "Longitude":"10.837502",
             "Latitude":"49.828925",
@@ -30,12 +30,16 @@ var OneLocation = {
     ]
 };
 
-
-
-var getLocation = {
+var GetLocation = {
     "MiataruGetLocation":[
         {
-            "Device":"7b8e6e0ee5296db345162dc2ef652c1350761823"
+            "Device":"bax"
         }
     ]
+};
+
+module.exports = {
+    NoHistoryOneMinuteRetention: NoHistoryOneMinuteRetention,
+    History15MinuteRetention: History15MinuteRetention,
+    GetLocation: GetLocation
 };

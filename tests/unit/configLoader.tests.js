@@ -7,7 +7,7 @@ var configLoader = require('../../lib/configurationLoader');
 describe('configLoader', function() {
 
     it('should load the default config', function() {
-        var config = configLoader.load(path.join(__dirname, '../testFiles/config'));
+        var config = configLoader.load(path.join(__dirname, '../testFiles/configLoader/config'));
 
         expect(config).to.deep.equal({foo:'bar'});
     });
@@ -16,7 +16,7 @@ describe('configLoader', function() {
         var tmpEnv = process.env.NODE_ENV;
 
         process.env.NODE_ENV = 'test';
-        var config = configLoader.load(path.join(__dirname, '../testFiles/config2'));
+        var config = configLoader.load(path.join(__dirname, '../testFiles/configLoader/config2'));
 
         expect(config).to.deep.equal({foo:'barFromTestEnvironment', foo2: 'baar'});
 
@@ -30,7 +30,7 @@ describe('configLoader', function() {
         process.env.NODE_ENV = 'test';
         process.env.USER = 'foouser';
 
-        var config = configLoader.load(path.join(__dirname, '../testFiles/config3'));
+        var config = configLoader.load(path.join(__dirname, '../testFiles/configLoader/config3'));
 
         expect(config).to.deep.equal({foo:'barFromuser', bar: 'barFromEnvironment', baz: 'bax'});
 

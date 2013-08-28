@@ -7,5 +7,9 @@ install-packages:
 run-unit-tests:
 	@NODE_ENV=test $(MOCHA) ./tests/unit
 
+run-integration-tests:
+	@NODE_ENV=test $(MOCHA) ./tests/integration
+
 run-all-tests:
 	@$(MAKE) run-unit-tests
+	@$(MAKE) run-integration-tests

@@ -8,6 +8,10 @@
     {
       "name": "Daniel Kirstenpfad",
       "email": "bietiekay@gmail.com"
+    },
+    {
+      "name": "Manuel Ernst",
+      "email": "zaphod84@gmx.de"
     }
   ],
   "keywords": [
@@ -27,7 +31,7 @@
     "ejs": "~0.8.4",
     "stylus": "~0.37.0",
     "cloneextend": "0.0.3",
-    "seq": "~0.3.5"
+    "seq": "~0.3.5",
   },
   "engines": {
     "node": ">= 0.10.0"
@@ -35,7 +39,8 @@
   "devDependencies": {
     "mocha": "*",
     "chai": "*",
-    "fakeredis": "*"
+    "fakeredis": "*",
+    "request": "*"
   },
   "files": [
     "server.js"
