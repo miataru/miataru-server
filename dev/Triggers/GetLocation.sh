@@ -1,2 +1,2 @@
-curl -H 'Content-Type: application/json' -X POST 'http://localhost:8080/GetLocation' -d '{"MiataruGetLocation":[{"Device":"7b8e6e0ee5296db345162dc2ef652c1350761823"}]}'
+curl -H 'Content-Type: application/json' -X POST 'http://service.miataru.com/GetLocation' -d '{"MiataruGetLocation":[{"Device":"7b8e6e0ee5296db345162dc2ef652c1350761823"}]}'
 echo
