@@ -20,6 +20,42 @@ By default Miataru does only store the last known location. And it only does tha
 
 With it's simple API it allows you to use Miataru to your own needs and practices.
 
+## Invocation
+
+Check out the repo:  
+`git clone git@github.com:miataru/miataru-server.git`
+
+Install dependencies:  
+`npm install`
+
+Run the tests:
+`make run-all-tests`
+
+Start:  
+`node server.js`
+
+### Configuration
+
+Configurations are stored in `./config/`. 
+
+A configuration file has to be a javascript file that exports a object (following the commonJS directive):
+```
+module.exports = {
+  myFooKey: 'foo',
+  myBarKey: {
+    spam: 'eggs'
+  }
+}
+```
+
+The standard configuration `default.js` will always be loaded. 
+In addition environment specific configs can be specified denoted by `{envName}.js`.
+For development you can specify a user specific configuration in the form of `user.{userName}.js`.
+
+In addition a external configuration can be speciefied via a command line parameter that comes in handy for production:  
+`node server.js --externalconfig=/etc/miataru/config.js`
+
+All other command line parameters get merged into the configuration.
 
 ## Dependencies
 
