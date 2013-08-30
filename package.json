@@ -1,6 +1,6 @@
 {
   "name": "miataru-server",
-  "version": "0.0.7",
+  "version": "0.0.8",
   "description": "this is the reference implementation of a miataru.com server",
   "homepage": "http://www.miataru.com",
   "bugs": "https://github.com/miataru/miataru-server/issues",
