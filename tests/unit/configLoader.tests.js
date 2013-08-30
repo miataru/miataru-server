@@ -69,7 +69,7 @@ describe('configLoader', function() {
         expect(config).to.deep.equal({foo:'bar', bax: 'baz', a: {b: {c: 256, d: 1024 } }});
     });
 
-    it('should throw an invalid external file', function() {
+    it('should throw on invalid external file', function() {
         expect(function() {
             configLoader.load(path.join(TEST_FILE_BASE, 'config'), {externalconfig: 'fooooooBar'});
         }).to.throw();
