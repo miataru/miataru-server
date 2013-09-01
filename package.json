@@ -32,7 +32,8 @@
     "stylus": "~0.37.0",
     "cloneextend": "0.0.3",
     "seq": "~0.3.5",
-    "require-directory": "~1.1.0"
+    "require-directory": "~1.1.0",
+    "moment": "~2.1.0"
   },
   "engines": {
     "node": ">= 0.10.0"

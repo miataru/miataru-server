@@ -6,6 +6,7 @@ var express = require('express');
 var configuration = require('./lib/configuration');
 var routes = require('./lib/routes');
 var middlewares = require('./lib/middlewares');
+var logger = require('./lib/logger');
 
 var app = express();
 
@@ -15,13 +16,17 @@ middlewares.install(app);
 routes.install(app);
 
 app.all('*', function(req, res, next) {
-    res.send(404, {error: 'Not found: ' + req.method + '_' + req.path});
+    var e = new Error('Not found: ' + req.method + '_' + req.path);
+    e.statusCode = 404;
+    handleError(e, req, res, next);
 });
 
-app.use(function(error, req, res, next) {
-    res.send(error.statusCode || 500, {error: error.message});
-});
+app.use(handleError);
 
 app.listen(configuration.port);
 
-console.log('miataru server is listening to: ' + configuration.port);
+logger.info('miataru server is listening to: %d', configuration.port);
+
+function handleError(error, req, res, next) {
+    res.send(error.statusCode || 500, {error: error.message});
+}
