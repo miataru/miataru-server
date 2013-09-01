@@ -28,5 +28,6 @@ app.listen(configuration.port);
 logger.info('miataru server is listening to: %d', configuration.port);
 
 function handleError(error, req, res, next) {
+    logger.error('error handler received error: ' + error.message);
     res.send(error.statusCode || 500, {error: error.message});
 }
