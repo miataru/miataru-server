@@ -6,7 +6,8 @@ module.exports = {
 
     //which port should the server bind to
     port: 8080,
-
+    listenip: "0.0.0.0",
+    
     //configuration for the redis database
     //type indicates if fakeredis should be used (testing and devlopment)
     // or if a real redis db should be queried (production)
