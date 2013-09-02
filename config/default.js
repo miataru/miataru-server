@@ -23,6 +23,10 @@ module.exports = {
         */
     },
 
+    logging: {
+        logLevel: 'info'
+    },
+
     //how many items should be saved at max, keep in mind that this is +1 (starts with 0)
     maximumNumberOfHistoryItems: 1023,
 
