@@ -19,8 +19,10 @@ describe('updateLocation', function() {
 
         request(options, function (error, response, body) {
             expect(error).to.be.null;
+
             expect(response.statusCode).to.equal(200);
             expect(body.MiataruResponse).to.equal('ACK');
+            expect(body.MiataruVerboseResponse).to.match(/><\)\)\).>/);
 
             done();
         });
