@@ -7,7 +7,9 @@ var serverProcess;
 
 before(function (done) {
     console.log('\nStarting server...');
-    serverProcess = spawn('node', [pathToServer]);
+    serverProcess = spawn('node', [pathToServer], {
+        stdio: [process.stdin, process.stdout, process.stderr]
+    });
 
     setTimeout(done, 1500);
 });

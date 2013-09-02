@@ -1,4 +1,6 @@
 function location(options) {
+    options = options || {};
+
     return {
         "Device": options.device || "bar",
         "Timestamp": options.timeStamp || "1376735651302",
@@ -9,6 +11,8 @@ function location(options) {
 }
 
 function config(options) {
+    options = options || {};
+
     return {
         "EnableLocationHistory": options.enableLocationHistory || "True",
         "LocationDataRetentionTime": options.locationDateRetentionTime || "15"
@@ -16,9 +20,13 @@ function config(options) {
 }
 
 function locationUpdate(options) {
+    options = options || {};
+
     return {
         "MiataruConfig": options.config || config(),
-        "MiataruLocation": options.locations || location()
+        "MiataruLocation": [
+            options.locations || location()
+        ]
     }
 }
 
