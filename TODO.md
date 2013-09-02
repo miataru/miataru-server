@@ -2,7 +2,9 @@
 
 ## features
 
-* logging
+### logging
+
+* loglevels
 
 ## tests
 
