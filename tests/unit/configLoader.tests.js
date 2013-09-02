@@ -38,12 +38,28 @@ describe('configLoader', function() {
         var tmpEnv = process.env.NODE_ENV;
         var tmpUser = process.env.USER;
 
+        process.env.NODE_ENV = 'development';
+        process.env.USER = 'foouser';
+
+        var config = configLoader.load(path.join(TEST_FILE_BASE, '/config3'));
+
+        expect(config).to.deep.equal({foo:'barFromuser', bar: 'barFromDevelopmentEnvironment', baz: 'bax'});
+
+        //restore
+        process.env.NODE_ENV = tmpEnv;
+        process.env.USER = tmpUser;
+    });
+
+    it('should load the default config, overwritten by the environment config, *NOT* overwritten by the user config', function() {
+        var tmpEnv = process.env.NODE_ENV;
+        var tmpUser = process.env.USER;
+
         process.env.NODE_ENV = 'test';
         process.env.USER = 'foouser';
 
         var config = configLoader.load(path.join(TEST_FILE_BASE, '/config3'));
 
-        expect(config).to.deep.equal({foo:'barFromuser', bar: 'barFromEnvironment', baz: 'bax'});
+        expect(config).to.deep.equal({foo:'barFromTestEnvironment', bar: 'barFromTestEnvironment'});
 
         //restore
         process.env.NODE_ENV = tmpEnv;

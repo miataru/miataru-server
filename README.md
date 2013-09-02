@@ -54,6 +54,7 @@ module.exports = {
 The standard configuration `default.js` will always be loaded. 
 In addition environment specific configs can be specified denoted by `{envName}.js`.
 For development you can specify a user specific configuration in the form of `user.{userName}.js`.
+This only works when the environment variable `NODE_ENV` is set to `development`.
 
 In addition a external configuration can be speciefied via a command line parameter that comes in handy for production when you don't want to checkin sensibel access credentials into source control. The specified path has to be absolute.  
 `node server.js --externalconfig=/etc/miataru/config.js`

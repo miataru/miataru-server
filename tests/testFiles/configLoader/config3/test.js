@@ -1,4 +1,4 @@
 module.exports = {
-    foo: 'barFromEnvironment',
-    bar: 'barFromEnvironment'
+    foo: 'barFromTestEnvironment',
+    bar: 'barFromTestEnvironment'
 };
