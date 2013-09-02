@@ -25,7 +25,7 @@ app.use(handleError);
 
 app.listen(configuration.port,configuration.listenip);
 
-logger.info('miataru server is listening to: %d on %d', configuration.port,configuration.listenip);
+logger.info('miataru server is listening to: %d on %s', configuration.port,configuration.listenip);
 
 function handleError(error, req, res, next) {
     logger.error('error handler received error: ' + error.message);
