@@ -14,8 +14,8 @@ function config(options) {
     options = options || {};
 
     return {
-        "EnableLocationHistory": options.enableLocationHistory || "True",
-        "LocationDataRetentionTime": options.locationDateRetentionTime || "15"
+        "EnableLocationHistory": options.history !== undefined ? options.history+'' : "True",
+        "LocationDataRetentionTime": options.retentionTime || "15"
     }
 }
 
@@ -24,9 +24,7 @@ function locationUpdate(options) {
 
     return {
         "MiataruConfig": options.config || config(),
-        "MiataruLocation": [
-            options.locations || location()
-        ]
+        "MiataruLocation": options.locations || location()
     }
 }
 
@@ -40,7 +38,17 @@ function getLocation(deviceName) {
     };
 }
 
+function getLocationHistory(device, amount) {
+    return {
+        "MiataruGetLocationHistory": {
+            "Device": device || "7b8e6e0ee5296db345162dc2ef652c1350761823",
+            "Amount": amount || "25"
+        }
+    }
+}
+
 module.exports = {
+    getLocationHistoryCall: getLocationHistory,
     getLocationCall: getLocation,
     locationUpdateCall: locationUpdate,
     config: config,
