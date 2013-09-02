@@ -23,7 +23,7 @@ app.all('*', function(req, res, next) {
 
 app.use(handleError);
 
-app.listen(configuration.port,configuration.listenip);
+app.listen(configuration.port, configuration.listenip);
 
 logger.info('miataru server is listening to: %d on %s', configuration.port,configuration.listenip);
 
