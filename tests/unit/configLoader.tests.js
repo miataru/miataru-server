@@ -2,7 +2,7 @@ var path = require('path');
 
 var expect = require('chai').expect;
 
-var configLoader = require('../../lib/configurationLoader');
+var configLoader = require('../../lib/utils/configurationLoader');
 var TEST_FILE_BASE = path.join(__dirname, '../testFiles/configLoader');
 
 describe('configLoader', function() {

@@ -1,45 +1,40 @@
-var NoHistoryOneMinuteRetention = {
-    "MiataruConfig":{
-        "EnableLocationHistory":"False",
-        "LocationDataRetentionTime":"1"
-    },
-    "MiataruLocation":[
-        {
-            "Device":"foo",
-            "Timestamp":"1376735651302",
-            "Longitude":"10.837502",
-            "Latitude":"49.828925",
-            "HorizontalAccuracy":"50.00"
-        }
-    ]
-};
+function location(options) {
+    return {
+        "Device": options.device || "bar",
+        "Timestamp": options.timeStamp || "1376735651302",
+        "Longitude": options.longitude || "10.837502",
+        "Latitude": options.latitude || "49.828925",
+        "HorizontalAccuracy": options.accuracy || "50.00"
+    };
+}
 
-var History15MinuteRetention = {
-    "MiataruConfig":{
-        "EnableLocationHistory":"True",
-        "LocationDataRetentionTime":"15"
-    },
-    "MiataruLocation":[
-        {
-            "Device":"bar",
-            "Timestamp":"1376735651302",
-            "Longitude":"10.837502",
-            "Latitude":"49.828925",
-            "HorizontalAccuracy":"50.00"
-        }
-    ]
-};
+function config(options) {
+    return {
+        "EnableLocationHistory": options.enableLocationHistory || "True",
+        "LocationDataRetentionTime": options.locationDateRetentionTime || "15"
+    }
+}
 
-var GetLocation = {
-    "MiataruGetLocation":[
-        {
-            "Device":"bax"
-        }
-    ]
-};
+function locationUpdate(options) {
+    return {
+        "MiataruConfig": options.config || config(),
+        "MiataruLocation": options.locations || location()
+    }
+}
+
+function getLocation(deviceName) {
+    return {
+        "MiataruGetLocation":[
+            {
+                "Device": deviceName || "foo"
+            }
+        ]
+    };
+}
 
 module.exports = {
-    NoHistoryOneMinuteRetention: NoHistoryOneMinuteRetention,
-    History15MinuteRetention: History15MinuteRetention,
-    GetLocation: GetLocation
+    getLocationCall: getLocation,
+    locationUpdateCall: locationUpdate,
+    config: config,
+    location: location
 };
