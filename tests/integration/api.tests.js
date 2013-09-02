@@ -1,3 +1,28 @@
+/*
+planned tests:
+
+✔ update location \w no history \w multiple locations
+   -> GetLocation shows last entry
+   -> GetLocationHistory shows nothing
+
+ update location \w history \w multiple locations
+    -> GetLocation shows last of history
+ -> GetLocationHistory shows complete history, shows number of entries
+
+ update location \w history \w multiple locations (more than the config allows for)
+    -> GetLocation shows last of history
+    -> GetLocationHistory shows history (related to the config value), shows number of entries
+
+ update location \w history \w multiple locations (more than the config allows for)
+    -> GetLocation show last of history
+    -> GetLocationHistory shows history (with constraints in the request), shows number of entries
+
+ getLocation: no data
+ getLocationHistory: no data
+
+ UpdateLocation retentionTno ime
+*/
+
 var seq = require('seq');
 var expect = require('chai').expect;
 var request = require('request');
