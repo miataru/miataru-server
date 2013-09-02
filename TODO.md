@@ -3,7 +3,6 @@
 ## features
 
 * logging
-* enhance configloader to make additional configurations possible (production deployment)
 
 ## tests
 

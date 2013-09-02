@@ -20,7 +20,7 @@ By default Miataru does only store the last known location. And it only does tha
 
 With it's simple API it allows you to use Miataru to your own needs and practices.
 
-## Invocation
+## Run the Server
 
 Check out the repo:  
 `git clone git@github.com:miataru/miataru-server.git`
@@ -31,7 +31,10 @@ Install dependencies:
 Run the tests:  
 `make run-all-tests`
 
-Start:  
+Configuration:
+Adjust the configuration in `./lib/config` or add your own
+
+Start Server:
 `node server.js`
 
 ### Configuration
