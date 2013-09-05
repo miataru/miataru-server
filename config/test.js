@@ -10,7 +10,7 @@ module.exports = {
        logLevel: 999 //logger accepts strings and numbers, in tests we dont want any logs, thus the 999
     },
 
-    maximumNumberOfHistoryItems: 3,
+    maximumNumberOfHistoryItems: 5,
 
     //namespacing for redis keys
     redisMiataruNamespace: 'miadTest'
