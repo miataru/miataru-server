@@ -11,6 +11,7 @@ var logger = require('./lib/logger');
 var app = express();
 
 app.use(express.bodyParser());
+app.use(express.favicon(__dirname + '/favicon.ico')); 
 
 middlewares.install(app);
 routes.install(app);
