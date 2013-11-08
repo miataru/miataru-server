@@ -60,4 +60,18 @@ describe('updateLocation', function() {
         });
     });
 
+   it('should answer with a documentation redirect for GET requests to the UpdateLocation url',function(done) {
+      var options = {
+	followRedirect: false,
+	url: serverUrl + '/UpdateLocation',
+	method: 'GET'
+	};
+
+	request(options,function (error, response, body) {
+		expect(error).to.be.null;
+		expect(response.statusCode).to.equal(301);
+		done();
+	});
+    });
+
 });
