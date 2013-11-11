@@ -109,7 +109,7 @@ describe('complete chain', function() {
                 getLocationHistory: calls.getLocationHistoryCall(DEVICE, 10)
             };
 
-            completeChain(data, '', function(error, data) {
+            completeChain(data, 'v1', function(error, data) {
                 result = data;
 //c(data);
                 done();
@@ -159,7 +159,7 @@ describe('complete chain', function() {
                 getLocationHistory: calls.getLocationHistoryCall(DEVICE, 10)
             };
 
-            completeChain(data, '', function(error, data) {
+            completeChain(data, 'v1', function(error, data) {
                 result = data;
 
                 done();
@@ -213,7 +213,7 @@ describe('complete chain', function() {
                 getLocationHistory: calls.getLocationHistoryCall(DEVICE, 10)
             };
 
-            completeChain(data, '', function(error, data) {
+            completeChain(data, 'v1', function(error, data) {
                 result = data;
 
                 done();
@@ -265,7 +265,7 @@ describe('complete chain', function() {
                 getLocationHistory: calls.getLocationHistoryCall(DEVICE, 2)
             };
 
-            completeChain(data, '', function(error, data) {
+            completeChain(data, 'v1', function(error, data) {
                 result = data;
 
                 done();

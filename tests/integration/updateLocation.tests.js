@@ -12,7 +12,7 @@ describe('updateLocation', function() {
         var updateData = calls.locationUpdateCall();
 
         var options = {
-            url: serverUrl + '/UpdateLocation',
+            url: serverUrl + '/v1/UpdateLocation',
             method: 'POST',
             json: updateData
         };
@@ -30,7 +30,7 @@ describe('updateLocation', function() {
 
     it('should answer with error on empty locationUpdate request', function(done) {
         var options = {
-            url: serverUrl + '/UpdateLocation',
+            url: serverUrl + '/v1/UpdateLocation',
             method: 'POST',
             json: {}
         };
@@ -45,7 +45,7 @@ describe('updateLocation', function() {
 
     it('should answer with error on crippled locationUpdate request', function(done) {
         var options = {
-            url: serverUrl + '/UpdateLocation',
+            url: serverUrl + '/v1/UpdateLocation',
             method: 'POST',
             json: {
                 MiataruLocation: 'foo'
@@ -60,18 +60,32 @@ describe('updateLocation', function() {
         });
     });
 
-   it('should answer with a documentation redirect for GET requests to the UpdateLocation url',function(done) {
-      var options = {
-	followRedirect: false,
-	url: serverUrl + '/UpdateLocation',
-	method: 'GET'
-	};
+    it('should answer with a method not supported error (405)', function(done) {
+        var options = {
+            followRedirect: false,
+            url: serverUrl + '/v1/UpdateLocation',
+            method: 'GET'
+        };
 
-	request(options,function (error, response, body) {
-		expect(error).to.be.null;
-		expect(response.statusCode).to.equal(301);
-		done();
-	});
+        request.get(options,function (error, response, body) {
+            expect(error).to.be.null;
+            expect(response.statusCode).to.equal(405);
+            done();
+        });
+    });
+
+    it('should answer with a not found error (404)', function(done) {
+        var options = {
+            followRedirect: false,
+            url: serverUrl + '/foobar',
+            method: 'GET'
+        };
+
+        request(options,function (error, response, body) {
+            expect(error).to.be.null;
+            expect(response.statusCode).to.equal(404);
+            done();
+        });
     });
 
 });
