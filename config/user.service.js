@@ -24,7 +24,7 @@ module.exports = {
     },
 
     //how many items should be saved at max, keep in mind that this is +1 (starts with 0)
-    maximumNumberOfHistoryItems: 10023,
+    maximumNumberOfHistoryItems: 1023,
 
     //namespacing for redis keys
     redisMiataruNamespace: "miad"

@@ -11,6 +11,7 @@ var logger = require('./lib/logger');
 var app = express();
 
 app.use(express.bodyParser());
+app.use(express.favicon(__dirname + '/favicon.ico')); 
 
 middlewares.install(app);
 routes.install(app);
@@ -29,5 +30,6 @@ logger.info('miataru server is listening to: %d on %s', configuration.port,confi
 
 function handleError(error, req, res, next) {
     logger.error('error handler received error: ' + error.message);
+    console.log(error.stack);
     res.send(error.statusCode || 500, {error: error.message});
 }
