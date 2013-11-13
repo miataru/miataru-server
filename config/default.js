@@ -6,6 +6,8 @@ module.exports = {
 
     //which port should the server bind to
     port: 8080,
+
+    //the ip that should be used
     listenip: "0.0.0.0",
     
     //configuration for the redis database
