@@ -10,7 +10,7 @@ describe('smoke', function() {
     it('should show that its running', function(done) {
         request(serverUrl, function (error, response, body) {
             expect(error).to.be.null;
-            expect(body).to.equal('this is miataru, welcome!');
+            expect(body).to.match(/this is the miataru service backend/);
 
             done();
         });
