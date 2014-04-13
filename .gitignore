@@ -4,3 +4,5 @@ node_modules
 
 user.manu.js
 user.mer.js
+newrelic.js
+newrelic_agent.log
