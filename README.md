@@ -1,5 +1,5 @@
 [![Build Status](https://travis-ci.org/miataru/miataru-server.png)](https://travis-ci.org/miataru/miataru-server)
-
+[![Code Climate](https://codeclimate.com/github/miataru/miataru-server/badges/gpa.svg)](https://codeclimate.com/github/miataru/miataru-server)
 [![Hack miataru/miataru-server on Nitrous.IO](https://d3o0mnbgv6k92a.cloudfront.net/assets/hack-l-v1-3cc067e71372f6045e1949af9d96095b.png)](https://www.nitrous.io/hack_button?source=embed&runtime=nodejs&repo=miataru%2Fmiataru-server&file_to_open=README.md)
 
 # miataru-server
