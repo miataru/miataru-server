@@ -39,6 +39,16 @@ Adjust the configuration in `./lib/config` or add your own
 Start Server:
 `node server.js`
 
+The server will, in the default configuration, listen on localhost port 8080. To do some test requests on the commandline, do this:
+
+to set a location:
+
+curl -H 'Content-Type: application/json' -X POST 'http://localhost:8080/UpdateLocation' -d '{"MiataruConfig":{"EnableLocationHistory":"True","LocationDataRetentionTime":"15"},"MiataruLocation":[{"Device":"7b8e6e0ee5296db345162dc2ef652c1350761823","Timestamp":"1376735651302","Longitude":"10.837502","Latitude":"49.828925","HorizontalAccuracy":"50.00"}]}'
+
+to retrieve a location:
+
+curl -H 'Content-Type: application/json' -X POST 'http://localhost:8080/GetLocation' -d '{"MiataruGetLocation":[{"Device":"7b8e6e0ee5296db345162dc2ef652c1350761823"}]}'
+
 ### Configuration
 
 Configurations are stored in `./config/`. 

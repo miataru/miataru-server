@@ -1,13 +1,13 @@
 {
   "name": "miataru-server",
-  "version": "1.0.2",
+  "version": "1.0.3",
   "description": "this is the reference implementation of a miataru.com server",
   "homepage": "http://www.miataru.com",
   "bugs": "https://github.com/miataru/miataru-server/issues",
   "contributors": [
     {
       "name": "Daniel Kirstenpfad",
-      "email": "bietiekay@gmail.com"
+      "email": "info@miataru.com"
     },
     {
       "name": "Manuel Ernst",
