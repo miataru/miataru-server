@@ -26,6 +26,9 @@ module.exports = {
     //how many items should be saved at max, keep in mind that this is +1 (starts with 0)
     maximumNumberOfHistoryItems: 10023,
 
+    // how many visitors to a device last and history call do we store this is +1 (starts with 0)
+    maximumNumberOfLocationVistors: 10,
+
     //namespacing for redis keys
     redisMiataruNamespace: "miad"
 

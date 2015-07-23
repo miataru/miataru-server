@@ -12,6 +12,9 @@ module.exports = {
 
     maximumNumberOfHistoryItems: 5,
 
+    // how many visitors to a device last and history call do we store this is +1 (starts with 0)
+    maximumNumberOfLocationVistors: 10,
+
     //namespacing for redis keys
     redisMiataruNamespace: 'miadTest'
 };
