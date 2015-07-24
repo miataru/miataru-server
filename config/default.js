@@ -14,14 +14,14 @@ module.exports = {
     //type indicates if fakeredis should be used (testing and devlopment)
     // or if a real redis db should be queried (production)
     database: {
-        type: 'mock' //mock - to use real redis comment this line and uncomment the next lines
+        //type: 'mock' //mock - to use real redis comment this line and uncomment the next lines
         //for the mock type we're done configuring, however a real server needs some more love.
         //use this parameters, e.g. in your local setup or for production
-        /*type: 'real', //mock|real
+        type: 'real', //mock|real
         host: 'localhost',
         port: 6379,
         userName: '',
-        password: ''*/
+        password: ''
     },
 
     logging: {
@@ -33,6 +33,9 @@ module.exports = {
 
     // how many visitors to a device last and history call do we store this is +1 (starts with 0)
     maximumNumberOfLocationVistors: 10,
+
+    // if there's an unknown visitor (no deviceID given) do you want it still to be added to the visitor history?
+    addEmptyVisitorDeviceIDtoVisitorHistory: false,
 
     //namespacing for redis keys
     redisMiataruNamespace: "miad"

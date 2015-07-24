@@ -29,6 +29,9 @@ module.exports = {
     // how many visitors to a device last and history call do we store this is +1 (starts with 0)
     maximumNumberOfLocationVistors: 10,
 
+    // if there's an unknown visitor (no deviceID given) do you want it still to be added to the visitor history?
+    addEmptyVisitorDeviceIDtoVisitorHistory: true,
+
     //namespacing for redis keys
     redisMiataruNamespace: "miad"
 
