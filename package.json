@@ -24,7 +24,7 @@
     "type": "git",
     "url": "git://github.com/miataru/miataru-server.git"
   },
-  "license": "BSD 2-clause",
+  "license": "BSD-2-Clause",
   "dependencies": {
     "express": "~3.3.5",
     "redis": "~0.8.4",
