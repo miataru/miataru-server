@@ -48,6 +48,27 @@ to retrieve a location:
 
 curl -H 'Content-Type: application/json' -X POST 'http://localhost:8080/GetLocation' -d '{"MiataruGetLocation":[{"Device":"7b8e6e0ee5296db345162dc2ef652c1350761823"}]}'
 
+## Docker
+
+You can use the included Dockerfile to build your own docker image for running a miataru server. 
+
+It is based upon the current alpine version of the official nodejs image and will build itself to approx. 80mbyte of size.
+
+To use run the docker build:
+```
+docker build -t miataru .
+```
+
+And run the image:
+
+```
+docker run -it -d --name miataru -p 3101:8090 miataru
+```
+
+It is going to use the default config, which is fakeredis right now. To use proper Redis and more complex
+configurations please change the configuration and in such a case link the miataru container to a redis container.
+
+
 ### Configuration
 
 Configurations are stored in `./config/`. 

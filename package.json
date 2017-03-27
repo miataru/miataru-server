@@ -34,7 +34,8 @@
     "seq": "~0.3.5",
     "require-directory": "~1.1.0",
     "moment": "~2.1.0",
-    "optimist": "~0.6.0"
+    "optimist": "~0.6.0",
+    "fakeredis": "*"
   },
   "engines": {
     "node": ">= 0.10.0"
@@ -42,7 +43,6 @@
   "devDependencies": {
     "mocha": "*",
     "chai": "*",
-    "fakeredis": "*",
     "request": "*"
   },
   "files": [
@@ -50,7 +50,7 @@
   ],
   "main": "./server.js",
   "scripts": {
-    "start": "node app.js",
+    "start": "node server.js",
     "test": "./node_modules/mocha/bin/mocha tests"
   }
 }

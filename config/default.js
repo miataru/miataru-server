@@ -17,7 +17,7 @@ module.exports = {
         //type: 'mock' //mock - to use real redis comment this line and uncomment the next lines
         //for the mock type we're done configuring, however a real server needs some more love.
         //use this parameters, e.g. in your local setup or for production
-        type: 'real', //mock|real
+        type: 'mock', //mock|real
         host: 'localhost',
         port: 6379,
         userName: '',
