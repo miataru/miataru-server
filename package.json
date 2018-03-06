@@ -33,7 +33,7 @@
     "cloneextend": "0.0.3",
     "seq": "~0.3.5",
     "require-directory": "~1.1.0",
-    "moment": "~2.11.2",
+    "moment": "~2.19.3",
     "optimist": "~0.6.0",
     "fakeredis": "*"
   },
@@ -41,7 +41,7 @@
     "node": ">= 0.10.0"
   },
   "devDependencies": {
-    "mocha": "*",
+    "mocha": "~3.2.0",
     "chai": "*",
     "request": "*"
   },
