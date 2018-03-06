@@ -43,7 +43,7 @@
   "devDependencies": {
     "mocha": "~3.2.0",
     "chai": "*",
-    "request": "*"
+    "request": "~2.81.0"
   },
   "files": [
     "server.js"
