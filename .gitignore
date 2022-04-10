@@ -7,3 +7,4 @@ user.manu.js
 user.mer.js
 newrelic.js
 newrelic_agent.log
+/package-lock.json
