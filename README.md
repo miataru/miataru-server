@@ -48,6 +48,10 @@ to retrieve a location:
 
 curl -H 'Content-Type: application/json' -X POST 'http://localhost:8080/GetLocation' -d '{"MiataruGetLocation":[{"Device":"7b8e6e0ee5296db345162dc2ef652c1350761823"}]}'
 
+to delete a location:
+
+curl -H 'Content-Type: application/json' -X POST 'http://localhost:8080/DeleteLocation' -d '{"MiataruDeleteLocation":[{"Device":"7b8e6e0ee5296db345162dc2ef652c1350761823"}]}'
+
 ## Docker
 
 You can use the included Dockerfile to build your own docker image for running a miataru server. 
