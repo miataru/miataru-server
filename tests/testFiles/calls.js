@@ -38,13 +38,23 @@ function getLocation(deviceName) {
     };
 }
 
-function getLocationHistory(device, amount) {
-    return {
-        "MiataruGetLocationHistory": {
-            "Device": device || "7b8e6e0ee5296db345162dc2ef652c1350761823",
-            "Amount": amount || "25"
-        }
+function getLocationHistory(device, amount, startTimestamp, endTimestamp) {
+    var body = {
+        "Device": device || "7b8e6e0ee5296db345162dc2ef652c1350761823",
+        "Amount": amount || "25"
+    };
+
+    if(startTimestamp !== undefined) {
+        body.StartTimestamp = startTimestamp;
     }
+
+    if(endTimestamp !== undefined) {
+        body.EndTimestamp = endTimestamp;
+    }
+
+    return {
+        "MiataruGetLocationHistory": body
+    };
 }
 
 module.exports = {
