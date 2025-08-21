@@ -88,4 +88,49 @@ describe('updateLocation', function() {
         });
     });
 
+    it('should wait for redis ops when history is disabled', function(done) {
+        var device = 'nohist';
+
+        var withHistory = {
+            MiataruConfig: calls.config({history: true}),
+            MiataruLocation: [calls.location({device: device, longitude: '10', latitude: '20', timeStamp: '100'})]
+        };
+
+        request({url: serverUrl + '/v1/UpdateLocation', method: 'POST', json: withHistory}, function(err) {
+            expect(err).to.be.null;
+
+            var withoutHistory = {
+                MiataruConfig: calls.config({history: false}),
+                MiataruLocation: [calls.location({device: device, longitude: '30', latitude: '40', timeStamp: '200'})]
+            };
+
+            request({url: serverUrl + '/v1/UpdateLocation', method: 'POST', json: withoutHistory}, function(err2) {
+                expect(err2).to.be.null;
+
+                var getLocOpts = {
+                    url: serverUrl + '/v1/GetLocation',
+                    method: 'POST',
+                    json: {MiataruGetLocation: [{Device: device}]}
+                };
+
+                var getHistOpts = {
+                    url: serverUrl + '/v1/GetLocationHistory',
+                    method: 'POST',
+                    json: {MiataruGetLocationHistory: {Device: device, Amount: '25'}}
+                };
+
+                request(getLocOpts, function(err3, res3, body3) {
+                    expect(err3).to.be.null;
+                    expect(body3.MiataruLocation[0].Longitude).to.equal('30');
+
+                    request(getHistOpts, function(err4, res4, body4) {
+                        expect(err4).to.be.null;
+                        expect(body4.MiataruLocation).to.be.an('array').that.is.empty;
+                        done();
+                    });
+                });
+            });
+        });
+    });
+
 });
