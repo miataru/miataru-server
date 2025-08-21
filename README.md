@@ -29,7 +29,7 @@ Check out the repo:
 Install dependencies:  
 `npm install`
 
-Run the tests:  
+Run the tests:
 `make run-all-tests`
 
 Configuration:
@@ -37,6 +37,10 @@ Adjust the configuration in `./lib/config` or add your own
 
 Start Server:
 `node server.js`
+
+### Dashboard
+
+After starting the server, open `http://localhost:8090/dashboard` (or the port configured in your setup) in a web browser. The dashboard displays device locations and recent history on an interactive map.
 
 The server will, in the default configuration, listen on localhost port 8080. To do some test requests on the commandline, do this:
 
