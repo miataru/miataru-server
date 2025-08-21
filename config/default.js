@@ -38,6 +38,11 @@ module.exports = {
     addEmptyVisitorDeviceIDtoVisitorHistory: false,
 
     //namespacing for redis keys
-    redisMiataruNamespace: "miad"
+    redisMiataruNamespace: "miad",
+
+    //cors configuration
+    cors: {
+        allowedOrigins: ['http://example.com']
+    }
 
 };

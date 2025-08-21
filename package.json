@@ -35,7 +35,8 @@
     "require-directory": "~1.1.0",
     "moment": ">=2.29.2",
     "optimist": "~0.6.0",
-    "fakeredis": "*"
+    "fakeredis": "*",
+    "cors": "~2.8.5"
   },
   "engines": {
     "node": ">= 0.10.0"
