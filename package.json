@@ -26,24 +26,26 @@
   },
   "license": "BSD-2-Clause",
   "dependencies": {
-    "express": "~3.3.5",
-    "redis": "~0.8.4",
-    "ejs": "~2.5.5",
-    "stylus": "~0.37.0",
+    "express": "^4.18.2",
+    "body-parser": "^1.20.2",
+    "serve-favicon": "^2.5.0",
+    "redis": "^4.6.7",
+    "fakeredis": "^2.0.0",
+    "ejs": "^3.1.9",
+    "stylus": "^0.59.0",
     "cloneextend": "0.0.3",
-    "seq": "~0.3.5",
-    "require-directory": "~1.1.0",
-    "moment": ">=2.29.2",
-    "optimist": "~0.6.0",
-    "fakeredis": "*"
+    "seq": "^0.3.5",
+    "require-directory": "^2.1.1",
+    "moment": "^2.29.4",
+    "optimist": "^0.6.1"
   },
   "engines": {
-    "node": ">= 0.10.0"
+    "node": ">= 18"
   },
   "devDependencies": {
-    "mocha": "~3.2.0",
-    "chai": "*",
-    "request": "~2.81.0"
+    "mocha": "^10.4.0",
+    "chai": "^4.3.7",
+    "request": "^2.88.2"
   },
   "files": [
     "server.js"
@@ -51,6 +53,6 @@
   "main": "./server.js",
   "scripts": {
     "start": "node server.js",
-    "test": "./node_modules/mocha/bin/mocha tests"
+    "test": "NODE_ENV=test mocha --recursive tests"
   }
 }
