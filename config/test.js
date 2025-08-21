@@ -19,5 +19,11 @@ module.exports = {
     addEmptyVisitorDeviceIDtoVisitorHistory: true,
 
     //namespacing for redis keys
-    redisMiataruNamespace: 'miadTest'
+    redisMiataruNamespace: 'miadTest',
+
+    // rate limiting configuration
+    rateLimit: {
+        windowSeconds: 60,
+        maxRequests: 100
+    }
 };

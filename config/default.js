@@ -38,6 +38,14 @@ module.exports = {
     addEmptyVisitorDeviceIDtoVisitorHistory: false,
 
     //namespacing for redis keys
-    redisMiataruNamespace: "miad"
+    redisMiataruNamespace: "miad",
+
+    // rate limiting configuration
+    rateLimit: {
+        // time window in seconds for request counting
+        windowSeconds: 60,
+        // maximum number of requests allowed within the time window
+        maxRequests: 100
+    }
 
 };
