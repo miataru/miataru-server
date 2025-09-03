@@ -10,12 +10,12 @@ describe('New Fields Integration Tests', function() {
         it('should accept location update with all new fields', function(done) {
             var updateData = calls.locationUpdateCall({
                 config: calls.config({history: false, retentionTime: 100}),
-                locations: calls.location({
+                locations: [calls.location({
                     device: 'new-fields-device-1',
                     speed: '25.5',
                     batteryLevel: '85',
                     altitude: '120.5'
-                })
+                })]
             });
 
             request(app)
@@ -32,11 +32,11 @@ describe('New Fields Integration Tests', function() {
         it('should accept location update with partial new fields', function(done) {
             var updateData = calls.locationUpdateCall({
                 config: calls.config({history: false, retentionTime: 100}),
-                locations: calls.location({
+                locations: [calls.location({
                     device: 'new-fields-device-2',
                     speed: '15.2'
                     // BatteryLevel and Altitude missing
-                })
+                })]
             });
 
             request(app)
@@ -53,12 +53,12 @@ describe('New Fields Integration Tests', function() {
         it('should accept location update with -1 values for new fields', function(done) {
             var updateData = calls.locationUpdateCall({
                 config: calls.config({history: false, retentionTime: 100}),
-                locations: calls.location({
+                locations: [calls.location({
                     device: 'new-fields-device-3',
                     speed: -1,
                     batteryLevel: -1,
                     altitude: -1
-                })
+                })]
             });
 
             request(app)
@@ -346,6 +346,209 @@ describe('New Fields Integration Tests', function() {
                     expect(res.body.MiataruLocation[0]).to.not.have.property('Altitude');
                     done();
                 });
+        });
+    });
+
+    describe('RequestLocation property validation', function() {
+        var RequestLocation = require('../../lib/models/RequestLocation');
+        var errors = require('../../lib/errors');
+
+        it('should throw BadRequestError when Device property is missing', function() {
+            var data = {
+                Timestamp: '1234567890',
+                Longitude: '10.0',
+                Latitude: '20.0',
+                HorizontalAccuracy: '5.0'
+            };
+
+            expect(function() {
+                new RequestLocation(data);
+            }).to.throw(errors.BadRequestError, 'Missing RequestProperty _device in location');
+        });
+
+        it('should throw BadRequestError when Timestamp property is missing', function() {
+            var data = {
+                Device: 'test-device',
+                Longitude: '10.0',
+                Latitude: '20.0',
+                HorizontalAccuracy: '5.0'
+            };
+
+            expect(function() {
+                new RequestLocation(data);
+            }).to.throw(errors.BadRequestError, 'Missing RequestProperty _timestamp in location');
+        });
+
+        it('should throw BadRequestError when Longitude property is missing', function() {
+            var data = {
+                Device: 'test-device',
+                Timestamp: '1234567890',
+                Latitude: '20.0',
+                HorizontalAccuracy: '5.0'
+            };
+
+            expect(function() {
+                new RequestLocation(data);
+            }).to.throw(errors.BadRequestError, 'Missing RequestProperty _longitude in location');
+        });
+
+        it('should throw BadRequestError when Latitude property is missing', function() {
+            var data = {
+                Device: 'test-device',
+                Timestamp: '1234567890',
+                Longitude: '10.0',
+                HorizontalAccuracy: '5.0'
+            };
+
+            expect(function() {
+                new RequestLocation(data);
+            }).to.throw(errors.BadRequestError, 'Missing RequestProperty _latitude in location');
+        });
+
+        it('should throw BadRequestError when HorizontalAccuracy property is missing', function() {
+            var data = {
+                Device: 'test-device',
+                Timestamp: '1234567890',
+                Longitude: '10.0',
+                Latitude: '20.0'
+            };
+
+            expect(function() {
+                new RequestLocation(data);
+            }).to.throw(errors.BadRequestError, 'Missing RequestProperty _horizontalAccuracy in location');
+        });
+
+        it('should not throw error when Device property is explicitly false (backward compatibility)', function() {
+            var data = {
+                Device: false,
+                Timestamp: '1234567890',
+                Longitude: '10.0',
+                Latitude: '20.0',
+                HorizontalAccuracy: '5.0'
+            };
+
+            expect(function() {
+                new RequestLocation(data);
+            }).to.not.throw();
+        });
+
+        it('should not throw error when Timestamp property is explicitly false (backward compatibility)', function() {
+            var data = {
+                Device: 'test-device',
+                Timestamp: false,
+                Longitude: '10.0',
+                Latitude: '20.0',
+                HorizontalAccuracy: '5.0'
+            };
+
+            expect(function() {
+                new RequestLocation(data);
+            }).to.not.throw();
+        });
+
+        it('should not throw error when Longitude property is explicitly false (backward compatibility)', function() {
+            var data = {
+                Device: 'test-device',
+                Timestamp: '1234567890',
+                Longitude: false,
+                Latitude: '20.0',
+                HorizontalAccuracy: '5.0'
+            };
+
+            expect(function() {
+                new RequestLocation(data);
+            }).to.not.throw();
+        });
+
+        it('should not throw error when Latitude property is explicitly false (backward compatibility)', function() {
+            var data = {
+                Device: 'test-device',
+                Timestamp: '1234567890',
+                Longitude: '10.0',
+                Latitude: false,
+                HorizontalAccuracy: '5.0'
+            };
+
+            expect(function() {
+                new RequestLocation(data);
+            }).to.not.throw();
+        });
+
+        it('should not throw error when HorizontalAccuracy property is explicitly false (backward compatibility)', function() {
+            var data = {
+                Device: 'test-device',
+                Timestamp: '1234567890',
+                Longitude: '10.0',
+                Latitude: '20.0',
+                HorizontalAccuracy: false
+            };
+
+            expect(function() {
+                new RequestLocation(data);
+            }).to.not.throw();
+        });
+
+        it('should not throw error when all required properties are provided', function() {
+            var data = {
+                Device: 'test-device',
+                Timestamp: '1234567890',
+                Longitude: '10.0',
+                Latitude: '20.0',
+                HorizontalAccuracy: '5.0',
+                Speed: '25.5',
+                BatteryLevel: '85',
+                Altitude: '120.5'
+            };
+
+            expect(function() {
+                new RequestLocation(data);
+            }).to.not.throw();
+        });
+
+        it('should not throw error when new fields are omitted (they default to -1)', function() {
+            var data = {
+                Device: 'test-device',
+                Timestamp: '1234567890',
+                Longitude: '10.0',
+                Latitude: '20.0',
+                HorizontalAccuracy: '5.0'
+                // Speed, BatteryLevel, Altitude omitted - should default to -1
+            };
+
+            expect(function() {
+                new RequestLocation(data);
+            }).to.not.throw();
+        });
+
+        it('should not throw error when new fields are explicitly set to -1', function() {
+            var data = {
+                Device: 'test-device',
+                Timestamp: '1234567890',
+                Longitude: '10.0',
+                Latitude: '20.0',
+                HorizontalAccuracy: '5.0',
+                Speed: -1,
+                BatteryLevel: -1,
+                Altitude: -1
+            };
+
+            expect(function() {
+                new RequestLocation(data);
+            }).to.not.throw();
+        });
+
+        it('should throw BadRequestError when Device property is explicitly null', function() {
+            var data = {
+                Device: null,
+                Timestamp: '1234567890',
+                Longitude: '10.0',
+                Latitude: '20.0',
+                HorizontalAccuracy: '5.0'
+            };
+
+            expect(function() {
+                new RequestLocation(data);
+            }).to.throw(errors.BadRequestError, 'Missing RequestProperty _device in location');
         });
     });
 });

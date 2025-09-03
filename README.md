@@ -97,6 +97,100 @@ In addition a external configuration can be speciefied via a command line parame
 
 All other command line parameters get merged into the configuration.
 
+## RequestLocation Validation
+
+The Miataru server validates all location data through the `RequestLocation` model to ensure data integrity and proper API usage.
+
+### Required Properties
+
+The following properties are **required** for all location updates:
+
+- `Device` - Device identifier
+- `Timestamp` - Unix timestamp of the location
+- `Longitude` - Longitude coordinate
+- `Latitude` - Latitude coordinate  
+- `HorizontalAccuracy` - Accuracy of the location data
+
+### Optional Properties (New Fields)
+
+The following properties are **optional** and default to `-1` when not provided:
+
+- `Speed` - Speed in appropriate units
+- `BatteryLevel` - Battery level percentage
+- `Altitude` - Altitude above sea level
+
+### Validation Behavior
+
+| Scenario | Behavior | Error |
+|----------|----------|-------|
+| Missing required property | Throws `BadRequestError` | `Missing RequestProperty {property} in location` |
+| Required property = `null` | Throws `BadRequestError` | `Missing RequestProperty {property} in location` |
+| Required property = `false` | **Accepted** (backward compatibility) | None |
+| Valid required property | Accepted | None |
+| Optional property omitted | Defaults to `-1` | None |
+| Optional property = `-1` | Accepted (excluded from response) | None |
+
+### Example Usage
+
+```javascript
+// Valid location update with all fields
+{
+  "Device": "my-device-123",
+  "Timestamp": "1376735651302", 
+  "Longitude": "10.837502",
+  "Latitude": "49.828925",
+  "HorizontalAccuracy": "50.00",
+  "Speed": "25.5",
+  "BatteryLevel": "85",
+  "Altitude": "120.5"
+}
+
+// Valid location update with only required fields
+{
+  "Device": "my-device-123",
+  "Timestamp": "1376735651302",
+  "Longitude": "10.837502", 
+  "Latitude": "49.828925",
+  "HorizontalAccuracy": "50.00"
+  // Speed, BatteryLevel, Altitude will default to -1
+}
+
+// Invalid - missing required property
+{
+  "Device": "my-device-123",
+  "Timestamp": "1376735651302",
+  "Longitude": "10.837502",
+  "Latitude": "49.828925"
+  // Missing HorizontalAccuracy - will throw BadRequestError
+}
+```
+
+## Backward Compatibility
+
+The Miataru server maintains full backward compatibility with previous versions:
+
+### Legacy Client Support
+
+- **Old format requests** without new fields (`Speed`, `BatteryLevel`, `Altitude`) are fully supported
+- **Legacy API endpoints** (`/UpdateLocation`, `/GetLocation`) continue to work alongside v1 endpoints
+- **Data type compatibility** - both string and numeric values are accepted for all fields
+- **Zero values** are properly handled for new fields
+
+### Validation Compatibility
+
+- **`false` values** for required properties are accepted (maintains compatibility with older clients)
+- **Missing properties** still properly throw validation errors
+- **New field behavior** remains unchanged (default to `-1` when omitted)
+
+### Migration Notes
+
+Existing clients do not need any changes. The server will:
+
+1. Accept requests in the old format without new fields
+2. Accept requests with `false` values for required properties  
+3. Continue to validate missing properties and throw appropriate errors
+4. Handle new fields gracefully when provided
+
 ## Dependencies
 
 Miataru server uses NodeJS, Redis and ExpressJS
