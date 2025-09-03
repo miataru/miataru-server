@@ -75,17 +75,100 @@ describe('New Fields Integration Tests', function() {
 
     describe('GetLocation with new fields', function() {
         it('should return location with new fields', function(done) {
-            // Skip this test for now as it has data persistence issues
-            // The functionality is tested in other working tests
-            done();
+            var DEVICE_WITH_NEW_FIELDS = 'get-location-new-fields-device-' + Date.now();
+            
+            // Use the same pattern as the working complete chain tests
+            var data = {
+                updateLocation: calls.locationUpdateCall({
+                    config: calls.config({history: true, retentionTime: 100}),
+                    locations: [
+                        calls.location({
+                            device: DEVICE_WITH_NEW_FIELDS,
+                            timeStamp: 1,
+                            speed: '30.5',
+                            batteryLevel: '75',
+                            altitude: '200.0'
+                        })
+                    ]
+                }),
+                getLocation: calls.getLocationCall(DEVICE_WITH_NEW_FIELDS)
+            };
+
+            // Update location first
+            request(app)
+                .post('/v1/UpdateLocation')
+                .send(data.updateLocation)
+                .expect(200)
+                .end(function(err, res) {
+                    expect(err).to.be.null;
+                    expect(res.body.MiataruResponse).to.equal('ACK');
+                    
+                    // Then get location
+                    request(app)
+                        .post('/v1/GetLocation')
+                        .send(data.getLocation)
+                        .expect(200)
+                        .end(function(err, res) {
+                            expect(err).to.be.null;
+                            expect(res.body.MiataruLocation).to.be.an('array');
+                            expect(res.body.MiataruLocation).to.have.length(1);
+                            expect(res.body.MiataruLocation[0]).to.have.property('Device', DEVICE_WITH_NEW_FIELDS);
+                            expect(res.body.MiataruLocation[0]).to.have.property('Speed', '30.5');
+                            expect(res.body.MiataruLocation[0]).to.have.property('BatteryLevel', '75');
+                            expect(res.body.MiataruLocation[0]).to.have.property('Altitude', '200.0');
+                            done();
+                        });
+                });
         });
     });
 
     describe('GetLocationGeoJSON with new fields', function() {
         it('should return GeoJSON with new fields in properties', function(done) {
-            // Skip this test for now as it has data persistence issues
-            // The functionality is tested in other working tests
-            done();
+            var DEVICE_GEOJSON_NEW_FIELDS = 'geojson-new-fields-device-' + Date.now();
+            
+            // Use the same pattern as the working complete chain tests
+            var data = {
+                updateLocation: calls.locationUpdateCall({
+                    config: calls.config({history: true, retentionTime: 100}),
+                    locations: [
+                        calls.location({
+                            device: DEVICE_GEOJSON_NEW_FIELDS,
+                            timeStamp: 1,
+                            speed: '40.0',
+                            batteryLevel: '90',
+                            altitude: '150.5'
+                        })
+                    ]
+                }),
+                getLocation: calls.getLocationCall(DEVICE_GEOJSON_NEW_FIELDS)
+            };
+
+            // Update location first
+            request(app)
+                .post('/v1/UpdateLocation')
+                .send(data.updateLocation)
+                .expect(200)
+                .end(function(err, res) {
+                    expect(err).to.be.null;
+                    expect(res.body.MiataruResponse).to.equal('ACK');
+                    
+                    // Then get GeoJSON
+                    request(app)
+                        .post('/v1/GetLocationGeoJSON')
+                        .send(data.getLocation)
+                        .expect(200)
+                        .end(function(err, res) {
+                            expect(err).to.be.null;
+                            expect(res.body).to.have.property('type', 'Feature');
+                            expect(res.body).to.have.property('geometry');
+                            expect(res.body).to.have.property('properties');
+                            expect(res.body.properties).to.have.property('name', DEVICE_GEOJSON_NEW_FIELDS);
+                            expect(res.body.properties).to.have.property('speed', '40.0');
+                            expect(res.body.properties).to.have.property('batteryLevel', '90');
+                            expect(res.body.properties).to.have.property('altitude', '150.5');
+                            done();
+                        });
+                });
         });
     });
 
