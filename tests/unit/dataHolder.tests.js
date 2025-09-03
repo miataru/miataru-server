@@ -8,6 +8,108 @@ describe('dataHolders', function() {
         it('should throw because of invalid data', function() {
             expect(function() { new RequestConfig() }).to.throw();
         });
+
+        describe('EnableLocationHistory validation', function() {
+            it('should accept string "True" and convert to boolean true', function() {
+                var config = new RequestConfig({
+                    EnableLocationHistory: "True",
+                    LocationDataRetentionTime: "15"
+                });
+                expect(config.enableLocationHistory()).to.equal(true);
+            });
+
+            it('should accept string "true" and convert to boolean true', function() {
+                var config = new RequestConfig({
+                    EnableLocationHistory: "true",
+                    LocationDataRetentionTime: "15"
+                });
+                expect(config.enableLocationHistory()).to.equal(true);
+            });
+
+            it('should accept string "False" and convert to boolean false', function() {
+                var config = new RequestConfig({
+                    EnableLocationHistory: "False",
+                    LocationDataRetentionTime: "15"
+                });
+                expect(config.enableLocationHistory()).to.equal(false);
+            });
+
+            it('should accept string "false" and convert to boolean false', function() {
+                var config = new RequestConfig({
+                    EnableLocationHistory: "false",
+                    LocationDataRetentionTime: "15"
+                });
+                expect(config.enableLocationHistory()).to.equal(false);
+            });
+
+            it('should accept any non-"true" string and convert to boolean false', function() {
+                var config = new RequestConfig({
+                    EnableLocationHistory: "maybe",
+                    LocationDataRetentionTime: "15"
+                });
+                expect(config.enableLocationHistory()).to.equal(false);
+            });
+
+            it('should accept null and keep as null', function() {
+                var config = new RequestConfig({
+                    EnableLocationHistory: null,
+                    LocationDataRetentionTime: "15"
+                });
+                expect(config.enableLocationHistory()).to.equal(null);
+            });
+
+            it('should accept undefined and keep as null', function() {
+                var config = new RequestConfig({
+                    LocationDataRetentionTime: "15"
+                });
+                expect(config.enableLocationHistory()).to.equal(null);
+            });
+
+            it('should throw error for numeric input', function() {
+                expect(function() {
+                    new RequestConfig({
+                        EnableLocationHistory: 1,
+                        LocationDataRetentionTime: "15"
+                    });
+                }).to.throw('EnableLocationHistory must be a string, received: number');
+            });
+
+            it('should throw error for boolean input', function() {
+                expect(function() {
+                    new RequestConfig({
+                        EnableLocationHistory: true,
+                        LocationDataRetentionTime: "15"
+                    });
+                }).to.throw('EnableLocationHistory must be a string, received: boolean');
+            });
+
+            it('should throw error for object input', function() {
+                expect(function() {
+                    new RequestConfig({
+                        EnableLocationHistory: {},
+                        LocationDataRetentionTime: "15"
+                    });
+                }).to.throw('EnableLocationHistory must be a string, received: object');
+            });
+
+            it('should throw error for array input', function() {
+                expect(function() {
+                    new RequestConfig({
+                        EnableLocationHistory: [],
+                        LocationDataRetentionTime: "15"
+                    });
+                }).to.throw('EnableLocationHistory must be a string, received: object');
+            });
+
+            it('should throw error for function input', function() {
+                expect(function() {
+                    new RequestConfig({
+                        EnableLocationHistory: function() {},
+                        LocationDataRetentionTime: "15"
+                    });
+                }).to.throw('EnableLocationHistory must be a string, received: function');
+            });
+        });
     });
 
     describe('location', function() {
