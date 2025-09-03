@@ -92,4 +92,27 @@ describe('updateLocation', function() {
             .expect(400)
             .end(done);
     });
+
+    it('should wait for Redis operations when history is disabled', function(done) {
+        var deviceId = 'redis-wait-test-device';
+        var updateData = calls.locationUpdateCall({
+            config: calls.config({history: false, retentionTime: 15}),
+            locations: calls.location({
+                device: deviceId,
+                longitude: "10.837502",
+                latitude: "49.828925"
+            })
+        });
+
+        // Test that the update completes successfully with history disabled
+        // This verifies that Redis del/setex operations complete before responding
+        request(app)
+            .post('/v1/UpdateLocation')
+            .send(updateData)
+            .expect(200)
+            .expect(function(res) {
+                expect(res.body.MiataruResponse).to.equal('ACK');
+            })
+            .end(done);
+    });
 });

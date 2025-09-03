@@ -29,10 +29,11 @@ describe('Backward Compatibility Tests', function() {
                 .post('/v1/UpdateLocation')
                 .send(oldFormatUpdate)
                 .expect(200)
-                .expect(function(res) {
+                .end(function(err, res) {
+                    expect(err).to.be.null;
                     expect(res.body.MiataruResponse).to.equal('ACK');
-                })
-                .end(done);
+                    done();
+                });
         });
 
         it('should return old format data for old clients', function(done) {
@@ -46,7 +47,8 @@ describe('Backward Compatibility Tests', function() {
                 .post('/v1/GetLocation')
                 .send(oldFormatGet)
                 .expect(200)
-                .expect(function(res) {
+                .end(function(err, res) {
+                    expect(err).to.be.null;
                     expect(res.body.MiataruLocation).to.be.an('array');
                     expect(res.body.MiataruLocation[0]).to.have.property('Device', OLD_CLIENT_DEVICE);
                     expect(res.body.MiataruLocation[0]).to.have.property('Timestamp', '1376735651302');
@@ -58,8 +60,8 @@ describe('Backward Compatibility Tests', function() {
                     expect(res.body.MiataruLocation[0]).to.not.have.property('Speed');
                     expect(res.body.MiataruLocation[0]).to.not.have.property('BatteryLevel');
                     expect(res.body.MiataruLocation[0]).to.not.have.property('Altitude');
-                })
-                .end(done);
+                    done();
+                });
         });
 
         it('should work with old format in location history', function(done) {
@@ -74,14 +76,15 @@ describe('Backward Compatibility Tests', function() {
                 .post('/v1/GetLocationHistory')
                 .send(oldFormatHistory)
                 .expect(200)
-                .expect(function(res) {
+                .end(function(err, res) {
+                    expect(err).to.be.null;
                     expect(res.body.MiataruLocation).to.be.an('array');
                     expect(res.body.MiataruLocation[0]).to.have.property('Device', OLD_CLIENT_DEVICE);
                     expect(res.body.MiataruLocation[0]).to.not.have.property('Speed');
                     expect(res.body.MiataruLocation[0]).to.not.have.property('BatteryLevel');
                     expect(res.body.MiataruLocation[0]).to.not.have.property('Altitude');
-                })
-                .end(done);
+                    done();
+                });
         });
     });
 
@@ -107,10 +110,11 @@ describe('Backward Compatibility Tests', function() {
                 .post('/UpdateLocation') // Legacy endpoint without /v1
                 .send(legacyUpdate)
                 .expect(200)
-                .expect(function(res) {
+                .end(function(err, res) {
+                    expect(err).to.be.null;
                     expect(res.body.MiataruResponse).to.equal('ACK');
-                })
-                .end(done);
+                    done();
+                });
         });
 
         it('should work with legacy /GetLocation endpoint', function(done) {
@@ -124,11 +128,12 @@ describe('Backward Compatibility Tests', function() {
                 .post('/GetLocation') // Legacy endpoint without /v1
                 .send(legacyGet)
                 .expect(200)
-                .expect(function(res) {
+                .end(function(err, res) {
+                    expect(err).to.be.null;
                     expect(res.body.MiataruLocation).to.be.an('array');
                     expect(res.body.MiataruLocation[0]).to.have.property('Device', LEGACY_DEVICE);
-                })
-                .end(done);
+                    done();
+                });
         });
     });
 
@@ -157,10 +162,11 @@ describe('Backward Compatibility Tests', function() {
                 .post('/v1/UpdateLocation')
                 .send(stringUpdate)
                 .expect(200)
-                .expect(function(res) {
+                .end(function(err, res) {
+                    expect(err).to.be.null;
                     expect(res.body.MiataruResponse).to.equal('ACK');
-                })
-                .end(done);
+                    done();
+                });
         });
 
         it('should handle numeric values for new fields', function(done) {
@@ -185,10 +191,11 @@ describe('Backward Compatibility Tests', function() {
                 .post('/v1/UpdateLocation')
                 .send(numericUpdate)
                 .expect(200)
-                .expect(function(res) {
+                .end(function(err, res) {
+                    expect(err).to.be.null;
                     expect(res.body.MiataruResponse).to.equal('ACK');
-                })
-                .end(done);
+                    done();
+                });
         });
 
         it('should handle zero values for new fields', function(done) {
@@ -213,10 +220,11 @@ describe('Backward Compatibility Tests', function() {
                 .post('/v1/UpdateLocation')
                 .send(zeroUpdate)
                 .expect(200)
-                .expect(function(res) {
+                .end(function(err, res) {
+                    expect(err).to.be.null;
                     expect(res.body.MiataruResponse).to.equal('ACK');
-                })
-                .end(done);
+                    done();
+                });
         });
     });
 
@@ -230,7 +238,10 @@ describe('Backward Compatibility Tests', function() {
                 .post('/v1/UpdateLocation')
                 .send(malformedUpdate)
                 .expect(400)
-                .end(done);
+                .end(function(err, res) {
+                    expect(err).to.be.null;
+                    done();
+                });
         });
 
         it('should handle empty requests the same way as before', function(done) {
@@ -238,7 +249,10 @@ describe('Backward Compatibility Tests', function() {
                 .post('/v1/UpdateLocation')
                 .send({})
                 .expect(400)
-                .end(done);
+                .end(function(err, res) {
+                    expect(err).to.be.null;
+                    done();
+                });
         });
     });
 });
