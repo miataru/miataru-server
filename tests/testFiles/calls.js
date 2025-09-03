@@ -60,10 +60,19 @@ function getLocationHistory(device, amount) {
     }
 }
 
+function deleteLocation(deviceName) {
+    return {
+        "MiataruDeleteLocation": {
+            "Device": deviceName || "foo"
+        }
+    }
+}
+
 module.exports = {
     getLocationHistoryCall: getLocationHistory,
     getLocationCall: getLocation,
     locationUpdateCall: locationUpdate,
+    deleteLocationCall: deleteLocation,
     config: config,
     location: location
 };
