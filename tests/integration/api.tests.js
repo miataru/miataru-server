@@ -389,3 +389,66 @@ describe('complete chain', function() {
         });
     });
 });
+
+describe('GetLocationGeoJSON with additional fields', function() {
+    var resultPost;
+    var resultGet;
+    var DEVICE = 'foo-geojson';
+
+    before(function(done) {
+        var updateData = calls.locationUpdateCall({
+            config: calls.config({history: false, retentionTime: 100}),
+            locations: [
+                calls.location({device: DEVICE, timeStamp: 1, speed: 12.3, batteryLevel: 45.6, altitude: 789.0})
+            ]
+        });
+
+        var updateOptions = {
+            url: serverUrl + '/v1/UpdateLocation',
+            method: 'POST',
+            json: updateData
+        };
+
+        request(updateOptions, function(error) {
+            if (error) return done(error);
+
+            var postOptions = {
+                url: serverUrl + '/v1/GetLocationGeoJSON',
+                method: 'POST',
+                json: calls.getLocationCall(DEVICE)
+            };
+
+            request(postOptions, function(error2, response2, body2) {
+                if (error2) return done(error2);
+                resultPost = body2;
+
+                var getOptions = {
+                    url: serverUrl + '/v1/GetLocationGeoJSON/' + DEVICE,
+                    method: 'GET',
+                    json: true
+                };
+
+                request(getOptions, function(error3, response3, body3) {
+                    if (error3) return done(error3);
+                    resultGet = body3;
+                    done();
+                });
+            });
+        });
+    });
+
+    it('should include speed in responses', function() {
+        expect(resultPost.properties.Speed).to.equal(12.3);
+        expect(resultGet.properties.Speed).to.equal(12.3);
+    });
+
+    it('should include battery level in responses', function() {
+        expect(resultPost.properties.BatteryLevel).to.equal(45.6);
+        expect(resultGet.properties.BatteryLevel).to.equal(45.6);
+    });
+
+    it('should include altitude in responses', function() {
+        expect(resultPost.properties.Altitude).to.equal(789.0);
+        expect(resultGet.properties.Altitude).to.equal(789.0);
+    });
+});
