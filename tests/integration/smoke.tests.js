@@ -1,19 +1,16 @@
 var expect = require('chai').expect;
-var request = require('request');
+var request = require('supertest');
 
-var config = require('../../lib/configuration');
-
-var serverUrl = 'http://localhost:' + config.port;
+var app = require('../../server');
 
 describe('smoke', function() {
 
     it('should show that its running', function(done) {
-        request(serverUrl, function (error, response, body) {
-            expect(error).to.be.null;
-            expect(body).to.match(/this is the miataru service backend/);
-
-            done();
-        });
+        request(app)
+            .get('/')
+            .expect(200)
+            .expect(/this is the miataru service backend/)
+            .end(done);
     });
 
 });

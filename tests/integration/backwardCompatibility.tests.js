@@ -1,10 +1,8 @@
 var expect = require('chai').expect;
-var request = require('request');
+var request = require('supertest');
 
-var config = require('../../lib/configuration');
+var app = require('../../server');
 var calls = require('../testFiles/calls');
-
-var serverUrl = 'http://localhost:' + config.port;
 
 describe('Backward Compatibility Tests', function() {
 
@@ -27,18 +25,14 @@ describe('Backward Compatibility Tests', function() {
                 }]
             };
 
-            var options = {
-                url: serverUrl + '/v1/UpdateLocation',
-                method: 'POST',
-                json: oldFormatUpdate
-            };
-
-            request(options, function (error, response, body) {
-                expect(error).to.be.null;
-                expect(response.statusCode).to.equal(200);
-                expect(body.MiataruResponse).to.equal('ACK');
-                done();
-            });
+            request(app)
+                .post('/v1/UpdateLocation')
+                .send(oldFormatUpdate)
+                .expect(200)
+                .expect(function(res) {
+                    expect(res.body.MiataruResponse).to.equal('ACK');
+                })
+                .end(done);
         });
 
         it('should return old format data for old clients', function(done) {
@@ -48,28 +42,24 @@ describe('Backward Compatibility Tests', function() {
                 }]
             };
 
-            var options = {
-                url: serverUrl + '/v1/GetLocation',
-                method: 'POST',
-                json: oldFormatGet
-            };
-
-            request(options, function (error, response, body) {
-                expect(error).to.be.null;
-                expect(response.statusCode).to.equal(200);
-                expect(body.MiataruLocation).to.be.an('array');
-                expect(body.MiataruLocation[0]).to.have.property('Device', OLD_CLIENT_DEVICE);
-                expect(body.MiataruLocation[0]).to.have.property('Timestamp', '1376735651302');
-                expect(body.MiataruLocation[0]).to.have.property('Longitude', '10.837502');
-                expect(body.MiataruLocation[0]).to.have.property('Latitude', '49.828925');
-                expect(body.MiataruLocation[0]).to.have.property('HorizontalAccuracy', '50.00');
-                
-                // New fields should not be present
-                expect(body.MiataruLocation[0]).to.not.have.property('Speed');
-                expect(body.MiataruLocation[0]).to.not.have.property('BatteryLevel');
-                expect(body.MiataruLocation[0]).to.not.have.property('Altitude');
-                done();
-            });
+            request(app)
+                .post('/v1/GetLocation')
+                .send(oldFormatGet)
+                .expect(200)
+                .expect(function(res) {
+                    expect(res.body.MiataruLocation).to.be.an('array');
+                    expect(res.body.MiataruLocation[0]).to.have.property('Device', OLD_CLIENT_DEVICE);
+                    expect(res.body.MiataruLocation[0]).to.have.property('Timestamp', '1376735651302');
+                    expect(res.body.MiataruLocation[0]).to.have.property('Longitude', '10.837502');
+                    expect(res.body.MiataruLocation[0]).to.have.property('Latitude', '49.828925');
+                    expect(res.body.MiataruLocation[0]).to.have.property('HorizontalAccuracy', '50.00');
+                    
+                    // New fields should not be present
+                    expect(res.body.MiataruLocation[0]).to.not.have.property('Speed');
+                    expect(res.body.MiataruLocation[0]).to.not.have.property('BatteryLevel');
+                    expect(res.body.MiataruLocation[0]).to.not.have.property('Altitude');
+                })
+                .end(done);
         });
 
         it('should work with old format in location history', function(done) {
@@ -80,22 +70,18 @@ describe('Backward Compatibility Tests', function() {
                 }
             };
 
-            var options = {
-                url: serverUrl + '/v1/GetLocationHistory',
-                method: 'POST',
-                json: oldFormatHistory
-            };
-
-            request(options, function (error, response, body) {
-                expect(error).to.be.null;
-                expect(response.statusCode).to.equal(200);
-                expect(body.MiataruLocation).to.be.an('array');
-                expect(body.MiataruLocation[0]).to.have.property('Device', OLD_CLIENT_DEVICE);
-                expect(body.MiataruLocation[0]).to.not.have.property('Speed');
-                expect(body.MiataruLocation[0]).to.not.have.property('BatteryLevel');
-                expect(body.MiataruLocation[0]).to.not.have.property('Altitude');
-                done();
-            });
+            request(app)
+                .post('/v1/GetLocationHistory')
+                .send(oldFormatHistory)
+                .expect(200)
+                .expect(function(res) {
+                    expect(res.body.MiataruLocation).to.be.an('array');
+                    expect(res.body.MiataruLocation[0]).to.have.property('Device', OLD_CLIENT_DEVICE);
+                    expect(res.body.MiataruLocation[0]).to.not.have.property('Speed');
+                    expect(res.body.MiataruLocation[0]).to.not.have.property('BatteryLevel');
+                    expect(res.body.MiataruLocation[0]).to.not.have.property('Altitude');
+                })
+                .end(done);
         });
     });
 
@@ -117,18 +103,14 @@ describe('Backward Compatibility Tests', function() {
                 }]
             };
 
-            var options = {
-                url: serverUrl + '/UpdateLocation', // Legacy endpoint without /v1
-                method: 'POST',
-                json: legacyUpdate
-            };
-
-            request(options, function (error, response, body) {
-                expect(error).to.be.null;
-                expect(response.statusCode).to.equal(200);
-                expect(body.MiataruResponse).to.equal('ACK');
-                done();
-            });
+            request(app)
+                .post('/UpdateLocation') // Legacy endpoint without /v1
+                .send(legacyUpdate)
+                .expect(200)
+                .expect(function(res) {
+                    expect(res.body.MiataruResponse).to.equal('ACK');
+                })
+                .end(done);
         });
 
         it('should work with legacy /GetLocation endpoint', function(done) {
@@ -138,19 +120,15 @@ describe('Backward Compatibility Tests', function() {
                 }]
             };
 
-            var options = {
-                url: serverUrl + '/GetLocation', // Legacy endpoint without /v1
-                method: 'POST',
-                json: legacyGet
-            };
-
-            request(options, function (error, response, body) {
-                expect(error).to.be.null;
-                expect(response.statusCode).to.equal(200);
-                expect(body.MiataruLocation).to.be.an('array');
-                expect(body.MiataruLocation[0]).to.have.property('Device', LEGACY_DEVICE);
-                done();
-            });
+            request(app)
+                .post('/GetLocation') // Legacy endpoint without /v1
+                .send(legacyGet)
+                .expect(200)
+                .expect(function(res) {
+                    expect(res.body.MiataruLocation).to.be.an('array');
+                    expect(res.body.MiataruLocation[0]).to.have.property('Device', LEGACY_DEVICE);
+                })
+                .end(done);
         });
     });
 
@@ -175,18 +153,14 @@ describe('Backward Compatibility Tests', function() {
                 }]
             };
 
-            var options = {
-                url: serverUrl + '/v1/UpdateLocation',
-                method: 'POST',
-                json: stringUpdate
-            };
-
-            request(options, function (error, response, body) {
-                expect(error).to.be.null;
-                expect(response.statusCode).to.equal(200);
-                expect(body.MiataruResponse).to.equal('ACK');
-                done();
-            });
+            request(app)
+                .post('/v1/UpdateLocation')
+                .send(stringUpdate)
+                .expect(200)
+                .expect(function(res) {
+                    expect(res.body.MiataruResponse).to.equal('ACK');
+                })
+                .end(done);
         });
 
         it('should handle numeric values for new fields', function(done) {
@@ -207,18 +181,14 @@ describe('Backward Compatibility Tests', function() {
                 }]
             };
 
-            var options = {
-                url: serverUrl + '/v1/UpdateLocation',
-                method: 'POST',
-                json: numericUpdate
-            };
-
-            request(options, function (error, response, body) {
-                expect(error).to.be.null;
-                expect(response.statusCode).to.equal(200);
-                expect(body.MiataruResponse).to.equal('ACK');
-                done();
-            });
+            request(app)
+                .post('/v1/UpdateLocation')
+                .send(numericUpdate)
+                .expect(200)
+                .expect(function(res) {
+                    expect(res.body.MiataruResponse).to.equal('ACK');
+                })
+                .end(done);
         });
 
         it('should handle zero values for new fields', function(done) {
@@ -239,18 +209,14 @@ describe('Backward Compatibility Tests', function() {
                 }]
             };
 
-            var options = {
-                url: serverUrl + '/v1/UpdateLocation',
-                method: 'POST',
-                json: zeroUpdate
-            };
-
-            request(options, function (error, response, body) {
-                expect(error).to.be.null;
-                expect(response.statusCode).to.equal(200);
-                expect(body.MiataruResponse).to.equal('ACK');
-                done();
-            });
+            request(app)
+                .post('/v1/UpdateLocation')
+                .send(zeroUpdate)
+                .expect(200)
+                .expect(function(res) {
+                    expect(res.body.MiataruResponse).to.equal('ACK');
+                })
+                .end(done);
         });
     });
 
@@ -260,31 +226,19 @@ describe('Backward Compatibility Tests', function() {
                 "MiataruLocation": "invalid" // Should be array
             };
 
-            var options = {
-                url: serverUrl + '/v1/UpdateLocation',
-                method: 'POST',
-                json: malformedUpdate
-            };
-
-            request(options, function (error, response, body) {
-                expect(error).to.be.null;
-                expect(response.statusCode).to.equal(400);
-                done();
-            });
+            request(app)
+                .post('/v1/UpdateLocation')
+                .send(malformedUpdate)
+                .expect(400)
+                .end(done);
         });
 
         it('should handle empty requests the same way as before', function(done) {
-            var options = {
-                url: serverUrl + '/v1/UpdateLocation',
-                method: 'POST',
-                json: {}
-            };
-
-            request(options, function (error, response, body) {
-                expect(error).to.be.null;
-                expect(response.statusCode).to.equal(400);
-                done();
-            });
+            request(app)
+                .post('/v1/UpdateLocation')
+                .send({})
+                .expect(400)
+                .end(done);
         });
     });
 });

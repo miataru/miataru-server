@@ -23,68 +23,48 @@ planned tests:
  UpdateLocation retentionTno ime
 */
 
-var seq = require('seq');
 var expect = require('chai').expect;
-var request = require('request');
+var request = require('supertest');
 
-var config = require('../../lib/configuration');
+var app = require('../../server');
 var calls = require('../testFiles/calls');
-
-var serverUrl = 'http://localhost:' + config.port;
 
 function c(a) { console.log( require('util').inspect(a, null, 100) ); }
 
 function completeChain(data, version, callback) {
     version = version ? '/' + version : '';
+    var results = {};
 
-    seq()
-            .seq('updateLocation', function() {
-                var done = this;
+    // Update location
+    request(app)
+        .post(version + '/UpdateLocation')
+        .send(data.updateLocation)
+        .expect(200)
+        .end(function(err, res) {
+            if (err) return callback(err);
+            results.updateLocation = res.body;
 
-                var options = {
-                    url: serverUrl + version + '/UpdateLocation',
-                    method: 'POST',
-                    json: data.updateLocation
-                };
+            // Get location
+            request(app)
+                .post(version + '/GetLocation')
+                .send(data.getLocation)
+                .expect(200)
+                .end(function(err, res) {
+                    if (err) return callback(err);
+                    results.getLocation = res.body;
 
-                request(options, function (error, response, body) {
-                    done(error, body);
+                    // Get location history
+                    request(app)
+                        .post(version + '/GetLocationHistory')
+                        .send(data.getLocationHistory)
+                        .expect(200)
+                        .end(function(err, res) {
+                            if (err) return callback(err);
+                            results.getLocationHistory = res.body;
+                            callback(null, results);
+                        });
                 });
-            })
-            .seq('getLocation', function() {
-                var done = this;
-
-                var options = {
-                    url: serverUrl + version + '/GetLocation',
-                    method: 'POST',
-                    json: data.getLocation
-                };
-
-                request(options, function (error, response, body) {
-                    done(error, body);
-                });
-            })
-            .seq('getLocationHistory', function() {
-                var done = this;
-
-                var options = {
-                    url: serverUrl + version + '/GetLocationHistory',
-                    method: 'POST',
-                    json: data.getLocationHistory
-                };
-
-                request(options, function (error, response, body) {
-                    done(error, body);
-                });
-            })
-            .seq(function() {
-                callback(null, {
-                    updateLocation: this.vars.updateLocation,
-                    getLocation: this.vars.getLocation,
-                    getLocationHistory: this.vars.getLocationHistory
-                })
-            })
-            .catch(callback);
+        });
 }
 
 describe('complete chain', function() {
