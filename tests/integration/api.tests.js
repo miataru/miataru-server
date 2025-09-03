@@ -349,4 +349,43 @@ describe('complete chain', function() {
         });
 
     });
+
+    describe('with additional fields', function() {
+        var result;
+        var DEVICE = 'foo-extra';
+
+        before(function(done) {
+            var data = {
+                updateLocation: calls.locationUpdateCall({
+                    config: calls.config({history: true, retentionTime: 100}),
+                    locations: [
+                        calls.location({device: DEVICE, timeStamp: 1, speed: 12.3, batteryLevel: 45.6, altitude: 789.0})
+                    ]
+                }),
+                getLocation: calls.getLocationCall(DEVICE),
+                getLocationHistory: calls.getLocationHistoryCall(DEVICE, 10)
+            };
+
+            completeChain(data, 'v1', function(error, data) {
+                result = data;
+
+                done();
+            });
+        });
+
+        it('should include speed in responses', function() {
+            expect(result.getLocation.MiataruLocation[0].Speed).to.equal(12.3);
+            expect(result.getLocationHistory.MiataruLocation[0].Speed).to.equal(12.3);
+        });
+
+        it('should include battery level in responses', function() {
+            expect(result.getLocation.MiataruLocation[0].BatteryLevel).to.equal(45.6);
+            expect(result.getLocationHistory.MiataruLocation[0].BatteryLevel).to.equal(45.6);
+        });
+
+        it('should include altitude in responses', function() {
+            expect(result.getLocation.MiataruLocation[0].Altitude).to.equal(789.0);
+            expect(result.getLocationHistory.MiataruLocation[0].Altitude).to.equal(789.0);
+        });
+    });
 });

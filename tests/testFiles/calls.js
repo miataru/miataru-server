@@ -1,13 +1,27 @@
 function location(options) {
     options = options || {};
 
-    return {
+    var loc = {
         "Device": options.device || "bar",
         "Timestamp": options.timeStamp || "1376735651302",
         "Longitude": options.longitude || "10.837502",
         "Latitude": options.latitude || "49.828925",
         "HorizontalAccuracy": options.accuracy || "50.00"
     };
+
+    if(options.speed !== undefined) {
+        loc.Speed = options.speed;
+    }
+
+    if(options.batteryLevel !== undefined) {
+        loc.BatteryLevel = options.batteryLevel;
+    }
+
+    if(options.altitude !== undefined) {
+        loc.Altitude = options.altitude;
+    }
+
+    return loc;
 }
 
 function config(options) {
