@@ -452,3 +452,67 @@ describe('GetLocationGeoJSON with additional fields', function() {
         expect(resultGet.properties.Altitude).to.equal(789.0);
     });
 });
+
+describe('visitor history with additional fields', function() {
+    var result;
+    var DEVICE = 'foo-visited';
+    var VISITOR_DEVICE = 'foo-visitor';
+
+    before(function(done) {
+        var updateOptions = {
+            url: serverUrl + '/v1/UpdateLocation',
+            method: 'POST',
+            json: calls.locationUpdateCall({
+                config: calls.config({history: false, retentionTime: 100}),
+                locations: [calls.location({device: DEVICE, timeStamp: 1})]
+            })
+        };
+
+        request(updateOptions, function(err) {
+            if (err) return done(err);
+
+            var getOptions = {
+                url: serverUrl + '/v1/GetLocation',
+                method: 'POST',
+                json: calls.getLocationCall(DEVICE, {
+                    RequestMiataruDeviceID: VISITOR_DEVICE,
+                    Speed: 12.3,
+                    BatteryLevel: 45.6,
+                    Altitude: 789.0
+                })
+            };
+
+            request(getOptions, function(err2) {
+                if (err2) return done(err2);
+
+                var historyOptions = {
+                    url: serverUrl + '/v1/GetVisitorHistory',
+                    method: 'POST',
+                    json: calls.getVisitorHistoryCall(DEVICE, 10)
+                };
+
+                request(historyOptions, function(err3, response3, body3) {
+                    if (err3) return done(err3);
+                    result = body3;
+                    done();
+                });
+            });
+        });
+    });
+
+    it('should include visitor speed in history', function() {
+        expect(result.MiataruVisitors[0].Speed).to.equal(12.3);
+    });
+
+    it('should include visitor battery level in history', function() {
+        expect(result.MiataruVisitors[0].BatteryLevel).to.equal(45.6);
+    });
+
+    it('should include visitor altitude in history', function() {
+        expect(result.MiataruVisitors[0].Altitude).to.equal(789.0);
+    });
+
+    it('should record visitor device id', function() {
+        expect(result.MiataruVisitors[0].DeviceID).to.equal(VISITOR_DEVICE);
+    });
+});

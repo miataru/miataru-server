@@ -42,14 +42,20 @@ function locationUpdate(options) {
     }
 }
 
-function getLocation(deviceName) {
-    return {
+function getLocation(deviceName, config) {
+    var call = {
         "MiataruGetLocation":[
             {
                 "Device": deviceName || "foo"
             }
         ]
     };
+
+    if(config) {
+        call.MiataruConfig = config;
+    }
+
+    return call;
 }
 
 function getLocationHistory(device, amount) {
@@ -61,9 +67,19 @@ function getLocationHistory(device, amount) {
     }
 }
 
+function getVisitorHistory(device, amount) {
+    return {
+        "MiataruGetVisitorHistory": {
+            "Device": device || "foo",
+            "Amount": amount || "25"
+        }
+    };
+}
+
 module.exports = {
     getLocationHistoryCall: getLocationHistory,
     getLocationCall: getLocation,
+    getVisitorHistoryCall: getVisitorHistory,
     locationUpdateCall: locationUpdate,
     config: config,
     location: location
