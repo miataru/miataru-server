@@ -1,5 +1,3 @@
-[![Build Status](https://travis-ci.org/miataru/miataru-server.png)](https://travis-ci.org/miataru/miataru-server)
-
 # miataru-server
 
 **Version 1.1.0** - Modernized server with enhanced features and improved security
