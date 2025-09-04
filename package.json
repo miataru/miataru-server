@@ -32,12 +32,12 @@
     "express": "^4.18.2",
     "fakeredis": "^2.0.0",
     "moment": "^2.29.4",
-    "optimist": "^0.6.1",
     "redis": "^4.6.10",
     "require-directory": "^2.1.1",
     "seq": "^0.3.5",
     "serve-favicon": "^2.5.0",
-    "stylus": "^0.59.0"
+    "stylus": "^0.59.0",
+    "yargs": "^17.7.2"
   },
   "engines": {
     "node": ">= 18.0.0"
