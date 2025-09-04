@@ -1,6 +1,6 @@
 {
   "name": "miataru-server",
-  "version": "1.0.3",
+  "version": "1.1.0",
   "description": "this is the reference implementation of a miataru.com server",
   "homepage": "http://www.miataru.com",
   "bugs": "https://github.com/miataru/miataru-server/issues",
@@ -26,24 +26,27 @@
   },
   "license": "BSD-2-Clause",
   "dependencies": {
-    "express": "~3.3.5",
-    "redis": "~0.8.4",
-    "ejs": "~2.5.5",
-    "stylus": "~0.37.0",
-    "cloneextend": "0.0.3",
-    "seq": "~0.3.5",
-    "require-directory": "~1.1.0",
-    "moment": ">=2.29.2",
-    "optimist": "~0.6.0",
-    "fakeredis": "*"
+    "body-parser": "^1.20.2",
+    "cloneextend": "^0.0.3",
+    "cors": "^2.8.5",
+    "ejs": "^3.1.9",
+    "express": "^4.18.2",
+    "fakeredis": "^2.0.0",
+    "moment": "^2.29.4",
+    "redis": "^4.6.10",
+    "require-directory": "^2.1.1",
+    "seq": "^0.3.5",
+    "serve-favicon": "^2.5.0",
+    "stylus": "^0.59.0",
+    "yargs": "^17.7.2"
   },
   "engines": {
-    "node": ">= 0.10.0"
+    "node": ">= 18.0.0"
   },
   "devDependencies": {
-    "mocha": "~3.2.0",
-    "chai": "*",
-    "request": "~2.81.0"
+    "chai": "^4.3.10",
+    "mocha": "^10.2.0",
+    "supertest": "^7.1.4"
   },
   "files": [
     "server.js"
@@ -51,6 +54,8 @@
   "main": "./server.js",
   "scripts": {
     "start": "node server.js",
-    "test": "./node_modules/mocha/bin/mocha tests"
+    "test": "NODE_ENV=test npx mocha tests/unit/",
+    "test:integration": "NODE_ENV=test npx mocha tests/integration/",
+    "test:all": "NODE_ENV=test npx mocha tests"
   }
 }

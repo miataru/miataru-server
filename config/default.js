@@ -38,6 +38,11 @@ module.exports = {
     addEmptyVisitorDeviceIDtoVisitorHistory: false,
 
     //namespacing for redis keys
-    redisMiataruNamespace: "miad"
+    redisMiataruNamespace: "miad",
+
+    //CORS configuration
+    cors: {
+        allowedOrigins: ["http://localhost:3000", "http://localhost:8080", "https://miataru.com"]
+    }
 
 };

@@ -2,6 +2,8 @@ var http = require('http');
 var path = require('path');
 
 var express = require('express');
+var bodyParser = require('body-parser');
+var favicon = require('serve-favicon');
 
 var configuration = require('./lib/configuration');
 var routes = require('./lib/routes');
@@ -11,8 +13,9 @@ var errors = require('./lib/errors');
 
 var app = express();
 
-app.use(express.bodyParser());
-app.use(express.favicon(__dirname + '/favicon.ico')); 
+app.use(bodyParser.json());
+app.use(bodyParser.urlencoded({ extended: true }));
+app.use(favicon(__dirname + '/favicon.ico')); 
 
 middlewares.install(app);
 routes.install(app);
@@ -23,12 +26,16 @@ app.all('*', function(req, res, next) {
 
 app.use(handleError);
 
-app.listen(configuration.port, configuration.listenip);
+// Only start the server if this file is run directly (not required for testing)
+if (require.main === module) {
+    app.listen(configuration.port, configuration.listenip);
+    logger.info('miataru server is listening to: %d on %s', configuration.port,configuration.listenip);
+}
 
-logger.info('miataru server is listening to: %d on %s', configuration.port,configuration.listenip);
+module.exports = app;
 
 function handleError(error, req, res, next) {
     logger.error('error handler received error: ' + error.message);
 
-    res.send(error.statusCode || 500, {error: error.message});
+    res.status(error.statusCode || 500).json({error: error.message});
 }
