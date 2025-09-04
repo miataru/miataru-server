@@ -19,5 +19,10 @@ module.exports = {
     addEmptyVisitorDeviceIDtoVisitorHistory: true,
 
     //namespacing for redis keys
-    redisMiataruNamespace: 'miadTest'
+    redisMiataruNamespace: 'miadTest',
+
+    //CORS configuration for testing
+    cors: {
+        allowedOrigins: ["http://localhost:3000", "http://test.example.com"]
+    }
 };
