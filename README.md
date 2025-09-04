@@ -3,6 +3,8 @@
 
 # miataru-server
 
+**Version 1.1.0** - Modernized server with enhanced features and improved security
+
 This is the source code of a Miataru server side implementation. You can get more information [here](http://www.miataru.com).
 
 ## What is Miataru?
@@ -21,6 +23,28 @@ By default Miataru does only store the last known location. And it only does tha
 
 With it's simple API it allows you to use Miataru to your own needs and practices.
 
+## API Endpoints
+
+The Miataru server provides both versioned (v1) and legacy API endpoints for maximum compatibility:
+
+### Version 1 API (Recommended)
+- **POST** `/v1/UpdateLocation` - Store location data
+- **POST** `/v1/GetLocation` - Retrieve current location
+- **POST** `/v1/GetLocationGeoJSON` - Get location in GeoJSON format
+- **GET** `/v1/GetLocationGeoJSON/:id?` - Get location in GeoJSON format via GET
+- **POST** `/v1/GetLocationHistory` - Retrieve location history
+- **POST** `/v1/GetVisitorHistory` - Retrieve visitor history
+- **POST** `/v1/DeleteLocation` - Delete all location data for a device
+
+### Legacy API (Backward Compatibility)
+- **POST** `/UpdateLocation` - Store location data
+- **POST** `/GetLocation` - Retrieve current location
+- **POST** `/GetLocationGeoJSON` - Get location in GeoJSON format
+- **GET** `/GetLocationGeoJSON/:id?` - Get location in GeoJSON format via GET
+- **POST** `/GetLocationHistory` - Retrieve location history
+- **POST** `/GetVisitorHistory` - Retrieve visitor history
+- **POST** `/DeleteLocation` - Delete all location data for a device
+
 ## Run the Server
 
 Check out the repo:  
@@ -30,27 +54,110 @@ Install dependencies:
 `npm install`
 
 Run the tests:  
-`make run-all-tests`
+`npm run test:all` (or `make run-all-tests`)
 
 Configuration:
-Adjust the configuration in `./lib/config` or add your own
+Adjust the configuration in `./config/` or add your own
 
 Start Server:
 `node server.js`
 
-The server will, in the default configuration, listen on localhost port 8080. To do some test requests on the commandline, do this:
+The server will, in the default configuration, listen on localhost port 8090. To do some test requests on the commandline, do this:
 
-to set a location:
+### Basic Examples
 
-curl -H 'Content-Type: application/json' -X POST 'http://localhost:8080/UpdateLocation' -d '{"MiataruConfig":{"EnableLocationHistory":"True","LocationDataRetentionTime":"15"},"MiataruLocation":[{"Device":"7b8e6e0ee5296db345162dc2ef652c1350761823","Timestamp":"1376735651302","Longitude":"10.837502","Latitude":"49.828925","HorizontalAccuracy":"50.00"}]}'
+**Set a location:**
+```bash
+curl -H 'Content-Type: application/json' -X POST 'http://localhost:8090/v1/UpdateLocation' \
+  -d '{"MiataruConfig":{"EnableLocationHistory":"True","LocationDataRetentionTime":"15"},"MiataruLocation":[{"Device":"7b8e6e0ee5296db345162dc2ef652c1350761823","Timestamp":"1376735651302","Longitude":"10.837502","Latitude":"49.828925","HorizontalAccuracy":"50.00"}]}'
+```
 
-to retrieve a location:
+**Retrieve a location:**
+```bash
+curl -H 'Content-Type: application/json' -X POST 'http://localhost:8090/v1/GetLocation' \
+  -d '{"MiataruGetLocation":[{"Device":"7b8e6e0ee5296db345162dc2ef652c1350761823"}]}'
+```
 
-curl -H 'Content-Type: application/json' -X POST 'http://localhost:8080/GetLocation' -d '{"MiataruGetLocation":[{"Device":"7b8e6e0ee5296db345162dc2ef652c1350761823"}]}'
+**Delete all location data for a device:**
+```bash
+curl -H 'Content-Type: application/json' -X POST 'http://localhost:8090/v1/DeleteLocation' \
+  -d '{"MiataruDeleteLocation":{"Device":"7b8e6e0ee5296db345162dc2ef652c1350761823"}}'
+```
 
-to delete all location data for a device:
+**Get location in GeoJSON format:**
+```bash
+curl -H 'Content-Type: application/json' -X POST 'http://localhost:8090/v1/GetLocationGeoJSON' \
+  -d '{"MiataruGetLocation":[{"Device":"7b8e6e0ee5296db345162dc2ef652c1350761823"}]}'
+```
 
-curl -H 'Content-Type: application/json' -X POST 'http://localhost:8080/DeleteLocation' -d '{"MiataruDeleteLocation":{"Device":"7b8e6e0ee5296db345162dc2ef652c1350761823"}}'
+## DeleteLocation API
+
+The DeleteLocation API allows you to permanently delete all location data associated with a specific device.
+
+### Request Format
+```json
+{
+  "MiataruDeleteLocation": {
+    "Device": "device-id-here"
+  }
+}
+```
+
+### Response Format
+```json
+{
+  "MiataruResponse": "ACK",
+  "MiataruVerboseResponse": "Location data deleted for device: device-id-here",
+  "MiataruDeletedCount": 3
+}
+```
+
+### What Gets Deleted
+- **Last Known Location**: Current location data
+- **Location History**: Complete location history (if enabled)
+- **Visitor History**: Visitor tracking data
+
+### Example Usage
+```bash
+# Delete all location data for a device
+curl -H 'Content-Type: application/json' -X POST 'http://localhost:8090/v1/DeleteLocation' \
+  -d '{"MiataruDeleteLocation":{"Device":"my-device-123"}}'
+```
+
+For detailed documentation, see [DELETE_LOCATION_API.md](docs/DELETE_LOCATION_API.md).
+
+## CORS Configuration
+
+The server includes configurable CORS (Cross-Origin Resource Sharing) middleware for web applications:
+
+### Default Configuration
+```javascript
+cors: {
+    allowedOrigins: ["http://localhost:3000", "http://localhost:8080", "https://miataru.com"]
+}
+```
+
+### Custom CORS Setup
+Add to your configuration file:
+```javascript
+module.exports = {
+    // ... other config
+    cors: {
+        allowedOrigins: [
+            "http://localhost:3000",
+            "https://yourdomain.com",
+            "https://app.yourdomain.com"
+        ]
+    }
+};
+```
+
+### CORS Features
+- **Origin Validation**: Only allows requests from configured origins
+- **Credentials Support**: Supports authenticated requests
+- **Method Support**: GET, POST, PUT, DELETE, OPTIONS
+- **Header Support**: Content-Type, Authorization, X-Requested-With
+- **Preflight Handling**: Automatic OPTIONS request handling
 
 ## Docker
 
@@ -59,13 +166,12 @@ You can use the included Dockerfile to build your own docker image for running a
 It is based upon the current alpine version of the official nodejs image and will build itself to approx. 80mbyte of size.
 
 To use run the docker build:
-```
+```bash
 docker build -t miataru .
 ```
 
 And run the image:
-
-```
+```bash
 docker run -it -d --name miataru -p 3101:8090 miataru
 ```
 
@@ -191,6 +297,113 @@ Existing clients do not need any changes. The server will:
 3. Continue to validate missing properties and throw appropriate errors
 4. Handle new fields gracefully when provided
 
+## Testing
+
+The Miataru server includes comprehensive test suites covering all functionality:
+
+### Test Commands
+```bash
+# Run all tests
+npm run test:all
+
+# Run only unit tests
+npm test
+
+# Run only integration tests
+npm run test:integration
+
+# Run tests with Makefile (legacy)
+make run-all-tests
+```
+
+### Test Coverage
+- **Unit Tests**: Model validation, data handling, response generation
+- **Integration Tests**: Complete API workflow testing
+- **Backward Compatibility Tests**: Legacy client support verification
+- **CORS Tests**: Cross-origin request handling
+- **New Fields Tests**: Enhanced location data with Speed, BatteryLevel, Altitude
+- **DeleteLocation Tests**: Data deletion functionality
+- **Error Handling Tests**: Invalid request scenarios
+
+### Test Files Structure
+```
+tests/
+├── unit/                    # Unit tests for individual components
+│   ├── dataHolder.tests.js
+│   ├── requestDevice.tests.js
+│   ├── requestLocationIntegration.tests.js
+│   ├── responseDeleteLocation.tests.js
+│   └── responseLocationGeoJSON.tests.js
+├── integration/             # Integration tests for API endpoints
+│   ├── api.tests.js
+│   ├── backwardCompatibility.tests.js
+│   ├── cors.tests.js
+│   ├── deleteLocation.tests.js
+│   ├── newFields.tests.js
+│   └── unknownDevice.tests.js
+└── testFiles/              # Test utilities and mock data
+    └── calls.js
+```
+
 ## Dependencies
 
-Miataru server uses NodeJS, Redis and ExpressJS
+### Core Dependencies
+- **Node.js**: >= 18.0.0 (modernized for current LTS)
+- **Express.js**: ^4.18.2 (web framework)
+- **Redis**: ^4.6.10 (data storage with modern Redis v4+ compatibility)
+- **FakeRedis**: ^2.0.0 (testing and development)
+
+### Additional Dependencies
+- **CORS**: ^2.8.5 (cross-origin resource sharing)
+- **Body-Parser**: ^1.20.2 (request parsing)
+- **Yargs**: ^17.7.2 (command line argument parsing)
+- **Moment.js**: ^2.29.4 (date/time handling)
+- **EJS**: ^3.1.9 (template engine)
+- **Stylus**: ^0.59.0 (CSS preprocessing)
+
+### Development Dependencies
+- **Mocha**: ^10.2.0 (test framework)
+- **Chai**: ^4.3.10 (assertion library)
+- **Supertest**: ^7.1.4 (HTTP testing)
+
+### Security Updates
+- **Replaced Optimist**: Critical security vulnerabilities fixed by replacing with Yargs
+- **Redis v4+ Support**: Updated Redis client for modern Redis versions
+- **Dependency Updates**: All dependencies updated to latest secure versions
+
+## Changelog
+
+### Version 1.1.0 (Latest)
+
+#### New Features
+- **DeleteLocation API**: Complete data deletion functionality for devices
+- **CORS Support**: Configurable cross-origin resource sharing middleware
+- **Enhanced Location Fields**: Support for Speed, BatteryLevel, and Altitude
+- **API Versioning**: v1 endpoints alongside legacy endpoints for better compatibility
+- **Modern Redis Support**: Updated Redis client for Redis v4+ compatibility
+
+#### Improvements
+- **Node.js 18+ Support**: Modernized for current LTS version
+- **Enhanced Testing**: Comprehensive test suite with 500+ tests
+- **Better Error Handling**: Improved validation and error responses
+- **Security Updates**: Fixed critical vulnerabilities in dependencies
+- **Backward Compatibility**: Full support for legacy clients
+
+#### Technical Updates
+- **Express.js 4.18.2**: Updated web framework
+- **Redis 4.6.10**: Modern Redis client with compatibility layer
+- **Yargs 17.7.2**: Secure command-line argument parsing
+- **Comprehensive CORS**: Origin validation, credentials support, preflight handling
+
+#### API Enhancements
+- **New Endpoints**: `/v1/DeleteLocation` for data management
+- **GeoJSON Support**: Enhanced GeoJSON responses with new fields
+- **Input Validation**: Robust validation with backward compatibility
+- **Response Models**: Improved response structures and error handling
+
+#### Testing & Quality
+- **Unit Tests**: 200+ unit tests for all components
+- **Integration Tests**: 300+ integration tests for API workflows
+- **Backward Compatibility Tests**: Legacy client support verification
+- **CORS Tests**: Cross-origin request handling validation
+- **Error Handling Tests**: Comprehensive error scenario coverage
