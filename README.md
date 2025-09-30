@@ -156,9 +156,52 @@ module.exports = {
 - **Header Support**: Content-Type, Authorization, X-Requested-With
 - **Preflight Handling**: Automatic OPTIONS request handling
 
+## Rate Limiting
+
+The server includes configurable rate limiting for both inbound HTTP requests and Redis operations to help protect the service under load.
+
+### HTTP Request Limiting
+
+Requests are tracked per client IP address. Each IP can use a limited number of concurrent connections while additional requests wait in a bounded queue. The defaults can be adjusted in `config/default.js` or your own configuration file:
+
+```javascript
+rateLimiting: {
+    http: {
+        enabled: true,
+        maxConcurrentPerIp: 10,      // Maximum in-flight requests allowed per IP
+        maxQueuePerIp: 50,           // Additional requests queued per IP
+        queueTimeoutMs: 0,           // Optional timeout (0 keeps waiting indefinitely)
+        rejectionStatusCode: 429,    // Status code returned when the queue is full
+        rejectionMessage: 'Too Many Requests',
+        timeoutMessage: 'Request timed out while waiting in rate limit queue'
+    },
+    // ...
+}
+```
+
+If the queue limit is exceeded the server responds with HTTP 429 and the configured message. Requests that wait longer than `queueTimeoutMs` are also rejected.
+
+### Redis Concurrency Limiting
+
+Redis commands are throttled with a global concurrency limiter to avoid overwhelming the datastore. Configuration is available under the same `rateLimiting` section:
+
+```javascript
+rateLimiting: {
+    // ...
+    redis: {
+        enabled: true,
+        maxConcurrent: 50,       // Parallel Redis commands allowed
+        maxQueue: 100,           // Additional queued Redis commands
+        queueTimeoutMs: 30000    // Time to wait before failing a queued command
+    }
+}
+```
+
+When the queue is full, Redis operations fail fast with an error indicating the concurrency limit was exceeded. Operations that wait longer than `queueTimeoutMs` are rejected with a timeout error.
+
 ## Docker
 
-You can use the included Dockerfile to build your own docker image for running a miataru server. 
+You can use the included Dockerfile to build your own docker image for running a miataru server.
 
 It is based upon the current alpine version of the official nodejs image and will build itself to approx. 80mbyte of size.
 
