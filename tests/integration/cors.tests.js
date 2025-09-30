@@ -2,6 +2,7 @@ var expect = require('chai').expect;
 var request = require('supertest');
 
 var app = require('../../server');
+var logger = require('../../lib/logger');
 
 describe('CORS middleware', function() {
 
@@ -135,6 +136,46 @@ describe('CORS middleware', function() {
                     if (err) return done(err);
                     // CORS rejection means no CORS headers are present
                     expect(res.headers).to.not.have.property('access-control-allow-origin');
+                    done();
+                });
+        });
+    });
+
+    describe('Location endpoint preflight', function() {
+        var originalLoggerError;
+
+        beforeEach(function() {
+            originalLoggerError = logger.error;
+        });
+
+        afterEach(function() {
+            logger.error = originalLoggerError;
+        });
+
+        it('should allow OPTIONS requests without logging errors', function(done) {
+            var errorLogged = false;
+
+            logger.error = function() {
+                errorLogged = true;
+            };
+
+            request(app)
+                .options('/v1/GetLocation')
+                .set('Origin', 'http://localhost:3000')
+                .set('Access-Control-Request-Method', 'POST')
+                .set('Access-Control-Request-Headers', 'Content-Type')
+                .expect(204)
+                .expect('Access-Control-Allow-Origin', 'http://localhost:3000')
+                .expect('Access-Control-Allow-Credentials', 'true')
+                .expect('Access-Control-Allow-Methods', /POST/)
+                .expect('Access-Control-Allow-Headers', /Content-Type/)
+                .end(function(err) {
+                    if (err) return done(err);
+
+                    if (errorLogged) {
+                        return done(new Error('Expected no logger.error invocations for OPTIONS /v1/GetLocation'));
+                    }
+
                     done();
                 });
         });
