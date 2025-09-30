@@ -35,7 +35,17 @@ if (require.main === module) {
 module.exports = app;
 
 function handleError(error, req, res, next) {
-    logger.error('error handler received error: ' + error.message);
+    var statusCode = (error && typeof error.statusCode === 'number') ? error.statusCode : 500;
+    var errorMessage = error && error.message ? error.message : 'Internal Server Error';
+    var logMessage = 'error handler received error: ' + errorMessage;
 
-    res.status(error.statusCode || 500).json({error: error.message});
+    if (!error || statusCode >= 500 || statusCode < 400) {
+        logger.error(logMessage);
+    } else if (statusCode === 404 || statusCode === 405) {
+        logger.info(logMessage);
+    } else {
+        logger.warn(logMessage);
+    }
+
+    res.status(statusCode).json({error: errorMessage});
 }
