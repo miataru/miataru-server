@@ -43,6 +43,24 @@ module.exports = {
     //CORS configuration
     cors: {
         allowedOrigins: ["http://localhost:3000", "http://localhost:8080", "https://miataru.com"]
+    },
+
+    rateLimiting: {
+        http: {
+            enabled: true,
+            maxConcurrentPerIp: 10,
+            maxQueuePerIp: 50,
+            queueTimeoutMs: 0,
+            rejectionStatusCode: 429,
+            rejectionMessage: 'Too Many Requests',
+            timeoutMessage: 'Request timed out while waiting in rate limit queue'
+        },
+        redis: {
+            enabled: true,
+            maxConcurrent: 50,
+            maxQueue: 100,
+            queueTimeoutMs: 30000
+        }
     }
 
 };
