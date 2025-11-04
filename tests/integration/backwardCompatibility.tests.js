@@ -314,5 +314,45 @@ describe('Backward Compatibility Tests', function() {
                     done();
                 });
         });
+
+        it('should accept Map style payloads in Device, Amount order', function(done) {
+            var mapPayload = {
+                "MiataruGetLocationHistory": [
+                    ["Device", ORDER_DEVICE],
+                    ["Amount", "5"]
+                ]
+            };
+
+            request(app)
+                .post('/v1/GetLocationHistory')
+                .send(mapPayload)
+                .expect(200)
+                .end(function(err, res) {
+                    expect(err).to.be.null;
+                    expect(res.body).to.have.property('MiataruLocation');
+                    expect(res.body.MiataruLocation).to.be.an('array');
+                    done();
+                });
+        });
+
+        it('should accept Map style payloads in Amount, Device order', function(done) {
+            var reversedMapPayload = {
+                "MiataruGetLocationHistory": [
+                    ["Amount", "5"],
+                    ["Device", ORDER_DEVICE]
+                ]
+            };
+
+            request(app)
+                .post('/v1/GetLocationHistory')
+                .send(reversedMapPayload)
+                .expect(200)
+                .end(function(err, res) {
+                    expect(err).to.be.null;
+                    expect(res.body).to.have.property('MiataruLocation');
+                    expect(res.body.MiataruLocation).to.be.an('array');
+                    done();
+                });
+        });
     });
 });
