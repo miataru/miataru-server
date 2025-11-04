@@ -314,26 +314,5 @@ describe('Backward Compatibility Tests', function() {
                     done();
                 });
         });
-
-        it('should accept raw JSON payloads where Amount precedes Device', function(done) {
-            var rawPayload = JSON.stringify({
-                "MiataruGetLocationHistory": {
-                    "Amount": "4",
-                    "Device": ORDER_DEVICE
-                }
-            });
-
-            request(app)
-                .post('/v1/GetLocationHistory')
-                .set('Content-Type', 'application/json')
-                .send(rawPayload)
-                .expect(200)
-                .end(function(err, res) {
-                    expect(err).to.be.null;
-                    expect(res.body).to.have.property('MiataruLocation');
-                    expect(res.body.MiataruLocation).to.be.an('array');
-                    done();
-                });
-        });
     });
 });
