@@ -354,5 +354,39 @@ describe('Backward Compatibility Tests', function() {
                     done();
                 });
         });
+
+        it('should accept key=value string payloads in Device, Amount order', function(done) {
+            var keyValuePayload = {
+                "MiataruGetLocationHistory": "Device=" + ORDER_DEVICE + "&Amount=5"
+            };
+
+            request(app)
+                .post('/v1/GetLocationHistory')
+                .send(keyValuePayload)
+                .expect(200)
+                .end(function(err, res) {
+                    expect(err).to.be.null;
+                    expect(res.body).to.have.property('MiataruLocation');
+                    expect(res.body.MiataruLocation).to.be.an('array');
+                    done();
+                });
+        });
+
+        it('should accept key=value string payloads in Amount, Device order', function(done) {
+            var reversedKeyValuePayload = {
+                "MiataruGetLocationHistory": "Amount=5&Device=" + ORDER_DEVICE
+            };
+
+            request(app)
+                .post('/v1/GetLocationHistory')
+                .send(reversedKeyValuePayload)
+                .expect(200)
+                .end(function(err, res) {
+                    expect(err).to.be.null;
+                    expect(res.body).to.have.property('MiataruLocation');
+                    expect(res.body.MiataruLocation).to.be.an('array');
+                    done();
+                });
+        });
     });
 });
