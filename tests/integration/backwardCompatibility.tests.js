@@ -255,4 +255,64 @@ describe('Backward Compatibility Tests', function() {
                 });
         });
     });
+
+    describe('Field order compatibility for GetLocationHistory', function() {
+        var ORDER_DEVICE = 'order-compatibility-device';
+
+        before(function(done) {
+            var updatePayload = calls.locationUpdateCall({
+                locations: [
+                    calls.location({ device: ORDER_DEVICE })
+                ]
+            });
+
+            request(app)
+                .post('/v1/UpdateLocation')
+                .send(updatePayload)
+                .expect(200)
+                .end(function(err) {
+                    done(err);
+                });
+        });
+
+        it('should accept Amount before Device in the history request', function(done) {
+            var reversedPayload = {
+                "MiataruGetLocationHistory": {
+                    "Amount": "5",
+                    "Device": ORDER_DEVICE
+                }
+            };
+
+            request(app)
+                .post('/v1/GetLocationHistory')
+                .send(reversedPayload)
+                .expect(200)
+                .end(function(err, res) {
+                    expect(err).to.be.null;
+                    expect(res.body).to.have.property('MiataruLocation');
+                    expect(res.body.MiataruLocation).to.be.an('array');
+                    done();
+                });
+        });
+
+        it('should accept lower-case field names regardless of order', function(done) {
+            var lowercasePayload = {
+                "MiataruGetLocationHistory": {
+                    "amount": 3,
+                    "device": ORDER_DEVICE
+                }
+            };
+
+            request(app)
+                .post('/v1/GetLocationHistory')
+                .send(lowercasePayload)
+                .expect(200)
+                .end(function(err, res) {
+                    expect(err).to.be.null;
+                    expect(res.body).to.have.property('MiataruLocation');
+                    expect(res.body.MiataruLocation).to.be.an('array');
+                    done();
+                });
+        });
+    });
 });
