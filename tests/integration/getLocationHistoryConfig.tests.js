@@ -65,4 +65,42 @@ describe('GetLocationHistory with MiataruConfig', function() {
             });
         });
     });
+
+    it('should return available history when requested amount exceeds stored entries', function(done) {
+        const entryOne = JSON.stringify({
+            Device: TEST_DEVICE,
+            Timestamp: 1700000000100,
+            Longitude: '10.0',
+            Latitude: '50.0'
+        });
+        const entryTwo = JSON.stringify({
+            Device: TEST_DEVICE,
+            Timestamp: 1700000000200,
+            Longitude: '11.0',
+            Latitude: '51.0'
+        });
+
+        db.lpush(HISTORY_KEY, entryOne, function(err) {
+            if (err) return done(err);
+
+            db.lpush(HISTORY_KEY, entryTwo, function(pushErr) {
+                if (pushErr) return done(pushErr);
+
+                const body = requestBody();
+                body.MiataruGetLocationHistory.Amount = '5';
+
+                request(app)
+                    .post('/GetLocationHistory')
+                    .send(body)
+                    .expect(200)
+                    .expect(function(res) {
+                        expect(res.body.MiataruServerConfig.AvailableDeviceLocationUpdates).to.equal(2);
+                        expect(res.body.MiataruLocation).to.be.an('array').with.length(2);
+                        expect(res.body.MiataruLocation[0].Timestamp).to.equal(1700000000200);
+                        expect(res.body.MiataruLocation[1].Timestamp).to.equal(1700000000100);
+                    })
+                    .end(done);
+            });
+        });
+    });
 });
