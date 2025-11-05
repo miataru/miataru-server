@@ -37,7 +37,15 @@ if (require.main === module) {
 module.exports = app;
 
 function handleError(error, req, res, next) {
-    var statusCode = (error && typeof error.statusCode === 'number') ? error.statusCode : 500;
+    var statusCode = 500;
+
+    if (error) {
+        if (typeof error.statusCode === 'number') {
+            statusCode = error.statusCode;
+        } else if (typeof error.status === 'number') {
+            statusCode = error.status;
+        }
+    }
     var errorMessage = error && error.message ? error.message : 'Internal Server Error';
     var logContext = buildErrorLogContext(error, req);
     var logMessage = 'error handler received error: ' + errorMessage + logContext;

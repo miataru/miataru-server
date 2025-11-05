@@ -47,4 +47,24 @@ describe('server error handling logging', function() {
                 done();
             });
     });
+
+    it('responds with 400 for malformed JSON payloads', function(done) {
+        request(app)
+            .post('/v1/GetLocationHistory')
+            .set('Content-Type', 'application/json')
+            .send('{"MiataruGetLocationHistory":{')
+            .expect(400)
+            .end(function(err, res) {
+                if (err) {
+                    return done(err);
+                }
+
+                expect(res.body)
+                    .to.have.property('error')
+                    .that.is.a('string')
+                    .and.contains('JSON');
+                expect(errorCalls).to.equal(0);
+                done();
+            });
+    });
 });
