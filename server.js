@@ -13,8 +13,10 @@ var errors = require('./lib/errors');
 
 var app = express();
 
-app.use(bodyParser.json());
-app.use(bodyParser.urlencoded({ extended: true }));
+app.use(bodyParser.json({
+    verify: captureRawBody
+}));
+app.use(bodyParser.urlencoded({ extended: true, verify: captureRawBody }));
 app.use(favicon(__dirname + '/favicon.ico')); 
 
 middlewares.install(app);
@@ -37,7 +39,8 @@ module.exports = app;
 function handleError(error, req, res, next) {
     var statusCode = (error && typeof error.statusCode === 'number') ? error.statusCode : 500;
     var errorMessage = error && error.message ? error.message : 'Internal Server Error';
-    var logMessage = 'error handler received error: ' + errorMessage;
+    var logContext = buildErrorLogContext(error, req);
+    var logMessage = 'error handler received error: ' + errorMessage + logContext;
 
     if (!error || statusCode >= 500 || statusCode < 400) {
         logger.error(logMessage);
@@ -48,4 +51,89 @@ function handleError(error, req, res, next) {
     }
 
     res.status(statusCode).json({error: errorMessage});
+}
+
+function captureRawBody(req, res, buf, encoding) {
+    if (!req) {
+        return;
+    }
+
+    if (!buf || !buf.length) {
+        req.rawBody = '';
+        return;
+    }
+
+    var charset = encoding || 'utf8';
+
+    try {
+        req.rawBody = buf.toString(charset);
+    } catch (error) {
+        req.rawBody = '[unable to decode raw body: ' + error.message + ']';
+    }
+}
+
+function buildErrorLogContext(error, req) {
+    var details = [];
+
+    if (req) {
+        if (req.method) {
+            details.push('method=' + req.method);
+        }
+
+        if (req.originalUrl || req.url) {
+            details.push('path=' + (req.originalUrl || req.url));
+        }
+
+        if (req.headers && req.headers['content-type']) {
+            details.push('content-type=' + req.headers['content-type']);
+        }
+
+        if (req.headers && req.headers['content-length']) {
+            details.push('content-length=' + req.headers['content-length']);
+        }
+    }
+
+    if (error) {
+        if (error.type) {
+            details.push('error.type=' + error.type);
+        }
+
+        if (typeof error.status === 'number') {
+            details.push('error.status=' + error.status);
+        }
+
+        if (typeof error.statusCode === 'number' && error.statusCode !== error.status) {
+            details.push('error.statusCode=' + error.statusCode);
+        }
+    }
+
+    var rawBody = (error && error.body) || (req && req.rawBody);
+
+    if (rawBody !== undefined) {
+        var maxLength = 200;
+        var length;
+        var preview;
+
+        if (Buffer.isBuffer(rawBody)) {
+            length = rawBody.length;
+            preview = rawBody.toString('utf8', 0, Math.min(maxLength, length));
+        } else {
+            var stringValue = typeof rawBody === 'string' ? rawBody : String(rawBody);
+            length = stringValue.length;
+            preview = stringValue.slice(0, Math.min(maxLength, length));
+        }
+
+        if (length > maxLength) {
+            preview += '…';
+        }
+
+        details.push('rawBodyLength=' + length);
+        details.push('rawBodyPreview=' + preview.replace(/\s+/g, ' '));
+    }
+
+    if (!details.length) {
+        return '';
+    }
+
+    return ' (' + details.join(', ') + ')';
 }
