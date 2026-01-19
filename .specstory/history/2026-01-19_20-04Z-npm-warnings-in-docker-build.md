@@ -177,3 +177,904 @@ Updating `stylus` to the latest version and adding npm overrides to force newer 
 
 ---
 
+
+Verifying the changes and testing if the overrides resolve the warnings. Checking if `inflight` can be excluded or if forcing `glob@10` is sufficient:
+
+
+---
+
+<tool-use data-tool-type="shell" data-tool-name="run_terminal_command_v2">
+<details><summary>Tool use: **run_terminal_command_v2** • Run command: cd /Users/bietiekay/code/miataru-server && npm install 2>&1 | grep -E "(warn|error|inflight|glob)" | head -20</summary>
+
+```bash
+cd /Users/bietiekay/code/miataru-server && npm install 2>&1 | grep -E "(warn|error|inflight|glob)" | head -20
+```
+</details>
+</tool-use>
+
+---
+
+
+Running a full install to check for warnings:
+
+
+---
+
+<tool-use data-tool-type="shell" data-tool-name="run_terminal_command_v2">
+<details><summary>Tool use: **run_terminal_command_v2** • Run command: cd /Users/bietiekay/code/miataru-server && npm install 2>&1 | tail -30</summary>
+
+```bash
+cd /Users/bietiekay/code/miataru-server && npm install 2>&1 | tail -30
+```
+
+```
+
+up to date, audited 230 packages in 1s
+
+49 packages are looking for funding
+  run &#96;npm fund&#96; for details
+
+found 0 vulnerabilities
+
+```
+</details>
+</tool-use>
+
+---
+
+
+Checking if the `inflight` override is correct. Testing a simpler approach: override `glob` to v10+ (which doesn't use `inflight`). If needed, we'll handle `inflight` separately:
+
+
+---
+
+<tool-use data-tool-type="shell" data-tool-name="run_terminal_command_v2">
+<details><summary>Tool use: **run_terminal_command_v2** • Run command: cd /Users/bietiekay/code/miataru-server && npm view @isaacs/inflight 2>&1 | head -5</summary>
+
+```bash
+cd /Users/bietiekay/code/miataru-server && npm view @isaacs/inflight 2>&1 | head -5
+```
+
+```
+npm notice Access token expired or revoked. Please try logging in again.
+npm error code E404
+npm error 404 Not Found - GET https://registry.npmjs.org/@isaacs%2finflight - Not found
+npm error 404
+npm error 404  The requested resource '@isaacs/inflight@*' could not be found or you do not have permission to access it.
+
+```
+</details>
+</tool-use>
+
+---
+
+
+The `@isaacs/inflight` package doesn't exist. Removing that override and keeping only the `glob` override, since `glob@10` doesn't use `inflight`:
+
+
+---
+
+<tool-use data-tool-type="write" data-tool-name="edit_file_v2">
+
+<details><summary>Tool use: **edit_file_v2** • Edit file: /Users/bietiekay/code/miataru-server/package.json</summary>
+
+</details>
+
+</tool-use>
+
+---
+
+
+Verifying the dependency tree after a clean install:
+
+
+---
+
+<tool-use data-tool-type="shell" data-tool-name="run_terminal_command_v2">
+<details><summary>Tool use: **run_terminal_command_v2** • Run command: cd /Users/bietiekay/code/miataru-server && rm -rf node_modules package-lock.json && npm install 2>&1 | grep -i "warn\|deprecated" | head -10</summary>
+
+```bash
+cd /Users/bietiekay/code/miataru-server && rm -rf node_modules package-lock.json && npm install 2>&1 | grep -i "warn\|deprecated" | head -10
+```
+</details>
+</tool-use>
+
+---
+
+
+Checking the dependency tree to confirm the deprecated packages are resolved:
+
+
+---
+
+<tool-use data-tool-type="shell" data-tool-name="run_terminal_command_v2">
+<details><summary>Tool use: **run_terminal_command_v2** • Run command: cd /Users/bietiekay/code/miataru-server && npm ls glob inflight 2>&1 | head -20</summary>
+
+```bash
+cd /Users/bietiekay/code/miataru-server && npm ls glob inflight 2>&1 | head -20
+```
+
+```
+miataru-server@1.1.0 /Users/bietiekay/code/miataru-server
+├─┬ mocha@10.8.2
+│ └── glob@10.5.0
+└─┬ stylus@0.64.0
+  └── glob@10.5.0 deduped
+
+
+```
+</details>
+</tool-use>
+
+---
+
+
+The dependency tree shows:
+- `mocha` now uses `glob@10.5.0` (instead of `glob@8.1.0`)
+- `stylus@0.64.0` now uses `glob@10.5.0` (instead of `glob@7.2.3`)
+- `inflight` is no longer in the dependency tree
+
+Verifying `inflight` is completely removed:
+
+
+---
+
+<tool-use data-tool-type="shell" data-tool-name="run_terminal_command_v2">
+<details><summary>Tool use: **run_terminal_command_v2** • Run command: cd /Users/bietiekay/code/miataru-server && npm ls inflight 2>&1</summary>
+
+```bash
+cd /Users/bietiekay/code/miataru-server && npm ls inflight 2>&1
+```
+
+```
+miataru-server@1.1.0 /Users/bietiekay/code/miataru-server
+└── (empty)
+
+
+```
+</details>
+</tool-use>
+
+---
+
+
+All deprecated packages are resolved. Summary of changes:
+
+1. **Updated `stylus`** from `^0.59.0` to `^0.64.0` (latest version)
+2. **Added `glob` override** to force version `^10.0.0` for all packages
+
+Results:
+- `mocha` now uses `glob@10.5.0` instead of `glob@8.1.0`
+- `stylus@0.64.0` now uses `glob@10.5.0` instead of `glob@7.2.3`
+- `inflight` is completely removed from the dependency tree (since `glob@10` doesn't use it)
+
+These changes should eliminate the npm warnings during Docker build. The deprecated `glob@7.2.3`, `glob@8.1.0`, and `inflight@1.0.6` are no longer in the dependency tree.
+
+You can test the Docker build to confirm the warnings are gone. The changes are backward compatible since `glob@10` is API-compatible with the older versions used by these packages.
+
+---
+
+_**User**_
+
+run all tests
+
+---
+
+_**Agent (model default, mode Agent)**_
+
+
+Running all tests.
+
+
+---
+
+<tool-use data-tool-type="shell" data-tool-name="run_terminal_command_v2">
+<details><summary>Tool use: **run_terminal_command_v2** • Run command: cd /Users/bietiekay/code/miataru-server && npm run test:all</summary>
+
+```bash
+cd /Users/bietiekay/code/miataru-server && npm run test:all
+```
+
+```
+
+&gt; miataru-server@1.1.0 test:all
+&gt; NODE_ENV=test npx mocha tests
+
+Error: No test files found
+
+```
+</details>
+</tool-use>
+
+---
+
+
+Checking the test directory structure and mocha configuration:
+
+
+---
+
+<tool-use data-tool-type="unknown" data-tool-name="list_dir_v2">
+<details>
+<summary>Tool use: **list_dir_v2**</summary>
+
+
+Parameters:
+
+```json
+{
+  "targetDirectory": "/Users/bietiekay/code/miataru-server/tests"
+}
+```
+Result:
+
+```json
+{
+  "directoryTreeRoot": {
+    "absPath": "/Users/bietiekay/code/miataru-server/tests",
+    "childrenDirs": [
+      {
+        "absPath": "/Users/bietiekay/code/miataru-server/tests/integration",
+        "childrenFiles": [
+          {
+            "name": "api.tests.js"
+          },
+          {
+            "name": "backwardCompatibility.tests.js"
+          },
+          {
+            "name": "cors.tests.js"
+          },
+          {
+            "name": "deleteLocation.tests.js"
+          },
+          {
+            "name": "getLocationHistoryConfig.tests.js"
+          },
+          {
+            "name": "getLocationHistoryLarge.tests.js"
+          },
+          {
+            "name": "httpRateLimiter.tests.js"
+          },
+          {
+            "name": "interoperability.tests.js"
+          },
+          {
+            "name": "newFields.tests.js"
+          },
+          {
+            "name": "robots.tests.js"
+          },
+          {
+            "name": "smoke.tests.js"
+          },
+          {
+            "name": "startServer.fixture.js"
+          },
+          {
+            "name": "unknownDevice.tests.js"
+          },
+          {
+            "name": "updateLocation.tests.js"
+          },
+          {
+            "name": "visitorHistoryFiltering.tests.js"
+          }
+        ],
+        "childrenWereProcessed": true
+      },
+      {
+        "absPath": "/Users/bietiekay/code/miataru-server/tests/testFiles",
+        "childrenDirs": [
+          {
+            "absPath": "/Users/bietiekay/code/miataru-server/tests/testFiles/configLoader",
+            "childrenDirs": [
+              {
+                "absPath": "/Users/bietiekay/code/miataru-server/tests/testFiles/configLoader/config",
+                "childrenFiles": [
+                  {
+                    "name": "default.js"
+                  }
+                ],
+                "childrenWereProcessed": true
+              },
+              {
+                "absPath": "/Users/bietiekay/code/miataru-server/tests/testFiles/configLoader/config2",
+                "childrenFiles": [
+                  {
+                    "name": "default.js"
+                  },
+                  {
+                    "name": "test.js"
+                  }
+                ],
+                "childrenWereProcessed": true
+              },
+              {
+                "absPath": "/Users/bietiekay/code/miataru-server/tests/testFiles/configLoader/config3",
+                "childrenFiles": [
+                  {
+                    "name": "default.js"
+                  },
+                  {
+                    "name": "development.js"
+                  },
+                  {
+                    "name": "test.js"
+                  },
+                  {
+                    "name": "user.foouser.js"
+                  }
+                ],
+                "childrenWereProcessed": true
+              },
+              {
+                "absPath": "/Users/bietiekay/code/miataru-server/tests/testFiles/configLoader/external",
+                "childrenFiles": [
+                  {
+                    "name": "external.js"
+                  }
+                ],
+                "childrenWereProcessed": true
+              }
+            ],
+            "childrenWereProcessed": true
+          }
+        ],
+        "childrenFiles": [
+          {
+            "name": "calls.js"
+          }
+        ],
+        "childrenWereProcessed": true
+      },
+      {
+        "absPath": "/Users/bietiekay/code/miataru-server/tests/unit",
+        "childrenFiles": [
+          {
+            "name": "concurrencyLimiter.tests.js"
+          },
+          {
+            "name": "configLoader.tests.js"
+          },
+          {
+            "name": "dataHolder.tests.js"
+          },
+          {
+            "name": "db.redisCompatibility.tests.js"
+          },
+          {
+            "name": "redisRateLimiter.tests.js"
+          },
+          {
+            "name": "requestDevice.tests.js"
+          },
+          {
+            "name": "requestLocationIntegration.tests.js"
+          },
+          {
+            "name": "responseDeleteLocation.tests.js"
+          },
+          {
+            "name": "responseLocationGeoJSON.tests.js"
+          },
+          {
+            "name": "serverErrorHandling.tests.js"
+          },
+          {
+            "name": "stuff.tests.js"
+          }
+        ],
+        "childrenWereProcessed": true
+      }
+    ],
+    "childrenFiles": [
+      {
+        "name": "README_NEW_FIELDS.md"
+      }
+    ],
+    "childrenWereProcessed": true
+  }
+}
+```
+Status: **completed**
+
+
+</details>
+</tool-use>
+
+---
+
+<tool-use data-tool-type="unknown" data-tool-name="ripgrep_raw_search">
+<details>
+<summary>Tool use: **ripgrep_raw_search**</summary>
+
+
+Parameters:
+
+```json
+{
+  "pattern": "mocha",
+  "path": "/Users/bietiekay/code/miataru-server",
+  "caseInsensitive": false,
+  "type": "json"
+}
+```
+Result:
+
+```json
+{
+  "success": {
+    "pattern": "mocha",
+    "path": "/Users/bietiekay/code/miataru-server",
+    "outputMode": "content",
+    "workspaceResults": {
+      "/Users/bietiekay/code/miataru-server": {
+        "content": {
+          "matches": [
+            {
+              "file": "./package.json",
+              "matches": [
+                {
+                  "lineNumber": 52,
+                  "content": "    \"mocha\": \"^10.2.0\","
+                },
+                {
+                  "lineNumber": 61,
+                  "content": "    \"test\": \"NODE_ENV=test npx mocha tests/unit/\","
+                },
+                {
+                  "lineNumber": 62,
+                  "content": "    \"test:integration\": \"NODE_ENV=test npx mocha tests/integration/\","
+                },
+                {
+                  "lineNumber": 63,
+                  "content": "    \"test:all\": \"NODE_ENV=test npx mocha tests\""
+                }
+              ]
+            }
+          ],
+          "totalLines": 4,
+          "totalMatchedLines": 4
+        }
+      }
+    }
+  }
+}
+```
+Status: **completed**
+
+
+</details>
+</tool-use>
+
+---
+
+
+Checking for a mocha configuration file and trying a more explicit test pattern:
+
+
+---
+
+<tool-use data-tool-type="generic" data-tool-name="glob_file_search">
+<details>
+<summary>Tool use: **glob_file_search** • Searched codebase "undefined" • **0** result in **1** directory</summary>
+
+Directory: **undefined** (0 file)
+
+</details>
+</tool-use>
+
+---
+
+<tool-use data-tool-type="generic" data-tool-name="glob_file_search">
+<details>
+<summary>Tool use: **glob_file_search** • Searched codebase "undefined" • **0** result in **1** directory</summary>
+
+Directory: **undefined** (0 file)
+
+</details>
+</tool-use>
+
+---
+
+<tool-use data-tool-type="shell" data-tool-name="run_terminal_command_v2">
+<details><summary>Tool use: **run_terminal_command_v2** • Run command: cd /Users/bietiekay/code/miataru-server && NODE_ENV=test npx mocha "tests/**/*.tests.js"</summary>
+
+```bash
+cd /Users/bietiekay/code/miataru-server && NODE_ENV=test npx mocha "tests/**/*.tests.js"
+```
+
+```
+
+
+  stuff
+    keybuilder
+      ✔ should use only the main namespace
+      ✔ should use all the parameters to build a key
+
+  server error handling logging
+    ✔ does not log error level messages for 404 responses
+    ✔ does not log error level messages for 405 responses
+
+  ResponseLocationGeoJSON with new fields
+    GeoJSON generation
+      ✔ should generate GeoJSON with new fields in properties
+      ✔ should handle location without new fields
+      ✔ should handle location with partial new fields
+      ✔ should handle empty location list
+      ✔ should handle location without required coordinates
+      ✔ should handle multiple locations (uses first one)
+
+  ResponseDeleteLocation
+    constructor
+      ✔ should create response with device ID and deleted count
+    data method
+      ✔ should return correct response structure
+      ✔ should handle zero deleted count
+      ✔ should handle multiple deleted items
+      ✔ should handle special characters in device ID
+
+  RequestLocation Integration Tests
+    End-to-end data flow
+      ✔ should handle complete data flow from request to response
+      ✔ should handle backward compatibility in complete data flow
+      ✔ should handle mixed data scenarios
+      ✔ should handle GeoJSON generation with new fields
+
+  RequestDevice
+    constructor
+      ✔ should throw BadRequestError when no arguments provided
+      ✔ should throw BadRequestError when null is passed
+      ✔ should throw BadRequestError when undefined is passed
+      ✔ should throw BadRequestError when empty object is passed
+      ✔ should throw BadRequestError when data object has no Device property
+      ✔ should throw BadRequestError when Device property is null
+      ✔ should throw BadRequestError when Device property is undefined
+      ✔ should throw BadRequestError when Device property is empty string
+      ✔ should create instance successfully when valid Device is provided
+      ✔ should create instance successfully when Device is 0
+      ✔ should create instance successfully when Device is false
+    device method
+      ✔ should return the device value
+
+  installRedisRateLimiter
+    ✔ queues operations and rejects when the queue is full
+    ✔ translates queue timeouts into Redis specific errors
+    ✔ leaves client methods untouched when disabled
+
+  db redis compatibility
+    ✔ exposes legacy list helpers when using the modern redis client
+    ✔ schedules redis operations only once even when using camelCase aliases
+
+  dataHolders
+    config
+      ✔ should throw because of invalid data
+      EnableLocationHistory validation
+        ✔ should accept string "True" and convert to boolean true
+        ✔ should accept string "true" and convert to boolean true
+        ✔ should accept string "False" and convert to boolean false
+        ✔ should accept string "false" and convert to boolean false
+        ✔ should accept any non-"true" string and convert to boolean false
+        ✔ should accept null and keep as null
+        ✔ should accept undefined and keep as null
+        ✔ should throw error for numeric input
+        ✔ should throw error for boolean input
+        ✔ should throw error for object input
+        ✔ should throw error for array input
+        ✔ should throw error for function input
+    location
+      RequestLocation with new fields
+        ✔ should handle old format without new fields
+        ✔ should handle new format with all fields
+        ✔ should handle mixed format with some new fields
+        ✔ should exclude fields with -1 values
+        ✔ should handle zero values correctly
+        ✔ should provide getter methods for new fields
+        ✔ should default new fields to -1 when not provided
+        ✔ should handle string and numeric values for new fields
+
+  configLoader
+    ✔ should load the default config
+    ✔ should load the default config, overwritten by the environment config
+    ✔ should load the default config, overwritten by the environment config, overwritten by the user config
+    ✔ should load the default config, overwritten by the environment config, *NOT* overwritten by the user config
+    ✔ should load the default config and should enhance/overwrite it with cliParms
+    ✔ should load the default config and should enhance/overwrite it with deep nested cli Parms
+    ✔ should load the default config and enhance it with an "external" config file
+    ✔ should throw on invalid external file
+
+  ConcurrencyLimiter
+    ✔ enforces maxConcurrent and maxQueue per key
+    ✔ rejects queued acquires when the timeout elapses
+    ✔ releases slots when scheduled tasks reject asynchronously
+    ✔ releases slots when scheduled tasks throw synchronously
+
+  Visitor History Filtering
+    GetLocation with RequestMiataruDeviceID
+      ✔ should NOT store visitor history when RequestMiataruDeviceID equals target deviceID (209ms)
+      ✔ should store visitor history when RequestMiataruDeviceID differs from target deviceID (204ms)
+    GetLocationHistory with RequestMiataruDeviceID
+      ✔ should NOT store visitor history when RequestMiataruDeviceID equals target deviceID (253ms)
+      ✔ should store visitor history when RequestMiataruDeviceID differs from target deviceID (290ms)
+    GetVisitorHistory filtering
+      ✔ should filter out entries where visitor DeviceID equals requested deviceID (285ms)
+      ✔ should return all entries when visitor DeviceID differs from requested deviceID (218ms)
+      ✔ should return empty array when all entries have DeviceID equal to requested deviceID (188ms)
+      ✔ should work with non-versioned GetVisitorHistory endpoint (147ms)
+
+  updateLocation
+    ✔ should answer with ACK to simple update location request (178ms)
+    ✔ should answer with ACK to update location request with multiple locations (237ms)
+    ✔ should answer with ACK to update location request with history enabled (137ms)
+    ✔ should answer with ACK to update location request with new fields (121ms)
+    ✔ should handle malformed update location request
+    ✔ should handle empty update location request
+    ✔ should wait for Redis operations when history is disabled (57ms)
+
+  Unknown Device ID Handling
+    GetLocation endpoint
+      ✔ should return null for unknown device ID (49ms)
+      ✔ should return null for unknown device ID (non-versioned endpoint) (61ms)
+      ✔ should handle multiple unknown device IDs (44ms)
+    GetLocationGeoJSON endpoint
+      ✔ should return empty object for unknown device ID (44ms)
+      ✔ should return empty object for unknown device ID (non-versioned endpoint) (43ms)
+      ✔ should handle GET request with unknown device ID (52ms)
+      ✔ should handle GET request with unknown device ID (non-versioned endpoint) (43ms)
+    GetLocationHistory endpoint
+      ✔ should return empty history for unknown device ID (39ms)
+      ✔ should return empty history for unknown device ID (non-versioned endpoint) (59ms)
+    GetVisitorHistory endpoint
+      ✔ should return empty visitor history for unknown device ID (49ms)
+      ✔ should return empty visitor history for unknown device ID (non-versioned endpoint) (55ms)
+    DeleteLocation endpoint
+      ✔ should return ACK with 0 deleted count for unknown device ID (52ms)
+      ✔ should return ACK with 0 deleted count for unknown device ID (non-versioned endpoint)
+    UpdateLocation endpoint
+      ✔ should successfully update location for unknown device ID (171ms)
+      ✔ should successfully update location for unknown device ID (non-versioned endpoint) (144ms)
+    Mixed known and unknown devices
+      ✔ should handle mixed known and unknown devices in GetLocation (60ms)
+      ✔ should handle mixed known and unknown devices in GetLocationGeoJSON (47ms)
+    Error handling for malformed data
+      ✔ should handle malformed JSON in Redis gracefully
+
+  smoke
+    ✔ should show that its running
+
+  robots.txt
+    ✔ should respond with a plain text robots policy without logging errors
+
+  New Fields Integration Tests
+    UpdateLocation with new fields
+      ✔ should accept location update with all new fields (66ms)
+      ✔ should accept location update with partial new fields (49ms)
+      ✔ should accept location update with -1 values for new fields (61ms)
+    GetLocation with new fields
+      ✔ should return location with new fields (196ms)
+    GetLocationGeoJSON with new fields
+      ✔ should return GeoJSON with new fields in properties (190ms)
+    GetLocationHistory with new fields
+      ✔ should return location history with new fields (103ms)
+    Mixed field scenarios
+      ✔ should handle mixed field scenarios in history (100ms)
+      ✔ should return current location with correct fields (48ms)
+    RequestLocation property validation
+      ✔ should throw BadRequestError when Device property is missing
+      ✔ should throw BadRequestError when Timestamp property is missing
+      ✔ should throw BadRequestError when Longitude property is missing
+      ✔ should throw BadRequestError when Latitude property is missing
+      ✔ should throw BadRequestError when HorizontalAccuracy property is missing
+      ✔ should not throw error when Device property is explicitly false (backward compatibility)
+      ✔ should not throw error when Timestamp property is explicitly false (backward compatibility)
+      ✔ should not throw error when Longitude property is explicitly false (backward compatibility)
+      ✔ should not throw error when Latitude property is explicitly false (backward compatibility)
+      ✔ should not throw error when HorizontalAccuracy property is explicitly false (backward compatibility)
+      ✔ should not throw error when all required properties are provided
+      ✔ should not throw error when new fields are omitted (they default to -1)
+      ✔ should not throw error when new fields are explicitly set to -1
+      ✔ should throw BadRequestError when Device property is explicitly null
+
+  Interoperability Tests
+    Old and new client interaction
+      ✔ should allow old client to update location, new client to read with new fields (189ms)
+      ✔ should allow new client to update location, old client to read without new fields (183ms)
+    Mixed client scenarios
+      ✔ should handle mixed updates from different client types (537ms)
+    API version compatibility
+      ✔ should work with both v1 and legacy endpoints (198ms)
+    Data persistence across client types
+      ✔ should persist data correctly when switching between client types (541ms)
+
+  HTTP rate limiter middleware
+    ✔ does not throttle requests when disabled
+    ✔ queues up to the configured limit and rejects overflow requests
+    ✔ returns the timeout message when queued requests wait too long (39ms)
+
+  GetLocationHistory large history retrieval
+    ✔ should return more than 1000 history entries without failing (124ms)
+    ✔ should also support the v1 endpoint with large history responses (141ms)
+
+  GetLocationHistory with MiataruConfig
+    ✔ should return an empty history when only config and device/amount are provided (40ms)
+    ✔ should ignore invalid history entries instead of failing the request (192ms)
+    ✔ should return available history when requested amount exceeds stored entries (192ms)
+
+  DeleteLocation
+    Basic DeleteLocation functionality
+      ✔ should return ACK when deleting location data for existing device (174ms)
+      ✔ should return ACK even when deleting non-existent device data (60ms)
+      ✔ should delete all location data types (current, history, visitor) (403ms)
+    API endpoint compatibility
+      ✔ should work with v1 API endpoint (46ms)
+      ✔ should work with default API endpoint (no v1 prefix)
+      ✔ should reject non-POST methods
+    Error handling
+      ✔ should handle missing device parameter
+      ✔ should handle missing MiataruDeleteLocation object
+      ✔ should handle empty request body
+    Complete workflow test
+      ✔ should handle complete location lifecycle: create -&gt; verify -&gt; delete -&gt; verify (398ms)
+
+  CORS middleware
+    OPTIONS preflight requests
+      ✔ should allow preflight requests from allowed origins
+      ✔ should allow preflight requests from test allowed origins
+      ✔ should reject preflight requests from disallowed origins
+    Actual requests
+      ✔ should allow GET requests from allowed origins
+      ✔ should allow POST requests from allowed origins (142ms)
+      ✔ should reject requests from disallowed origins
+      ✔ should allow requests with no origin (mobile apps, curl, etc.)
+    CORS headers validation
+      ✔ should include proper CORS headers for allowed origins
+    Error handling
+      ✔ should handle CORS errors gracefully
+    Location endpoint preflight
+      ✔ should allow OPTIONS requests without logging errors
+
+  Backward Compatibility Tests
+    Old client compatibility
+      ✔ should accept old format location updates (146ms)
+      ✔ should return old format data for old clients (83ms)
+      ✔ should work with old format in location history (93ms)
+    Legacy API endpoint compatibility
+      ✔ should work with legacy /UpdateLocation endpoint (136ms)
+      ✔ should work with legacy /GetLocation endpoint (51ms)
+    Data type compatibility
+      ✔ should handle string values for new fields (126ms)
+      ✔ should handle numeric values for new fields (146ms)
+      ✔ should handle zero values for new fields (135ms)
+    Error handling compatibility
+      ✔ should handle malformed requests the same way as before
+      ✔ should handle empty requests the same way as before
+    Field order compatibility for GetLocationHistory
+      ✔ should accept Amount before Device in the history request (93ms)
+      ✔ should accept lower-case field names regardless of order (79ms)
+      ✔ should accept Map style payloads in Device, Amount order (98ms)
+      ✔ should accept Map style payloads in Amount, Device order (115ms)
+      ✔ should accept key=value string payloads in Device, Amount order (112ms)
+      ✔ should accept key=value string payloads in Amount, Device order (93ms)
+
+  complete chain
+    no history, multiple locations
+      ✔ should sucessfully call the api for the update
+      ✔ should ask the api for the last update (which is equals to the current location)
+      ✔ should only have stored the last update
+      ✔ should return the correct number of maxStored items
+      ✔ should return 0 elements
+      ✔ should return 0 elements
+    with history, multiple locations
+      ✔ should sucessfully call the api for the update
+      ✔ should ask the api for the last update (which is equals to the current location)
+      ✔ should only have stored the last update
+      ✔ should return the correct number of maxStored items
+      ✔ should return the number of history elements
+      ✔ should return all history elements
+    with history, multiple locations (more then config allows)
+      ✔ should sucessfully call the api for the update
+      ✔ should ask the api for the last update (which is equals to the current location)
+      ✔ should only have stored the last update
+      ✔ should return the correct number of maxStored items
+      ✔ should return the number of history elements (trimmed by the number of max elements)
+      ✔ should return all history elements
+    with history, multiple locations (more then config allows), history length check
+      ✔ should sucessfully call the api for the update
+      ✔ should ask the api for the last update (which is equals to the current location)
+      ✔ should have stored the last update
+      ✔ should return the correct number of maxStored items
+      ✔ should return the number of history elements (trimmed by the number of max elements)
+      ✔ should return the number of demanded history elements (which is less than the actual history)
+    with history, multiple locations (more then config allows), history length check, with a version
+      ✔ should sucessfully call the api for the update
+      ✔ should ask the api for the last update (which is equals to the current location)
+      ✔ should have stored the last update
+      ✔ should return the correct number of maxStored items
+      ✔ should return the number of history elements (trimmed by the number of max elements)
+      ✔ should return the number of demanded history elements (which is less than the actual history)
+
+
+  205 passing (16s)
+
+
+```
+</details>
+</tool-use>
+
+---
+
+
+All 205 tests passed. The `test:all` script needs a more explicit pattern. Updating it to use a glob pattern:
+
+
+---
+
+<tool-use data-tool-type="read" data-tool-name="read_file_v2">
+<details><summary>Tool use: **read_file_v2** • Read file: /Users/bietiekay/code/miataru-server/package.json</summary>
+
+</details>
+</tool-use>
+
+---
+
+
+Updating the `test:all` script to use an explicit glob pattern:
+
+
+---
+
+<tool-use data-tool-type="write" data-tool-name="edit_file_v2">
+
+<details><summary>Tool use: **edit_file_v2** • Edit file: /Users/bietiekay/code/miataru-server/package.json</summary>
+
+</details>
+
+</tool-use>
+
+---
+
+
+Verifying the updated `test:all` script works:
+
+
+---
+
+<tool-use data-tool-type="shell" data-tool-name="run_terminal_command_v2">
+<details><summary>Tool use: **run_terminal_command_v2** • Run command: cd /Users/bietiekay/code/miataru-server && npm run test:all 2>&1 | tail -5</summary>
+
+```bash
+cd /Users/bietiekay/code/miataru-server && npm run test:all 2>&1 | tail -5
+```
+
+```
+      ✔ should return the number of demanded history elements (which is less than the actual history)
+
+
+  205 passing (16s)
+
+
+```
+</details>
+</tool-use>
+
+---
+
+
+All tests passed.
+
+**Test Results Summary:**
+- 205 tests passing
+- Execution time: 16 seconds
+- All unit and integration tests completed successfully
+
+Updated the `test:all` script in `package.json` to use an explicit glob pattern (`'tests/**/*.tests.js'`) so mocha finds all test files. The script now works correctly.
+
+The test suite covers:
+- Unit tests (concurrency limiter, config loader, data holders, etc.)
+- Integration tests (API endpoints, CORS, rate limiting, backward compatibility, etc.)
+- End-to-end workflows (location updates, history retrieval, visitor history filtering, etc.)
+
+---
+
