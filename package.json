@@ -37,14 +37,15 @@
     "require-directory": "^2.1.1",
     "seq": "^0.3.5",
     "serve-favicon": "^2.5.0",
-    "stylus": "^0.59.0",
+    "stylus": "^0.64.0",
     "yargs": "^17.7.2"
   },
   "engines": {
     "node": ">= 18.0.0"
   },
   "overrides": {
-    "diff": "^8.0.3"
+    "diff": "^8.0.3",
+    "glob": "^10.0.0"
   },
   "devDependencies": {
     "chai": "^4.3.10",
@@ -59,6 +60,6 @@
     "start": "node server.js",
     "test": "NODE_ENV=test npx mocha tests/unit/",
     "test:integration": "NODE_ENV=test npx mocha tests/integration/",
-    "test:all": "NODE_ENV=test npx mocha tests"
+    "test:all": "NODE_ENV=test npx mocha 'tests/**/*.tests.js'"
   }
 }
