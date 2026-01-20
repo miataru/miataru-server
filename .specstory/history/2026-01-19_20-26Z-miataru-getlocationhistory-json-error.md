@@ -24240,11 +24240,356 @@ Removing the JSON validation from `captureRawBody` since it's too aggressive and
 
 <details><summary>Tool use: **edit_file_v2** • Edit file: /Users/bietiekay/code/miataru-server/server.js</summary>
 
-Status: **loading**
-
 </details>
 
 </tool-use>
+
+---
+
+<tool-use data-tool-type="unknown" data-tool-name="ripgrep_raw_search">
+<details>
+<summary>Tool use: **ripgrep_raw_search**</summary>
+
+
+Parameters:
+
+```json
+{
+  "pattern": "logger\\.debug",
+  "path": "/Users/bietiekay/code/miataru-server/server.js",
+  "caseInsensitive": false
+}
+```
+Result:
+
+```json
+{
+  "success": {
+    "pattern": "logger\\.debug",
+    "path": "/Users/bietiekay/code/miataru-server/server.js",
+    "outputMode": "content",
+    "workspaceResults": {
+      "/Users/bietiekay/code/miataru-server": {
+        "content": {}
+      }
+    }
+  }
+}
+```
+Status: **completed**
+
+
+</details>
+</tool-use>
+
+---
+
+<tool-use data-tool-type="shell" data-tool-name="run_terminal_command_v2">
+<details><summary>Tool use: **run_terminal_command_v2** • Run command: cd /Users/bietiekay/code/miataru-server && npm test -- tests/integration/getLocationHistoryParsingError.tests.js 2>&1 | tail -20</summary>
+
+```bash
+cd /Users/bietiekay/code/miataru-server && npm test -- tests/integration/getLocationHistoryParsingError.tests.js 2>&1 | tail -20
+```
+
+```
+      ✔ should handle multiple locations (uses first one)
+
+  server error handling logging
+    ✔ does not log error level messages for 404 responses
+    ✔ does not log error level messages for 405 responses
+
+  stuff
+    keybuilder
+      ✔ should use only the main namespace
+      ✔ should use all the parameters to build a key
+
+  GetLocationHistory JSON parsing error reproduction
+    ✔ should handle Amount=1000 without JSON parsing errors (73ms)
+    ✔ should handle Amount=100 without errors (baseline) (62ms)
+    ✔ should handle the exact request body from the error log (51ms)
+    ✔ should handle various Amount values without parsing errors (68ms)
+
+
+  73 passing (566ms)
+
+
+```
+</details>
+</tool-use>
+
+---
+
+
+All tests pass. Verifying the fix is complete:
+
+
+---
+
+<tool-use data-tool-type="read" data-tool-name="read_file_v2">
+<details><summary>Tool use: **read_file_v2** • Read file: /Users/bietiekay/code/miataru-server/server.js</summary>
+
+</details>
+</tool-use>
+
+---
+
+<tool-use data-tool-type="unknown" data-tool-name="ripgrep_raw_search">
+<details>
+<summary>Tool use: **ripgrep_raw_search**</summary>
+
+
+Parameters:
+
+```json
+{
+  "pattern": "logger\\.debug",
+  "path": "/Users/bietiekay/code/miataru-server",
+  "caseInsensitive": false
+}
+```
+Result:
+
+```json
+{
+  "success": {
+    "pattern": "logger\\.debug",
+    "path": "/Users/bietiekay/code/miataru-server",
+    "outputMode": "content",
+    "workspaceResults": {
+      "/Users/bietiekay/code/miataru-server": {
+        "content": {
+          "matches": [
+            {
+              "file": "./.specstory/history/2026-01-19_20-26Z-miataru-getlocationhistory-json-error.md",
+              "matches": [
+                {
+                  "lineNumber": 15965,
+                  "content": "        \"contents\": \"function handleError(error, req, res, next) {\\n\\n\\n    res.status(statusCode).json({error: errorMessage});\\n}\\n\\nfunction captureRawBody(req, res, buf, encoding) {\\n    if (!req) {\\n        return;\\n    }\\n\\n    if (!buf || !buf.length) {\\n        req.rawBody = '';\\n        return;\\n    }\\n\\n    var charset = encoding || 'utf8';\\n    var contentLength = req.headers &amp;amp;&amp;amp; req.headers['content-length'] ? parseInt(req.headers['content-length'], 10) : null;\\n\\n    try {\\n        req.rawBody = buf.toString(charset);\\n        \\n        // Log if there's a mismatch between Content-Length header and actual body size\\n        if (contentLength !== null &amp;amp;&amp;amp; !isNaN(contentLength) &amp;amp;&amp;amp; buf.length !== contentLength) {\\n            logger.warn('Content-Length mismatch detected: header=%d, actual-buffer=%d, path=%s', \\n                contentLength, buf.length, req.path || req.url);\\n        }\\n        \\n        // Validate JSON structure for JSON content types\\ [... omitted end of long line]"
+                },
+                {
+                  "lineNumber": 16098,
+                  "content": "            \"text\": \"                logger.debug('Request body validated as JSON: length=%d, path=%s', buf.length, req.path || req.url);\","
+                },
+                {
+                  "lineNumber": 20605,
+                  "content": "        \"contents\": \"function handleError(error, req, res, next) {\\n\\n\\n    res.status(statusCode).json({error: errorMessage});\\n}\\n\\nfunction captureRawBody(req, res, buf, encoding) {\\n    if (!req) {\\n        return;\\n    }\\n\\n    if (!buf || !buf.length) {\\n        req.rawBody = '';\\n        return;\\n    }\\n\\n    var charset = encoding || 'utf8';\\n    var contentLength = req.headers &amp;amp;&amp;amp; req.headers['content-length'] ? parseInt(req.headers['content-length'], 10) : null;\\n\\n    try {\\n        req.rawBody = buf.toString(charset);\\n        \\n        // Log if there's a mismatch between Content-Length header and actual body size\\n        if (contentLength !== null &amp;amp;&amp;amp; !isNaN(contentLength) &amp;amp;&amp;amp; buf.length !== contentLength) {\\n            logger.warn('Content-Length mismatch detected: header=%d, actual-buffer=%d, path=%s', \\n                contentLength, buf.length, req.path || req.url);\\n        }\\n        \\n        // Validate JSON structure for JSON content types\\ [... omitted end of long line]"
+                },
+                {
+                  "lineNumber": 20738,
+                  "content": "            \"text\": \"                logger.debug('Request body validated as JSON: length=%d, path=%s', buf.length, req.path || req.url);\","
+                }
+              ]
+            }
+          ],
+          "totalLines": 4,
+          "totalMatchedLines": 4
+        }
+      }
+    }
+  }
+}
+```
+Status: **completed**
+
+
+</details>
+</tool-use>
+
+---
+
+
+Fixed. The remaining `logger.debug` references are only in the specstory history file (documentation), not in the code.
+
+## Summary of the fix:
+
+1. Removed the `logger.debug()` call in `captureRawBody` that was trying to log successful JSON validation (line 103)
+2. Removed the `logger.debug()` call in `buildErrorLogContext` that was logging JSON parsing error details (line 156)
+3. Removed the aggressive JSON validation that was running on every request and logging errors unnecessarily
+
+The Logger class only supports `info`, `warn`, and `error` methods, not `debug`. The JSON validation was also redundant since body-parser already handles JSON parsing and will throw appropriate errors that are caught by the error handler.
+
+The server should no longer spam error messages. The enhanced error logging for actual parsing failures (from body-parser) remains in the `handleError` function, which provides the diagnostic information you need without the noise.
+
+---
+
+_**User**_
+
+describe and commt
+
+---
+
+_**Agent (model default, mode Agent)**_
+
+
+Checking git status, then committing the changes with a descriptive message:
+
+
+---
+
+<tool-use data-tool-type="shell" data-tool-name="run_terminal_command_v2">
+<details><summary>Tool use: **run_terminal_command_v2** • Run command: cd /Users/bietiekay/code/miataru-server && git status</summary>
+
+```bash
+cd /Users/bietiekay/code/miataru-server && git status
+```
+
+```
+On branch master
+Your branch is up to date with 'origin/master'.
+
+Changes not staged for commit:
+  (use "git add &lt;file&gt;..." to update what will be committed)
+  (use "git restore &lt;file&gt;..." to discard changes in working directory)
+	modified:   server.js
+
+no changes added to commit (use "git add" and/or "git commit -a")
+
+```
+</details>
+</tool-use>
+
+---
+
+<tool-use data-tool-type="shell" data-tool-name="run_terminal_command_v2">
+<details><summary>Tool use: **run_terminal_command_v2** • Run command: cd /Users/bietiekay/code/miataru-server && git diff --stat</summary>
+
+```bash
+cd /Users/bietiekay/code/miataru-server && git diff --stat
+```
+
+```
+ server.js | 21 +++------------------
+ 1 file changed, 3 insertions(+), 18 deletions(-)
+
+```
+</details>
+</tool-use>
+
+---
+
+
+Reviewing the changes, then committing with a descriptive message:
+
+
+---
+
+<tool-use data-tool-type="shell" data-tool-name="run_terminal_command_v2">
+<details><summary>Tool use: **run_terminal_command_v2** • Run command: cd /Users/bietiekay/code/miataru-server && git diff server.js | head -80</summary>
+
+```bash
+cd /Users/bietiekay/code/miataru-server && git diff server.js | head -80
+```
+
+```
+diff --git a/server.js b/server.js
+index 87fdbde..25775e9 100644
+--- a/server.js
++++ b/server.js
+@@ -95,17 +95,8 @@ function captureRawBody(req, res, buf, encoding) {
+                 contentLength, buf.length, req.path || req.url);
+         }
+         
+-        // Validate JSON structure for JSON content types
+-        if (req.headers &amp;&amp; req.headers['content-type'] &amp;&amp; 
+-            req.headers['content-type'].includes('application/json')) {
+-            try {
+-                JSON.parse(req.rawBody);
+-                logger.debug('Request body validated as JSON: length=%d, path=%s', buf.length, req.path || req.url);
+-            } catch (parseError) {
+-                logger.error('Request body failed JSON validation: %s, path=%s, body-preview=%s', 
+-                    parseError.message, req.path || req.url, req.rawBody.substring(0, 300));
+-            }
+-        }
++        // Note: JSON validation is handled by body-parser itself, which will throw appropriate errors
++        // that are caught by our error handler. We don't need to pre-validate here.
+     } catch (error) {
+         req.rawBody = '[unable to decode raw body: ' + error.message + ']';
+         logger.error('Failed to decode raw body: %s, path=%s', error.message, req.path || req.url);
+@@ -151,13 +142,7 @@ function buildErrorLogContext(error, req) {
+             details.push('error.expose=' + error.expose);
+         }
+         
+-        if (error.statusCode === 400 &amp;&amp; error.type === 'entity.parse.failed') {
+-            // This is a JSON parsing error from body-parser
+-            logger.debug('JSON parsing error details: %j', {
+-                message: error.message,
+-                stack: error.stack
+-            });
+-        }
++        // Additional error details are already logged in handleError function above
+     }
+ 
+     var rawBody = (error &amp;&amp; error.body) || (req &amp;&amp; req.rawBody);
+
+```
+</details>
+</tool-use>
+
+---
+
+<tool-use data-tool-type="shell" data-tool-name="run_terminal_command_v2">
+<details><summary>Tool use: **run_terminal_command_v2** • Run command: cd /Users/bietiekay/code/miataru-server && git add server.js && git commit -m "Fix: Remove logger.debug calls and aggressive JSON validation
+
+- Remove logger.debug() calls that caused 'logger.debug is not a function' errors
+  The Logger class only supports info, warn, and error methods
+- Remove redundant JSON validation in captureRawBody function
+  Body-parser already handles JSON parsing and throws appropriate errors
+- Keep Content-Length mismatch detection for diagnostic purposes
+- Remove debug logging from buildErrorLogContext function
+
+This fixes the issue where every request was logging error messages about
+JSON validation failures, even for valid requests. The error handler still
+provides comprehensive diagnostic information for actual parsing failures."</summary>
+
+```bash
+cd /Users/bietiekay/code/miataru-server && git add server.js && git commit -m "Fix: Remove logger.debug calls and aggressive JSON validation
+
+- Remove logger.debug() calls that caused 'logger.debug is not a function' errors
+  The Logger class only supports info, warn, and error methods
+- Remove redundant JSON validation in captureRawBody function
+  Body-parser already handles JSON parsing and throws appropriate errors
+- Keep Content-Length mismatch detection for diagnostic purposes
+- Remove debug logging from buildErrorLogContext function
+
+This fixes the issue where every request was logging error messages about
+JSON validation failures, even for valid requests. The error handler still
+provides comprehensive diagnostic information for actual parsing failures."
+```
+
+```
+[master 101c036] Fix: Remove logger.debug calls and aggressive JSON validation
+ 1 file changed, 3 insertions(+), 18 deletions(-)
+
+```
+</details>
+</tool-use>
+
+---
+
+
+Committed the changes. Summary:
+
+## Commit Summary
+
+**Commit:** `Fix: Remove logger.debug calls and aggressive JSON validation`
+
+### Changes Made:
+
+1. **Removed `logger.debug()` calls** — The Logger class only supports `info`, `warn`, and `error`. Removed calls that caused "logger.debug is not a function" errors.
+
+2. **Removed redundant JSON validation** — Removed pre-validation in `captureRawBody` that logged errors on every request. Body-parser already handles JSON parsing and throws errors that are caught by the error handler.
+
+3. **Kept useful diagnostics** — Content-Length mismatch detection remains for troubleshooting.
+
+4. **Cleaned up error context** — Removed debug logging from `buildErrorLogContext` since the error handler already logs details.
+
+### Result:
+
+- No more error spam in logs for valid requests
+- Error handler still provides diagnostic information for actual parsing failures
+- All tests passing
+
+The commit is ready. The server should no longer log excessive error messages.
 
 ---
 
