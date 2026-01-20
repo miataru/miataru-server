@@ -95,17 +95,8 @@ function captureRawBody(req, res, buf, encoding) {
                 contentLength, buf.length, req.path || req.url);
         }
         
-        // Validate JSON structure for JSON content types
-        if (req.headers && req.headers['content-type'] && 
-            req.headers['content-type'].includes('application/json')) {
-            try {
-                JSON.parse(req.rawBody);
-                logger.debug('Request body validated as JSON: length=%d, path=%s', buf.length, req.path || req.url);
-            } catch (parseError) {
-                logger.error('Request body failed JSON validation: %s, path=%s, body-preview=%s', 
-                    parseError.message, req.path || req.url, req.rawBody.substring(0, 300));
-            }
-        }
+        // Note: JSON validation is handled by body-parser itself, which will throw appropriate errors
+        // that are caught by our error handler. We don't need to pre-validate here.
     } catch (error) {
         req.rawBody = '[unable to decode raw body: ' + error.message + ']';
         logger.error('Failed to decode raw body: %s, path=%s', error.message, req.path || req.url);
@@ -151,13 +142,7 @@ function buildErrorLogContext(error, req) {
             details.push('error.expose=' + error.expose);
         }
         
-        if (error.statusCode === 400 && error.type === 'entity.parse.failed') {
-            // This is a JSON parsing error from body-parser
-            logger.debug('JSON parsing error details: %j', {
-                message: error.message,
-                stack: error.stack
-            });
-        }
+        // Additional error details are already logged in handleError function above
     }
 
     var rawBody = (error && error.body) || (req && req.rawBody);
