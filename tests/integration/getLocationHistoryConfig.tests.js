@@ -5,7 +5,7 @@ const app = require('../../server');
 const db = require('../../lib/db');
 const kb = require('../../lib/utils/keyBuilder');
 
-const TEST_DEVICE = '2FF802EA-0F13-41D7-B392-2841E97371C2';
+const TEST_DEVICE = 'TEST-DEVICE-0000-0000-0000-000000000001';
 const HISTORY_KEY = kb.build(TEST_DEVICE, 'hist');
 
 describe('GetLocationHistory with MiataruConfig', function() {
