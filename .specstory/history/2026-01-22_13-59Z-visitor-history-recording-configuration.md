@@ -9102,3 +9102,4544 @@ Creating the implementation plan:
 
 ---
 
+<tool-use data-tool-type="unknown" data-tool-name="create_plan">
+<details>
+<summary>Tool use: **create_plan**</summary>
+
+
+Parameters:
+
+```json
+{
+  "plan": "# Add recordDetailedVisitorHistory Configuration Option\n\n## Overview\nAdd a configuration option &#96;recordDetailedVisitorHistory&#96; that controls how visitor history is recorded. When OFF (default), each accessing device is only recorded once and updated on subsequent accesses. When ON, every access is recorded as a separate entry (current behavior).\n\n## Implementation Details\n\n### 1. Configuration\n- **File**: &#96;config/default.js&#96;\n- Add &#96;recordDetailedVisitorHistory: false&#96; to the default configuration object\n- This will be the default value (OFF mode)\n\n### 2. Visitor History Recording Logic\nThe visitor history is recorded in two places in &#96;lib/routes/location/v1/location.js&#96;:\n\n#### Location 1: &#96;getLocationHistory&#96; function (lines 75-96)\nCurrently uses &#96;db.lpush()&#96; to always add a new entry.\n\n#### Location 2: &#96;getLocation&#96; function (lines 225-246)  \nCurrently uses &#96;db.lpush()&#96; to always add a new entry.\n\n### 3. Implementation Strategy\n\nWhen &#96;recordDetailedVisitorHistory&#96; is **false** (OFF mode):\n1. Read the entire visitor list using &#96;db.lrange()&#96;\n2. Parse all JSON entries\n3. Filter out any existing entry with the same &#96;DeviceID&#96; as the new visitor\n4. Delete the entire list using &#96;db.del()&#96;\n5. Re-add all filtered entries plus the new visitor entry using &#96;db.lpush()&#96;\n6. Trim to max size using &#96;db.ltrim()&#96;\n\nWhen &#96;recordDetailedVisitorHistory&#96; is **true** (ON mode):\n- Keep current behavior: use &#96;db.lpush()&#96; directly and trim\n\n### 4. Code Structure\n\nCreate a helper function to handle visitor history recording that:\n- Takes the visit key, visitor object, and configuration as parameters\n- Checks &#96;configuration.recordDetailedVisitorHistory&#96;\n- Implements the appropriate logic based on the configuration value\n- Handles errors appropriately\n\n### 5. Files to Modify\n\n1. **&#96;config/default.js&#96;**\n   - Add &#96;recordDetailedVisitorHistory: false&#96; configuration option\n\n2. **&#96;lib/routes/location/v1/location.js&#96;**\n   - Extract visitor history recording logic into a helper function\n   - Update &#96;getLocationHistory&#96; to use the helper\n   - Update &#96;getLocation&#96; to use the helper\n   - The helper should check &#96;configuration.recordDetailedVisitorHistory&#96; and implement both modes\n\n### 6. Data Flow\n\n&#96;&#96;&#96;\nAccess Location → Check recordDetailedVisitorHistory config\n  ├─ true:  lpush new entry → trim (current behavior)\n  └─ false: lrange existing → filter by DeviceID → del → lpush filtered + new → trim\n&#96;&#96;&#96;\n\n### 7. Edge Cases to Handle\n\n- Empty visitor list (first visitor)\n- Visitor list at max capacity\n- JSON parsing errors when reading existing entries\n- Redis operation errors\n- Multiple concurrent accesses (handled by existing Redis operations)\n\n### 8. Testing Considerations\n\nThe existing tests in &#96;tests/integration/visitorHistoryFiltering.tests.js&#96; should continue to work, but may need updates to test the new behavior when &#96;recordDetailedVisitorHistory&#96; is false.",
+  "name": "Add recordDetailedVisitorHistory configuration",
+  "todos": [
+    {
+      "content": "Add recordDetailedVisitorHistory: false to config/default.js",
+      "status": "pending",
+      "id": "add-config-option"
+    },
+    {
+      "content": "Create helper function in location.js to handle visitor history recording with both modes",
+      "status": "pending",
+      "id": "create-helper-function"
+    },
+    {
+      "content": "Update getLocationHistory function to use the new helper",
+      "status": "pending",
+      "id": "update-getlocationhistory"
+    },
+    {
+      "content": "Update getLocation function to use the new helper",
+      "status": "pending",
+      "id": "update-getlocation"
+    }
+  ],
+  "overview": "Add a configuration option &#96;recordDetailedVisitorHistory&#96; (default: false) that controls whether visitor history records every access separately (ON) or updates existing entries for the same device (OFF)."
+}
+```
+Additional data:
+
+```json
+{
+  "reviewData": {
+    "status": "Requested",
+    "selectedOption": "none",
+    "isShowingInput": false
+  },
+  "planUri": "file:///Users/bietiekay/.cursor/plans/add_recorddetailedvisitorhistory_configuration_f1956c44.plan.md",
+  "hasOpenedEditor": true
+}
+```
+Result:
+
+```json
+{
+  "rejected": {}
+}
+```
+Status: **completed**
+
+
+</details>
+</tool-use>
+
+---
+
+_**User**_
+
+also update the default /example configurations with the new option
+
+---
+
+_**Agent (model default, mode Plan)**_
+
+
+Checking which configuration files need the new option:
+
+
+---
+
+<tool-use data-tool-type="unknown" data-tool-name="list_dir_v2">
+<details>
+<summary>Tool use: **list_dir_v2**</summary>
+
+
+Parameters:
+
+```json
+{
+  "targetDirectory": "/Users/bietiekay/code/miataru-server/config"
+}
+```
+Result:
+
+```json
+{
+  "directoryTreeRoot": {
+    "absPath": "/Users/bietiekay/code/miataru-server/config",
+    "childrenFiles": [
+      {
+        "name": "default.js"
+      },
+      {
+        "name": "test.js"
+      },
+      {
+        "name": "user.fooUser.js"
+      },
+      {
+        "name": "user.service.js"
+      }
+    ],
+    "childrenWereProcessed": true
+  }
+}
+```
+Status: **completed**
+
+
+</details>
+</tool-use>
+
+---
+
+<tool-use data-tool-type="read" data-tool-name="read_file_v2">
+<details><summary>Tool use: **read_file_v2** • Read file: /Users/bietiekay/code/miataru-server/config/test.js</summary>
+
+</details>
+</tool-use>
+
+---
+
+<tool-use data-tool-type="read" data-tool-name="read_file_v2">
+<details><summary>Tool use: **read_file_v2** • Read file: /Users/bietiekay/code/miataru-server/config/user.fooUser.js</summary>
+
+</details>
+</tool-use>
+
+---
+
+<tool-use data-tool-type="read" data-tool-name="read_file_v2">
+<details><summary>Tool use: **read_file_v2** • Read file: /Users/bietiekay/code/miataru-server/config/user.service.js</summary>
+
+</details>
+</tool-use>
+
+---
+
+
+Updating the plan to include all relevant configuration files:
+
+
+---
+
+<tool-use data-tool-type="read" data-tool-name="read_file_v2">
+<details><summary>Tool use: **read_file_v2** • Read file: /Users/bietiekay/code/miataru-server/.cursor/plans/add_recorddetailedvisitorhistory_configuration_f1956c44.plan.md</summary>
+
+</details>
+</tool-use>
+
+---
+
+
+Updating the plan to include all configuration files:
+
+
+---
+
+<tool-use data-tool-type="write" data-tool-name="edit_file_v2">
+
+<details><summary>Tool use: **edit_file_v2** • Edit file: /Users/bietiekay/code/miataru-server/.cursor/plans/add_recorddetailedvisitorhistory_configuration_f1956c44.plan.md</summary>
+
+</details>
+
+</tool-use>
+
+---
+
+<tool-use data-tool-type="write" data-tool-name="edit_file_v2">
+
+<details><summary>Tool use: **edit_file_v2** • Edit file: /Users/bietiekay/code/miataru-server/.cursor/plans/add_recorddetailedvisitorhistory_configuration_f1956c44.plan.md</summary>
+
+</details>
+
+</tool-use>
+
+---
+
+<tool-use data-tool-type="write" data-tool-name="edit_file_v2">
+
+<details><summary>Tool use: **edit_file_v2** • Edit file: /Users/bietiekay/code/miataru-server/.cursor/plans/add_recorddetailedvisitorhistory_configuration_f1956c44.plan.md</summary>
+
+</details>
+
+</tool-use>
+
+---
+
+
+Updated the plan to include all relevant configuration files. The new `recordDetailedVisitorHistory` option will be added to:
+
+1. **`config/default.js`** - Main default configuration
+2. **`config/test.js`** - Test configuration  
+3. **`config/user.service.js`** - Example service configuration
+
+All will be set to `false` (OFF mode) by default, matching the requirement. The plan is ready for implementation.
+
+---
+
+_**User**_
+
+extend the documentation with current and new options, explaining how to setup and what the options do
+
+---
+
+_**Agent (model default, mode Plan)**_
+
+
+Reviewing existing documentation to identify where to add the new configuration option:
+
+
+---
+
+<tool-use data-tool-type="read" data-tool-name="read_file_v2">
+<details><summary>Tool use: **read_file_v2** • Read file: /Users/bietiekay/code/miataru-server/README.md</summary>
+
+</details>
+</tool-use>
+
+---
+
+<tool-use data-tool-type="unknown" data-tool-name="semantic_search_full">
+<details>
+<summary>Tool use: **semantic_search_full**</summary>
+
+
+Parameters:
+
+```json
+{
+  "query": "Where is visitor history configuration documented?",
+  "topK": 10,
+  "explanation": ""
+}
+```
+Result:
+
+```json
+{
+  "codeResults": [
+    {
+      "codeBlock": {
+        "relativeWorkspacePath": "./.cursor/plans/add_recorddetailedvisitorhistory_configuration_f1956c44.plan.md",
+        "range": {
+          "startPosition": {},
+          "endPosition": {
+            "line": 50
+          }
+        },
+        "contents": "---\nname: Add recordDetailedVisitorHistory configuration\noverview: \"Add a configuration option &#96;recordDetailedVisitorHistory&#96; (default: false) that controls whether visitor history records every access separately (ON) or updates existing entries for the same device (OFF).\"\ntodos:\n  - id: add-config-option\n    content: \"Add recordDetailedVisitorHistory: false to config/default.js, config/test.js, and config/user.service.js\"\n    status: pending\n  - id: create-helper-function\n    content: Create helper function in location.js to handle visitor history recording with both modes\n    status: pending\n  - id: update-getlocationhistory\n    content: Update getLocationHistory function to use the new helper\n    status: pending\n  - id: update-getlocation\n    content: Update getLocation function to use the new helper\n    status: pending\n---\n\n# Add recordDetailedVisitorHistory Configuration Option\n\n## Overview\n\nAdd a configuration option &#96;recordDetailedVisitorHistory&#96; that controls how visitor history is recorded. When OFF (default), each accessing device is only recorded once and updated on subsequent accesses. When ON, every access is recorded as a separate entry (current behavior).\n\n## Implementation Details\n\n### 1. Configuration\n\nUpdate the following configuration files to include the new option:\n\n- **&#96;config/default.js&#96;** - Main default configuration\n  - Add &#96;recordDetailedVisitorHistory: false&#96; to the default configuration object\n  - This will be the default value (OFF mode)\n\n- **&#96;config/test.js&#96;** - Test configuration\n  - Add &#96;recordDetailedVisitorHistory: false&#96; for consistency\n\n- **&#96;config/user.service.js&#96;** - Example service configuration\n  - Add &#96;recordDetailedVisitorHistory: false&#96; as an example configuration option\n\n### 2. Visitor History Recording Logic\n\nThe visitor history is recorded in two places in &#96;lib/routes/location/v1/location.js&#96;:\n\n#### Location 1: &#96;getLocationHistory&#96; function (lines 75-96)\n\nCurrently uses &#96;db.lpush()&#96; to always add a new entry.\n\n#### Location 2: &#96;getLocation&#96; function (lines 225-246)  ",
+        "signatures": {},
+        "detailedLines": [
+          {
+            "text": "---",
+            "lineNumber": 1
+          },
+          {
+            "text": "name: Add recordDetailedVisitorHistory configuration",
+            "lineNumber": 2
+          },
+          {
+            "text": "overview: \"Add a configuration option &#96;recordDetailedVisitorHistory&#96; (default: false) that controls whether visitor history records every access separately (ON) or updates existing entries for the same device (OFF).\"",
+            "lineNumber": 3
+          },
+          {
+            "text": "todos:",
+            "lineNumber": 4
+          },
+          {
+            "text": "  - id: add-config-option",
+            "lineNumber": 5
+          },
+          {
+            "text": "    content: \"Add recordDetailedVisitorHistory: false to config/default.js, config/test.js, and config/user.service.js\"",
+            "lineNumber": 6
+          },
+          {
+            "text": "    status: pending",
+            "lineNumber": 7
+          },
+          {
+            "text": "  - id: create-helper-function",
+            "lineNumber": 8
+          },
+          {
+            "text": "    content: Create helper function in location.js to handle visitor history recording with both modes",
+            "lineNumber": 9
+          },
+          {
+            "text": "    status: pending",
+            "lineNumber": 10
+          },
+          {
+            "text": "  - id: update-getlocationhistory",
+            "lineNumber": 11
+          },
+          {
+            "text": "    content: Update getLocationHistory function to use the new helper",
+            "lineNumber": 12
+          },
+          {
+            "text": "    status: pending",
+            "lineNumber": 13
+          },
+          {
+            "text": "  - id: update-getlocation",
+            "lineNumber": 14
+          },
+          {
+            "text": "    content: Update getLocation function to use the new helper",
+            "lineNumber": 15
+          },
+          {
+            "text": "    status: pending",
+            "lineNumber": 16
+          },
+          {
+            "text": "---",
+            "lineNumber": 17
+          },
+          {
+            "lineNumber": 18
+          },
+          {
+            "text": "# Add recordDetailedVisitorHistory Configuration Option",
+            "lineNumber": 19
+          },
+          {
+            "lineNumber": 20
+          },
+          {
+            "text": "## Overview",
+            "lineNumber": 21
+          },
+          {
+            "lineNumber": 22
+          },
+          {
+            "text": "Add a configuration option &#96;recordDetailedVisitorHistory&#96; that controls how visitor history is recorded. When OFF (default), each accessing device is only recorded once and updated on subsequent accesses. When ON, every access is recorded as a separate entry (current behavior).",
+            "lineNumber": 23
+          },
+          {
+            "lineNumber": 24
+          },
+          {
+            "text": "## Implementation Details",
+            "lineNumber": 25
+          },
+          {
+            "lineNumber": 26
+          },
+          {
+            "text": "### 1. Configuration",
+            "lineNumber": 27
+          },
+          {
+            "lineNumber": 28
+          },
+          {
+            "text": "Update the following configuration files to include the new option:",
+            "lineNumber": 29
+          },
+          {
+            "lineNumber": 30
+          },
+          {
+            "text": "- **&#96;config/default.js&#96;** - Main default configuration",
+            "lineNumber": 31
+          },
+          {
+            "text": "  - Add &#96;recordDetailedVisitorHistory: false&#96; to the default configuration object",
+            "lineNumber": 32
+          },
+          {
+            "text": "  - This will be the default value (OFF mode)",
+            "lineNumber": 33
+          },
+          {
+            "lineNumber": 34
+          },
+          {
+            "text": "- **&#96;config/test.js&#96;** - Test configuration",
+            "lineNumber": 35
+          },
+          {
+            "text": "  - Add &#96;recordDetailedVisitorHistory: false&#96; for consistency",
+            "lineNumber": 36
+          },
+          {
+            "lineNumber": 37
+          },
+          {
+            "text": "- **&#96;config/user.service.js&#96;** - Example service configuration",
+            "lineNumber": 38
+          },
+          {
+            "text": "  - Add &#96;recordDetailedVisitorHistory: false&#96; as an example configuration option",
+            "lineNumber": 39
+          },
+          {
+            "lineNumber": 40
+          },
+          {
+            "text": "### 2. Visitor History Recording Logic",
+            "lineNumber": 41
+          },
+          {
+            "lineNumber": 42
+          },
+          {
+            "text": "The visitor history is recorded in two places in &#96;lib/routes/location/v1/location.js&#96;:",
+            "lineNumber": 43
+          },
+          {
+            "lineNumber": 44
+          },
+          {
+            "text": "#### Location 1: &#96;getLocationHistory&#96; function (lines 75-96)",
+            "lineNumber": 45
+          },
+          {
+            "lineNumber": 46
+          },
+          {
+            "text": "Currently uses &#96;db.lpush()&#96; to always add a new entry.",
+            "lineNumber": 47
+          },
+          {
+            "lineNumber": 48
+          },
+          {
+            "text": "#### Location 2: &#96;getLocation&#96; function (lines 225-246)  ",
+            "lineNumber": 49
+          }
+        ]
+      },
+      "score": 0.47323259711265564
+    },
+    {
+      "codeBlock": {
+        "relativeWorkspacePath": "./.cursor/plans/add_recorddetailedvisitorhistory_configuration_f1956c44.plan.md",
+        "range": {
+          "startPosition": {
+            "line": 48
+          },
+          "endPosition": {
+            "line": 106
+          }
+        },
+        "contents": "#### Location 2: &#96;getLocation&#96; function (lines 225-246)  \n\nCurrently uses &#96;db.lpush()&#96; to always add a new entry.\n\n### 3. Implementation Strategy\n\nWhen &#96;recordDetailedVisitorHistory&#96; is **false** (OFF mode):\n\n1. Read the entire visitor list using &#96;db.lrange()&#96;\n2. Parse all JSON entries\n3. Filter out any existing entry with the same &#96;DeviceID&#96; as the new visitor\n4. Delete the entire list using &#96;db.del()&#96;\n5. Re-add all filtered entries plus the new visitor entry using &#96;db.lpush()&#96;\n6. Trim to max size using &#96;db.ltrim()&#96;\n\nWhen &#96;recordDetailedVisitorHistory&#96; is **true** (ON mode):\n\n- Keep current behavior: use &#96;db.lpush()&#96; directly and trim\n\n### 4. Code Structure\n\nCreate a helper function to handle visitor history recording that:\n\n- Takes the visit key, visitor object, and configuration as parameters\n- Checks &#96;configuration.recordDetailedVisitorHistory&#96;\n- Implements the appropriate logic based on the configuration value\n- Handles errors appropriately\n\n### 5. Files to Modify\n\n1. **Configuration Files**\n\n   - **&#96;config/default.js&#96;** - Add &#96;recordDetailedVisitorHistory: false&#96; configuration option\n   - **&#96;config/test.js&#96;** - Add &#96;recordDetailedVisitorHistory: false&#96; configuration option\n   - **&#96;config/user.service.js&#96;** - Add &#96;recordDetailedVisitorHistory: false&#96; configuration option as example\n\n2. **&#96;lib/routes/location/v1/location.js&#96;**\n\n   - Extract visitor history recording logic into a helper function\n   - Update &#96;getLocationHistory&#96; to use the helper\n   - Update &#96;getLocation&#96; to use the helper\n   - The helper should check &#96;configuration.recordDetailedVisitorHistory&#96; and implement both modes\n\n### 6. Data Flow\n\n&#96;&#96;&#96;\nAccess Location → Check recordDetailedVisitorHistory config\n  ├─ true:  lpush new entry → trim (current behavior)\n  └─ false: lrange existing → filter by DeviceID → del → lpush filtered + new → trim\n&#96;&#96;&#96;\n\n### 7. Edge Cases to Handle\n\n- Empty visitor list (first visitor)\n- Visitor list at max capacity\n- JSON parsing errors when reading existing entries\n- Redis operation errors\n- Multiple concurrent accesses (handled by existing Redis operations)",
+        "signatures": {},
+        "detailedLines": [
+          {
+            "text": "#### Location 2: &#96;getLocation&#96; function (lines 225-246)  ",
+            "lineNumber": 49
+          },
+          {
+            "lineNumber": 50
+          },
+          {
+            "text": "Currently uses &#96;db.lpush()&#96; to always add a new entry.",
+            "lineNumber": 51
+          },
+          {
+            "lineNumber": 52
+          },
+          {
+            "text": "### 3. Implementation Strategy",
+            "lineNumber": 53
+          },
+          {
+            "lineNumber": 54
+          },
+          {
+            "text": "When &#96;recordDetailedVisitorHistory&#96; is **false** (OFF mode):",
+            "lineNumber": 55
+          },
+          {
+            "lineNumber": 56
+          },
+          {
+            "text": "1. Read the entire visitor list using &#96;db.lrange()&#96;",
+            "lineNumber": 57
+          },
+          {
+            "text": "2. Parse all JSON entries",
+            "lineNumber": 58
+          },
+          {
+            "text": "3. Filter out any existing entry with the same &#96;DeviceID&#96; as the new visitor",
+            "lineNumber": 59
+          },
+          {
+            "text": "4. Delete the entire list using &#96;db.del()&#96;",
+            "lineNumber": 60
+          },
+          {
+            "text": "5. Re-add all filtered entries plus the new visitor entry using &#96;db.lpush()&#96;",
+            "lineNumber": 61
+          },
+          {
+            "text": "6. Trim to max size using &#96;db.ltrim()&#96;",
+            "lineNumber": 62
+          },
+          {
+            "lineNumber": 63
+          },
+          {
+            "text": "When &#96;recordDetailedVisitorHistory&#96; is **true** (ON mode):",
+            "lineNumber": 64
+          },
+          {
+            "lineNumber": 65
+          },
+          {
+            "text": "- Keep current behavior: use &#96;db.lpush()&#96; directly and trim",
+            "lineNumber": 66
+          },
+          {
+            "lineNumber": 67
+          },
+          {
+            "text": "### 4. Code Structure",
+            "lineNumber": 68
+          },
+          {
+            "lineNumber": 69
+          },
+          {
+            "text": "Create a helper function to handle visitor history recording that:",
+            "lineNumber": 70
+          },
+          {
+            "lineNumber": 71
+          },
+          {
+            "text": "- Takes the visit key, visitor object, and configuration as parameters",
+            "lineNumber": 72
+          },
+          {
+            "text": "- Checks &#96;configuration.recordDetailedVisitorHistory&#96;",
+            "lineNumber": 73
+          },
+          {
+            "text": "- Implements the appropriate logic based on the configuration value",
+            "lineNumber": 74
+          },
+          {
+            "text": "- Handles errors appropriately",
+            "lineNumber": 75
+          },
+          {
+            "lineNumber": 76
+          },
+          {
+            "text": "### 5. Files to Modify",
+            "lineNumber": 77
+          },
+          {
+            "lineNumber": 78
+          },
+          {
+            "text": "1. **Configuration Files**",
+            "lineNumber": 79
+          },
+          {
+            "lineNumber": 80
+          },
+          {
+            "text": "   - **&#96;config/default.js&#96;** - Add &#96;recordDetailedVisitorHistory: false&#96; configuration option",
+            "lineNumber": 81
+          },
+          {
+            "text": "   - **&#96;config/test.js&#96;** - Add &#96;recordDetailedVisitorHistory: false&#96; configuration option",
+            "lineNumber": 82
+          },
+          {
+            "text": "   - **&#96;config/user.service.js&#96;** - Add &#96;recordDetailedVisitorHistory: false&#96; configuration option as example",
+            "lineNumber": 83
+          },
+          {
+            "lineNumber": 84
+          },
+          {
+            "text": "2. **&#96;lib/routes/location/v1/location.js&#96;**",
+            "lineNumber": 85
+          },
+          {
+            "lineNumber": 86
+          },
+          {
+            "text": "   - Extract visitor history recording logic into a helper function",
+            "lineNumber": 87
+          },
+          {
+            "text": "   - Update &#96;getLocationHistory&#96; to use the helper",
+            "lineNumber": 88
+          },
+          {
+            "text": "   - Update &#96;getLocation&#96; to use the helper",
+            "lineNumber": 89
+          },
+          {
+            "text": "   - The helper should check &#96;configuration.recordDetailedVisitorHistory&#96; and implement both modes",
+            "lineNumber": 90
+          },
+          {
+            "lineNumber": 91
+          },
+          {
+            "text": "### 6. Data Flow",
+            "lineNumber": 92
+          },
+          {
+            "lineNumber": 93
+          },
+          {
+            "text": "&#96;&#96;&#96;",
+            "lineNumber": 94
+          },
+          {
+            "text": "Access Location → Check recordDetailedVisitorHistory config",
+            "lineNumber": 95
+          },
+          {
+            "text": "  ├─ true:  lpush new entry → trim (current behavior)",
+            "lineNumber": 96
+          },
+          {
+            "text": "  └─ false: lrange existing → filter by DeviceID → del → lpush filtered + new → trim",
+            "lineNumber": 97
+          },
+          {
+            "text": "&#96;&#96;&#96;",
+            "lineNumber": 98
+          },
+          {
+            "lineNumber": 99
+          },
+          {
+            "text": "### 7. Edge Cases to Handle",
+            "lineNumber": 100
+          },
+          {
+            "lineNumber": 101
+          },
+          {
+            "text": "- Empty visitor list (first visitor)",
+            "lineNumber": 102
+          },
+          {
+            "text": "- Visitor list at max capacity",
+            "lineNumber": 103
+          },
+          {
+            "text": "- JSON parsing errors when reading existing entries",
+            "lineNumber": 104
+          },
+          {
+            "text": "- Redis operation errors",
+            "lineNumber": 105
+          },
+          {
+            "text": "- Multiple concurrent accesses (handled by existing Redis operations)",
+            "lineNumber": 106
+          }
+        ]
+      },
+      "score": 0.37363401055336
+    },
+    {
+      "codeBlock": {
+        "relativeWorkspacePath": "./config/user.service.js",
+        "range": {
+          "startPosition": {
+            "column": 84
+          },
+          "endPosition": {
+            "line": 37,
+            "column": 2
+          }
+        },
+        "contents": "//the sole purpose is to feature each and every relevant key and to provide a \"ready-to-go\" configuration\n//so that a developer can run the application locally\n\nmodule.exports = {\n\n    //which port should the server bind to\n    port: 8080,\n    listenip: \"127.0.0.1\",\n\n    //configuration for the redis database\n    //type indicates if fakeredis should be used (testing and devlopment)\n    // or if a real redis db should be queried (production)\n    database: {\n        type: 'real' //mock|real\n        //for the mock type we're done configuring, however a real server needs some more love.\n        //use this parameters, e.g. in your local setup or for production\n        /*\n        host: 'localhost',\n        port: 6379,\n        userName: 'root',\n        password: ''\n        */\n    },\n\n    //how many items should be saved at max, keep in mind that this is +1 (starts with 0)\n    maximumNumberOfHistoryItems: 10023,\n\n    // how many visitors to a device last and history call do we store this is +1 (starts with 0)\n    maximumNumberOfLocationVistors: 10,\n\n    // if there's an unknown visitor (no deviceID given) do you want it still to be added to the visitor history?\n    addEmptyVisitorDeviceIDtoVisitorHistory: true,\n\n    //namespacing for redis keys\n    redisMiataruNamespace: \"miad\"\n\n};",
+        "signatures": {},
+        "detailedLines": [
+          {
+            "text": "//the sole purpose is to feature each and every relevant key and to provide a \"ready-to-go\" configuration",
+            "lineNumber": 2
+          },
+          {
+            "text": "//so that a developer can run the application locally",
+            "lineNumber": 3
+          },
+          {
+            "lineNumber": 4
+          },
+          {
+            "text": "module.exports = {",
+            "lineNumber": 5
+          },
+          {
+            "lineNumber": 6
+          },
+          {
+            "text": "    //which port should the server bind to",
+            "lineNumber": 7
+          },
+          {
+            "text": "    port: 8080,",
+            "lineNumber": 8
+          },
+          {
+            "text": "    listenip: \"127.0.0.1\",",
+            "lineNumber": 9
+          },
+          {
+            "lineNumber": 10
+          },
+          {
+            "text": "    //configuration for the redis database",
+            "lineNumber": 11
+          },
+          {
+            "text": "    //type indicates if fakeredis should be used (testing and devlopment)",
+            "lineNumber": 12
+          },
+          {
+            "text": "    // or if a real redis db should be queried (production)",
+            "lineNumber": 13
+          },
+          {
+            "text": "    database: {",
+            "lineNumber": 14
+          },
+          {
+            "text": "        type: 'real' //mock|real",
+            "lineNumber": 15
+          },
+          {
+            "text": "        //for the mock type we're done configuring, however a real server needs some more love.",
+            "lineNumber": 16
+          },
+          {
+            "text": "        //use this parameters, e.g. in your local setup or for production",
+            "lineNumber": 17
+          },
+          {
+            "text": "        /*",
+            "lineNumber": 18
+          },
+          {
+            "text": "        host: 'localhost',",
+            "lineNumber": 19
+          },
+          {
+            "text": "        port: 6379,",
+            "lineNumber": 20
+          },
+          {
+            "text": "        userName: 'root',",
+            "lineNumber": 21
+          },
+          {
+            "text": "        password: ''",
+            "lineNumber": 22
+          },
+          {
+            "text": "        */",
+            "lineNumber": 23
+          },
+          {
+            "text": "    },",
+            "lineNumber": 24
+          },
+          {
+            "lineNumber": 25
+          },
+          {
+            "text": "    //how many items should be saved at max, keep in mind that this is +1 (starts with 0)",
+            "lineNumber": 26
+          },
+          {
+            "text": "    maximumNumberOfHistoryItems: 10023,",
+            "lineNumber": 27
+          },
+          {
+            "lineNumber": 28
+          },
+          {
+            "text": "    // how many visitors to a device last and history call do we store this is +1 (starts with 0)",
+            "lineNumber": 29
+          },
+          {
+            "text": "    maximumNumberOfLocationVistors: 10,",
+            "lineNumber": 30
+          },
+          {
+            "lineNumber": 31
+          },
+          {
+            "text": "    // if there's an unknown visitor (no deviceID given) do you want it still to be added to the visitor history?",
+            "lineNumber": 32
+          },
+          {
+            "text": "    addEmptyVisitorDeviceIDtoVisitorHistory: true,",
+            "lineNumber": 33
+          },
+          {
+            "lineNumber": 34
+          },
+          {
+            "text": "    //namespacing for redis keys",
+            "lineNumber": 35
+          },
+          {
+            "text": "    redisMiataruNamespace: \"miad\"",
+            "lineNumber": 36
+          },
+          {
+            "lineNumber": 37
+          },
+          {
+            "text": "};",
+            "lineNumber": 38
+          }
+        ]
+      },
+      "score": 0.33725446462631226
+    },
+    {
+      "codeBlock": {
+        "relativeWorkspacePath": "./config/default.js",
+        "range": {
+          "startPosition": {
+            "column": 84
+          },
+          "endPosition": {
+            "line": 65,
+            "column": 2
+          }
+        },
+        "contents": "//the sole purpose is to feature each and every relevant key and to provide a \"ready-to-go\" configuration\n//so that a developer can run the application locally\n\nmodule.exports = {\n\n    //which port should the server bind to, chosing 8090 here because normally the\n    port: 8090,\n\n    //the ip that should be used\n    listenip: \"0.0.0.0\",\n\n    //configuration for the redis database\n    //type indicates if fakeredis should be used (testing and devlopment)\n    // or if a real redis db should be queried (production)\n    database: {\n        //type: 'mock' //mock - to use real redis comment this line and uncomment the next lines\n        //for the mock type we're done configuring, however a real server needs some more love.\n        //use this parameters, e.g. in your local setup or for production\n        type: 'mock', //mock|real\n        host: 'localhost',\n        port: 6379,\n        userName: '',\n        password: ''\n    },\n\n    logging: {\n        logLevel: 'info'\n    },\n\n    //how many items should be saved at max, keep in mind that this is +1 (starts with 0)\n    maximumNumberOfHistoryItems: 1023,\n\n    // how many visitors to a device last and history call do we store this is +1 (starts with 0)\n    maximumNumberOfLocationVistors: 10,\n\n    // if there's an unknown visitor (no deviceID given) do you want it still to be added to the visitor history?\n    addEmptyVisitorDeviceIDtoVisitorHistory: false,\n\n    //namespacing for redis keys\n    redisMiataruNamespace: \"miad\",\n\n    //CORS configuration\n    cors: {\n        allowedOrigins: [\"http://localhost:3000\", \"http://localhost:8080\", \"https://miataru.com\"]\n    },\n\n    rateLimiting: {\n        http: {\n            enabled: true,\n            maxConcurrentPerIp: 10,\n            maxQueuePerIp: 50,\n            queueTimeoutMs: 0,\n            rejectionStatusCode: 429,\n            rejectionMessage: 'Too Many Requests',\n            timeoutMessage: 'Request timed out while waiting in rate limit queue'\n        },\n        redis: {\n            enabled: true,\n            maxConcurrent: 50,\n            maxQueue: 100,\n            queueTimeoutMs: 30000\n        }\n    }\n\n};",
+        "signatures": {},
+        "detailedLines": [
+          {
+            "text": "//the sole purpose is to feature each and every relevant key and to provide a \"ready-to-go\" configuration",
+            "lineNumber": 2
+          },
+          {
+            "text": "//so that a developer can run the application locally",
+            "lineNumber": 3
+          },
+          {
+            "lineNumber": 4
+          },
+          {
+            "text": "module.exports = {",
+            "lineNumber": 5
+          },
+          {
+            "lineNumber": 6
+          },
+          {
+            "text": "    //which port should the server bind to, chosing 8090 here because normally the",
+            "lineNumber": 7
+          },
+          {
+            "text": "    port: 8090,",
+            "lineNumber": 8
+          },
+          {
+            "lineNumber": 9
+          },
+          {
+            "text": "    //the ip that should be used",
+            "lineNumber": 10
+          },
+          {
+            "text": "    listenip: \"0.0.0.0\",",
+            "lineNumber": 11
+          },
+          {
+            "lineNumber": 12
+          },
+          {
+            "text": "    //configuration for the redis database",
+            "lineNumber": 13
+          },
+          {
+            "text": "    //type indicates if fakeredis should be used (testing and devlopment)",
+            "lineNumber": 14
+          },
+          {
+            "text": "    // or if a real redis db should be queried (production)",
+            "lineNumber": 15
+          },
+          {
+            "text": "    database: {",
+            "lineNumber": 16
+          },
+          {
+            "text": "        //type: 'mock' //mock - to use real redis comment this line and uncomment the next lines",
+            "lineNumber": 17
+          },
+          {
+            "text": "        //for the mock type we're done configuring, however a real server needs some more love.",
+            "lineNumber": 18
+          },
+          {
+            "text": "        //use this parameters, e.g. in your local setup or for production",
+            "lineNumber": 19
+          },
+          {
+            "text": "        type: 'mock', //mock|real",
+            "lineNumber": 20
+          },
+          {
+            "text": "        host: 'localhost',",
+            "lineNumber": 21
+          },
+          {
+            "text": "        port: 6379,",
+            "lineNumber": 22
+          },
+          {
+            "text": "        userName: '',",
+            "lineNumber": 23
+          },
+          {
+            "text": "        password: ''",
+            "lineNumber": 24
+          },
+          {
+            "text": "    },",
+            "lineNumber": 25
+          },
+          {
+            "lineNumber": 26
+          },
+          {
+            "text": "    logging: {",
+            "lineNumber": 27
+          },
+          {
+            "text": "        logLevel: 'info'",
+            "lineNumber": 28
+          },
+          {
+            "text": "    },",
+            "lineNumber": 29
+          },
+          {
+            "lineNumber": 30
+          },
+          {
+            "text": "    //how many items should be saved at max, keep in mind that this is +1 (starts with 0)",
+            "lineNumber": 31
+          },
+          {
+            "text": "    maximumNumberOfHistoryItems: 1023,",
+            "lineNumber": 32
+          },
+          {
+            "lineNumber": 33
+          },
+          {
+            "text": "    // how many visitors to a device last and history call do we store this is +1 (starts with 0)",
+            "lineNumber": 34
+          },
+          {
+            "text": "    maximumNumberOfLocationVistors: 10,",
+            "lineNumber": 35
+          },
+          {
+            "lineNumber": 36
+          },
+          {
+            "text": "    // if there's an unknown visitor (no deviceID given) do you want it still to be added to the visitor history?",
+            "lineNumber": 37
+          },
+          {
+            "text": "    addEmptyVisitorDeviceIDtoVisitorHistory: false,",
+            "lineNumber": 38
+          },
+          {
+            "lineNumber": 39
+          },
+          {
+            "text": "    //namespacing for redis keys",
+            "lineNumber": 40
+          },
+          {
+            "text": "    redisMiataruNamespace: \"miad\",",
+            "lineNumber": 41
+          },
+          {
+            "lineNumber": 42
+          },
+          {
+            "text": "    //CORS configuration",
+            "lineNumber": 43
+          },
+          {
+            "text": "    cors: {",
+            "lineNumber": 44
+          },
+          {
+            "text": "        allowedOrigins: [\"http://localhost:3000\", \"http://localhost:8080\", \"https://miataru.com\"]",
+            "lineNumber": 45
+          },
+          {
+            "text": "    },",
+            "lineNumber": 46
+          },
+          {
+            "lineNumber": 47
+          },
+          {
+            "text": "    rateLimiting: {",
+            "lineNumber": 48
+          },
+          {
+            "text": "        http: {",
+            "lineNumber": 49
+          },
+          {
+            "text": "            enabled: true,",
+            "lineNumber": 50
+          },
+          {
+            "text": "            maxConcurrentPerIp: 10,",
+            "lineNumber": 51
+          },
+          {
+            "text": "            maxQueuePerIp: 50,",
+            "lineNumber": 52
+          },
+          {
+            "text": "            queueTimeoutMs: 0,",
+            "lineNumber": 53
+          },
+          {
+            "text": "            rejectionStatusCode: 429,",
+            "lineNumber": 54
+          },
+          {
+            "text": "            rejectionMessage: 'Too Many Requests',",
+            "lineNumber": 55
+          },
+          {
+            "text": "            timeoutMessage: 'Request timed out while waiting in rate limit queue'",
+            "lineNumber": 56
+          },
+          {
+            "text": "        },",
+            "lineNumber": 57
+          },
+          {
+            "text": "        redis: {",
+            "lineNumber": 58
+          },
+          {
+            "text": "            enabled: true,",
+            "lineNumber": 59
+          },
+          {
+            "text": "            maxConcurrent: 50,",
+            "lineNumber": 60
+          },
+          {
+            "text": "            maxQueue: 100,",
+            "lineNumber": 61
+          },
+          {
+            "text": "            queueTimeoutMs: 30000",
+            "lineNumber": 62
+          },
+          {
+            "text": "        }",
+            "lineNumber": 63
+          },
+          {
+            "text": "    }",
+            "lineNumber": 64
+          },
+          {
+            "lineNumber": 65
+          },
+          {
+            "text": "};",
+            "lineNumber": 66
+          }
+        ]
+      },
+      "score": 0.31564998626708984
+    },
+    {
+      "codeBlock": {
+        "relativeWorkspacePath": "./README.md",
+        "range": {
+          "startPosition": {
+            "line": 31
+          },
+          "endPosition": {
+            "line": 85
+          }
+        },
+        "contents": "- **POST** &#96;/v1/GetLocationHistory&#96; - Retrieve location history\n- **POST** &#96;/v1/GetVisitorHistory&#96; - Retrieve visitor history\n- **POST** &#96;/v1/DeleteLocation&#96; - Delete all location data for a device\n\n### Legacy API (Backward Compatibility)\n- **POST** &#96;/UpdateLocation&#96; - Store location data\n- **POST** &#96;/GetLocation&#96; - Retrieve current location\n- **POST** &#96;/GetLocationGeoJSON&#96; - Get location in GeoJSON format\n- **GET** &#96;/GetLocationGeoJSON/:id?&#96; - Get location in GeoJSON format via GET\n- **POST** &#96;/GetLocationHistory&#96; - Retrieve location history\n- **POST** &#96;/GetVisitorHistory&#96; - Retrieve visitor history\n- **POST** &#96;/DeleteLocation&#96; - Delete all location data for a device\n\n## Run the Server\n\nCheck out the repo:  \n&#96;git clone git@github.com:miataru/miataru-server.git&#96;\n\nInstall dependencies:  \n&#96;npm install&#96;\n\nRun the tests:  \n&#96;npm run test:all&#96; (or &#96;make run-all-tests&#96;)\n\nConfiguration:\nAdjust the configuration in &#96;./config/&#96; or add your own\n\nStart Server:\n&#96;node server.js&#96;\n\nThe server will, in the default configuration, listen on localhost port 8090. To do some test requests on the commandline, do this:\n\n### Basic Examples\n\n**Set a location:**\n&#96;&#96;&#96;bash\ncurl -H 'Content-Type: application/json' -X POST 'http://localhost:8090/v1/UpdateLocation' \\\n  -d '{\"MiataruConfig\":{\"EnableLocationHistory\":\"True\",\"LocationDataRetentionTime\":\"15\"},\"MiataruLocation\":[{\"Device\":\"7b8e6e0ee5296db345162dc2ef652c1350761823\",\"Timestamp\":\"1376735651302\",\"Longitude\":\"10.837502\",\"Latitude\":\"49.828925\",\"HorizontalAccuracy\":\"50.00\"}]}'\n&#96;&#96;&#96;\n\n**Retrieve a location:**\n&#96;&#96;&#96;bash\ncurl -H 'Content-Type: application/json' -X POST 'http://localhost:8090/v1/GetLocation' \\\n  -d '{\"MiataruGetLocation\":[{\"Device\":\"7b8e6e0ee5296db345162dc2ef652c1350761823\"}]}'\n&#96;&#96;&#96;\n\n**Delete all location data for a device:**\n&#96;&#96;&#96;bash\ncurl -H 'Content-Type: application/json' -X POST 'http://localhost:8090/v1/DeleteLocation' \\\n  -d '{\"MiataruDeleteLocation\":{\"Device\":\"7b8e6e0ee5296db345162dc2ef652c1350761823\"}}'\n&#96;&#96;&#96;\n\n**Get location in GeoJSON format:**\n&#96;&#96;&#96;bash",
+        "signatures": {},
+        "detailedLines": [
+          {
+            "text": "- **POST** &#96;/v1/GetLocationHistory&#96; - Retrieve location history",
+            "lineNumber": 32
+          },
+          {
+            "text": "- **POST** &#96;/v1/GetVisitorHistory&#96; - Retrieve visitor history",
+            "lineNumber": 33
+          },
+          {
+            "text": "- **POST** &#96;/v1/DeleteLocation&#96; - Delete all location data for a device",
+            "lineNumber": 34
+          },
+          {
+            "lineNumber": 35
+          },
+          {
+            "text": "### Legacy API (Backward Compatibility)",
+            "lineNumber": 36
+          },
+          {
+            "text": "- **POST** &#96;/UpdateLocation&#96; - Store location data",
+            "lineNumber": 37
+          },
+          {
+            "text": "- **POST** &#96;/GetLocation&#96; - Retrieve current location",
+            "lineNumber": 38
+          },
+          {
+            "text": "- **POST** &#96;/GetLocationGeoJSON&#96; - Get location in GeoJSON format",
+            "lineNumber": 39
+          },
+          {
+            "text": "- **GET** &#96;/GetLocationGeoJSON/:id?&#96; - Get location in GeoJSON format via GET",
+            "lineNumber": 40
+          },
+          {
+            "text": "- **POST** &#96;/GetLocationHistory&#96; - Retrieve location history",
+            "lineNumber": 41
+          },
+          {
+            "text": "- **POST** &#96;/GetVisitorHistory&#96; - Retrieve visitor history",
+            "lineNumber": 42
+          },
+          {
+            "text": "- **POST** &#96;/DeleteLocation&#96; - Delete all location data for a device",
+            "lineNumber": 43
+          },
+          {
+            "lineNumber": 44
+          },
+          {
+            "text": "## Run the Server",
+            "lineNumber": 45
+          },
+          {
+            "lineNumber": 46
+          },
+          {
+            "text": "Check out the repo:  ",
+            "lineNumber": 47
+          },
+          {
+            "text": "&#96;git clone git@github.com:miataru/miataru-server.git&#96;",
+            "lineNumber": 48
+          },
+          {
+            "lineNumber": 49
+          },
+          {
+            "text": "Install dependencies:  ",
+            "lineNumber": 50
+          },
+          {
+            "text": "&#96;npm install&#96;",
+            "lineNumber": 51
+          },
+          {
+            "lineNumber": 52
+          },
+          {
+            "text": "Run the tests:  ",
+            "lineNumber": 53
+          },
+          {
+            "text": "&#96;npm run test:all&#96; (or &#96;make run-all-tests&#96;)",
+            "lineNumber": 54
+          },
+          {
+            "lineNumber": 55
+          },
+          {
+            "text": "Configuration:",
+            "lineNumber": 56
+          },
+          {
+            "text": "Adjust the configuration in &#96;./config/&#96; or add your own",
+            "lineNumber": 57
+          },
+          {
+            "lineNumber": 58
+          },
+          {
+            "text": "Start Server:",
+            "lineNumber": 59
+          },
+          {
+            "text": "&#96;node server.js&#96;",
+            "lineNumber": 60
+          },
+          {
+            "lineNumber": 61
+          },
+          {
+            "text": "The server will, in the default configuration, listen on localhost port 8090. To do some test requests on the commandline, do this:",
+            "lineNumber": 62
+          },
+          {
+            "lineNumber": 63
+          },
+          {
+            "text": "### Basic Examples",
+            "lineNumber": 64
+          },
+          {
+            "lineNumber": 65
+          },
+          {
+            "text": "**Set a location:**",
+            "lineNumber": 66
+          },
+          {
+            "text": "&#96;&#96;&#96;bash",
+            "lineNumber": 67
+          },
+          {
+            "text": "curl -H 'Content-Type: application/json' -X POST 'http://localhost:8090/v1/UpdateLocation' \\",
+            "lineNumber": 68
+          },
+          {
+            "text": "  -d '{\"MiataruConfig\":{\"EnableLocationHistory\":\"True\",\"LocationDataRetentionTime\":\"15\"},\"MiataruLocation\":[{\"Device\":\"7b8e6e0ee5296db345162dc2ef652c1350761823\",\"Timestamp\":\"1376735651302\",\"Longitude\":\"10.837502\",\"Latitude\":\"49.828925\",\"HorizontalAccuracy\":\"50.00\"}]}'",
+            "lineNumber": 69
+          },
+          {
+            "text": "&#96;&#96;&#96;",
+            "lineNumber": 70
+          },
+          {
+            "lineNumber": 71
+          },
+          {
+            "text": "**Retrieve a location:**",
+            "lineNumber": 72
+          },
+          {
+            "text": "&#96;&#96;&#96;bash",
+            "lineNumber": 73
+          },
+          {
+            "text": "curl -H 'Content-Type: application/json' -X POST 'http://localhost:8090/v1/GetLocation' \\",
+            "lineNumber": 74
+          },
+          {
+            "text": "  -d '{\"MiataruGetLocation\":[{\"Device\":\"7b8e6e0ee5296db345162dc2ef652c1350761823\"}]}'",
+            "lineNumber": 75
+          },
+          {
+            "text": "&#96;&#96;&#96;",
+            "lineNumber": 76
+          },
+          {
+            "lineNumber": 77
+          },
+          {
+            "text": "**Delete all location data for a device:**",
+            "lineNumber": 78
+          },
+          {
+            "text": "&#96;&#96;&#96;bash",
+            "lineNumber": 79
+          },
+          {
+            "text": "curl -H 'Content-Type: application/json' -X POST 'http://localhost:8090/v1/DeleteLocation' \\",
+            "lineNumber": 80
+          },
+          {
+            "text": "  -d '{\"MiataruDeleteLocation\":{\"Device\":\"7b8e6e0ee5296db345162dc2ef652c1350761823\"}}'",
+            "lineNumber": 81
+          },
+          {
+            "text": "&#96;&#96;&#96;",
+            "lineNumber": 82
+          },
+          {
+            "lineNumber": 83
+          },
+          {
+            "text": "**Get location in GeoJSON format:**",
+            "lineNumber": 84
+          },
+          {
+            "text": "&#96;&#96;&#96;bash",
+            "lineNumber": 85
+          }
+        ]
+      },
+      "score": 0.30672430992126465
+    },
+    {
+      "codeBlock": {
+        "relativeWorkspacePath": "./lib/models/RequestConfig.js",
+        "range": {
+          "startPosition": {},
+          "endPosition": {
+            "line": 28,
+            "column": 47
+          }
+        },
+        "contents": "var errors = require('../errors');\n\nfunction RequestConfig(data) {\n    data = data || {};\n\n    this._enableLocationHistory = data.EnableLocationHistory || null;\n    this._locationDataRetentionTime = data.LocationDataRetentionTime || null;\n\n    if(this._enableLocationHistory !== null) {\n        // Validate that EnableLocationHistory is a string\n        if(typeof this._enableLocationHistory !== 'string') {\n            throw new errors.BadRequestError('EnableLocationHistory must be a string, received: ' + typeof this._enableLocationHistory);\n        }\n        \n        if(this._enableLocationHistory.toLowerCase() === 'true') {\n            this._enableLocationHistory = true;\n        } else {\n            this._enableLocationHistory = false;\n        }\n    }\n\n    if(this._locationDataRetentionTime !== null) {\n        this._locationDataRetentionTime = +this._locationDataRetentionTime;\n    }\n\n    this._validate();\n}\n\nRequestConfig.prototype.enableLocationHistory =",
+        "signatures": {},
+        "detailedLines": [
+          {
+            "text": "var errors = require('../errors');",
+            "lineNumber": 1
+          },
+          {
+            "lineNumber": 2
+          },
+          {
+            "text": "function RequestConfig(data) {",
+            "lineNumber": 3,
+            "isSignature": true
+          },
+          {
+            "text": "    data = data || {};",
+            "lineNumber": 4
+          },
+          {
+            "lineNumber": 5
+          },
+          {
+            "text": "    this._enableLocationHistory = data.EnableLocationHistory || null;",
+            "lineNumber": 6
+          },
+          {
+            "text": "    this._locationDataRetentionTime = data.LocationDataRetentionTime || null;",
+            "lineNumber": 7
+          },
+          {
+            "lineNumber": 8
+          },
+          {
+            "text": "    if(this._enableLocationHistory !== null) {",
+            "lineNumber": 9
+          },
+          {
+            "text": "        // Validate that EnableLocationHistory is a string",
+            "lineNumber": 10
+          },
+          {
+            "text": "        if(typeof this._enableLocationHistory !== 'string') {",
+            "lineNumber": 11
+          },
+          {
+            "text": "            throw new errors.BadRequestError('EnableLocationHistory must be a string, received: ' + typeof this._enableLocationHistory);",
+            "lineNumber": 12
+          },
+          {
+            "text": "        }",
+            "lineNumber": 13
+          },
+          {
+            "text": "        ",
+            "lineNumber": 14
+          },
+          {
+            "text": "        if(this._enableLocationHistory.toLowerCase() === 'true') {",
+            "lineNumber": 15
+          },
+          {
+            "text": "            this._enableLocationHistory = true;",
+            "lineNumber": 16
+          },
+          {
+            "text": "        } else {",
+            "lineNumber": 17
+          },
+          {
+            "text": "            this._enableLocationHistory = false;",
+            "lineNumber": 18
+          },
+          {
+            "text": "        }",
+            "lineNumber": 19
+          },
+          {
+            "text": "    }",
+            "lineNumber": 20
+          },
+          {
+            "lineNumber": 21
+          },
+          {
+            "text": "    if(this._locationDataRetentionTime !== null) {",
+            "lineNumber": 22
+          },
+          {
+            "text": "        this._locationDataRetentionTime = +this._locationDataRetentionTime;",
+            "lineNumber": 23
+          },
+          {
+            "text": "    }",
+            "lineNumber": 24
+          },
+          {
+            "lineNumber": 25
+          },
+          {
+            "text": "    this._validate();",
+            "lineNumber": 26
+          },
+          {
+            "text": "}",
+            "lineNumber": 27,
+            "isSignature": true
+          },
+          {
+            "lineNumber": 28
+          },
+          {
+            "text": "RequestConfig.prototype.enableLocationHistory =",
+            "lineNumber": 29
+          }
+        ]
+      },
+      "score": 0.30153024196624756
+    },
+    {
+      "codeBlock": {
+        "relativeWorkspacePath": "./config/test.js",
+        "range": {
+          "startPosition": {},
+          "endPosition": {
+            "line": 27,
+            "column": 2
+          }
+        },
+        "contents": "module.exports = {\n    port: 8888,\n    listenip: \"0.0.0.0\",\n\n    database: {\n        type: 'mock'\n    },\n\n    logging: {\n       logLevel: 999 //logger accepts strings and numbers, in tests we dont want any logs, thus the 999\n    },\n\n    maximumNumberOfHistoryItems: 5,\n\n    // how many visitors to a device last and history call do we store this is +1 (starts with 0)\n    maximumNumberOfLocationVistors: 10,\n\n    // if there's an unknown visitor (no deviceID given) do you want it still to be added to the visitor history?\n    addEmptyVisitorDeviceIDtoVisitorHistory: true,\n\n    //namespacing for redis keys\n    redisMiataruNamespace: 'miadTest',\n\n    //CORS configuration for testing\n    cors: {\n        allowedOrigins: [\"http://localhost:3000\", \"http://test.example.com\"]\n    }\n};",
+        "signatures": {},
+        "detailedLines": [
+          {
+            "text": "module.exports = {",
+            "lineNumber": 1
+          },
+          {
+            "text": "    port: 8888,",
+            "lineNumber": 2
+          },
+          {
+            "text": "    listenip: \"0.0.0.0\",",
+            "lineNumber": 3
+          },
+          {
+            "lineNumber": 4
+          },
+          {
+            "text": "    database: {",
+            "lineNumber": 5
+          },
+          {
+            "text": "        type: 'mock'",
+            "lineNumber": 6
+          },
+          {
+            "text": "    },",
+            "lineNumber": 7
+          },
+          {
+            "lineNumber": 8
+          },
+          {
+            "text": "    logging: {",
+            "lineNumber": 9
+          },
+          {
+            "text": "       logLevel: 999 //logger accepts strings and numbers, in tests we dont want any logs, thus the 999",
+            "lineNumber": 10
+          },
+          {
+            "text": "    },",
+            "lineNumber": 11
+          },
+          {
+            "lineNumber": 12
+          },
+          {
+            "text": "    maximumNumberOfHistoryItems: 5,",
+            "lineNumber": 13
+          },
+          {
+            "lineNumber": 14
+          },
+          {
+            "text": "    // how many visitors to a device last and history call do we store this is +1 (starts with 0)",
+            "lineNumber": 15
+          },
+          {
+            "text": "    maximumNumberOfLocationVistors: 10,",
+            "lineNumber": 16
+          },
+          {
+            "lineNumber": 17
+          },
+          {
+            "text": "    // if there's an unknown visitor (no deviceID given) do you want it still to be added to the visitor history?",
+            "lineNumber": 18
+          },
+          {
+            "text": "    addEmptyVisitorDeviceIDtoVisitorHistory: true,",
+            "lineNumber": 19
+          },
+          {
+            "lineNumber": 20
+          },
+          {
+            "text": "    //namespacing for redis keys",
+            "lineNumber": 21
+          },
+          {
+            "text": "    redisMiataruNamespace: 'miadTest',",
+            "lineNumber": 22
+          },
+          {
+            "lineNumber": 23
+          },
+          {
+            "text": "    //CORS configuration for testing",
+            "lineNumber": 24
+          },
+          {
+            "text": "    cors: {",
+            "lineNumber": 25
+          },
+          {
+            "text": "        allowedOrigins: [\"http://localhost:3000\", \"http://test.example.com\"]",
+            "lineNumber": 26
+          },
+          {
+            "text": "    }",
+            "lineNumber": 27
+          },
+          {
+            "text": "};",
+            "lineNumber": 28
+          }
+        ]
+      },
+      "score": 0.27562856674194336
+    },
+    {
+      "codeBlock": {
+        "relativeWorkspacePath": "./lib/models/ResponseVisitorHistory.js",
+        "range": {
+          "startPosition": {
+            "line": 4,
+            "column": 1
+          },
+          "endPosition": {
+            "line": 16,
+            "column": 40
+          }
+        },
+        "contents": "ResponseVisitorHistory.prototype.data = function() {\n    return {\n        MiataruServerConfig: {\n            MaximumNumberOfVisitorHistory: this._maxNumber,\n            AvailableVisitorHistory: this._size\n        },\n        MiataruVisitors: this._visitorsList\n    };\n};\n\nmodule.exports = ResponseVisitorHistory;",
+        "signatures": {},
+        "detailedLines": [
+          {
+            "text": "ResponseVisitorHistory.prototype.data = function() {",
+            "lineNumber": 7
+          },
+          {
+            "text": "    return {",
+            "lineNumber": 8
+          },
+          {
+            "text": "        MiataruServerConfig: {",
+            "lineNumber": 9
+          },
+          {
+            "text": "            MaximumNumberOfVisitorHistory: this._maxNumber,",
+            "lineNumber": 10
+          },
+          {
+            "text": "            AvailableVisitorHistory: this._size",
+            "lineNumber": 11
+          },
+          {
+            "text": "        },",
+            "lineNumber": 12
+          },
+          {
+            "text": "        MiataruVisitors: this._visitorsList",
+            "lineNumber": 13
+          },
+          {
+            "text": "    };",
+            "lineNumber": 14
+          },
+          {
+            "text": "};",
+            "lineNumber": 15
+          },
+          {
+            "lineNumber": 16
+          },
+          {
+            "text": "module.exports = ResponseVisitorHistory;",
+            "lineNumber": 17
+          }
+        ]
+      },
+      "score": 0.2742702066898346
+    },
+    {
+      "codeBlock": {
+        "relativeWorkspacePath": "./lib/routes/location/v1/location.js",
+        "range": {
+          "startPosition": {
+            "line": 312
+          },
+          "endPosition": {
+            "line": 408,
+            "column": 1
+          }
+        },
+        "contents": "function getLocationGeoJSONGET(id, res, next) {\n\n}\n\n/**\n * GetVisitorHistory\n * Retrieves the complete visitor history\n * @param req\n * @param res\n * @param next\n */\nfunction getVisitorHistory(req, res, next) {\n    var locationRequest = req.MIATARU.request;\n    var key = kb.build(locationRequest.device(), KEY_VISIT);\n\n    seq()\n        .par('listLength', function() {\n            db.llen(key, this);\n        })\n        .seq(function() {\n            var done = this;\n            var vars = done.vars = done.vars || {};\n            var available = Number(vars.listLength) || 0;\n            var requested = Number(locationRequest.amount());\n\n            if (!isFinite(requested) || requested &lt;= 0) {\n                vars.list = [];\n                return done();\n            }\n\n            var toFetch = Math.min(requested, available);\n\n            if (toFetch &lt;= 0) {\n                vars.list = [];\n                return done();\n            }\n\n            db.lrange(key, 0, toFetch - 1, function(error, list) {\n                if (error) {\n                    return done(error);\n                }\n\n                vars.list = list || [];\n                done();\n            });\n        })\n        .seq(function() {\n\n            try\n\n\n}",
+        "signatures": {},
+        "detailedLines": [
+          {
+            "text": "function getLocationGeoJSONGET(id, res, next) {",
+            "lineNumber": 313,
+            "isSignature": true
+          },
+          {
+            "lineNumber": 338
+          },
+          {
+            "text": "}",
+            "lineNumber": 339,
+            "isSignature": true
+          },
+          {
+            "lineNumber": 340
+          },
+          {
+            "text": "/**",
+            "lineNumber": 341
+          },
+          {
+            "text": " * GetVisitorHistory",
+            "lineNumber": 342
+          },
+          {
+            "text": " * Retrieves the complete visitor history",
+            "lineNumber": 343
+          },
+          {
+            "text": " * @param req",
+            "lineNumber": 344
+          },
+          {
+            "text": " * @param res",
+            "lineNumber": 345
+          },
+          {
+            "text": " * @param next",
+            "lineNumber": 346
+          },
+          {
+            "text": " */",
+            "lineNumber": 347
+          },
+          {
+            "text": "function getVisitorHistory(req, res, next) {",
+            "lineNumber": 348,
+            "isSignature": true
+          },
+          {
+            "text": "    var locationRequest = req.MIATARU.request;",
+            "lineNumber": 349
+          },
+          {
+            "text": "    var key = kb.build(locationRequest.device(), KEY_VISIT);",
+            "lineNumber": 350
+          },
+          {
+            "lineNumber": 351
+          },
+          {
+            "text": "    seq()",
+            "lineNumber": 352
+          },
+          {
+            "text": "        .par('listLength', function() {",
+            "lineNumber": 353
+          },
+          {
+            "text": "            db.llen(key, this);",
+            "lineNumber": 354
+          },
+          {
+            "text": "        })",
+            "lineNumber": 355
+          },
+          {
+            "text": "        .seq(function() {",
+            "lineNumber": 356
+          },
+          {
+            "text": "            var done = this;",
+            "lineNumber": 357
+          },
+          {
+            "text": "            var vars = done.vars = done.vars || {};",
+            "lineNumber": 358
+          },
+          {
+            "text": "            var available = Number(vars.listLength) || 0;",
+            "lineNumber": 359
+          },
+          {
+            "text": "            var requested = Number(locationRequest.amount());",
+            "lineNumber": 360
+          },
+          {
+            "lineNumber": 361
+          },
+          {
+            "text": "            if (!isFinite(requested) || requested &lt;= 0) {",
+            "lineNumber": 362
+          },
+          {
+            "text": "                vars.list = [];",
+            "lineNumber": 363
+          },
+          {
+            "text": "                return done();",
+            "lineNumber": 364
+          },
+          {
+            "text": "            }",
+            "lineNumber": 365
+          },
+          {
+            "lineNumber": 366
+          },
+          {
+            "text": "            var toFetch = Math.min(requested, available);",
+            "lineNumber": 367
+          },
+          {
+            "lineNumber": 368
+          },
+          {
+            "text": "            if (toFetch &lt;= 0) {",
+            "lineNumber": 369
+          },
+          {
+            "text": "                vars.list = [];",
+            "lineNumber": 370
+          },
+          {
+            "text": "                return done();",
+            "lineNumber": 371
+          },
+          {
+            "text": "            }",
+            "lineNumber": 372
+          },
+          {
+            "lineNumber": 373
+          },
+          {
+            "text": "            db.lrange(key, 0, toFetch - 1, function(error, list) {",
+            "lineNumber": 374
+          },
+          {
+            "text": "                if (error) {",
+            "lineNumber": 375
+          },
+          {
+            "text": "                    return done(error);",
+            "lineNumber": 376
+          },
+          {
+            "text": "                }",
+            "lineNumber": 377
+          },
+          {
+            "lineNumber": 378
+          },
+          {
+            "text": "                vars.list = list || [];",
+            "lineNumber": 379
+          },
+          {
+            "text": "                done();",
+            "lineNumber": 380
+          },
+          {
+            "text": "            });",
+            "lineNumber": 381
+          },
+          {
+            "text": "        })",
+            "lineNumber": 382
+          },
+          {
+            "text": "        .seq(function() {",
+            "lineNumber": 383
+          },
+          {
+            "lineNumber": 384
+          },
+          {
+            "text": "            try",
+            "lineNumber": 385
+          },
+          {
+            "lineNumber": 405
+          },
+          {
+            "lineNumber": 408
+          },
+          {
+            "text": "}",
+            "lineNumber": 409,
+            "isSignature": true
+          }
+        ]
+      },
+      "score": 0.26236578822135925
+    },
+    {
+      "codeBlock": {
+        "relativeWorkspacePath": "./lib/routes/location/v1/location.js",
+        "range": {
+          "startPosition": {},
+          "endPosition": {
+            "line": 35,
+            "column": 3
+          }
+        },
+        "contents": "/*\n\tUpdateLocation POST\n\n\tBy doing a HTTP Post on the /UpdateLocation method of this server you should\n\tbe able to trigger this method here.\n\n\tcurl -H \"Content-Type: application/json\" -X POST http://localhost:3000/UpdateLocation -d '{\"JSON\": \"HERE\"}'\n\n\tcurl -H \"Content-Type: application/json\" -X POST http://localhost:3000/UpdateLocation -d '{\"MiataruConfig\":{\"EnableLocationHistory\":\"Fa\":\"15\"},\"MiataruLocation\":[{\"Device\":\"7b8e6e0ee5296db345162dc2ef652c1350761823\",\"Timestamp\":\"1376735651302\",\"Longitude\":\"10.837502\",\"Latitude\":\"49.828925\",\"HorizontalAccuracy\":\"50.00\"}]}'\n\n\tTo store information Redis is used. The naming conventions are as follows:\n\n\tLast Known Location (expiring key-value): miad:$deviceid:last\n\tLocation History (non expiring list): miad:$deviceid:hist\n */\n\nvar seq = require('seq');\n\nvar configuration = require('../../../configuration');\nvar db = require('../../../db');\nvar kb = require('../../../utils/keyBuilder');\nvar models = require('../../../models');\nvar errors = require('../../../errors');\nvar logger = require('../../../logger');\n\nvar KEY_HISTORY = 'hist';\nvar KEY_LAST = 'last';\nvar KEY_VISIT = 'visit';\n\n/**\n * GetLocationHistory\n * Retrieves the complete History\n * @param req\n * @param res\n * @param next\n */",
+        "signatures": {},
+        "detailedLines": [
+          {
+            "text": "/*",
+            "lineNumber": 1
+          },
+          {
+            "text": "\tUpdateLocation POST",
+            "lineNumber": 2
+          },
+          {
+            "lineNumber": 3
+          },
+          {
+            "text": "\tBy doing a HTTP Post on the /UpdateLocation method of this server you should",
+            "lineNumber": 4
+          },
+          {
+            "text": "\tbe able to trigger this method here.",
+            "lineNumber": 5
+          },
+          {
+            "lineNumber": 6
+          },
+          {
+            "text": "\tcurl -H \"Content-Type: application/json\" -X POST http://localhost:3000/UpdateLocation -d '{\"JSON\": \"HERE\"}'",
+            "lineNumber": 7
+          },
+          {
+            "lineNumber": 8
+          },
+          {
+            "text": "\tcurl -H \"Content-Type: application/json\" -X POST http://localhost:3000/UpdateLocation -d '{\"MiataruConfig\":{\"EnableLocationHistory\":\"Fa\":\"15\"},\"MiataruLocation\":[{\"Device\":\"7b8e6e0ee5296db345162dc2ef652c1350761823\",\"Timestamp\":\"1376735651302\",\"Longitude\":\"10.837502\",\"Latitude\":\"49.828925\",\"HorizontalAccuracy\":\"50.00\"}]}'",
+            "lineNumber": 9
+          },
+          {
+            "lineNumber": 10
+          },
+          {
+            "text": "\tTo store information Redis is used. The naming conventions are as follows:",
+            "lineNumber": 11
+          },
+          {
+            "lineNumber": 12
+          },
+          {
+            "text": "\tLast Known Location (expiring key-value): miad:$deviceid:last",
+            "lineNumber": 13
+          },
+          {
+            "text": "\tLocation History (non expiring list): miad:$deviceid:hist",
+            "lineNumber": 14
+          },
+          {
+            "text": " */",
+            "lineNumber": 15
+          },
+          {
+            "lineNumber": 16
+          },
+          {
+            "text": "var seq = require('seq');",
+            "lineNumber": 17
+          },
+          {
+            "lineNumber": 18
+          },
+          {
+            "text": "var configuration = require('../../../configuration');",
+            "lineNumber": 19
+          },
+          {
+            "text": "var db = require('../../../db');",
+            "lineNumber": 20
+          },
+          {
+            "text": "var kb = require('../../../utils/keyBuilder');",
+            "lineNumber": 21
+          },
+          {
+            "text": "var models = require('../../../models');",
+            "lineNumber": 22
+          },
+          {
+            "text": "var errors = require('../../../errors');",
+            "lineNumber": 23
+          },
+          {
+            "text": "var logger = require('../../../logger');",
+            "lineNumber": 24
+          },
+          {
+            "lineNumber": 25
+          },
+          {
+            "text": "var KEY_HISTORY = 'hist';",
+            "lineNumber": 26
+          },
+          {
+            "text": "var KEY_LAST = 'last';",
+            "lineNumber": 27
+          },
+          {
+            "text": "var KEY_VISIT = 'visit';",
+            "lineNumber": 28
+          },
+          {
+            "lineNumber": 29
+          },
+          {
+            "text": "/**",
+            "lineNumber": 30
+          },
+          {
+            "text": " * GetLocationHistory",
+            "lineNumber": 31
+          },
+          {
+            "text": " * Retrieves the complete History",
+            "lineNumber": 32
+          },
+          {
+            "text": " * @param req",
+            "lineNumber": 33
+          },
+          {
+            "text": " * @param res",
+            "lineNumber": 34
+          },
+          {
+            "text": " * @param next",
+            "lineNumber": 35
+          },
+          {
+            "text": " */",
+            "lineNumber": 36
+          }
+        ]
+      },
+      "score": 0.26218968629837036
+    },
+    {
+      "codeBlock": {
+        "relativeWorkspacePath": "./lib/routes/location/v1/location.js",
+        "range": {
+          "startPosition": {
+            "line": 36
+          },
+          "endPosition": {
+            "line": 138,
+            "column": 1
+          }
+        },
+        "contents": "function getLocationHistory(req, res, next) {\n\n\n);\n        })\n        .seq(function() {\n\n            // only if this device is existing we update the visitor list...\n            if (this.vars.listLength != 0)\n            {\n              // store the visitor for this device (if it's not empty)...\n              var visitKey = kb.build(locationRequest.device(), KEY_VISIT);\n              var miataruVisitorObject = requestConfig.requestMiataruVisitorObject(locationRequest.device());\n              // only if the object is not null (= we do not want to store the visitor history of unknown devices)\n              if (miataruVisitorObject != null)\n              {\n                  var visitValue = JSON.stringify(miataruVisitorObject);\n\n                  seq()\n                      // we do want to store visitor history, so check if we got, so lpush and trim\n                      .seq(function() {\n                          db.lpush(visitKey, visitValue, this);\n                      })\n                      // take care that the visitor history does not grow beyond the set range of maximumNumberOfLocationVistors\n                      .seq(function() {\n                          db.ltrim(visitKey, 0, configuration.maximumNumberOfLocationVistors-1, this);\n                      });\n              }\n            }\n\n            var parsedList = [];\n            var invalidEntries = 0;\n\n            (this.vars.list || []).forEach(function(value) {\n                if (value === null || value === undefined) {\n                    invalidEntries++;\n                    return;\n                }\n\n                var serialized = value;\n\n                if (Buffer.isBuffer(value)) {\n                    serialized = value.toString();\n                }\n\n                try {\n                    parsedList.push(JSON.parse(serialized));\n                } catch (parseError) {\n                    invalidEntries++;\n                }\n            });\n\n            if (invalidEntries &gt; 0)\n\n\n}",
+        "signatures": {
+          "ranges": [
+            {
+              "startPosition": {
+                "line": 37,
+                "column": 1
+              },
+              "endPosition": {
+                "line": 38,
+                "column": 5
+              }
+            },
+            {
+              "startPosition": {
+                "line": 42,
+                "column": 5
+              },
+              "endPosition": {
+                "line": 42,
+                "column": 5
+              }
+            },
+            {
+              "startPosition": {
+                "line": 42,
+                "column": 5
+              },
+              "endPosition": {
+                "line": 42,
+                "column": 5
+              }
+            }
+          ]
+        },
+        "detailedLines": [
+          {
+            "text": "function getLocationHistory(req, res, next) {",
+            "lineNumber": 37,
+            "isSignature": true
+          },
+          {
+            "lineNumber": 42
+          },
+          {
+            "lineNumber": 64
+          },
+          {
+            "text": ");",
+            "lineNumber": 71
+          },
+          {
+            "text": "        })",
+            "lineNumber": 72
+          },
+          {
+            "text": "        .seq(function() {",
+            "lineNumber": 73
+          },
+          {
+            "lineNumber": 74
+          },
+          {
+            "text": "            // only if this device is existing we update the visitor list...",
+            "lineNumber": 75
+          },
+          {
+            "text": "            if (this.vars.listLength != 0)",
+            "lineNumber": 76
+          },
+          {
+            "text": "            {",
+            "lineNumber": 77
+          },
+          {
+            "text": "              // store the visitor for this device (if it's not empty)...",
+            "lineNumber": 78
+          },
+          {
+            "text": "              var visitKey = kb.build(locationRequest.device(), KEY_VISIT);",
+            "lineNumber": 79
+          },
+          {
+            "text": "              var miataruVisitorObject = requestConfig.requestMiataruVisitorObject(locationRequest.device());",
+            "lineNumber": 80
+          },
+          {
+            "text": "              // only if the object is not null (= we do not want to store the visitor history of unknown devices)",
+            "lineNumber": 81
+          },
+          {
+            "text": "              if (miataruVisitorObject != null)",
+            "lineNumber": 82
+          },
+          {
+            "text": "              {",
+            "lineNumber": 83
+          },
+          {
+            "text": "                  var visitValue = JSON.stringify(miataruVisitorObject);",
+            "lineNumber": 84
+          },
+          {
+            "lineNumber": 85
+          },
+          {
+            "text": "                  seq()",
+            "lineNumber": 86
+          },
+          {
+            "text": "                      // we do want to store visitor history, so check if we got, so lpush and trim",
+            "lineNumber": 87
+          },
+          {
+            "text": "                      .seq(function() {",
+            "lineNumber": 88
+          },
+          {
+            "text": "                          db.lpush(visitKey, visitValue, this);",
+            "lineNumber": 89
+          },
+          {
+            "text": "                      })",
+            "lineNumber": 90
+          },
+          {
+            "text": "                      // take care that the visitor history does not grow beyond the set range of maximumNumberOfLocationVistors",
+            "lineNumber": 91
+          },
+          {
+            "text": "                      .seq(function() {",
+            "lineNumber": 92
+          },
+          {
+            "text": "                          db.ltrim(visitKey, 0, configuration.maximumNumberOfLocationVistors-1, this);",
+            "lineNumber": 93
+          },
+          {
+            "text": "                      });",
+            "lineNumber": 94
+          },
+          {
+            "text": "              }",
+            "lineNumber": 95
+          },
+          {
+            "text": "            }",
+            "lineNumber": 96
+          },
+          {
+            "lineNumber": 97
+          },
+          {
+            "text": "            var parsedList = [];",
+            "lineNumber": 98
+          },
+          {
+            "text": "            var invalidEntries = 0;",
+            "lineNumber": 99
+          },
+          {
+            "lineNumber": 100
+          },
+          {
+            "text": "            (this.vars.list || []).forEach(function(value) {",
+            "lineNumber": 101
+          },
+          {
+            "text": "                if (value === null || value === undefined) {",
+            "lineNumber": 102
+          },
+          {
+            "text": "                    invalidEntries++;",
+            "lineNumber": 103
+          },
+          {
+            "text": "                    return;",
+            "lineNumber": 104
+          },
+          {
+            "text": "                }",
+            "lineNumber": 105
+          },
+          {
+            "lineNumber": 106
+          },
+          {
+            "text": "                var serialized = value;",
+            "lineNumber": 107
+          },
+          {
+            "lineNumber": 108
+          },
+          {
+            "text": "                if (Buffer.isBuffer(value)) {",
+            "lineNumber": 109
+          },
+          {
+            "text": "                    serialized = value.toString();",
+            "lineNumber": 110
+          },
+          {
+            "text": "                }",
+            "lineNumber": 111
+          },
+          {
+            "lineNumber": 112
+          },
+          {
+            "text": "                try {",
+            "lineNumber": 113
+          },
+          {
+            "text": "                    parsedList.push(JSON.parse(serialized));",
+            "lineNumber": 114
+          },
+          {
+            "text": "                } catch (parseError) {",
+            "lineNumber": 115
+          },
+          {
+            "text": "                    invalidEntries++;",
+            "lineNumber": 116
+          },
+          {
+            "text": "                }",
+            "lineNumber": 117
+          },
+          {
+            "text": "            });",
+            "lineNumber": 118
+          },
+          {
+            "lineNumber": 119
+          },
+          {
+            "text": "            if (invalidEntries &gt; 0)",
+            "lineNumber": 120
+          },
+          {
+            "lineNumber": 135
+          },
+          {
+            "lineNumber": 138
+          },
+          {
+            "text": "}",
+            "lineNumber": 139,
+            "isSignature": true
+          }
+        ]
+      },
+      "score": 0.2606501579284668
+    },
+    {
+      "codeBlock": {
+        "relativeWorkspacePath": "./lib/models/RequestConfigGetLocation.js",
+        "range": {
+          "startPosition": {
+            "line": 12,
+            "column": 1
+          },
+          "endPosition": {
+            "line": 38,
+            "column": 42
+          }
+        },
+        "contents": "RequestConfigGetLocation.prototype.requestMiataruDeviceID = function() {\n    return this._requestMiataruDeviceID;\n};\n\nRequestConfigGetLocation.prototype.requestMiataruVisitorObject = function(targetDeviceID) {\n\n    if (configuration.addEmptyVisitorDeviceIDtoVisitorHistory == false &amp;&amp; this._requestMiataruDeviceID == \"\")\n    {\n        return null;\n    }\n\n    // Do not record visitor history if RequestMiataruDeviceID equals the target deviceID\n    if (targetDeviceID &amp;&amp; this._requestMiataruDeviceID === targetDeviceID)\n    {\n        return null;\n    }\n\n    this._VisitorObject = {};\n    this._VisitorObject.DeviceID = this._requestMiataruDeviceID;\n    this._VisitorObject.TimeStamp = Date.now();\n\n    return this._VisitorObject;\n};\n\nmodule.exports = RequestConfigGetLocation;",
+        "signatures": {},
+        "detailedLines": [
+          {
+            "text": "RequestConfigGetLocation.prototype.requestMiataruDeviceID = function() {",
+            "lineNumber": 15
+          },
+          {
+            "text": "    return this._requestMiataruDeviceID;",
+            "lineNumber": 16
+          },
+          {
+            "text": "};",
+            "lineNumber": 17
+          },
+          {
+            "lineNumber": 18
+          },
+          {
+            "text": "RequestConfigGetLocation.prototype.requestMiataruVisitorObject = function(targetDeviceID) {",
+            "lineNumber": 19
+          },
+          {
+            "lineNumber": 20
+          },
+          {
+            "text": "    if (configuration.addEmptyVisitorDeviceIDtoVisitorHistory == false &amp;&amp; this._requestMiataruDeviceID == \"\")",
+            "lineNumber": 21
+          },
+          {
+            "text": "    {",
+            "lineNumber": 22
+          },
+          {
+            "text": "        return null;",
+            "lineNumber": 23
+          },
+          {
+            "text": "    }",
+            "lineNumber": 24
+          },
+          {
+            "lineNumber": 25
+          },
+          {
+            "text": "    // Do not record visitor history if RequestMiataruDeviceID equals the target deviceID",
+            "lineNumber": 26
+          },
+          {
+            "text": "    if (targetDeviceID &amp;&amp; this._requestMiataruDeviceID === targetDeviceID)",
+            "lineNumber": 27
+          },
+          {
+            "text": "    {",
+            "lineNumber": 28
+          },
+          {
+            "text": "        return null;",
+            "lineNumber": 29
+          },
+          {
+            "text": "    }",
+            "lineNumber": 30
+          },
+          {
+            "lineNumber": 31
+          },
+          {
+            "text": "    this._VisitorObject = {};",
+            "lineNumber": 32
+          },
+          {
+            "text": "    this._VisitorObject.DeviceID = this._requestMiataruDeviceID;",
+            "lineNumber": 33
+          },
+          {
+            "text": "    this._VisitorObject.TimeStamp = Date.now();",
+            "lineNumber": 34
+          },
+          {
+            "lineNumber": 35
+          },
+          {
+            "text": "    return this._VisitorObject;",
+            "lineNumber": 36
+          },
+          {
+            "text": "};",
+            "lineNumber": 37
+          },
+          {
+            "lineNumber": 38
+          },
+          {
+            "text": "module.exports = RequestConfigGetLocation;",
+            "lineNumber": 39
+          }
+        ]
+      },
+      "score": 0.258776992559433
+    },
+    {
+      "codeBlock": {
+        "relativeWorkspacePath": "./lib/routes/location/v1/location.js",
+        "range": {
+          "startPosition": {
+            "line": 202,
+            "column": 1
+          },
+          "endPosition": {
+            "line": 264,
+            "column": 1
+          }
+        },
+        "contents": "/**\n * GetLocation\n * This is used to get the current location of a device.\n *\n * @param req\n * @param res\n * @param next\n */\nfunction getLocation(req, res, next) {\n    var chain = seq();\n\t\tvar requestConfig = req.MIATARU.config;\n    var response = new models.ResponseLocation();\n\n    req.MIATARU.devices.forEach(function(device) {\n        chain.par(function() {\n            var done = this;\n\n            db.get(kb.build(device.device(), KEY_LAST), function (error, reply) {\n                if(error)  return done(error);\n\n                // only if this device is existing we update the visitor list...\n                if (reply != null)\n                {\n                  // store the visitor for this device (if it's not empty)...\n                  var visitKey = kb.build(device.device(), KEY_VISIT);\n                  var miataruVisitorObject = requestConfig.requestMiataruVisitorObject(device.device());\n                  // only if the object is not null (= we do not want to store the visitor history of unknown devices)\n                  if (miataruVisitorObject != null)\n                  {\n                      var visitValue = JSON.stringify(miataruVisitorObject);\n\n                      seq()\n                          // we do want to store visitor history, so check if we got, so lpush and trim\n                          .seq(function() {\n                              db.lpush(visitKey, visitValue, this);\n                          })\n                          // take care that the visitor history does not grow beyond the set range of maximumNumberOfLocationVistors\n                          .seq(function() {\n                              db.ltrim(visitKey, 0, configuration.maximumNumberOfLocationVistors-1, this);\n                          });\n                  }\n                }\n                if (reply != null) {\n                    try\n\n\n\n}",
+        "signatures": {},
+        "detailedLines": [
+          {
+            "text": "/**",
+            "lineNumber": 205
+          },
+          {
+            "text": " * GetLocation",
+            "lineNumber": 206
+          },
+          {
+            "text": " * This is used to get the current location of a device.",
+            "lineNumber": 207
+          },
+          {
+            "text": " *",
+            "lineNumber": 208
+          },
+          {
+            "text": " * @param req",
+            "lineNumber": 209
+          },
+          {
+            "text": " * @param res",
+            "lineNumber": 210
+          },
+          {
+            "text": " * @param next",
+            "lineNumber": 211
+          },
+          {
+            "text": " */",
+            "lineNumber": 212
+          },
+          {
+            "text": "function getLocation(req, res, next) {",
+            "lineNumber": 213,
+            "isSignature": true
+          },
+          {
+            "text": "    var chain = seq();",
+            "lineNumber": 214
+          },
+          {
+            "text": "\t\tvar requestConfig = req.MIATARU.config;",
+            "lineNumber": 215
+          },
+          {
+            "text": "    var response = new models.ResponseLocation();",
+            "lineNumber": 216
+          },
+          {
+            "lineNumber": 217
+          },
+          {
+            "text": "    req.MIATARU.devices.forEach(function(device) {",
+            "lineNumber": 218
+          },
+          {
+            "text": "        chain.par(function() {",
+            "lineNumber": 219
+          },
+          {
+            "text": "            var done = this;",
+            "lineNumber": 220
+          },
+          {
+            "lineNumber": 221
+          },
+          {
+            "text": "            db.get(kb.build(device.device(), KEY_LAST), function (error, reply) {",
+            "lineNumber": 222
+          },
+          {
+            "text": "                if(error)  return done(error);",
+            "lineNumber": 223
+          },
+          {
+            "lineNumber": 224
+          },
+          {
+            "text": "                // only if this device is existing we update the visitor list...",
+            "lineNumber": 225
+          },
+          {
+            "text": "                if (reply != null)",
+            "lineNumber": 226
+          },
+          {
+            "text": "                {",
+            "lineNumber": 227
+          },
+          {
+            "text": "                  // store the visitor for this device (if it's not empty)...",
+            "lineNumber": 228
+          },
+          {
+            "text": "                  var visitKey = kb.build(device.device(), KEY_VISIT);",
+            "lineNumber": 229
+          },
+          {
+            "text": "                  var miataruVisitorObject = requestConfig.requestMiataruVisitorObject(device.device());",
+            "lineNumber": 230
+          },
+          {
+            "text": "                  // only if the object is not null (= we do not want to store the visitor history of unknown devices)",
+            "lineNumber": 231
+          },
+          {
+            "text": "                  if (miataruVisitorObject != null)",
+            "lineNumber": 232
+          },
+          {
+            "text": "                  {",
+            "lineNumber": 233
+          },
+          {
+            "text": "                      var visitValue = JSON.stringify(miataruVisitorObject);",
+            "lineNumber": 234
+          },
+          {
+            "lineNumber": 235
+          },
+          {
+            "text": "                      seq()",
+            "lineNumber": 236
+          },
+          {
+            "text": "                          // we do want to store visitor history, so check if we got, so lpush and trim",
+            "lineNumber": 237
+          },
+          {
+            "text": "                          .seq(function() {",
+            "lineNumber": 238
+          },
+          {
+            "text": "                              db.lpush(visitKey, visitValue, this);",
+            "lineNumber": 239
+          },
+          {
+            "text": "                          })",
+            "lineNumber": 240
+          },
+          {
+            "text": "                          // take care that the visitor history does not grow beyond the set range of maximumNumberOfLocationVistors",
+            "lineNumber": 241
+          },
+          {
+            "text": "                          .seq(function() {",
+            "lineNumber": 242
+          },
+          {
+            "text": "                              db.ltrim(visitKey, 0, configuration.maximumNumberOfLocationVistors-1, this);",
+            "lineNumber": 243
+          },
+          {
+            "text": "                          });",
+            "lineNumber": 244
+          },
+          {
+            "text": "                  }",
+            "lineNumber": 245
+          },
+          {
+            "text": "                }",
+            "lineNumber": 246
+          },
+          {
+            "text": "                if (reply != null) {",
+            "lineNumber": 247
+          },
+          {
+            "text": "                    try",
+            "lineNumber": 248
+          },
+          {
+            "lineNumber": 257
+          },
+          {
+            "lineNumber": 258
+          },
+          {
+            "lineNumber": 259
+          },
+          {
+            "text": "}",
+            "lineNumber": 265,
+            "isSignature": true
+          }
+        ]
+      },
+      "score": 0.24115943908691406
+    },
+    {
+      "codeBlock": {
+        "relativeWorkspacePath": "./lib/models/RequestConfig.js",
+        "range": {
+          "startPosition": {
+            "line": 26,
+            "column": 1
+          },
+          "endPosition": {
+            "line": 47,
+            "column": 31
+          }
+        },
+        "contents": "RequestConfig.prototype.enableLocationHistory = function() {\n    return this._enableLocationHistory;\n};\n\nRequestConfig.prototype.locationDataRetentionTime = function() {\n    return this._locationDataRetentionTime;\n};\n\nRequestConfig.prototype._validate = function() {\n    var that = this;\n\n    Object.keys(this).forEach(function(property) {\n        // Allow _enableLocationHistory to be null as it's optional\n        if(that[property] === null &amp;&amp; property !== '_enableLocationHistory') {\n            throw new errors.BadRequestError('Missing RequestProperty ' + property + ' in configuration');\n          }\n    });\n};\n\nmodule.exports = RequestConfig;",
+        "signatures": {},
+        "detailedLines": [
+          {
+            "text": "RequestConfig.prototype.enableLocationHistory = function() {",
+            "lineNumber": 29
+          },
+          {
+            "text": "    return this._enableLocationHistory;",
+            "lineNumber": 30
+          },
+          {
+            "text": "};",
+            "lineNumber": 31
+          },
+          {
+            "lineNumber": 32
+          },
+          {
+            "text": "RequestConfig.prototype.locationDataRetentionTime = function() {",
+            "lineNumber": 33
+          },
+          {
+            "text": "    return this._locationDataRetentionTime;",
+            "lineNumber": 34
+          },
+          {
+            "text": "};",
+            "lineNumber": 35
+          },
+          {
+            "lineNumber": 36
+          },
+          {
+            "text": "RequestConfig.prototype._validate = function() {",
+            "lineNumber": 37
+          },
+          {
+            "text": "    var that = this;",
+            "lineNumber": 38
+          },
+          {
+            "lineNumber": 39
+          },
+          {
+            "text": "    Object.keys(this).forEach(function(property) {",
+            "lineNumber": 40
+          },
+          {
+            "text": "        // Allow _enableLocationHistory to be null as it's optional",
+            "lineNumber": 41
+          },
+          {
+            "text": "        if(that[property] === null &amp;&amp; property !== '_enableLocationHistory') {",
+            "lineNumber": 42
+          },
+          {
+            "text": "            throw new errors.BadRequestError('Missing RequestProperty ' + property + ' in configuration');",
+            "lineNumber": 43
+          },
+          {
+            "text": "          }",
+            "lineNumber": 44
+          },
+          {
+            "text": "    });",
+            "lineNumber": 45
+          },
+          {
+            "text": "};",
+            "lineNumber": 46
+          },
+          {
+            "lineNumber": 47
+          },
+          {
+            "text": "module.exports = RequestConfig;",
+            "lineNumber": 48
+          }
+        ]
+      },
+      "score": 0.24024665355682373
+    },
+    {
+      "codeBlock": {
+        "relativeWorkspacePath": "./lib/models/RequestVisitorHistory.js",
+        "range": {
+          "startPosition": {},
+          "endPosition": {
+            "line": 15,
+            "column": 1
+          }
+        },
+        "contents": "var errors = require('../errors');\n\nfunction RequestVisitorHistory(data) {\n    data = data || {};\n\n    this._device = data.Device || null;\n    this._amount = +data.Amount || null;\n\n    if(this._device === null || this._amount === null) {\n        throw new errors.BadRequestError('missing device or amount');\n    }\n}\n\nRequestVisitorHistory.prototype.device = function() {\n    return this._device;\n}",
+        "signatures": {},
+        "detailedLines": [
+          {
+            "text": "var errors = require('../errors');",
+            "lineNumber": 1
+          },
+          {
+            "lineNumber": 2
+          },
+          {
+            "text": "function RequestVisitorHistory(data) {",
+            "lineNumber": 3,
+            "isSignature": true
+          },
+          {
+            "text": "    data = data || {};",
+            "lineNumber": 4
+          },
+          {
+            "lineNumber": 5
+          },
+          {
+            "text": "    this._device = data.Device || null;",
+            "lineNumber": 6
+          },
+          {
+            "text": "    this._amount = +data.Amount || null;",
+            "lineNumber": 7
+          },
+          {
+            "lineNumber": 8
+          },
+          {
+            "text": "    if(this._device === null || this._amount === null) {",
+            "lineNumber": 9
+          },
+          {
+            "text": "        throw new errors.BadRequestError('missing device or amount');",
+            "lineNumber": 10
+          },
+          {
+            "text": "    }",
+            "lineNumber": 11
+          },
+          {
+            "text": "}",
+            "lineNumber": 12,
+            "isSignature": true
+          },
+          {
+            "lineNumber": 13
+          },
+          {
+            "text": "RequestVisitorHistory.prototype.device = function() {",
+            "lineNumber": 14
+          },
+          {
+            "text": "    return this._device;",
+            "lineNumber": 15
+          },
+          {
+            "text": "}",
+            "lineNumber": 16
+          }
+        ]
+      },
+      "score": 0.23629610240459442
+    },
+    {
+      "codeBlock": {
+        "relativeWorkspacePath": "./README.md",
+        "range": {
+          "startPosition": {
+            "line": 81
+          },
+          "endPosition": {
+            "line": 159
+          }
+        },
+        "contents": "&#96;&#96;&#96;\n\n**Get location in GeoJSON format:**\n&#96;&#96;&#96;bash\ncurl -H 'Content-Type: application/json' -X POST 'http://localhost:8090/v1/GetLocationGeoJSON' \\\n  -d '{\"MiataruGetLocation\":[{\"Device\":\"7b8e6e0ee5296db345162dc2ef652c1350761823\"}]}'\n&#96;&#96;&#96;\n\n## DeleteLocation API\n\nThe DeleteLocation API allows you to permanently delete all location data associated with a specific device.\n\n### Request Format\n&#96;&#96;&#96;json\n{\n  \"MiataruDeleteLocation\": {\n    \"Device\": \"device-id-here\"\n  }\n}\n&#96;&#96;&#96;\n\n### Response Format\n&#96;&#96;&#96;json\n{\n  \"MiataruResponse\": \"ACK\",\n  \"MiataruVerboseResponse\": \"Location data deleted for device: device-id-here\",\n  \"MiataruDeletedCount\": 3\n}\n&#96;&#96;&#96;\n\n### What Gets Deleted\n- **Last Known Location**: Current location data\n- **Location History**: Complete location history (if enabled)\n- **Visitor History**: Visitor tracking data\n\n### Example Usage\n&#96;&#96;&#96;bash\n# Delete all location data for a device\ncurl -H 'Content-Type: application/json' -X POST 'http://localhost:8090/v1/DeleteLocation' \\\n  -d '{\"MiataruDeleteLocation\":{\"Device\":\"my-device-123\"}}'\n&#96;&#96;&#96;\n\nFor detailed documentation, see [DELETE_LOCATION_API.md](docs/DELETE_LOCATION_API.md).\n\n## CORS Configuration\n\nThe server includes configurable CORS (Cross-Origin Resource Sharing) middleware for web applications:\n\n### Default Configuration\n&#96;&#96;&#96;javascript\ncors: {\n    allowedOrigins: [\"http://localhost:3000\", \"http://localhost:8080\", \"https://miataru.com\"]\n}\n&#96;&#96;&#96;\n\n### Custom CORS Setup\nAdd to your configuration file:\n&#96;&#96;&#96;javascript\nmodule.exports = {\n    // ... other config\n    cors: {\n        allowedOrigins: [\n            \"http://localhost:3000\",\n            \"https://yourdomain.com\",\n            \"https://app.yourdomain.com\"\n        ]\n    }\n};\n&#96;&#96;&#96;\n\n### CORS Features\n- **Origin Validation**: Only allows requests from configured origins\n- **Credentials Support**: Supports authenticated requests\n- **Method Support**: GET, POST, PUT, DELETE, OPTIONS\n- **Header Support**: Content-Type, Authorization, X-Requested-With\n- **Preflight Handling**: Automatic OPTIONS request handling\n\n## Rate Limiting",
+        "signatures": {},
+        "detailedLines": [
+          {
+            "text": "&#96;&#96;&#96;",
+            "lineNumber": 82
+          },
+          {
+            "lineNumber": 83
+          },
+          {
+            "text": "**Get location in GeoJSON format:**",
+            "lineNumber": 84
+          },
+          {
+            "text": "&#96;&#96;&#96;bash",
+            "lineNumber": 85
+          },
+          {
+            "text": "curl -H 'Content-Type: application/json' -X POST 'http://localhost:8090/v1/GetLocationGeoJSON' \\",
+            "lineNumber": 86
+          },
+          {
+            "text": "  -d '{\"MiataruGetLocation\":[{\"Device\":\"7b8e6e0ee5296db345162dc2ef652c1350761823\"}]}'",
+            "lineNumber": 87
+          },
+          {
+            "text": "&#96;&#96;&#96;",
+            "lineNumber": 88
+          },
+          {
+            "lineNumber": 89
+          },
+          {
+            "text": "## DeleteLocation API",
+            "lineNumber": 90
+          },
+          {
+            "lineNumber": 91
+          },
+          {
+            "text": "The DeleteLocation API allows you to permanently delete all location data associated with a specific device.",
+            "lineNumber": 92
+          },
+          {
+            "lineNumber": 93
+          },
+          {
+            "text": "### Request Format",
+            "lineNumber": 94
+          },
+          {
+            "text": "&#96;&#96;&#96;json",
+            "lineNumber": 95
+          },
+          {
+            "text": "{",
+            "lineNumber": 96
+          },
+          {
+            "text": "  \"MiataruDeleteLocation\": {",
+            "lineNumber": 97
+          },
+          {
+            "text": "    \"Device\": \"device-id-here\"",
+            "lineNumber": 98
+          },
+          {
+            "text": "  }",
+            "lineNumber": 99
+          },
+          {
+            "text": "}",
+            "lineNumber": 100
+          },
+          {
+            "text": "&#96;&#96;&#96;",
+            "lineNumber": 101
+          },
+          {
+            "lineNumber": 102
+          },
+          {
+            "text": "### Response Format",
+            "lineNumber": 103
+          },
+          {
+            "text": "&#96;&#96;&#96;json",
+            "lineNumber": 104
+          },
+          {
+            "text": "{",
+            "lineNumber": 105
+          },
+          {
+            "text": "  \"MiataruResponse\": \"ACK\",",
+            "lineNumber": 106
+          },
+          {
+            "text": "  \"MiataruVerboseResponse\": \"Location data deleted for device: device-id-here\",",
+            "lineNumber": 107
+          },
+          {
+            "text": "  \"MiataruDeletedCount\": 3",
+            "lineNumber": 108
+          },
+          {
+            "text": "}",
+            "lineNumber": 109
+          },
+          {
+            "text": "&#96;&#96;&#96;",
+            "lineNumber": 110
+          },
+          {
+            "lineNumber": 111
+          },
+          {
+            "text": "### What Gets Deleted",
+            "lineNumber": 112
+          },
+          {
+            "text": "- **Last Known Location**: Current location data",
+            "lineNumber": 113
+          },
+          {
+            "text": "- **Location History**: Complete location history (if enabled)",
+            "lineNumber": 114
+          },
+          {
+            "text": "- **Visitor History**: Visitor tracking data",
+            "lineNumber": 115
+          },
+          {
+            "lineNumber": 116
+          },
+          {
+            "text": "### Example Usage",
+            "lineNumber": 117
+          },
+          {
+            "text": "&#96;&#96;&#96;bash",
+            "lineNumber": 118
+          },
+          {
+            "text": "# Delete all location data for a device",
+            "lineNumber": 119
+          },
+          {
+            "text": "curl -H 'Content-Type: application/json' -X POST 'http://localhost:8090/v1/DeleteLocation' \\",
+            "lineNumber": 120
+          },
+          {
+            "text": "  -d '{\"MiataruDeleteLocation\":{\"Device\":\"my-device-123\"}}'",
+            "lineNumber": 121
+          },
+          {
+            "text": "&#96;&#96;&#96;",
+            "lineNumber": 122
+          },
+          {
+            "lineNumber": 123
+          },
+          {
+            "text": "For detailed documentation, see [DELETE_LOCATION_API.md](docs/DELETE_LOCATION_API.md).",
+            "lineNumber": 124
+          },
+          {
+            "lineNumber": 125
+          },
+          {
+            "text": "## CORS Configuration",
+            "lineNumber": 126
+          },
+          {
+            "lineNumber": 127
+          },
+          {
+            "text": "The server includes configurable CORS (Cross-Origin Resource Sharing) middleware for web applications:",
+            "lineNumber": 128
+          },
+          {
+            "lineNumber": 129
+          },
+          {
+            "text": "### Default Configuration",
+            "lineNumber": 130
+          },
+          {
+            "text": "&#96;&#96;&#96;javascript",
+            "lineNumber": 131
+          },
+          {
+            "text": "cors: {",
+            "lineNumber": 132
+          },
+          {
+            "text": "    allowedOrigins: [\"http://localhost:3000\", \"http://localhost:8080\", \"https://miataru.com\"]",
+            "lineNumber": 133
+          },
+          {
+            "text": "}",
+            "lineNumber": 134
+          },
+          {
+            "text": "&#96;&#96;&#96;",
+            "lineNumber": 135
+          },
+          {
+            "lineNumber": 136
+          },
+          {
+            "text": "### Custom CORS Setup",
+            "lineNumber": 137
+          },
+          {
+            "text": "Add to your configuration file:",
+            "lineNumber": 138
+          },
+          {
+            "text": "&#96;&#96;&#96;javascript",
+            "lineNumber": 139
+          },
+          {
+            "text": "module.exports = {",
+            "lineNumber": 140
+          },
+          {
+            "text": "    // ... other config",
+            "lineNumber": 141
+          },
+          {
+            "text": "    cors: {",
+            "lineNumber": 142
+          },
+          {
+            "text": "        allowedOrigins: [",
+            "lineNumber": 143
+          },
+          {
+            "text": "            \"http://localhost:3000\",",
+            "lineNumber": 144
+          },
+          {
+            "text": "            \"https://yourdomain.com\",",
+            "lineNumber": 145
+          },
+          {
+            "text": "            \"https://app.yourdomain.com\"",
+            "lineNumber": 146
+          },
+          {
+            "text": "        ]",
+            "lineNumber": 147
+          },
+          {
+            "text": "    }",
+            "lineNumber": 148
+          },
+          {
+            "text": "};",
+            "lineNumber": 149
+          },
+          {
+            "text": "&#96;&#96;&#96;",
+            "lineNumber": 150
+          },
+          {
+            "lineNumber": 151
+          },
+          {
+            "text": "### CORS Features",
+            "lineNumber": 152
+          },
+          {
+            "text": "- **Origin Validation**: Only allows requests from configured origins",
+            "lineNumber": 153
+          },
+          {
+            "text": "- **Credentials Support**: Supports authenticated requests",
+            "lineNumber": 154
+          },
+          {
+            "text": "- **Method Support**: GET, POST, PUT, DELETE, OPTIONS",
+            "lineNumber": 155
+          },
+          {
+            "text": "- **Header Support**: Content-Type, Authorization, X-Requested-With",
+            "lineNumber": 156
+          },
+          {
+            "text": "- **Preflight Handling**: Automatic OPTIONS request handling",
+            "lineNumber": 157
+          },
+          {
+            "lineNumber": 158
+          },
+          {
+            "text": "## Rate Limiting",
+            "lineNumber": 159
+          }
+        ]
+      },
+      "score": 0.2338484525680542
+    },
+    {
+      "codeBlock": {
+        "relativeWorkspacePath": "./tests/unit/dataHolder.tests.js",
+        "range": {
+          "startPosition": {},
+          "endPosition": {
+            "line": 305
+          }
+        },
+        "contents": "var expect = require('chai').expect;\n\nvar RequestConfig = require('../../lib/models/RequestConfig');\n\ndescribe('dataHolders', function() {\n\n    describe('config', function() {\n        it('should throw because of invalid data', function() {\n            expect(function() { new RequestConfig() }).to.throw();\n        });\n\n        describe('EnableLocationHistory validation', function() {\n            it('should accept string \"True\" and convert to boolean true', function() {\n                var config = new RequestConfig({\n                    EnableLocationHistory: \"True\",\n                    LocationDataRetentionTime: \"15\"\n                });\n                expect(config.enableLocationHistory()).to.equal(true);\n            });\n\n            it('should accept string \"true\" and convert to boolean true', function() {\n                var config = new RequestConfig({\n                    EnableLocationHistory: \"true\",\n                    LocationDataRetentionTime: \"15\"\n                });\n                expect(config.enableLocationHistory()).to.equal(true);\n            });\n\n            it('should accept string \"False\" and convert to boolean false', function() {\n                var config = new RequestConfig({\n                    EnableLocationHistory: \"False\",\n                    LocationDataRetentionTime: \"15\"\n                });\n                expect(config.enableLocationHistory()).to.equal(false);\n            });\n\n            it('should accept string \"false\" and convert to boolean false', function() {\n                var config = new RequestConfig({\n                    EnableLocationHistory: \"false\",\n                    LocationDataRetentionTime: \"15\"\n                });\n                expect(config.enableLocationHistory()).to.equal(false);\n            });\n\n            it('should accept any non-\"true\" string and convert to boolean false",
+        "signatures": {},
+        "detailedLines": [
+          {
+            "text": "var expect = require('chai').expect;",
+            "lineNumber": 1
+          },
+          {
+            "lineNumber": 2
+          },
+          {
+            "text": "var RequestConfig = require('../../lib/models/RequestConfig');",
+            "lineNumber": 3
+          },
+          {
+            "lineNumber": 4
+          },
+          {
+            "text": "describe('dataHolders', function() {",
+            "lineNumber": 5
+          },
+          {
+            "lineNumber": 6
+          },
+          {
+            "text": "    describe('config', function() {",
+            "lineNumber": 7
+          },
+          {
+            "text": "        it('should throw because of invalid data', function() {",
+            "lineNumber": 8
+          },
+          {
+            "text": "            expect(function() { new RequestConfig() }).to.throw();",
+            "lineNumber": 9
+          },
+          {
+            "text": "        });",
+            "lineNumber": 10
+          },
+          {
+            "lineNumber": 11
+          },
+          {
+            "text": "        describe('EnableLocationHistory validation', function() {",
+            "lineNumber": 12
+          },
+          {
+            "text": "            it('should accept string \"True\" and convert to boolean true', function() {",
+            "lineNumber": 13
+          },
+          {
+            "text": "                var config = new RequestConfig({",
+            "lineNumber": 14
+          },
+          {
+            "text": "                    EnableLocationHistory: \"True\",",
+            "lineNumber": 15
+          },
+          {
+            "text": "                    LocationDataRetentionTime: \"15\"",
+            "lineNumber": 16
+          },
+          {
+            "text": "                });",
+            "lineNumber": 17
+          },
+          {
+            "text": "                expect(config.enableLocationHistory()).to.equal(true);",
+            "lineNumber": 18
+          },
+          {
+            "text": "            });",
+            "lineNumber": 19
+          },
+          {
+            "lineNumber": 20
+          },
+          {
+            "text": "            it('should accept string \"true\" and convert to boolean true', function() {",
+            "lineNumber": 21
+          },
+          {
+            "text": "                var config = new RequestConfig({",
+            "lineNumber": 22
+          },
+          {
+            "text": "                    EnableLocationHistory: \"true\",",
+            "lineNumber": 23
+          },
+          {
+            "text": "                    LocationDataRetentionTime: \"15\"",
+            "lineNumber": 24
+          },
+          {
+            "text": "                });",
+            "lineNumber": 25
+          },
+          {
+            "text": "                expect(config.enableLocationHistory()).to.equal(true);",
+            "lineNumber": 26
+          },
+          {
+            "text": "            });",
+            "lineNumber": 27
+          },
+          {
+            "lineNumber": 28
+          },
+          {
+            "text": "            it('should accept string \"False\" and convert to boolean false', function() {",
+            "lineNumber": 29
+          },
+          {
+            "text": "                var config = new RequestConfig({",
+            "lineNumber": 30
+          },
+          {
+            "text": "                    EnableLocationHistory: \"False\",",
+            "lineNumber": 31
+          },
+          {
+            "text": "                    LocationDataRetentionTime: \"15\"",
+            "lineNumber": 32
+          },
+          {
+            "text": "                });",
+            "lineNumber": 33
+          },
+          {
+            "text": "                expect(config.enableLocationHistory()).to.equal(false);",
+            "lineNumber": 34
+          },
+          {
+            "text": "            });",
+            "lineNumber": 35
+          },
+          {
+            "lineNumber": 36
+          },
+          {
+            "text": "            it('should accept string \"false\" and convert to boolean false', function() {",
+            "lineNumber": 37
+          },
+          {
+            "text": "                var config = new RequestConfig({",
+            "lineNumber": 38
+          },
+          {
+            "text": "                    EnableLocationHistory: \"false\",",
+            "lineNumber": 39
+          },
+          {
+            "text": "                    LocationDataRetentionTime: \"15\"",
+            "lineNumber": 40
+          },
+          {
+            "text": "                });",
+            "lineNumber": 41
+          },
+          {
+            "text": "                expect(config.enableLocationHistory()).to.equal(false);",
+            "lineNumber": 42
+          },
+          {
+            "text": "            });",
+            "lineNumber": 43
+          },
+          {
+            "lineNumber": 44
+          },
+          {
+            "text": "            it('should accept any non-\"true\" string and convert to boolean false",
+            "lineNumber": 45
+          }
+        ]
+      },
+      "score": 0.23311036825180054
+    },
+    {
+      "codeBlock": {
+        "relativeWorkspacePath": "./.cursor/plans/add_recorddetailedvisitorhistory_configuration_f1956c44.plan.md",
+        "range": {
+          "startPosition": {
+            "line": 102
+          },
+          "endPosition": {
+            "line": 109,
+            "column": 191
+          }
+        },
+        "contents": "- Visitor list at max capacity\n- JSON parsing errors when reading existing entries\n- Redis operation errors\n- Multiple concurrent accesses (handled by existing Redis operations)\n\n### 8. Testing Considerations\n\nThe existing tests in &#96;tests/integration/visitorHistoryFiltering.tests.js&#96; should continue to work, but may need updates to test the new behavior when &#96;recordDetailedVisitorHistory&#96; is false.",
+        "signatures": {},
+        "detailedLines": [
+          {
+            "text": "- Visitor list at max capacity",
+            "lineNumber": 103
+          },
+          {
+            "text": "- JSON parsing errors when reading existing entries",
+            "lineNumber": 104
+          },
+          {
+            "text": "- Redis operation errors",
+            "lineNumber": 105
+          },
+          {
+            "text": "- Multiple concurrent accesses (handled by existing Redis operations)",
+            "lineNumber": 106
+          },
+          {
+            "lineNumber": 107
+          },
+          {
+            "text": "### 8. Testing Considerations",
+            "lineNumber": 108
+          },
+          {
+            "lineNumber": 109
+          },
+          {
+            "text": "The existing tests in &#96;tests/integration/visitorHistoryFiltering.tests.js&#96; should continue to work, but may need updates to test the new behavior when &#96;recordDetailedVisitorHistory&#96; is false.",
+            "lineNumber": 110
+          }
+        ]
+      },
+      "score": 0.22905409336090088
+    },
+    {
+      "codeBlock": {
+        "relativeWorkspacePath": "./tests/integration/visitorHistoryFiltering.tests.js",
+        "range": {
+          "startPosition": {},
+          "endPosition": {
+            "line": 421
+          }
+        },
+        "contents": "var expect = require('chai').expect;\nvar request = require('supertest');\n\nvar app = require('../../server');\nvar db = require('../../lib/db');\nvar kb = require('../../lib/utils/keyBuilder');\n\nvar TEST_DEVICE = 'VISITOR-TEST-DEVICE-12345';\nvar VISITOR_DEVICE_1 = 'VISITOR-DEVICE-1';\nvar VISITOR_DEVICE_2 = 'VISITOR-DEVICE-2';\nvar VISIT_KEY = kb.build(TEST_DEVICE, 'visit');\nvar LAST_KEY = kb.build(TEST_DEVICE, 'last');\n\ndescribe('Visitor History Filtering', function() {\n    beforeEach(function(done) {\n        // Clean up visitor history and last location for test device\n        db.del(VISIT_KEY, function(err1) {\n            db.del(LAST_KEY, function(err2) {\n                done(err1 || err2);\n            });\n        });\n    });\n\n    afterEach(function(done) {\n        // Clean up after each test\n        db.del(VISIT_KEY, function(err1) {\n            db.del(LAST_KEY, function(err2) {\n                done(err1 || err2);\n            });\n        });\n    });\n\n    describe('GetLocation with RequestMiataruDeviceID',",
+        "signatures": {},
+        "detailedLines": [
+          {
+            "text": "var expect = require('chai').expect;",
+            "lineNumber": 1
+          },
+          {
+            "text": "var request = require('supertest');",
+            "lineNumber": 2
+          },
+          {
+            "lineNumber": 3
+          },
+          {
+            "text": "var app = require('../../server');",
+            "lineNumber": 4
+          },
+          {
+            "text": "var db = require('../../lib/db');",
+            "lineNumber": 5
+          },
+          {
+            "text": "var kb = require('../../lib/utils/keyBuilder');",
+            "lineNumber": 6
+          },
+          {
+            "lineNumber": 7
+          },
+          {
+            "text": "var TEST_DEVICE = 'VISITOR-TEST-DEVICE-12345';",
+            "lineNumber": 8
+          },
+          {
+            "text": "var VISITOR_DEVICE_1 = 'VISITOR-DEVICE-1';",
+            "lineNumber": 9
+          },
+          {
+            "text": "var VISITOR_DEVICE_2 = 'VISITOR-DEVICE-2';",
+            "lineNumber": 10
+          },
+          {
+            "text": "var VISIT_KEY = kb.build(TEST_DEVICE, 'visit');",
+            "lineNumber": 11
+          },
+          {
+            "text": "var LAST_KEY = kb.build(TEST_DEVICE, 'last');",
+            "lineNumber": 12
+          },
+          {
+            "lineNumber": 13
+          },
+          {
+            "text": "describe('Visitor History Filtering', function() {",
+            "lineNumber": 14
+          },
+          {
+            "text": "    beforeEach(function(done) {",
+            "lineNumber": 15
+          },
+          {
+            "text": "        // Clean up visitor history and last location for test device",
+            "lineNumber": 16
+          },
+          {
+            "text": "        db.del(VISIT_KEY, function(err1) {",
+            "lineNumber": 17
+          },
+          {
+            "text": "            db.del(LAST_KEY, function(err2) {",
+            "lineNumber": 18
+          },
+          {
+            "text": "                done(err1 || err2);",
+            "lineNumber": 19
+          },
+          {
+            "text": "            });",
+            "lineNumber": 20
+          },
+          {
+            "text": "        });",
+            "lineNumber": 21
+          },
+          {
+            "text": "    });",
+            "lineNumber": 22
+          },
+          {
+            "lineNumber": 23
+          },
+          {
+            "text": "    afterEach(function(done) {",
+            "lineNumber": 24
+          },
+          {
+            "text": "        // Clean up after each test",
+            "lineNumber": 25
+          },
+          {
+            "text": "        db.del(VISIT_KEY, function(err1) {",
+            "lineNumber": 26
+          },
+          {
+            "text": "            db.del(LAST_KEY, function(err2) {",
+            "lineNumber": 27
+          },
+          {
+            "text": "                done(err1 || err2);",
+            "lineNumber": 28
+          },
+          {
+            "text": "            });",
+            "lineNumber": 29
+          },
+          {
+            "text": "        });",
+            "lineNumber": 30
+          },
+          {
+            "text": "    });",
+            "lineNumber": 31
+          },
+          {
+            "lineNumber": 32
+          },
+          {
+            "text": "    describe('GetLocation with RequestMiataruDeviceID',",
+            "lineNumber": 33
+          }
+        ]
+      },
+      "score": 0.2283652424812317
+    },
+    {
+      "codeBlock": {
+        "relativeWorkspacePath": "./tests/integration/unknownDevice.tests.js",
+        "range": {
+          "startPosition": {
+            "line": 6
+          },
+          "endPosition": {
+            "line": 380
+          }
+        },
+        "contents": " function() {\n        it('should return empty visitor history for unknown device ID', function(done) {\n            var getVisitorRequest = {\n                \"MiataruGetVisitorHistory\": {\n                    \"Device\": UNKNOWN_DEVICE_ID,\n                    \"Amount\": 10\n                }\n            };\n\n            request(app)\n                .post('/v1/GetVisitorHistory')\n                .send(getVisitorRequest)\n                .expect(200)\n                .expect(function(res) {\n                    expect(res.body.MiataruVisitors).to.be.an('array');\n                    expect(res.body.MiataruVisitors).to.have.length(0);\n                    expect(res.body.MiataruServerConfig.AvailableVisitorHistory).to.equal(0);\n                    expect(res.body.MiataruServerConfig.MaximumNumberOfVisitorHistory).to.be.a('number');\n                })\n                .end(done);\n        });\n\n        it('should return empty visitor history for unknown device ID (non-versioned endpoint)', function(done) {\n            var getVisitorRequest = {\n                \"MiataruGetVisitorHistory\": {\n                    \"Device\": UNKNOWN_DEVICE_ID,\n                    \"Amount\": 10\n                }\n            };\n\n            request(app)\n                .post('/GetVisitorHistory')\n                .send(getVisitorRequest)\n                .expect(200)\n                .expect(function(res) {\n                    expect(res.body.MiataruVisitors).to.be.an('array');\n                    expect(res.body.MiataruVisitors).to.have.length(0);\n                    expect(res.body.MiataruServerConfig.AvailableVisitorHistory).to.equal(0);\n                })\n                .end(done);\n        });\n    });\n\n    describe('DeleteLocation endpoint',",
+        "signatures": {
+          "ranges": [
+            {
+              "startPosition": {
+                "line": 7,
+                "column": 1
+              },
+              "endPosition": {
+                "line": 7,
+                "column": 1
+              }
+            },
+            {
+              "startPosition": {
+                "line": 67,
+                "column": 5
+              },
+              "endPosition": {
+                "line": 67,
+                "column": 5
+              }
+            }
+          ]
+        },
+        "detailedLines": [
+          {
+            "text": " function() {",
+            "lineNumber": 166
+          },
+          {
+            "text": "        it('should return empty visitor history for unknown device ID', function(done) {",
+            "lineNumber": 167
+          },
+          {
+            "text": "            var getVisitorRequest = {",
+            "lineNumber": 168
+          },
+          {
+            "text": "                \"MiataruGetVisitorHistory\": {",
+            "lineNumber": 169
+          },
+          {
+            "text": "                    \"Device\": UNKNOWN_DEVICE_ID,",
+            "lineNumber": 170
+          },
+          {
+            "text": "                    \"Amount\": 10",
+            "lineNumber": 171
+          },
+          {
+            "text": "                }",
+            "lineNumber": 172
+          },
+          {
+            "text": "            };",
+            "lineNumber": 173
+          },
+          {
+            "lineNumber": 174
+          },
+          {
+            "text": "            request(app)",
+            "lineNumber": 175
+          },
+          {
+            "text": "                .post('/v1/GetVisitorHistory')",
+            "lineNumber": 176
+          },
+          {
+            "text": "                .send(getVisitorRequest)",
+            "lineNumber": 177
+          },
+          {
+            "text": "                .expect(200)",
+            "lineNumber": 178
+          },
+          {
+            "text": "                .expect(function(res) {",
+            "lineNumber": 179
+          },
+          {
+            "text": "                    expect(res.body.MiataruVisitors).to.be.an('array');",
+            "lineNumber": 180
+          },
+          {
+            "text": "                    expect(res.body.MiataruVisitors).to.have.length(0);",
+            "lineNumber": 181
+          },
+          {
+            "text": "                    expect(res.body.MiataruServerConfig.AvailableVisitorHistory).to.equal(0);",
+            "lineNumber": 182
+          },
+          {
+            "text": "                    expect(res.body.MiataruServerConfig.MaximumNumberOfVisitorHistory).to.be.a('number');",
+            "lineNumber": 183
+          },
+          {
+            "text": "                })",
+            "lineNumber": 184
+          },
+          {
+            "text": "                .end(done);",
+            "lineNumber": 185
+          },
+          {
+            "text": "        });",
+            "lineNumber": 186
+          },
+          {
+            "lineNumber": 187
+          },
+          {
+            "text": "        it('should return empty visitor history for unknown device ID (non-versioned endpoint)', function(done) {",
+            "lineNumber": 188
+          },
+          {
+            "text": "            var getVisitorRequest = {",
+            "lineNumber": 189
+          },
+          {
+            "text": "                \"MiataruGetVisitorHistory\": {",
+            "lineNumber": 190
+          },
+          {
+            "text": "                    \"Device\": UNKNOWN_DEVICE_ID,",
+            "lineNumber": 191
+          },
+          {
+            "text": "                    \"Amount\": 10",
+            "lineNumber": 192
+          },
+          {
+            "text": "                }",
+            "lineNumber": 193
+          },
+          {
+            "text": "            };",
+            "lineNumber": 194
+          },
+          {
+            "lineNumber": 195
+          },
+          {
+            "text": "            request(app)",
+            "lineNumber": 196
+          },
+          {
+            "text": "                .post('/GetVisitorHistory')",
+            "lineNumber": 197
+          },
+          {
+            "text": "                .send(getVisitorRequest)",
+            "lineNumber": 198
+          },
+          {
+            "text": "                .expect(200)",
+            "lineNumber": 199
+          },
+          {
+            "text": "                .expect(function(res) {",
+            "lineNumber": 200
+          },
+          {
+            "text": "                    expect(res.body.MiataruVisitors).to.be.an('array');",
+            "lineNumber": 201
+          },
+          {
+            "text": "                    expect(res.body.MiataruVisitors).to.have.length(0);",
+            "lineNumber": 202
+          },
+          {
+            "text": "                    expect(res.body.MiataruServerConfig.AvailableVisitorHistory).to.equal(0);",
+            "lineNumber": 203
+          },
+          {
+            "text": "                })",
+            "lineNumber": 204
+          },
+          {
+            "text": "                .end(done);",
+            "lineNumber": 205
+          },
+          {
+            "text": "        });",
+            "lineNumber": 206
+          },
+          {
+            "text": "    });",
+            "lineNumber": 207
+          },
+          {
+            "lineNumber": 208
+          },
+          {
+            "text": "    describe('DeleteLocation endpoint',",
+            "lineNumber": 209
+          }
+        ]
+      },
+      "score": 0.22801609337329865
+    },
+    {
+      "codeBlock": {
+        "relativeWorkspacePath": "./lib/models/ResponseVisitorHistory.js",
+        "range": {
+          "startPosition": {},
+          "endPosition": {
+            "line": 6,
+            "column": 39
+          }
+        },
+        "contents": "function ResponseVisitorHistory(size, maxNumber, list) {\n    this._size = size;\n    this._visitorsList = list;\n    this._maxNumber = maxNumber;\n}\n\nResponseVisitorHistory.prototype.data =",
+        "signatures": {},
+        "detailedLines": [
+          {
+            "text": "function ResponseVisitorHistory(size, maxNumber, list) {",
+            "lineNumber": 1,
+            "isSignature": true
+          },
+          {
+            "text": "    this._size = size;",
+            "lineNumber": 2
+          },
+          {
+            "text": "    this._visitorsList = list;",
+            "lineNumber": 3
+          },
+          {
+            "text": "    this._maxNumber = maxNumber;",
+            "lineNumber": 4
+          },
+          {
+            "text": "}",
+            "lineNumber": 5,
+            "isSignature": true
+          },
+          {
+            "lineNumber": 6
+          },
+          {
+            "text": "ResponseVisitorHistory.prototype.data =",
+            "lineNumber": 7
+          }
+        ]
+      },
+      "score": 0.22503529489040375
+    },
+    {
+      "codeBlock": {
+        "relativeWorkspacePath": "./lib/routes/location/index.js",
+        "range": {
+          "startPosition": {},
+          "endPosition": {
+            "line": 44,
+            "column": 63
+          }
+        },
+        "contents": "var v1 = require('./v1');\nvar errors = require('../../errors');\n\nmodule.exports.install = function(app) {\n\n    ///////////////////////////////////////////\n    ///// API Version 1 ///////////////////////\n    ///////////////////////////////////////////\n    app.post('/v1/UpdateLocation', v1.inputParser, v1.updateLocation);\n    app.post('/v1/GetLocation', v1.inputParser, v1.getLocation);\n    app.post('/v1/GetLocationGeoJSON', v1.inputParser, v1.getLocationGeoJSON);\n    app.get('/v1/GetLocationGeoJSON/:id?',  function(req, res){\n        v1.getLocationGeoJSONGET(req.params.id, res,null);\n    });\n    app.post('/v1/GetLocationHistory', v1.inputParser, v1.getLocationHistory);\n    app.post('/v1/GetVisitorHistory', v1.inputParser, v1.getVisitorHistory);\n    app.post('/v1/DeleteLocation', v1.inputParser, v1.deleteLocation);\n\n    ///////////////////////////////////////////\n    ///// API current /////////////////////////\n    ///////////////////////////////////////////\n    app.post('/UpdateLocation', v1.inputParser, v1.updateLocation);\n    app.post('/GetLocation', v1.inputParser, v1.getLocation);\n    app.post('/GetLocationGeoJSON', v1.inputParser, v1.getLocationGeoJSON);\n    app.get('/GetLocationGeoJSON/:id?',  function(req, res){\n        v1.getLocationGeoJSONGET(req.params.id, res,null);\n    });\n    app.post('/GetLocationHistory', v1.inputParser, v1.getLocationHistory);\n    app.post('/GetVisitorHistory', v1.inputParser, v1.getVisitorHistory);\n    app.post('/DeleteLocation', v1.inputParser, v1.deleteLocation);\n\n    ///////////////////////////////////////////\n    ///// non-Post /////////////////////////\n    ///////////////////////////////////////////\n    function handleUnsupportedMethod(req, res, next) {\n        if (req.method === 'OPTIONS') {\n            return res.status(204).end();\n        }\n\n        next(new errors.MethodNotSupportedError(req.method, req.path));\n    }\n\n    app.all('/v1/UpdateLocation', handleUnsupportedMethod);\n    app.all('/v1/GetLocation', handleUnsupportedMethod);\n    app.all('/v1/GetLocationGeoJSON', handleUnsupportedMethod);",
+        "signatures": {},
+        "detailedLines": [
+          {
+            "text": "var v1 = require('./v1');",
+            "lineNumber": 1
+          },
+          {
+            "text": "var errors = require('../../errors');",
+            "lineNumber": 2
+          },
+          {
+            "lineNumber": 3
+          },
+          {
+            "text": "module.exports.install = function(app) {",
+            "lineNumber": 4
+          },
+          {
+            "lineNumber": 5
+          },
+          {
+            "text": "    ///////////////////////////////////////////",
+            "lineNumber": 6
+          },
+          {
+            "text": "    ///// API Version 1 ///////////////////////",
+            "lineNumber": 7
+          },
+          {
+            "text": "    ///////////////////////////////////////////",
+            "lineNumber": 8
+          },
+          {
+            "text": "    app.post('/v1/UpdateLocation', v1.inputParser, v1.updateLocation);",
+            "lineNumber": 9
+          },
+          {
+            "text": "    app.post('/v1/GetLocation', v1.inputParser, v1.getLocation);",
+            "lineNumber": 10
+          },
+          {
+            "text": "    app.post('/v1/GetLocationGeoJSON', v1.inputParser, v1.getLocationGeoJSON);",
+            "lineNumber": 11
+          },
+          {
+            "text": "    app.get('/v1/GetLocationGeoJSON/:id?',  function(req, res){",
+            "lineNumber": 12
+          },
+          {
+            "text": "        v1.getLocationGeoJSONGET(req.params.id, res,null);",
+            "lineNumber": 13
+          },
+          {
+            "text": "    });",
+            "lineNumber": 14
+          },
+          {
+            "text": "    app.post('/v1/GetLocationHistory', v1.inputParser, v1.getLocationHistory);",
+            "lineNumber": 15
+          },
+          {
+            "text": "    app.post('/v1/GetVisitorHistory', v1.inputParser, v1.getVisitorHistory);",
+            "lineNumber": 16
+          },
+          {
+            "text": "    app.post('/v1/DeleteLocation', v1.inputParser, v1.deleteLocation);",
+            "lineNumber": 17
+          },
+          {
+            "lineNumber": 18
+          },
+          {
+            "text": "    ///////////////////////////////////////////",
+            "lineNumber": 19
+          },
+          {
+            "text": "    ///// API current /////////////////////////",
+            "lineNumber": 20
+          },
+          {
+            "text": "    ///////////////////////////////////////////",
+            "lineNumber": 21
+          },
+          {
+            "text": "    app.post('/UpdateLocation', v1.inputParser, v1.updateLocation);",
+            "lineNumber": 22
+          },
+          {
+            "text": "    app.post('/GetLocation', v1.inputParser, v1.getLocation);",
+            "lineNumber": 23
+          },
+          {
+            "text": "    app.post('/GetLocationGeoJSON', v1.inputParser, v1.getLocationGeoJSON);",
+            "lineNumber": 24
+          },
+          {
+            "text": "    app.get('/GetLocationGeoJSON/:id?',  function(req, res){",
+            "lineNumber": 25
+          },
+          {
+            "text": "        v1.getLocationGeoJSONGET(req.params.id, res,null);",
+            "lineNumber": 26
+          },
+          {
+            "text": "    });",
+            "lineNumber": 27
+          },
+          {
+            "text": "    app.post('/GetLocationHistory', v1.inputParser, v1.getLocationHistory);",
+            "lineNumber": 28
+          },
+          {
+            "text": "    app.post('/GetVisitorHistory', v1.inputParser, v1.getVisitorHistory);",
+            "lineNumber": 29
+          },
+          {
+            "text": "    app.post('/DeleteLocation', v1.inputParser, v1.deleteLocation);",
+            "lineNumber": 30
+          },
+          {
+            "lineNumber": 31
+          },
+          {
+            "text": "    ///////////////////////////////////////////",
+            "lineNumber": 32
+          },
+          {
+            "text": "    ///// non-Post /////////////////////////",
+            "lineNumber": 33
+          },
+          {
+            "text": "    ///////////////////////////////////////////",
+            "lineNumber": 34
+          },
+          {
+            "text": "    function handleUnsupportedMethod(req, res, next) {",
+            "lineNumber": 35
+          },
+          {
+            "text": "        if (req.method === 'OPTIONS') {",
+            "lineNumber": 36
+          },
+          {
+            "text": "            return res.status(204).end();",
+            "lineNumber": 37
+          },
+          {
+            "text": "        }",
+            "lineNumber": 38
+          },
+          {
+            "lineNumber": 39
+          },
+          {
+            "text": "        next(new errors.MethodNotSupportedError(req.method, req.path));",
+            "lineNumber": 40
+          },
+          {
+            "text": "    }",
+            "lineNumber": 41
+          },
+          {
+            "lineNumber": 42
+          },
+          {
+            "text": "    app.all('/v1/UpdateLocation', handleUnsupportedMethod);",
+            "lineNumber": 43
+          },
+          {
+            "text": "    app.all('/v1/GetLocation', handleUnsupportedMethod);",
+            "lineNumber": 44
+          },
+          {
+            "text": "    app.all('/v1/GetLocationGeoJSON', handleUnsupportedMethod);",
+            "lineNumber": 45
+          }
+        ]
+      },
+      "score": 0.2233528047800064
+    },
+    {
+      "codeBlock": {
+        "relativeWorkspacePath": "./lib/routes/location/v1/location.js",
+        "range": {
+          "startPosition": {
+            "line": 347
+          },
+          "endPosition": {
+            "line": 416,
+            "column": 3
+          }
+        },
+        "contents": "function getVisitorHistory(req, res, next) {\n\n\n);\n        })\n        .seq(function() {\n\n            try {\n                var targetDeviceID = locationRequest.device();\n                var parsedList = (this.vars.list || []).map(function(value) {\n                    return JSON.parse(value);\n                }).filter(function(visitor) {\n                    // Filter out entries where visitor DeviceID equals the requested deviceID\n                    return visitor.DeviceID !== targetDeviceID;\n                });\n\n                // Recalculate the filtered list length for the response\n                var filteredListLength = parsedList.length;\n\n                res.send((new models.ResponseVisitorHistory(\n                    filteredListLength,\n                    configuration.maximumNumberOfLocationVistors,\n                    parsedList\n                )).data());\n            } catch (parseError) {\n                next(new errors.InternalServerError('Invalid visitor history data format'));\n            }\n        })\n        .catch(function(error) {\n            next(new errors.InternalServerError(error));\n        });\n}\n\n/**\n * DeleteLocation\n * Deletes all location data (current and historical) for a device\n * @param req\n * @param res\n * @param next\n */",
+        "signatures": {
+          "ranges": [
+            {
+              "startPosition": {
+                "line": 348,
+                "column": 1
+              },
+              "endPosition": {
+                "line": 349,
+                "column": 5
+              }
+            },
+            {
+              "startPosition": {
+                "line": 352,
+                "column": 5
+              },
+              "endPosition": {
+                "line": 352,
+                "column": 5
+              }
+            },
+            {
+              "startPosition": {
+                "line": 352,
+                "column": 5
+              },
+              "endPosition": {
+                "line": 352,
+                "column": 5
+              }
+            }
+          ]
+        },
+        "detailedLines": [
+          {
+            "text": "function getVisitorHistory(req, res, next) {",
+            "lineNumber": 348,
+            "isSignature": true
+          },
+          {
+            "lineNumber": 352
+          },
+          {
+            "lineNumber": 374
+          },
+          {
+            "text": ");",
+            "lineNumber": 381
+          },
+          {
+            "text": "        })",
+            "lineNumber": 382
+          },
+          {
+            "text": "        .seq(function() {",
+            "lineNumber": 383
+          },
+          {
+            "lineNumber": 384
+          },
+          {
+            "text": "            try {",
+            "lineNumber": 385
+          },
+          {
+            "text": "                var targetDeviceID = locationRequest.device();",
+            "lineNumber": 386
+          },
+          {
+            "text": "                var parsedList = (this.vars.list || []).map(function(value) {",
+            "lineNumber": 387
+          },
+          {
+            "text": "                    return JSON.parse(value);",
+            "lineNumber": 388
+          },
+          {
+            "text": "                }).filter(function(visitor) {",
+            "lineNumber": 389
+          },
+          {
+            "text": "                    // Filter out entries where visitor DeviceID equals the requested deviceID",
+            "lineNumber": 390
+          },
+          {
+            "text": "                    return visitor.DeviceID !== targetDeviceID;",
+            "lineNumber": 391
+          },
+          {
+            "text": "                });",
+            "lineNumber": 392
+          },
+          {
+            "lineNumber": 393
+          },
+          {
+            "text": "                // Recalculate the filtered list length for the response",
+            "lineNumber": 394
+          },
+          {
+            "text": "                var filteredListLength = parsedList.length;",
+            "lineNumber": 395
+          },
+          {
+            "lineNumber": 396
+          },
+          {
+            "text": "                res.send((new models.ResponseVisitorHistory(",
+            "lineNumber": 397
+          },
+          {
+            "text": "                    filteredListLength,",
+            "lineNumber": 398
+          },
+          {
+            "text": "                    configuration.maximumNumberOfLocationVistors,",
+            "lineNumber": 399
+          },
+          {
+            "text": "                    parsedList",
+            "lineNumber": 400
+          },
+          {
+            "text": "                )).data());",
+            "lineNumber": 401
+          },
+          {
+            "text": "            } catch (parseError) {",
+            "lineNumber": 402
+          },
+          {
+            "text": "                next(new errors.InternalServerError('Invalid visitor history data format'));",
+            "lineNumber": 403
+          },
+          {
+            "text": "            }",
+            "lineNumber": 404
+          },
+          {
+            "text": "        })",
+            "lineNumber": 405
+          },
+          {
+            "text": "        .catch(function(error) {",
+            "lineNumber": 406
+          },
+          {
+            "text": "            next(new errors.InternalServerError(error));",
+            "lineNumber": 407
+          },
+          {
+            "text": "        });",
+            "lineNumber": 408
+          },
+          {
+            "text": "}",
+            "lineNumber": 409,
+            "isSignature": true
+          },
+          {
+            "lineNumber": 410
+          },
+          {
+            "text": "/**",
+            "lineNumber": 411
+          },
+          {
+            "text": " * DeleteLocation",
+            "lineNumber": 412
+          },
+          {
+            "text": " * Deletes all location data (current and historical) for a device",
+            "lineNumber": 413
+          },
+          {
+            "text": " * @param req",
+            "lineNumber": 414
+          },
+          {
+            "text": " * @param res",
+            "lineNumber": 415
+          },
+          {
+            "text": " * @param next",
+            "lineNumber": 416
+          },
+          {
+            "text": " */",
+            "lineNumber": 417
+          }
+        ]
+      },
+      "score": 0.22108019888401031
+    },
+    {
+      "codeBlock": {
+        "relativeWorkspacePath": "./tests/testFiles/calls.js",
+        "range": {
+          "startPosition": {},
+          "endPosition": {
+            "line": 41,
+            "column": 1
+          }
+        },
+        "contents": "function location(options) {\n\n}\n\nfunction config(options) {\n    options = options || {};\n\n    return {\n        \"EnableLocationHistory\": options.history !== undefined ? options.history+'' : \"True\",\n        \"LocationDataRetentionTime\": options.retentionTime || \"15\"\n    }\n}\n\nfunction locationUpdate(options) {\n    options = options || {};\n}",
+        "signatures": {},
+        "detailedLines": [
+          {
+            "text": "function location(options) {",
+            "lineNumber": 1,
+            "isSignature": true
+          },
+          {
+            "lineNumber": 23
+          },
+          {
+            "text": "}",
+            "lineNumber": 24,
+            "isSignature": true
+          },
+          {
+            "lineNumber": 25
+          },
+          {
+            "text": "function config(options) {",
+            "lineNumber": 26,
+            "isSignature": true
+          },
+          {
+            "text": "    options = options || {};",
+            "lineNumber": 27
+          },
+          {
+            "lineNumber": 28
+          },
+          {
+            "text": "    return {",
+            "lineNumber": 29
+          },
+          {
+            "text": "        \"EnableLocationHistory\": options.history !== undefined ? options.history+'' : \"True\",",
+            "lineNumber": 30
+          },
+          {
+            "text": "        \"LocationDataRetentionTime\": options.retentionTime || \"15\"",
+            "lineNumber": 31
+          },
+          {
+            "text": "    }",
+            "lineNumber": 32
+          },
+          {
+            "text": "}",
+            "lineNumber": 33,
+            "isSignature": true
+          },
+          {
+            "lineNumber": 34
+          },
+          {
+            "text": "function locationUpdate(options) {",
+            "lineNumber": 35,
+            "isSignature": true
+          },
+          {
+            "text": "    options = options || {};",
+            "lineNumber": 36
+          },
+          {
+            "text": "}",
+            "lineNumber": 42,
+            "isSignature": true
+          }
+        ]
+      },
+      "score": 0.2202945351600647
+    },
+    {
+      "codeBlock": {
+        "relativeWorkspacePath": "./lib/routes/location/v1/inputParser.js",
+        "range": {
+          "startPosition": {
+            "column": 61
+          },
+          "endPosition": {
+            "line": 61,
+            "column": 1
+          }
+        },
+        "contents": "var RequestConfigGetLocation = require('../../../models/RequestConfigGetLocation');\nvar RequestLocation = require('../../../models/RequestLocation');\nvar RequestDevice = require('../../../models/RequestDevice');\nvar RequestLocationHistory = require('../../../models/RequestLocationHistory');\nvar RequestVisitorHistory = require('../../../models/RequestVisitorHistory');\n\nmodule.exports = function(req, res, next) {\n    req.MIATARU = req.MIATARU || {};\n\n    var nextError;\n\n    try {\n        switch(req.path) {\n            case '/UpdateLocation':\n            case '/v1/UpdateLocation':\n                parseUpdateLocation(req);\n                break;\n            case '/GetLocation':\n            case '/v1/GetLocation':\n                parseGetLocations(req);\n                break;\n            case '/GetLocationGeoJSON':\n            case '/v1/GetLocationGeoJSON':\n                parseGetLocationsGeoJSON(req);\n                break;\n            case '/GetLocationHistory':\n            case '/v1/GetLocationHistory':\n                parseGetLocationHistory(req);\n                break;\n            case '/v1/GetVisitorHistory':\n            case '/GetVisitorHistory':\n                parseGetVisitorHistory(req);\n                break;\n            case '/DeleteLocation':\n            case '/v1/DeleteLocation':\n                parseDeleteLocation(req);\n                break;\n        }\n    }\n    catch(error) {\n        nextError = error;\n    }\n\n    next(nextError);\n};\n\nfunction parseUpdateLocation(req) {\n    var locations = req.body['MiataruLocation'];\n}",
+        "signatures": {},
+        "detailedLines": [
+          {
+            "text": "var RequestConfigGetLocation = require('../../../models/RequestConfigGetLocation');",
+            "lineNumber": 2
+          },
+          {
+            "text": "var RequestLocation = require('../../../models/RequestLocation');",
+            "lineNumber": 3
+          },
+          {
+            "text": "var RequestDevice = require('../../../models/RequestDevice');",
+            "lineNumber": 4
+          },
+          {
+            "text": "var RequestLocationHistory = require('../../../models/RequestLocationHistory');",
+            "lineNumber": 5
+          },
+          {
+            "text": "var RequestVisitorHistory = require('../../../models/RequestVisitorHistory');",
+            "lineNumber": 6
+          },
+          {
+            "lineNumber": 7
+          },
+          {
+            "text": "module.exports = function(req, res, next) {",
+            "lineNumber": 8
+          },
+          {
+            "text": "    req.MIATARU = req.MIATARU || {};",
+            "lineNumber": 9
+          },
+          {
+            "lineNumber": 10
+          },
+          {
+            "text": "    var nextError;",
+            "lineNumber": 11
+          },
+          {
+            "lineNumber": 12
+          },
+          {
+            "text": "    try {",
+            "lineNumber": 13
+          },
+          {
+            "text": "        switch(req.path) {",
+            "lineNumber": 14
+          },
+          {
+            "text": "            case '/UpdateLocation':",
+            "lineNumber": 15
+          },
+          {
+            "text": "            case '/v1/UpdateLocation':",
+            "lineNumber": 16
+          },
+          {
+            "text": "                parseUpdateLocation(req);",
+            "lineNumber": 17
+          },
+          {
+            "text": "                break;",
+            "lineNumber": 18
+          },
+          {
+            "text": "            case '/GetLocation':",
+            "lineNumber": 19
+          },
+          {
+            "text": "            case '/v1/GetLocation':",
+            "lineNumber": 20
+          },
+          {
+            "text": "                parseGetLocations(req);",
+            "lineNumber": 21
+          },
+          {
+            "text": "                break;",
+            "lineNumber": 22
+          },
+          {
+            "text": "            case '/GetLocationGeoJSON':",
+            "lineNumber": 23
+          },
+          {
+            "text": "            case '/v1/GetLocationGeoJSON':",
+            "lineNumber": 24
+          },
+          {
+            "text": "                parseGetLocationsGeoJSON(req);",
+            "lineNumber": 25
+          },
+          {
+            "text": "                break;",
+            "lineNumber": 26
+          },
+          {
+            "text": "            case '/GetLocationHistory':",
+            "lineNumber": 27
+          },
+          {
+            "text": "            case '/v1/GetLocationHistory':",
+            "lineNumber": 28
+          },
+          {
+            "text": "                parseGetLocationHistory(req);",
+            "lineNumber": 29
+          },
+          {
+            "text": "                break;",
+            "lineNumber": 30
+          },
+          {
+            "text": "            case '/v1/GetVisitorHistory':",
+            "lineNumber": 31
+          },
+          {
+            "text": "            case '/GetVisitorHistory':",
+            "lineNumber": 32
+          },
+          {
+            "text": "                parseGetVisitorHistory(req);",
+            "lineNumber": 33
+          },
+          {
+            "text": "                break;",
+            "lineNumber": 34
+          },
+          {
+            "text": "            case '/DeleteLocation':",
+            "lineNumber": 35
+          },
+          {
+            "text": "            case '/v1/DeleteLocation':",
+            "lineNumber": 36
+          },
+          {
+            "text": "                parseDeleteLocation(req);",
+            "lineNumber": 37
+          },
+          {
+            "text": "                break;",
+            "lineNumber": 38
+          },
+          {
+            "text": "        }",
+            "lineNumber": 39
+          },
+          {
+            "text": "    }",
+            "lineNumber": 40
+          },
+          {
+            "text": "    catch(error) {",
+            "lineNumber": 41
+          },
+          {
+            "text": "        nextError = error;",
+            "lineNumber": 42
+          },
+          {
+            "text": "    }",
+            "lineNumber": 43
+          },
+          {
+            "lineNumber": 44
+          },
+          {
+            "text": "    next(nextError);",
+            "lineNumber": 45
+          },
+          {
+            "text": "};",
+            "lineNumber": 46
+          },
+          {
+            "lineNumber": 47
+          },
+          {
+            "text": "function parseUpdateLocation(req) {",
+            "lineNumber": 48,
+            "isSignature": true
+          },
+          {
+            "text": "    var locations = req.body['MiataruLocation'];",
+            "lineNumber": 49
+          },
+          {
+            "text": "}",
+            "lineNumber": 62,
+            "isSignature": true
+          }
+        ]
+      },
+      "score": 0.21893270313739777
+    }
+  ]
+}
+```
+Status: **completed**
+
+
+</details>
+</tool-use>
+
+---
+
+<tool-use data-tool-type="unknown" data-tool-name="ripgrep_raw_search">
+<details>
+<summary>Tool use: **ripgrep_raw_search**</summary>
+
+
+Parameters:
+
+```json
+{
+  "pattern": "maximumNumberOfLocationVistors|addEmptyVisitorDeviceIDtoVisitorHistory|visitor.*history|Visitor.*History",
+  "path": "docs",
+  "caseInsensitive": true
+}
+```
+Result:
+
+```json
+{
+  "success": {
+    "pattern": "maximumNumberOfLocationVistors|addEmptyVisitorDeviceIDtoVisitorHistory|visitor.*history|Visitor.*History",
+    "path": "docs",
+    "outputMode": "content",
+    "workspaceResults": {
+      "/Users/bietiekay/code/miataru-server": {
+        "content": {
+          "matches": [
+            {
+              "file": "docs/DELETE_LOCATION_API.md",
+              "matches": [
+                {
+                  "lineNumber": 9,
+                  "content": "- Visitor history data"
+                },
+                {
+                  "lineNumber": 113,
+                  "content": "3. **Visitor History**: &#96;miad:{device-id}:visit&#96;"
+                }
+              ]
+            }
+          ],
+          "totalLines": 2,
+          "totalMatchedLines": 2
+        }
+      }
+    }
+  }
+}
+```
+Status: **completed**
+
+
+</details>
+</tool-use>
+
+---
+
+
+Updating the plan to add documentation for the visitor history configuration options:
+
+
+---
+
+<tool-use data-tool-type="read" data-tool-name="read_file_v2">
+<details><summary>Tool use: **read_file_v2** • Read file: /Users/bietiekay/code/miataru-server/README.md</summary>
+
+</details>
+</tool-use>
+
+---
+
+<tool-use data-tool-type="write" data-tool-name="edit_file_v2">
+
+<details><summary>Tool use: **edit_file_v2** • Edit file: /Users/bietiekay/code/miataru-server/.cursor/plans/add_recorddetailedvisitorhistory_configuration_f1956c44.plan.md</summary>
+
+</details>
+
+</tool-use>
+
+---
+
+<tool-use data-tool-type="write" data-tool-name="edit_file_v2">
+
+<details><summary>Tool use: **edit_file_v2** • Edit file: /Users/bietiekay/code/miataru-server/.cursor/plans/add_recorddetailedvisitorhistory_configuration_f1956c44.plan.md</summary>
+
+</details>
+
+</tool-use>
+
+---
+
+
+Updating the plan with documentation details:
+
+
+---
+
+<tool-use data-tool-type="write" data-tool-name="edit_file_v2">
+
+<details><summary>Tool use: **edit_file_v2** • Edit file: /Users/bietiekay/code/miataru-server/.cursor/plans/add_recorddetailedvisitorhistory_configuration_f1956c44.plan.md</summary>
+
+Status: **loading**
+
+</details>
+
+</tool-use>
+
+---
+
