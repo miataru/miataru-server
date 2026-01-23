@@ -1,6 +1,6 @@
 # miataru-server
 
-**Version 1.1.0** - Modernized server with enhanced features and improved security
+**Version 1.3.0** - Modernized server with enhanced features and improved security
 
 This is the source code of a Miataru server side implementation. You can get more information [here](http://www.miataru.com).
 
