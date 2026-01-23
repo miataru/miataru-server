@@ -4,19 +4,19 @@ overview: "Add a configuration option `recordDetailedVisitorHistory` (default: f
 todos:
   - id: add-config-option
     content: "Add recordDetailedVisitorHistory: false to config/default.js, config/test.js, and config/user.service.js"
-    status: pending
+    status: completed
   - id: create-helper-function
     content: Create helper function in location.js to handle visitor history recording with both modes
-    status: pending
+    status: completed
   - id: update-getlocationhistory
     content: Update getLocationHistory function to use the new helper
-    status: pending
+    status: completed
   - id: update-getlocation
     content: Update getLocation function to use the new helper
-    status: pending
+    status: in_progress
   - id: add-documentation
     content: Add comprehensive documentation section to README.md explaining all onfiguration options
-    status: pending
+    status: completed
 ---
 
 # Add recordDetailedVisitorHistory Configuration Option
