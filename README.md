@@ -199,6 +199,89 @@ rateLimiting: {
 
 When the queue is full, Redis operations fail fast with an error indicating the concurrency limit was exceeded. Operations that wait longer than `queueTimeoutMs` are rejected with a timeout error.
 
+## Visitor History Configuration
+
+The server tracks which devices have accessed location data for other devices. This visitor history can be configured to control how entries are recorded and stored.
+
+### Configuration Options
+
+#### `maximumNumberOfLocationVistors`
+
+Maximum number of visitor entries to store per device.
+
+- **Default**: `10`
+- **Type**: Number
+- **Note**: This is +1 (starts with 0), so 10 means 11 entries max
+
+```javascript
+module.exports = {
+    maximumNumberOfLocationVistors: 10
+};
+```
+
+#### `addEmptyVisitorDeviceIDtoVisitorHistory`
+
+Whether to record visitors that don't have a device ID (empty `RequestMiataruDeviceID`).
+
+- **Default**: `false`
+- **Type**: Boolean
+- **When `false`**: Unknown visitors (empty device ID) are not recorded
+- **When `true`**: All visitors are recorded, even without device IDs
+
+```javascript
+module.exports = {
+    addEmptyVisitorDeviceIDtoVisitorHistory: false
+};
+```
+
+#### `recordDetailedVisitorHistory`
+
+Controls how visitor history entries are recorded.
+
+- **Default**: `false` (OFF mode)
+- **Type**: Boolean
+- **When `false` (OFF mode)**: Each accessing device is only recorded once. If the same device accesses the location again, its existing entry is updated with the new timestamp and information. This mode is more storage-efficient and shows only unique visitors with their latest access time.
+- **When `true` (ON mode)**: Every access to a location is recorded as a separate history entry with a timestamp. This mode provides a complete audit trail of all accesses but uses more storage.
+
+```javascript
+module.exports = {
+    recordDetailedVisitorHistory: false  // OFF mode (default)
+};
+```
+
+### Complete Configuration Example
+
+```javascript
+module.exports = {
+    // ... other configuration
+    
+    // Visitor History Configuration
+    maximumNumberOfLocationVistors: 10,
+    addEmptyVisitorDeviceIDtoVisitorHistory: false,
+    recordDetailedVisitorHistory: false  // OFF mode (default)
+};
+```
+
+### Use Cases
+
+#### `recordDetailedVisitorHistory: false` (Recommended for most use cases)
+
+Use this mode when:
+- You want to track unique visitors and their last access time
+- Storage efficiency is important
+- You only need to know "who visited" and "when they last visited"
+
+Example: A location sharing app where you want to see which friends have checked your location, with their most recent access time.
+
+#### `recordDetailedVisitorHistory: true`
+
+Use this mode when:
+- You need a complete audit trail of all accesses
+- You want to analyze access patterns over time
+- You need to track frequency of visits per device
+
+Example: A security monitoring system where you need to log every access attempt with timestamps for compliance or analysis.
+
 ## Docker
 
 You can use the included Dockerfile to build your own docker image for running a miataru server.

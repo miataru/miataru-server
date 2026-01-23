@@ -37,6 +37,9 @@ module.exports = {
     // if there's an unknown visitor (no deviceID given) do you want it still to be added to the visitor history?
     addEmptyVisitorDeviceIDtoVisitorHistory: false,
 
+    // controls how visitor history entries are recorded: false = each device recorded once and updated on subsequent accesses, true = every access recorded as separate entry
+    recordDetailedVisitorHistory: false,
+
     //namespacing for redis keys
     redisMiataruNamespace: "miad",
 
