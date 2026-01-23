@@ -20872,3 +20872,45 @@ what is the new default behaviour
 
 ---
 
+_**Agent (model default, mode Agent)**_
+
+
+The new default behavior is OFF mode (`recordDetailedVisitorHistory: false`).
+
+## Default behavior (OFF mode)
+
+When `recordDetailedVisitorHistory` is `false` (default):
+
+- Each accessing device is recorded once. If the same device accesses the location again, its existing entry is updated with the new timestamp and information.
+- The visitor history is sorted by timestamp, with the newest visits at the top.
+- More storage-efficient: only unique visitors are stored, not every access.
+
+### Example:
+If Device A accesses a location 5 times:
+- OFF mode (default): 1 entry for Device A with the most recent timestamp
+- ON mode: 5 separate entries, one for each access
+
+## Previous behavior (now ON mode)
+
+When `recordDetailedVisitorHistory` is `true`:
+- Every access is recorded as a separate entry
+- Provides a complete audit trail
+- Uses more storage
+
+## Configuration
+
+The default is set in:
+- `config/default.js`: `recordDetailedVisitorHistory: false`
+- `config/test.js`: `recordDetailedVisitorHistory: false`
+- `config/user.service.js`: `recordDetailedVisitorHistory: false`
+
+To use the previous behavior (every access recorded separately), set `recordDetailedVisitorHistory: true` in your configuration file.
+
+---
+
+_**User**_
+
+describe all changes and commit everything
+
+---
+
