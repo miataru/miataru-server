@@ -207,11 +207,13 @@ The server tracks which devices have accessed location data for other devices. T
 
 #### `maximumNumberOfLocationVistors`
 
-Maximum number of visitor entries to store per device.
+Maximum number of visitor entries to store per device. The behavior depends on the `recordDetailedVisitorHistory` setting:
 
 - **Default**: `10`
 - **Type**: Number
 - **Note**: This is +1 (starts with 0), so 10 means 11 entries max
+- **When `recordDetailedVisitorHistory: false`**: This is the maximum number of **unique devices** that can be tracked (one entry per device)
+- **When `recordDetailedVisitorHistory: true`**: This is the maximum number of **total entries** (multiple entries per device allowed)
 
 ```javascript
 module.exports = {
@@ -240,8 +242,17 @@ Controls how visitor history entries are recorded.
 
 - **Default**: `false` (OFF mode)
 - **Type**: Boolean
-- **When `false` (OFF mode)**: Each accessing device is only recorded once. If the same device accesses the location again, its existing entry is updated with the new timestamp and information. This mode is more storage-efficient and shows only unique visitors with their latest access time.
-- **When `true` (ON mode)**: Every access to a location is recorded as a separate history entry with a timestamp. This mode provides a complete audit trail of all accesses but uses more storage.
+- **When `false` (OFF mode)**: 
+  - Each accessing device is only recorded once with its most recent access information
+  - If the same device accesses the location again, its existing entry is replaced with the new timestamp and information
+  - Only the newest entry per device is kept - older entries for the same device are discarded
+  - The `maximumNumberOfLocationVistors` limit applies to the number of **unique devices** (not total entries)
+  - This mode is more storage-efficient and shows only unique visitors with their latest access time
+- **When `true` (ON mode)**: 
+  - Every access to a location is recorded as a separate history entry with a timestamp
+  - Multiple entries per device are allowed
+  - The `maximumNumberOfLocationVistors` limit applies to the **total number of entries** (across all devices)
+  - This mode provides a complete audit trail of all accesses but uses more storage
 
 ```javascript
 module.exports = {

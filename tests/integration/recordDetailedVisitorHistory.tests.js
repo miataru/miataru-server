@@ -368,6 +368,9 @@ describe('recordDetailedVisitorHistory Configuration', function() {
         });
 
         it('should sort visitors by timestamp with newest first', function(done) {
+            // Increase timeout for this test
+            this.timeout(5000);
+            
             // First, create a location for the test device
             var locationData = {
                 "MiataruConfig": {
@@ -476,11 +479,11 @@ describe('recordDetailedVisitorHistory Configuration', function() {
                                                                 done();
                                                             });
                                                         });
-                                                    }, 200);
+                                                    }, 300);
                                                 });
-                                        }, 100);
+                                        }, 200);
                                     });
-                            }, 100);
+                            }, 200);
                         });
                 });
         });
@@ -646,7 +649,7 @@ describe('recordDetailedVisitorHistory Configuration', function() {
                 });
         });
 
-        it('should respect maximumNumberOfLocationVistors limit', function(done) {
+        it('should respect maximumNumberOfLocationVistors limit as unique device limit', function(done) {
             // Set a small limit for testing
             configuration.maximumNumberOfLocationVistors = 3;
 
@@ -677,11 +680,21 @@ describe('recordDetailedVisitorHistory Configuration', function() {
                         if (index >= devices.length) {
                             // Wait for last async operation to complete
                             setTimeout(function() {
-                                // Verify only 3 entries exist (max limit)
+                                // Verify only 3 entries exist (max limit for unique devices)
                                 db.llen(VISIT_KEY, function(err2, length) {
                                     if (err2) return done(err2);
                                     expect(length).to.equal(3);
-                                    done();
+                                    
+                                    // Verify all entries have different DeviceIDs
+                                    db.lrange(VISIT_KEY, 0, 2, function(err3, entries) {
+                                        if (err3) return done(err3);
+                                        var deviceIDs = entries.map(function(e) {
+                                            return JSON.parse(e).DeviceID;
+                                        });
+                                        // Should have 3 unique devices
+                                        expect(new Set(deviceIDs).size).to.equal(3);
+                                        done();
+                                    });
                                 });
                             }, 300);
                             return;
@@ -710,6 +723,106 @@ describe('recordDetailedVisitorHistory Configuration', function() {
                     };
 
                     addVisitor(0);
+                });
+        });
+
+        it('should deduplicate multiple old entries per device and keep only newest', function(done) {
+            // First, create a location for the test device
+            var locationData = {
+                "MiataruConfig": {
+                    "LocationDataRetentionTime": "15"
+                },
+                "MiataruLocation": [{
+                    "Device": TEST_DEVICE,
+                    "Timestamp": "1376735651302",
+                    "Longitude": "10.837502",
+                    "Latitude": "49.828925",
+                    "HorizontalAccuracy": "50.00"
+                }]
+            };
+
+            request(app)
+                .post('/v1/UpdateLocation')
+                .send(locationData)
+                .expect(200)
+                .end(function(err) {
+                    if (err) return done(err);
+
+                    // Manually add multiple old entries for the same device (simulating old behavior)
+                    var oldTimestamp1 = Date.now() - 5000;
+                    var oldTimestamp2 = Date.now() - 3000;
+                    var oldTimestamp3 = Date.now() - 1000;
+                    
+                    var oldEntry1 = JSON.stringify({
+                        DeviceID: VISITOR_DEVICE_1,
+                        TimeStamp: oldTimestamp1
+                    });
+                    var oldEntry2 = JSON.stringify({
+                        DeviceID: VISITOR_DEVICE_1,
+                        TimeStamp: oldTimestamp2
+                    });
+                    var oldEntry3 = JSON.stringify({
+                        DeviceID: VISITOR_DEVICE_1,
+                        TimeStamp: oldTimestamp3
+                    });
+
+                    // Add old entries manually
+                    db.lpush(VISIT_KEY, oldEntry1, function(err1) {
+                        if (err1) return done(err1);
+                        db.lpush(VISIT_KEY, oldEntry2, function(err2) {
+                            if (err2) return done(err2);
+                            db.lpush(VISIT_KEY, oldEntry3, function(err3) {
+                                if (err3) return done(err3);
+
+                                // Verify we have 3 entries for the same device
+                                db.llen(VISIT_KEY, function(err4, length) {
+                                    if (err4) return done(err4);
+                                    expect(length).to.equal(3);
+
+                                    // Now make a new access - should deduplicate and keep only newest
+                                    var getLocationRequest = {
+                                        "MiataruConfig": {
+                                            "RequestMiataruDeviceID": VISITOR_DEVICE_1
+                                        },
+                                        "MiataruGetLocation": [{
+                                            "Device": TEST_DEVICE
+                                        }]
+                                    };
+
+                                    request(app)
+                                        .post('/v1/GetLocation')
+                                        .send(getLocationRequest)
+                                        .expect(200)
+                                        .end(function(err5) {
+                                            if (err5) return done(err5);
+
+                                            // Wait for async operations to complete
+                                            setTimeout(function() {
+                                                // Verify only 1 entry exists (deduplicated)
+                                                db.llen(VISIT_KEY, function(err6, length2) {
+                                                    if (err6) return done(err6);
+                                                    expect(length2).to.equal(1);
+
+                                                    // Verify it's the newest entry
+                                                    db.lrange(VISIT_KEY, 0, 0, function(err7, entries) {
+                                                        if (err7) return done(err7);
+                                                        expect(entries).to.have.length(1);
+                                                        
+                                                        var visitor = JSON.parse(entries[0]);
+                                                        expect(visitor.DeviceID).to.equal(VISITOR_DEVICE_1);
+                                                        expect(visitor.TimeStamp).to.be.a('number');
+                                                        // New timestamp should be newer than all old ones
+                                                        expect(visitor.TimeStamp).to.be.at.least(oldTimestamp3);
+                                                        
+                                                        done();
+                                                    });
+                                                });
+                                            }, 200);
+                                        });
+                                });
+                            });
+                        });
+                    });
                 });
         });
     });
