@@ -4,6 +4,7 @@ var request = require('supertest');
 var app = require('../../server');
 var db = require('../../lib/db');
 var kb = require('../../lib/utils/keyBuilder');
+var configuration = require('../../lib/configuration');
 
 var TEST_DEVICE = 'VISITOR-TEST-DEVICE-12345';
 var VISITOR_DEVICE_1 = 'VISITOR-DEVICE-1';
@@ -12,7 +13,14 @@ var VISIT_KEY = kb.build(TEST_DEVICE, 'visit');
 var LAST_KEY = kb.build(TEST_DEVICE, 'last');
 
 describe('Visitor History Filtering', function() {
+    var originalConfigValue;
+
     beforeEach(function(done) {
+        // Save and set configuration to ON mode (detailed history) for these tests
+        // since they test the behavior of recording every access
+        originalConfigValue = configuration.recordDetailedVisitorHistory;
+        configuration.recordDetailedVisitorHistory = true;
+        
         // Clean up visitor history and last location for test device
         db.del(VISIT_KEY, function(err1) {
             db.del(LAST_KEY, function(err2) {
@@ -22,6 +30,9 @@ describe('Visitor History Filtering', function() {
     });
 
     afterEach(function(done) {
+        // Restore original configuration
+        configuration.recordDetailedVisitorHistory = originalConfigValue;
+        
         // Clean up after each test
         db.del(VISIT_KEY, function(err1) {
             db.del(LAST_KEY, function(err2) {
@@ -131,20 +142,23 @@ describe('Visitor History Filtering', function() {
                                 return done(err2);
                             }
 
-                            // Check that visitor history was stored
-                            db.llen(VISIT_KEY, function(err3, length) {
-                                if (err3) return done(err3);
-                                expect(length).to.equal(1);
+                            // Wait for async operations to complete
+                            setTimeout(function() {
+                                // Check that visitor history was stored
+                                db.llen(VISIT_KEY, function(err3, length) {
+                                    if (err3) return done(err3);
+                                    expect(length).to.equal(1);
 
-                                // Verify the visitor entry
-                                db.lrange(VISIT_KEY, 0, 0, function(err4, entries) {
-                                    if (err4) return done(err4);
-                                    var visitor = JSON.parse(entries[0]);
-                                    expect(visitor.DeviceID).to.equal(VISITOR_DEVICE_1);
-                                    expect(visitor.TimeStamp).to.be.a('number');
-                                    done();
+                                    // Verify the visitor entry
+                                    db.lrange(VISIT_KEY, 0, 0, function(err4, entries) {
+                                        if (err4) return done(err4);
+                                        var visitor = JSON.parse(entries[0]);
+                                        expect(visitor.DeviceID).to.equal(VISITOR_DEVICE_1);
+                                        expect(visitor.TimeStamp).to.be.a('number');
+                                        done();
+                                    });
                                 });
-                            });
+                            }, 200);
                         });
                 });
         });
@@ -227,22 +241,25 @@ describe('Visitor History Filtering', function() {
                     .end(function(err2) {
                         if (err2) return done(err2);
 
-                        // Check that visitor history was stored
-                        db.llen(VISIT_KEY, function(err3, length) {
-                            if (err3) return done(err3);
-                            expect(length).to.equal(1);
+                        // Wait for async operations to complete
+                        setTimeout(function() {
+                            // Check that visitor history was stored
+                            db.llen(VISIT_KEY, function(err3, length) {
+                                if (err3) return done(err3);
+                                expect(length).to.equal(1);
 
-                            // Verify the visitor entry
-                            db.lrange(VISIT_KEY, 0, 0, function(err4, entries) {
-                                if (err4) return done(err4);
-                                var visitor = JSON.parse(entries[0]);
-                                expect(visitor.DeviceID).to.equal(VISITOR_DEVICE_1);
-                                expect(visitor.TimeStamp).to.be.a('number');
+                                // Verify the visitor entry
+                                db.lrange(VISIT_KEY, 0, 0, function(err4, entries) {
+                                    if (err4) return done(err4);
+                                    var visitor = JSON.parse(entries[0]);
+                                    expect(visitor.DeviceID).to.equal(VISITOR_DEVICE_1);
+                                    expect(visitor.TimeStamp).to.be.a('number');
 
-                                // Clean up
-                                db.del(historyKey, done);
+                                    // Clean up
+                                    db.del(historyKey, done);
+                                });
                             });
-                        });
+                        }, 200);
                     });
             });
         });
