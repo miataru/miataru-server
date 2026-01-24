@@ -2,6 +2,7 @@
 # Offline Miataru seeder + updater (hardcoded city-center coordinates)
 # English-only output and English-only device names.
 # IMPORTANT: LocationDataRetentionTime is interpreted as MINUTES by Miataru.
+# IMPORTANT: Timestamp unit is configurable; default is SECONDS (matches Miataru example payload).
 # Requirements: bash, curl, date
 
 if [ -z "${BASH_VERSION:-}" ]; then
@@ -14,25 +15,50 @@ set -euo pipefail
 API_URL="${API_URL:-http://service.miataru.com/v1/UpdateLocation}"
 
 # Miataru defaults
-ENABLE_HISTORY="${ENABLE_HISTORY:-False}"
+ENABLE_HISTORY="${ENABLE_HISTORY:-True}"
 
 # IMPORTANT: MINUTES (not days)
 RETENTION_MINUTES="${RETENTION_MINUTES:-30}"
 
 H_ACC="${H_ACC:-50}"
 
+# Timestamp unit for Miataru "Timestamp" field:
+# - "seconds"      => Unix epoch seconds (10 digits)  [DEFAULT, matches Miataru example]
+# - "milliseconds" => JS-style epoch milliseconds (13 digits)
+TIMESTAMP_UNIT="${TIMESTAMP_UNIT:-seconds}"
+
 # If set to 1, only print what would be sent (no POST)
 DRY_RUN="${DRY_RUN:-0}"
 
-js_timestamp_ms() {
-  # JavaScript-style timestamp in ms since epoch (Date.now())
-  # Validate strictly to avoid macOS date %N pitfalls.
-  local ts=""
-  ts="$(date +%s%3N 2>/dev/null || true)"
-  if [[ ! "$ts" =~ ^[0-9]{13}$ ]]; then
-    ts="$(( $(date +%s) * 1000 ))"
-  fi
-  printf "%s" "$ts"
+require_cmd() {
+  command -v "$1" >/dev/null 2>&1 || {
+    echo "Missing required command: $1" >&2
+    exit 1
+  }
+}
+
+require_cmd curl
+require_cmd date
+
+timestamp_value() {
+  case "$TIMESTAMP_UNIT" in
+    seconds)
+      date +%s
+      ;;
+    milliseconds)
+      # Strict 13-digit ms timestamp (macOS-safe fallback)
+      local ts=""
+      ts="$(date +%s%3N 2>/dev/null || true)"
+      if [[ ! "$ts" =~ ^[0-9]{13}$ ]]; then
+        ts="$(( $(date +%s) * 1000 ))"
+      fi
+      printf "%s" "$ts"
+      ;;
+    *)
+      echo "Invalid TIMESTAMP_UNIT: $TIMESTAMP_UNIT (use 'seconds' or 'milliseconds')" >&2
+      exit 1
+      ;;
+  esac
 }
 
 miataru_update_location() {
@@ -41,7 +67,7 @@ miataru_update_location() {
   local lat="$3"
   local ts json
 
-  ts="$(js_timestamp_ms)"
+  ts="$(timestamp_value)"
 
   json="$(cat <<EOF
 {
@@ -63,11 +89,11 @@ EOF
 )"
 
   if [ "$DRY_RUN" = "1" ]; then
-    echo "DRY_RUN: device=$device_id lon=$lon lat=$lat ts=$ts retention_minutes=$RETENTION_MINUTES"
+    echo "DRY_RUN: device=$device_id lon=$lon lat=$lat ts=$ts ts_unit=$TIMESTAMP_UNIT retention_minutes=$RETENTION_MINUTES"
     return 0
   fi
 
-  echo "POST: device=$device_id lon=$lon lat=$lat ts=$ts retention_minutes=$RETENTION_MINUTES"
+  echo "POST: device=$device_id lon=$lon lat=$lat ts=$ts ts_unit=$TIMESTAMP_UNIT retention_minutes=$RETENTION_MINUTES"
   curl -sS -X POST \
     -H "Content-Type: application/json" \
     -H "Accept: application/json" \
@@ -80,7 +106,7 @@ EOF
 # ------------------------------------------------------------------
 # Offline hardcoded dataset
 # Format: DeviceID|Longitude|Latitude
-# Decimal dot is required for JSON (Miataru expects standard numeric strings).
+# Decimal dot is required for JSON payload numbers (standard format).
 # ------------------------------------------------------------------
 DATA='
 # Europe
@@ -163,7 +189,7 @@ Wellington_nz|174.7762|-41.2865
 
 echo "Starting offline Miataru updates (hardcoded coordinates)"
 echo "API_URL=$API_URL  DRY_RUN=$DRY_RUN  HISTORY=$ENABLE_HISTORY  RETENTION_MINUTES=$RETENTION_MINUTES  H_ACC=$H_ACC"
-echo "Timestamp(ms) example: $(js_timestamp_ms)"
+echo "Timestamp example: $(timestamp_value) (unit=$TIMESTAMP_UNIT)"
 
 while IFS='|' read -r device lon lat; do
   # Skip empty lines and comments
