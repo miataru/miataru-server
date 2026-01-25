@@ -300,6 +300,78 @@ describe('dataHolders', function() {
                 expect(stringRequest.altitude()).to.equal("120.5");
                 expect(numericRequest.altitude()).to.equal(120.5);
             });
+
+            describe('RequestLocation with DeviceKey (API 1.1)', function() {
+                it('should handle location without DeviceKey (backward compatible)', function() {
+                    var oldData = {
+                        Device: "test-device",
+                        Timestamp: "1376735651302",
+                        Longitude: "10.837502",
+                        Latitude: "49.828925",
+                        HorizontalAccuracy: "50.00"
+                    };
+
+                    var request = new RequestLocation(oldData);
+                    expect(request.deviceKey()).to.be.null;
+                });
+
+                it('should handle location with DeviceKey', function() {
+                    var dataWithKey = {
+                        Device: "test-device",
+                        Timestamp: "1376735651302",
+                        Longitude: "10.837502",
+                        Latitude: "49.828925",
+                        HorizontalAccuracy: "50.00",
+                        DeviceKey: "test-device-key-123"
+                    };
+
+                    var request = new RequestLocation(dataWithKey);
+                    expect(request.deviceKey()).to.equal("test-device-key-123");
+                });
+
+                it('should handle DeviceKey as null', function() {
+                    var dataWithNullKey = {
+                        Device: "test-device",
+                        Timestamp: "1376735651302",
+                        Longitude: "10.837502",
+                        Latitude: "49.828925",
+                        HorizontalAccuracy: "50.00",
+                        DeviceKey: null
+                    };
+
+                    var request = new RequestLocation(dataWithNullKey);
+                    expect(request.deviceKey()).to.be.null;
+                });
+
+                it('should handle DeviceKey as empty string', function() {
+                    var dataWithEmptyKey = {
+                        Device: "test-device",
+                        Timestamp: "1376735651302",
+                        Longitude: "10.837502",
+                        Latitude: "49.828925",
+                        HorizontalAccuracy: "50.00",
+                        DeviceKey: ""
+                    };
+
+                    var request = new RequestLocation(dataWithEmptyKey);
+                    expect(request.deviceKey()).to.be.null;
+                });
+
+                it('should not include DeviceKey in data() output', function() {
+                    var dataWithKey = {
+                        Device: "test-device",
+                        Timestamp: "1376735651302",
+                        Longitude: "10.837502",
+                        Latitude: "49.828925",
+                        HorizontalAccuracy: "50.00",
+                        DeviceKey: "test-device-key-123"
+                    };
+
+                    var request = new RequestLocation(dataWithKey);
+                    var data = request.data();
+                    expect(data.DeviceKey).to.be.undefined;
+                });
+            });
         });
     });
 
