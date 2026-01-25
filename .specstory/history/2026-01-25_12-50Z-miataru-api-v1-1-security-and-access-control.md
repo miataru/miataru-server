@@ -41690,7 +41690,6 @@ Creating a commit message summarizing all changes:
 - `tests/integration/deleteLocation.tests.js`: Added `RequestMiataruDeviceID` to `GetLocation` requests
 - `tests/integration/interoperability.tests.js`: Added `RequestMiataruDeviceID` to all relevant requests
 - `tests/testFiles/calls.js`: Updated helper functions:
-<<<<<<< HEAD
   - `config()` now includes `RequestMiataruDeviceID` with default "test-client"
   - `getLocation()` includes `MiataruConfig` with `RequestMiataruDeviceID`
   - `getLocationHistory()` includes `MiataruConfig` with `RequestMiataruDeviceID`
@@ -41766,9 +41765,6 @@ All tests passing: 295 tests
 ```
 
 Should I create this commit, or do you want to review and modify the message first?
-=======
-  - `config()` now includes `Reque
->>>>>>> github/master
 
 ---
 
