@@ -1,0 +1,133 @@
+<!DOCTYPE html>
+<html lang="de">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Miataru Web Client 2.0</title>
+    
+    <!-- Leaflet CSS -->
+    <link rel="stylesheet" href="css/leaflet.css">
+    <link rel="stylesheet" href="css/styles.css">
+    
+    <!-- Leaflet JavaScript -->
+    <script src="js/leaflet.js"></script>
+</head>
+<body>
+    <div class="toolbar">
+        <a href="https://miataru.com" target="_blank">
+            <img src="img/miataru_icon_29.png" alt="Miataru" class="toolbar-logo">
+        </a>
+        <select id="savedDevices">
+            <option value="">Saved Devices...</option>
+        </select>
+        <input type="text" id="searchInput" placeholder="Miataru DeviceID">
+        <button id="searchButton">Search</button>
+        <button id="helpButton" class="help-button">?</button>
+        <button id="embedButton" class="embed-button">< ></button>
+        <button id="settingsButton" class="settings-button">⚙️</button>
+    </div>
+    <div id="map"></div>
+
+    <!-- Modaler Dialog zum Speichern -->
+    <div id="saveDeviceModal" class="modal">
+        <div class="modal-content">
+            <h3>Save Device</h3>
+            <input type="text" id="deviceNameInput" placeholder="Name for this device">
+            <div class="modal-buttons">
+                <button id="saveDeviceButton">Save</button>
+                <button id="cancelSaveButton">Cancel</button>
+            </div>
+        </div>
+    </div>
+
+    <!-- Modaler Dialog zum Löschen -->
+    <div id="deleteDeviceModal" class="modal">
+        <div class="modal-content">
+            <h3>Delete Device</h3>
+            <p>Do you really want to delete this device?</p>
+            <div class="modal-buttons">
+                <button id="confirmDeleteButton" class="delete-btn">Delete</button>
+                <button id="cancelDeleteButton">Cancel</button>
+            </div>
+        </div>
+    </div>
+
+    <!-- Help Modal -->
+    <div id="helpModal" class="modal">
+        <div class="modal-content help-content">
+            <h3>About Miataru Web Client</h3>
+            <div class="help-text">
+                <p>This is a website client for the Miataru service. You can interact with the server side through this website.</p>
+                <p>To save known devices and quickly access them later your browser needs to support HTML5 Web Storage (Web storage is supported in Internet Explorer 8+, Firefox, Opera, Chrome, and Safari.)</p>
+                <p>It is not storing any data except in your local browser - it does access the internet and the Miataru service to retrieve location information for given DeviceIDs.</p>
+                
+                <div class="demo-section">
+                    <p>To see a Demo-Device click here: <a href="#BF0160F5-4138-402C-A5F0-DEB1AA1F4216" class="demo-link">Demo Device</a> or scan the Demo-Device QR Code:</p>
+                    <img src="img/qrcode.png" alt="Demo Device QR Code" class="qr-code">
+                </div>
+                
+                <div class="links-section">
+                    <p>Get more information here: <a href="https://miataru.com" target="_blank">miataru.com</a></p>
+                    <p>Get the sourcecode here: <a href="https://github.com/miataru" target="_blank">github</a></p>
+                </div>
+                
+                <p class="copyright">&copy; 2013-2025 Daniel Kirstenpfad / <a href="https://www.technology-ninja.com/" target="_blank">technology-ninja</a></p>
+            </div>
+            <div class="modal-buttons">
+                <button id="closeHelpButton">Close</button>
+            </div>
+        </div>
+    </div>
+
+    <!-- Embed Modal -->
+    <div id="embedModal" class="modal">
+        <div class="modal-content help-content">
+            <h3>Embed a device into your own website</h3>
+            <div class="help-text">
+                <p>You can embed a device into a website by adding the following pattern to your website's HTML:</p>
+                
+                <div class="code-block">
+                    <pre><code>&lt;iframe width="320" scrolling="no" height="240" frameborder="0" 
+                        src="https://www.miataru.com/client/#BF0160F5-4138-402C-A5F0-DEB1AA1F4216"&gt;&lt;/iframe&gt;</code></pre>                    <button class="copy-button" onclick="copyEmbedCode()">Copy</button>
+                </div>
+                
+                <p>Example:</p>
+                <div class="embed-example" id="embedIframeContainer">
+                    <!-- iframe wird dynamisch eingefügt wenn das Modal geöffnet wird -->
+                </div>
+            </div>
+            <div class="modal-buttons">
+                <button id="closeEmbedButton">Close</button>
+            </div>
+        </div>
+    </div>
+
+    <!-- Settings Modal -->
+    <div id="settingsModal" class="modal">
+        <div class="modal-content">
+            <h3>Settings</h3>
+            <div class="settings-form">
+                <div class="setting-group">
+                    <label for="updateInterval">Update-Intervall (seconds):</label>
+                    <input type="number" id="updateInterval" min="1" max="60" value="5">
+                </div>
+                <div class="setting-group">
+                    <label for="historyAmount">Number of history entries to display (10-1000):</label>
+                    <input type="number" id="historyAmount" min="10" max="1000" value="100">
+                </div>
+                <div class="setting-group">
+                    <label for="requestMiataruDeviceID">RequestMiataruDeviceID:</label>
+                    <input type="text" id="requestMiataruDeviceID" placeholder="webclient" maxlength="256">
+                    <small style="display: block; color: #666; margin-top: 4px;">Device ID used for API requests (required for API 1.1)</small>
+                </div>
+            </div>
+            <div class="modal-buttons">
+                <button id="saveSettingsButton">Save</button>
+                <button id="closeSettingsButton">Cancel</button>
+            </div>
+        </div>
+    </div>
+
+    <script src="js/script.js"></script>
+</body>
+</html> 

@@ -26,10 +26,19 @@ function location(options) {
 function config(options) {
     options = options || {};
 
-    return {
+    var configObj = {
         "EnableLocationHistory": options.history !== undefined ? options.history+'' : "True",
         "LocationDataRetentionTime": options.retentionTime || "15"
+    };
+
+    // RequestMiataruDeviceID is now mandatory
+    if (options.requestMiataruDeviceID !== undefined) {
+        configObj.RequestMiataruDeviceID = options.requestMiataruDeviceID;
+    } else {
+        configObj.RequestMiataruDeviceID = options.requestMiataruDeviceID || "test-client";
     }
+
+    return configObj;
 }
 
 function locationUpdate(options) {
@@ -41,8 +50,11 @@ function locationUpdate(options) {
     }
 }
 
-function getLocation(deviceName) {
+function getLocation(deviceName, requestMiataruDeviceID) {
     return {
+        "MiataruConfig": {
+            "RequestMiataruDeviceID": requestMiataruDeviceID || "test-client"
+        },
         "MiataruGetLocation":[
             {
                 "Device": deviceName || "foo"
@@ -51,8 +63,11 @@ function getLocation(deviceName) {
     };
 }
 
-function getLocationHistory(device, amount) {
+function getLocationHistory(device, amount, requestMiataruDeviceID) {
     return {
+        "MiataruConfig": {
+            "RequestMiataruDeviceID": requestMiataruDeviceID || "test-client"
+        },
         "MiataruGetLocationHistory": {
             "Device": device || "7b8e6e0ee5296db345162dc2ef652c1350761823",
             "Amount": amount || "25"
