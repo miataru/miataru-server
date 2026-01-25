@@ -82,8 +82,9 @@ All existing API 1.0 clients continue to work without modification. Security fea
 - Devices without allowed devices list work exactly as before
 - All existing endpoints maintain the same response format
 
-**Breaking Change:** GetLocationGeoJSON returns 401 Unauthorized when DeviceKey is set. See [Compatibility Assessment](docs/COMPATIBILITY_ASSESSMENT.md) for details.
-
+**Breaking Changse:** 
+- **RequestMiataruDeviceID** is mandatory: Made RequestMiataruDeviceID mandatory in all GetLocation functions
+- **GetLocationGeoJSON returns 401 Unauthorized when DeviceKey is set**. See [Compatibility Assessment](docs/COMPATIBILITY_ASSESSMENT.md) for details.
 For client migration guidance, see [iOS Client Adoption Guide](docs/CLIENT_ADOPTION_API_1.1.md).
 
 ## Run the Server
