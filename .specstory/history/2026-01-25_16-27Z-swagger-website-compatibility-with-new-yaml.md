@@ -6544,3 +6544,6094 @@ still the same error message TypeError: Swagger 2.0 does not support null types 
 
 ---
 
+_**Agent (model default, mode Agent)**_
+
+
+Searching for properties without explicit types or other issues that could cause this error:
+
+
+---
+
+<tool-use data-tool-type="read" data-tool-name="read_file_v2">
+<details><summary>Tool use: **read_file_v2** • Read file: /Users/bietiekay/code/miataru-server/docs/swagger.yaml</summary>
+
+</details>
+</tool-use>
+
+---
+
+
+Fixing indentation: `MiataruServerConfig` at line 231 is mis-indented. Correcting it and checking for similar issues:
+
+
+---
+
+<tool-use data-tool-type="read" data-tool-name="read_file_v2">
+<details><summary>Tool use: **read_file_v2** • Read file: /Users/bietiekay/code/miataru-server/docs/swagger.yaml</summary>
+
+</details>
+</tool-use>
+
+---
+
+
+Fixing the indentation: `MiataruServerConfig` at line 231 should be indented under `properties:`.
+
+
+---
+
+<tool-use data-tool-type="write" data-tool-name="edit_file_v2">
+
+<details><summary>Tool use: **edit_file_v2** • Edit file: /Users/bietiekay/code/miataru-server/docs/swagger.yaml</summary>
+
+</details>
+
+</tool-use>
+
+---
+
+<tool-use data-tool-type="shell" data-tool-name="run_terminal_command_v2">
+<details><summary>Tool use: **run_terminal_command_v2** • Run command: cd /Users/bietiekay/code/miataru-server && node -e "const yaml = require('js-yaml'); const fs = require('fs'); try { const doc = yaml.load(fs.readFileSync('docs/swagger.yaml', 'utf8')); console.log('✓ YAML is valid'); } catch(e) { console.log('✗ Error:', e.message.split('\\n')[0]); }"</summary>
+
+```bash
+cd /Users/bietiekay/code/miataru-server && node -e "const yaml = require('js-yaml'); const fs = require('fs'); try { const doc = yaml.load(fs.readFileSync('docs/swagger.yaml', 'utf8')); console.log('✓ YAML is valid'); } catch(e) { console.log('✗ Error:', e.message.split('\\n')[0]); }"
+```
+
+```
+✓ YAML is valid
+
+```
+</details>
+</tool-use>
+
+---
+
+
+Fixed the indentation issue. `MiataruServerConfig` at line 231 was not indented under `properties:`, which caused the Swagger parser to misinterpret it and trigger the null types error.
+
+**What I fixed:**
+- Corrected the indentation of `MiataruServerConfig` in `MiataruGetVisitorHistoryResponse` so it's properly nested under `properties:`
+- All nested properties within `MiataruServerConfig` are now correctly indented
+
+The YAML is still valid. This should resolve the "TypeError: Swagger 2.0 does not support null types" error. The issue was a property at the wrong indentation level, which made the parser treat it as having an undefined/null type.
+
+Try loading the swagger.yaml file in your old Swagger explorer again; the error should be resolved.
+
+---
+
+_**User**_
+
+it seems still TypeError: Swagger 2.0 does not support null types ([object Object]). - take a closer look for null
+
+---
+
+_**Agent (model default, mode Agent)**_
+
+
+Searching for properties without explicit types or other issues that could cause null type errors:
+
+
+---
+
+<tool-use data-tool-type="unknown" data-tool-name="ripgrep_raw_search">
+<details>
+<summary>Tool use: **ripgrep_raw_search**</summary>
+
+
+Parameters:
+
+```json
+{
+  "pattern": "^\\s+\\w+:\\s*$",
+  "path": "/Users/bietiekay/code/miataru-server/docs/swagger.yaml",
+  "contextAfter": 2,
+  "caseInsensitive": false
+}
+```
+Result:
+
+```json
+{
+  "success": {
+    "pattern": "^\\s+\\w+:\\s*$",
+    "path": "/Users/bietiekay/code/miataru-server/docs/swagger.yaml",
+    "outputMode": "content",
+    "workspaceResults": {
+      "/Users/bietiekay/code/miataru-server": {
+        "content": {
+          "matches": [
+            {
+              "file": "docs/swagger.yaml",
+              "matches": [
+                {
+                  "lineNumber": 12,
+                  "content": " contact:"
+                },
+                {
+                  "lineNumber": 13,
+                  "content": "  name: Miataru Team",
+                  "isContextLine": true
+                },
+                {
+                  "lineNumber": 14,
+                  "content": "  email: info@miataru.com",
+                  "isContextLine": true
+                },
+                {
+                  "lineNumber": 16,
+                  "content": " license:"
+                },
+                {
+                  "lineNumber": 17,
+                  "content": "  name: Public Domain",
+                  "isContextLine": true
+                },
+                {
+                  "lineNumber": 18,
+                  "content": "  url: https://raw.githubusercontent.com/miataru/miataru-protocol-specification/master/LICENSE",
+                  "isContextLine": true
+                },
+                {
+                  "lineNumber": 32,
+                  "content": "  post:"
+                },
+                {
+                  "lineNumber": 33,
+                  "content": "   tags:"
+                },
+                {
+                  "lineNumber": 34,
+                  "content": "   - updateLocation",
+                  "isContextLine": true
+                },
+                {
+                  "lineNumber": 35,
+                  "content": "   description: |",
+                  "isContextLine": true
+                },
+                {
+                  "lineNumber": 40,
+                  "content": "   produces:"
+                },
+                {
+                  "lineNumber": 41,
+                  "content": "   - application/json",
+                  "isContextLine": true
+                },
+                {
+                  "lineNumber": 42,
+                  "content": "   parameters:"
+                },
+                {
+                  "lineNumber": 43,
+                  "content": "   - name: body",
+                  "isContextLine": true
+                },
+                {
+                  "lineNumber": 44,
+                  "content": "     in: body",
+                  "isContextLine": true
+                },
+                {
+                  "lineNumber": 47,
+                  "content": "     schema:"
+                },
+                {
+                  "lineNumber": 48,
+                  "content": "      $ref: '#/definitions/MiataruUpdateLocationRequest'",
+                  "isContextLine": true
+                },
+                {
+                  "lineNumber": 49,
+                  "content": "   responses:"
+                },
+                {
+                  "lineNumber": 50,
+                  "content": "    default:"
+                },
+                {
+                  "lineNumber": 51,
+                  "content": "     description: successful request",
+                  "isContextLine": true
+                },
+                {
+                  "lineNumber": 52,
+                  "content": "     schema:"
+                },
+                {
+                  "lineNumber": 53,
+                  "content": "      $ref: '#/definitions/ACK'",
+                  "isContextLine": true
+                },
+                {
+                  "lineNumber": 54,
+                  "content": " /GetLocation:",
+                  "isContextLine": true
+                },
+                {
+                  "lineNumber": 55,
+                  "content": "  post:"
+                },
+                {
+                  "lineNumber": 56,
+                  "content": "   tags:"
+                },
+                {
+                  "lineNumber": 57,
+                  "content": "   - getLocation",
+                  "isContextLine": true
+                },
+                {
+                  "lineNumber": 58,
+                  "content": "   description: |",
+                  "isContextLine": true
+                },
+                {
+                  "lineNumber": 63,
+                  "content": "   produces:"
+                },
+                {
+                  "lineNumber": 64,
+                  "content": "   - application/json",
+                  "isContextLine": true
+                },
+                {
+                  "lineNumber": 65,
+                  "content": "   parameters:"
+                },
+                {
+                  "lineNumber": 66,
+                  "content": "   - name: body",
+                  "isContextLine": true
+                },
+                {
+                  "lineNumber": 67,
+                  "content": "     in: body",
+                  "isContextLine": true
+                },
+                {
+                  "lineNumber": 70,
+                  "content": "     schema:"
+                },
+                {
+                  "lineNumber": 71,
+                  "content": "      $ref: '#/definitions/MiataruGetLocationRequest'",
+                  "isContextLine": true
+                },
+                {
+                  "lineNumber": 72,
+                  "content": "   responses:"
+                },
+                {
+                  "lineNumber": 73,
+                  "content": "    default:"
+                },
+                {
+                  "lineNumber": 74,
+                  "content": "     description: successful location responses",
+                  "isContextLine": true
+                },
+                {
+                  "lineNumber": 75,
+                  "content": "     schema:"
+                },
+                {
+                  "lineNumber": 76,
+                  "content": "      $ref: '#/definitions/MiataruGetLocationResponse'",
+                  "isContextLine": true
+                },
+                {
+                  "lineNumber": 77,
+                  "content": " /GetLocationGeoJSON/{deviceID}:",
+                  "isContextLine": true
+                },
+                {
+                  "lineNumber": 78,
+                  "content": "  get:"
+                },
+                {
+                  "lineNumber": 79,
+                  "content": "   tags:"
+                },
+                {
+                  "lineNumber": 80,
+                  "content": "   - getLocation",
+                  "isContextLine": true
+                },
+                {
+                  "lineNumber": 81,
+                  "content": "   description: |",
+                  "isContextLine": true
+                },
+                {
+                  "lineNumber": 86,
+                  "content": "   produces:"
+                },
+                {
+                  "lineNumber": 87,
+                  "content": "   - application/json",
+                  "isContextLine": true
+                },
+                {
+                  "lineNumber": 88,
+                  "content": "   parameters:"
+                },
+                {
+                  "lineNumber": 89,
+                  "content": "   - name: deviceID",
+                  "isContextLine": true
+                },
+                {
+                  "lineNumber": 90,
+                  "content": "     in: path",
+                  "isContextLine": true
+                },
+                {
+                  "lineNumber": 95,
+                  "content": "   responses:"
+                },
+                {
+                  "lineNumber": 96,
+                  "content": "    default:"
+                },
+                {
+                  "lineNumber": 97,
+                  "content": "     description: geoJSON formatted device location",
+                  "isContextLine": true
+                },
+                {
+                  "lineNumber": 98,
+                  "content": "     schema:"
+                },
+                {
+                  "lineNumber": 99,
+                  "content": "      $ref: '#/definitions/MiataruGetLocationGeoJSONResponse'",
+                  "isContextLine": true
+                },
+                {
+                  "lineNumber": 100,
+                  "content": " /GetLocationHistory:",
+                  "isContextLine": true
+                },
+                {
+                  "lineNumber": 101,
+                  "content": "  post:"
+                },
+                {
+                  "lineNumber": 102,
+                  "content": "   tags:"
+                },
+                {
+                  "lineNumber": 103,
+                  "content": "   - getLocation",
+                  "isContextLine": true
+                },
+                {
+                  "lineNumber": 104,
+                  "content": "   description: |",
+                  "isContextLine": true
+                },
+                {
+                  "lineNumber": 109,
+                  "content": "   produces:"
+                },
+                {
+                  "lineNumber": 110,
+                  "content": "   - application/json",
+                  "isContextLine": true
+                },
+                {
+                  "lineNumber": 111,
+                  "content": "   parameters:"
+                },
+                {
+                  "lineNumber": 112,
+                  "content": "   - name: body",
+                  "isContextLine": true
+                },
+                {
+                  "lineNumber": 113,
+                  "content": "     in: body",
+                  "isContextLine": true
+                },
+                {
+                  "lineNumber": 116,
+                  "content": "     schema: "
+                },
+                {
+                  "lineNumber": 117,
+                  "content": "      $ref: '#/definitions/MiataruGetLocationHistoryRequest'",
+                  "isContextLine": true
+                },
+                {
+                  "lineNumber": 118,
+                  "content": "   responses:"
+                },
+                {
+                  "lineNumber": 119,
+                  "content": "    default:"
+                },
+                {
+                  "lineNumber": 120,
+                  "content": "     description: successful location history response",
+                  "isContextLine": true
+                },
+                {
+                  "lineNumber": 121,
+                  "content": "     schema:"
+                },
+                {
+                  "lineNumber": 122,
+                  "content": "      $ref: '#/definitions/MiataruGetLocationHistoryResponse'",
+                  "isContextLine": true
+                },
+                {
+                  "lineNumber": 123,
+                  "content": " /GetVisitorHistory:",
+                  "isContextLine": true
+                },
+                {
+                  "lineNumber": 124,
+                  "content": "  post:"
+                },
+                {
+                  "lineNumber": 125,
+                  "content": "   tags:"
+                },
+                {
+                  "lineNumber": 126,
+                  "content": "   - getVisitorHistory",
+                  "isContextLine": true
+                },
+                {
+                  "lineNumber": 127,
+                  "content": "   description: |",
+                  "isContextLine": true
+                },
+                {
+                  "lineNumber": 132,
+                  "content": "   produces:"
+                },
+                {
+                  "lineNumber": 133,
+                  "content": "   - application/json",
+                  "isContextLine": true
+                },
+                {
+                  "lineNumber": 134,
+                  "content": "   parameters:"
+                },
+                {
+                  "lineNumber": 135,
+                  "content": "   - name: body",
+                  "isContextLine": true
+                },
+                {
+                  "lineNumber": 136,
+                  "content": "     in: body",
+                  "isContextLine": true
+                },
+                {
+                  "lineNumber": 139,
+                  "content": "     schema:"
+                },
+                {
+                  "lineNumber": 140,
+                  "content": "      $ref: '#/definitions/MiataruGetVisitorHistoryRequest'",
+                  "isContextLine": true
+                },
+                {
+                  "lineNumber": 141,
+                  "content": "   responses:"
+                },
+                {
+                  "lineNumber": 142,
+                  "content": "    default:"
+                },
+                {
+                  "lineNumber": 143,
+                  "content": "     description: visitor history response",
+                  "isContextLine": true
+                },
+                {
+                  "lineNumber": 144,
+                  "content": "     schema:"
+                },
+                {
+                  "lineNumber": 145,
+                  "content": "      $ref: '#/definitions/MiataruGetVisitorHistoryResponse'",
+                  "isContextLine": true
+                },
+                {
+                  "lineNumber": 146,
+                  "content": " /setDeviceKey:",
+                  "isContextLine": true
+                },
+                {
+                  "lineNumber": 147,
+                  "content": "  post:"
+                },
+                {
+                  "lineNumber": 148,
+                  "content": "   tags:"
+                },
+                {
+                  "lineNumber": 149,
+                  "content": "   - security",
+                  "isContextLine": true
+                },
+                {
+                  "lineNumber": 150,
+                  "content": "   description: |",
+                  "isContextLine": true
+                },
+                {
+                  "lineNumber": 155,
+                  "content": "   produces:"
+                },
+                {
+                  "lineNumber": 156,
+                  "content": "   - application/json",
+                  "isContextLine": true
+                },
+                {
+                  "lineNumber": 157,
+                  "content": "   parameters:"
+                },
+                {
+                  "lineNumber": 158,
+                  "content": "   - name: body",
+                  "isContextLine": true
+                },
+                {
+                  "lineNumber": 159,
+                  "content": "     in: body",
+                  "isContextLine": true
+                },
+                {
+                  "lineNumber": 162,
+                  "content": "     schema:"
+                },
+                {
+                  "lineNumber": 163,
+                  "content": "      $ref: '#/definitions/MiataruSetDeviceKeyRequest'",
+                  "isContextLine": true
+                },
+                {
+                  "lineNumber": 164,
+                  "content": "   responses:"
+                },
+                {
+                  "lineNumber": 165,
+                  "content": "    default:"
+                },
+                {
+                  "lineNumber": 166,
+                  "content": "     description: Device key set successfully",
+                  "isContextLine": true
+                },
+                {
+                  "lineNumber": 167,
+                  "content": "     schema:"
+                },
+                {
+                  "lineNumber": 168,
+                  "content": "      $ref: '#/definitions/MiataruSetDeviceKeyResponse'",
+                  "isContextLine": true
+                },
+                {
+                  "lineNumber": 169,
+                  "content": " /setAllowedDeviceList:",
+                  "isContextLine": true
+                },
+                {
+                  "lineNumber": 170,
+                  "content": "  post:"
+                },
+                {
+                  "lineNumber": 171,
+                  "content": "   tags:"
+                },
+                {
+                  "lineNumber": 172,
+                  "content": "   - security",
+                  "isContextLine": true
+                },
+                {
+                  "lineNumber": 173,
+                  "content": "   description: |",
+                  "isContextLine": true
+                },
+                {
+                  "lineNumber": 180,
+                  "content": "   produces:"
+                },
+                {
+                  "lineNumber": 181,
+                  "content": "   - application/json",
+                  "isContextLine": true
+                },
+                {
+                  "lineNumber": 182,
+                  "content": "   parameters:"
+                },
+                {
+                  "lineNumber": 183,
+                  "content": "   - name: body",
+                  "isContextLine": true
+                },
+                {
+                  "lineNumber": 184,
+                  "content": "     in: body",
+                  "isContextLine": true
+                },
+                {
+                  "lineNumber": 187,
+                  "content": "     schema:"
+                },
+                {
+                  "lineNumber": 188,
+                  "content": "      $ref: '#/definitions/MiataruSetAllowedDeviceListRequest'",
+                  "isContextLine": true
+                },
+                {
+                  "lineNumber": 189,
+                  "content": "   responses:"
+                },
+                {
+                  "lineNumber": 190,
+                  "content": "    default:"
+                },
+                {
+                  "lineNumber": 191,
+                  "content": "     description: Allowed devices list updated successfully",
+                  "isContextLine": true
+                },
+                {
+                  "lineNumber": 192,
+                  "content": "     schema:"
+                },
+                {
+                  "lineNumber": 193,
+                  "content": "      $ref: '#/definitions/MiataruSetAllowedDeviceListResponse'",
+                  "isContextLine": true
+                },
+                {
+                  "lineNumber": 194,
+                  "isContextLine": true
+                },
+                {
+                  "lineNumber": 197,
+                  "content": " MiataruVisitors:"
+                },
+                {
+                  "lineNumber": 198,
+                  "content": "  required:"
+                },
+                {
+                  "lineNumber": 199,
+                  "content": "  - DeviceID",
+                  "isContextLine": true
+                },
+                {
+                  "lineNumber": 200,
+                  "content": "  - TimeStamp",
+                  "isContextLine": true
+                },
+                {
+                  "lineNumber": 201,
+                  "content": "  properties:"
+                },
+                {
+                  "lineNumber": 202,
+                  "content": "   DeviceID:"
+                },
+                {
+                  "lineNumber": 203,
+                  "content": "    type: string",
+                  "isContextLine": true
+                },
+                {
+                  "lineNumber": 204,
+                  "content": "    description: the device id of the visiting device. If this is an empty string the deviceID is unknown/was not reported.",
+                  "isContextLine": true
+                },
+                {
+                  "lineNumber": 205,
+                  "content": "   TimeStamp:"
+                },
+                {
+                  "lineNumber": 206,
+                  "content": "    type: string",
+                  "isContextLine": true
+                },
+                {
+                  "lineNumber": 207,
+                  "content": "    description: the javascript timestamp of the visit",
+                  "isContextLine": true
+                },
+                {
+                  "lineNumber": 208,
+                  "content": " MiataruGetVisitorHistoryRequest:"
+                },
+                {
+                  "lineNumber": 209,
+                  "content": "  required:"
+                },
+                {
+                  "lineNumber": 210,
+                  "content": "  - MiataruGetVisitorHistory",
+                  "isContextLine": true
+                },
+                {
+                  "lineNumber": 211,
+                  "content": "  properties:"
+                },
+                {
+                  "lineNumber": 212,
+                  "content": "   MiataruGetVisitorHistory:"
+                },
+                {
+                  "lineNumber": 213,
+                  "content": "    type: object",
+                  "isContextLine": true
+                },
+                {
+                  "lineNumber": 214,
+                  "content": "    required:"
+                },
+                {
+                  "lineNumber": 215,
+                  "content": "    - Device",
+                  "isContextLine": true
+                },
+                {
+                  "lineNumber": 216,
+                  "content": "    - Amount",
+                  "isContextLine": true
+                },
+                {
+                  "lineNumber": 217,
+                  "content": "    properties:"
+                },
+                {
+                  "lineNumber": 218,
+                  "content": "     Device:"
+                },
+                {
+                  "lineNumber": 219,
+                  "content": "      type: string",
+                  "isContextLine": true
+                },
+                {
+                  "lineNumber": 220,
+                  "content": "      description: the device id of which the visitor history is requested",
+                  "isContextLine": true
+                },
+                {
+                  "lineNumber": 222,
+                  "content": "     Amount:"
+                },
+                {
+                  "lineNumber": 223,
+                  "content": "      type: string",
+                  "isContextLine": true
+                },
+                {
+                  "lineNumber": 224,
+                  "content": "      description: the maximum number of visitor history entries to be retrieved",
+                  "isContextLine": true
+                },
+                {
+                  "lineNumber": 226,
+                  "content": " MiataruGetVisitorHistoryResponse:"
+                },
+                {
+                  "lineNumber": 227,
+                  "content": "  required:"
+                },
+                {
+                  "lineNumber": 228,
+                  "content": "  - MiataruServerConfig",
+                  "isContextLine": true
+                },
+                {
+                  "lineNumber": 229,
+                  "content": "  - MiataruVisitors",
+                  "isContextLine": true
+                },
+                {
+                  "lineNumber": 230,
+                  "content": "  properties:"
+                },
+                {
+                  "lineNumber": 231,
+                  "content": "   MiataruServerConfig:"
+                },
+                {
+                  "lineNumber": 232,
+                  "content": "    type: object",
+                  "isContextLine": true
+                },
+                {
+                  "lineNumber": 233,
+                  "content": "    description: holds information about the server side settings of the visitor history and about the available device related visitor history.",
+                  "isContextLine": true
+                },
+                {
+                  "lineNumber": 234,
+                  "content": "    required:"
+                },
+                {
+                  "lineNumber": 235,
+                  "content": "    - MaximumNumberOfVisitorHistory",
+                  "isContextLine": true
+                },
+                {
+                  "lineNumber": 236,
+                  "content": "    - AvailableVisitorHistory",
+                  "isContextLine": true
+                },
+                {
+                  "lineNumber": 237,
+                  "content": "    properties:"
+                },
+                {
+                  "lineNumber": 238,
+                  "content": "     MaximumNumberOfVisitorHistory:"
+                },
+                {
+                  "lineNumber": 239,
+                  "content": "      type: string",
+                  "isContextLine": true
+                },
+                {
+                  "lineNumber": 240,
+                  "content": "      description: a server-side setting that controls up to how many Visitors the server is storing in the Visitor History before it removes the oldest one.",
+                  "isContextLine": true
+                },
+                {
+                  "lineNumber": 241,
+                  "content": "     AvailableVisitorHistory:"
+                },
+                {
+                  "lineNumber": 242,
+                  "content": "      type: string",
+                  "isContextLine": true
+                },
+                {
+                  "lineNumber": 243,
+                  "content": "      description: the number of available visitor history entries for this device. If the client requested more Visitor Updates than there are available the server will return those available.",
+                  "isContextLine": true
+                },
+                {
+                  "lineNumber": 244,
+                  "content": "   MiataruVisitors:"
+                },
+                {
+                  "lineNumber": 245,
+                  "content": "    type: array",
+                  "isContextLine": true
+                },
+                {
+                  "lineNumber": 246,
+                  "content": "    description: The server will answer back with an Array of MiataruVisitors if there are Visitors, or an empty array when there are none.",
+                  "isContextLine": true
+                },
+                {
+                  "lineNumber": 247,
+                  "content": "    items:"
+                },
+                {
+                  "lineNumber": 248,
+                  "content": "     $ref: '#/definitions/MiataruVisitors'",
+                  "isContextLine": true
+                },
+                {
+                  "lineNumber": 249,
+                  "content": " MiataruGetLocationHistoryResponse:"
+                },
+                {
+                  "lineNumber": 250,
+                  "content": "  required:"
+                },
+                {
+                  "lineNumber": 251,
+                  "content": "  - MiataruServerConfig",
+                  "isContextLine": true
+                },
+                {
+                  "lineNumber": 252,
+                  "content": "  - MiataruLocation",
+                  "isContextLine": true
+                },
+                {
+                  "lineNumber": 253,
+                  "content": "  properties:"
+                },
+                {
+                  "lineNumber": 254,
+                  "content": "   MiataruServerConfig:"
+                },
+                {
+                  "lineNumber": 255,
+                  "content": "    type: object",
+                  "isContextLine": true
+                },
+                {
+                  "lineNumber": 256,
+                  "content": "    description: holds information about the basic configuration settings on server side.",
+                  "isContextLine": true
+                },
+                {
+                  "lineNumber": 257,
+                  "content": "    required:"
+                },
+                {
+                  "lineNumber": 258,
+                  "content": "    - MaximumNumberOfLocationUpdates",
+                  "isContextLine": true
+                },
+                {
+                  "lineNumber": 259,
+                  "content": "    - AvailableDeviceLocationUpdates",
+                  "isContextLine": true
+                },
+                {
+                  "lineNumber": 260,
+                  "content": "    properties:"
+                },
+                {
+                  "lineNumber": 261,
+                  "content": "     MaximumNumberOfLocationUpdates:"
+                },
+                {
+                  "lineNumber": 262,
+                  "content": "      type: string",
+                  "isContextLine": true
+                },
+                {
+                  "lineNumber": 263,
+                  "content": "      description: the amount of locations the server is storing per device at maximum before it will remove the oldest one (FiFo)",
+                  "isContextLine": true
+                },
+                {
+                  "lineNumber": 264,
+                  "content": "     AvailableDeviceLocationUpdates:"
+                },
+                {
+                  "lineNumber": 265,
+                  "content": "      type: string",
+                  "isContextLine": true
+                },
+                {
+                  "lineNumber": 266,
+                  "content": "      description: the number of locations stored for this particular device",
+                  "isContextLine": true
+                },
+                {
+                  "lineNumber": 267,
+                  "content": "   MiataruLocation:"
+                },
+                {
+                  "lineNumber": 268,
+                  "content": "    type: array",
+                  "isContextLine": true
+                },
+                {
+                  "lineNumber": 269,
+                  "content": "    description: holds all location information of a given device or is an empty array if device not found or no location information is stored.",
+                  "isContextLine": true
+                },
+                {
+                  "lineNumber": 270,
+                  "content": "    items:"
+                },
+                {
+                  "lineNumber": 271,
+                  "content": "     $ref: '#/definitions/MiataruLocation'",
+                  "isContextLine": true
+                },
+                {
+                  "lineNumber": 272,
+                  "content": " MiataruGetLocationHistoryRequest:"
+                },
+                {
+                  "lineNumber": 273,
+                  "content": "  required:"
+                },
+                {
+                  "lineNumber": 274,
+                  "content": "  - MiataruGetLocationHistory",
+                  "isContextLine": true
+                },
+                {
+                  "lineNumber": 275,
+                  "content": "  properties:"
+                },
+                {
+                  "lineNumber": 276,
+                  "content": "   MiataruConfig:"
+                },
+                {
+                  "lineNumber": 277,
+                  "content": "    type: object",
+                  "isContextLine": true
+                },
+                {
+                  "lineNumber": 278,
+                  "content": "    description: the configuration for this request. please note that it's optional.",
+                  "isContextLine": true
+                },
+                {
+                  "lineNumber": 279,
+                  "content": "    required:"
+                },
+                {
+                  "lineNumber": 280,
+                  "content": "    - RequestMiataruDeviceID",
+                  "isContextLine": true
+                },
+                {
+                  "lineNumber": 281,
+                  "content": "    properties:"
+                },
+                {
+                  "lineNumber": 282,
+                  "content": "     RequestMiataruDeviceID:"
+                },
+                {
+                  "lineNumber": 283,
+                  "content": "      type: string",
+                  "isContextLine": true
+                },
+                {
+                  "lineNumber": 284,
+                  "content": "      description: RequestMiataruDeviceID should be the ID of the device the request is sent from (or an identifier like an URL).",
+                  "isContextLine": true
+                },
+                {
+                  "lineNumber": 286,
+                  "content": "   MiataruGetLocationHistory:"
+                },
+                {
+                  "lineNumber": 287,
+                  "content": "    type: object",
+                  "isContextLine": true
+                },
+                {
+                  "lineNumber": 288,
+                  "content": "    description: one device id for which the location history should be retrieved.",
+                  "isContextLine": true
+                },
+                {
+                  "lineNumber": 289,
+                  "content": "    required:"
+                },
+                {
+                  "lineNumber": 290,
+                  "content": "    - Device",
+                  "isContextLine": true
+                },
+                {
+                  "lineNumber": 291,
+                  "content": "    - Amount",
+                  "isContextLine": true
+                },
+                {
+                  "lineNumber": 292,
+                  "content": "    properties:"
+                },
+                {
+                  "lineNumber": 293,
+                  "content": "     Device:"
+                },
+                {
+                  "lineNumber": 294,
+                  "content": "      type: string",
+                  "isContextLine": true
+                },
+                {
+                  "lineNumber": 295,
+                  "content": "      description: the device id of which the location history shall be requested",
+                  "isContextLine": true
+                },
+                {
+                  "lineNumber": 297,
+                  "content": "     Amount:"
+                },
+                {
+                  "lineNumber": 298,
+                  "content": "      type: string",
+                  "isContextLine": true
+                },
+                {
+                  "lineNumber": 299,
+                  "content": "      description: the maximum number of location history entries that are requested.",
+                  "isContextLine": true
+                },
+                {
+                  "lineNumber": 301,
+                  "content": " MiataruGetLocationDevice:"
+                },
+                {
+                  "lineNumber": 302,
+                  "content": "  type: object",
+                  "isContextLine": true
+                },
+                {
+                  "lineNumber": 303,
+                  "content": "  required:"
+                },
+                {
+                  "lineNumber": 304,
+                  "content": "  - Device",
+                  "isContextLine": true
+                },
+                {
+                  "lineNumber": 305,
+                  "content": "  properties:"
+                },
+                {
+                  "lineNumber": 306,
+                  "content": "   Device:"
+                },
+                {
+                  "lineNumber": 307,
+                  "content": "    type: string",
+                  "isContextLine": true
+                },
+                {
+                  "lineNumber": 308,
+                  "content": "    description: the unique device id of a device.",
+                  "isContextLine": true
+                },
+                {
+                  "lineNumber": 310,
+                  "content": " MiataruGetLocationRequest:"
+                },
+                {
+                  "lineNumber": 311,
+                  "content": "  required:"
+                },
+                {
+                  "lineNumber": 312,
+                  "content": "  - MiataruGetLocation",
+                  "isContextLine": true
+                },
+                {
+                  "lineNumber": 313,
+                  "content": "  properties:"
+                },
+                {
+                  "lineNumber": 314,
+                  "content": "   MiataruConfig:"
+                },
+                {
+                  "lineNumber": 315,
+                  "content": "    type: object",
+                  "isContextLine": true
+                },
+                {
+                  "lineNumber": 316,
+                  "content": "    description: the configuration for this request. please note that it's optional.",
+                  "isContextLine": true
+                },
+                {
+                  "lineNumber": 317,
+                  "content": "    required:"
+                },
+                {
+                  "lineNumber": 318,
+                  "content": "    - RequestMiataruDeviceID",
+                  "isContextLine": true
+                },
+                {
+                  "lineNumber": 319,
+                  "content": "    properties:"
+                },
+                {
+                  "lineNumber": 320,
+                  "content": "     RequestMiataruDeviceID:"
+                },
+                {
+                  "lineNumber": 321,
+                  "content": "      type: string",
+                  "isContextLine": true
+                },
+                {
+                  "lineNumber": 322,
+                  "content": "      description: RequestMiataruDeviceID should be the ID of the device the request is sent from (or an identifier like an URL).",
+                  "isContextLine": true
+                },
+                {
+                  "lineNumber": 324,
+                  "content": "   MiataruGetLocation:"
+                },
+                {
+                  "lineNumber": 325,
+                  "content": "    type: array",
+                  "isContextLine": true
+                },
+                {
+                  "lineNumber": 326,
+                  "content": "    description: one or more devices in an array for which the location should be retrieved.",
+                  "isContextLine": true
+                },
+                {
+                  "lineNumber": 327,
+                  "content": "    items: "
+                },
+                {
+                  "lineNumber": 328,
+                  "content": "     $ref: '#/definitions/MiataruGetLocationDevice'",
+                  "isContextLine": true
+                },
+                {
+                  "lineNumber": 329,
+                  "content": " MiataruLocation:"
+                },
+                {
+                  "lineNumber": 330,
+                  "content": "  type: object",
+                  "isContextLine": true
+                },
+                {
+                  "lineNumber": 331,
+                  "content": "  required:"
+                },
+                {
+                  "lineNumber": 332,
+                  "content": "  - Device",
+                  "isContextLine": true
+                },
+                {
+                  "lineNumber": 333,
+                  "content": "  - Timestamp",
+                  "isContextLine": true
+                },
+                {
+                  "lineNumber": 337,
+                  "content": "  properties:"
+                },
+                {
+                  "lineNumber": 338,
+                  "content": "   Device:"
+                },
+                {
+                  "lineNumber": 339,
+                  "content": "    type: string",
+                  "isContextLine": true
+                },
+                {
+                  "lineNumber": 340,
+                  "content": "    description: the unique id of this device. This needs to be unique as it is the only piece of information directly pointing towards this one device. Generating a GUID per device is recommended.",
+                  "isContextLine": true
+                },
+                {
+                  "lineNumber": 342,
+                  "content": "   Timestamp:"
+                },
+                {
+                  "lineNumber": 343,
+                  "content": "    type: string",
+                  "isContextLine": true
+                },
+                {
+                  "lineNumber": 344,
+                  "content": "    description: the javascript timestamp of this location update",
+                  "isContextLine": true
+                },
+                {
+                  "lineNumber": 346,
+                  "content": "   Longitude:"
+                },
+                {
+                  "lineNumber": 347,
+                  "content": "    type: string",
+                  "isContextLine": true
+                },
+                {
+                  "lineNumber": 348,
+                  "content": "    description: longitude of the position that is reported",
+                  "isContextLine": true
+                },
+                {
+                  "lineNumber": 350,
+                  "content": "   Latitude:"
+                },
+                {
+                  "lineNumber": 351,
+                  "content": "    type: string",
+                  "isContextLine": true
+                },
+                {
+                  "lineNumber": 352,
+                  "content": "    description: latitude of the position that is reported",
+                  "isContextLine": true
+                },
+                {
+                  "lineNumber": 354,
+                  "content": "   HorizontalAccuracy:"
+                },
+                {
+                  "lineNumber": 355,
+                  "content": "    type: string",
+                  "isContextLine": true
+                },
+                {
+                  "lineNumber": 356,
+                  "content": "    description: the accuracy of this location update in meters",
+                  "isContextLine": true
+                },
+                {
+                  "lineNumber": 358,
+                  "content": " MiataruGetLocationGeoJSONResponse:"
+                },
+                {
+                  "lineNumber": 359,
+                  "content": "  type: object",
+                  "isContextLine": true
+                },
+                {
+                  "lineNumber": 360,
+                  "content": "  required:"
+                },
+                {
+                  "lineNumber": 361,
+                  "content": "  - geometry",
+                  "isContextLine": true
+                },
+                {
+                  "lineNumber": 362,
+                  "content": "  - type",
+                  "isContextLine": true
+                },
+                {
+                  "lineNumber": 364,
+                  "content": "  properties:"
+                },
+                {
+                  "lineNumber": 365,
+                  "content": "   geometry:"
+                },
+                {
+                  "lineNumber": 366,
+                  "content": "    type: object",
+                  "isContextLine": true
+                },
+                {
+                  "lineNumber": 367,
+                  "content": "    required:"
+                },
+                {
+                  "lineNumber": 368,
+                  "content": "    - type",
+                  "isContextLine": true
+                },
+                {
+                  "lineNumber": 369,
+                  "content": "    - coordinates",
+                  "isContextLine": true
+                },
+                {
+                  "lineNumber": 370,
+                  "content": "    properties:"
+                },
+                {
+                  "lineNumber": 371,
+                  "content": "     type:"
+                },
+                {
+                  "lineNumber": 372,
+                  "content": "      type: string",
+                  "isContextLine": true
+                },
+                {
+                  "lineNumber": 373,
+                  "content": "     coordinates:"
+                },
+                {
+                  "lineNumber": 374,
+                  "content": "      type: array",
+                  "isContextLine": true
+                },
+                {
+                  "lineNumber": 375,
+                  "content": "      items:"
+                },
+                {
+                  "lineNumber": 376,
+                  "content": "       type: number",
+                  "isContextLine": true
+                },
+                {
+                  "lineNumber": 377,
+                  "content": "       format: float",
+                  "isContextLine": true
+                },
+                {
+                  "lineNumber": 378,
+                  "content": "   type:"
+                },
+                {
+                  "lineNumber": 379,
+                  "content": "    type: string",
+                  "isContextLine": true
+                },
+                {
+                  "lineNumber": 380,
+                  "content": "   properties:"
+                },
+                {
+                  "lineNumber": 381,
+                  "content": "    type: object",
+                  "isContextLine": true
+                },
+                {
+                  "lineNumber": 382,
+                  "content": "    required:"
+                },
+                {
+                  "lineNumber": 383,
+                  "content": "    - name",
+                  "isContextLine": true
+                },
+                {
+                  "lineNumber": 384,
+                  "content": "    properties:"
+                },
+                {
+                  "lineNumber": 385,
+                  "content": "     name:"
+                },
+                {
+                  "lineNumber": 386,
+                  "content": "      type: string",
+                  "isContextLine": true
+                },
+                {
+                  "lineNumber": 387,
+                  "content": " MiataruGetLocationResponse:"
+                },
+                {
+                  "lineNumber": 388,
+                  "content": "  type: object",
+                  "isContextLine": true
+                },
+                {
+                  "lineNumber": 389,
+                  "content": "  required:"
+                },
+                {
+                  "lineNumber": 390,
+                  "content": "  - MiataruLocation",
+                  "isContextLine": true
+                },
+                {
+                  "lineNumber": 391,
+                  "content": "  properties:"
+                },
+                {
+                  "lineNumber": 392,
+                  "content": "   MiataruLocation:"
+                },
+                {
+                  "lineNumber": 393,
+                  "content": "    type: array",
+                  "isContextLine": true
+                },
+                {
+                  "lineNumber": 394,
+                  "content": "    items: "
+                },
+                {
+                  "lineNumber": 395,
+                  "content": "     $ref: '#/definitions/MiataruLocation'",
+                  "isContextLine": true
+                },
+                {
+                  "lineNumber": 396,
+                  "content": " MiataruUpdateLocationRequest:"
+                },
+                {
+                  "lineNumber": 397,
+                  "content": "  required:"
+                },
+                {
+                  "lineNumber": 398,
+                  "content": "  - MiataruConfig",
+                  "isContextLine": true
+                },
+                {
+                  "lineNumber": 399,
+                  "content": "  - MiataruLocation",
+                  "isContextLine": true
+                },
+                {
+                  "lineNumber": 400,
+                  "content": "  properties:"
+                },
+                {
+                  "lineNumber": 401,
+                  "content": "   MiataruConfig:"
+                },
+                {
+                  "lineNumber": 402,
+                  "content": "    type: object",
+                  "isContextLine": true
+                },
+                {
+                  "lineNumber": 403,
+                  "content": "    description: the configuration for this request.",
+                  "isContextLine": true
+                },
+                {
+                  "lineNumber": 404,
+                  "content": "    required:"
+                },
+                {
+                  "lineNumber": 405,
+                  "content": "    - EnableLocationHistory",
+                  "isContextLine": true
+                },
+                {
+                  "lineNumber": 406,
+                  "content": "    - LocationDataRetentionTime",
+                  "isContextLine": true
+                },
+                {
+                  "lineNumber": 407,
+                  "content": "    properties:"
+                },
+                {
+                  "lineNumber": 408,
+                  "content": "     EnableLocationHistory:"
+                },
+                {
+                  "lineNumber": 409,
+                  "content": "      type: string",
+                  "isContextLine": true
+                },
+                {
+                  "lineNumber": 410,
+                  "content": "      description: If the client tells the server to store a location history the server automatically disables the pre-configured data time-out behavior that removes location data after a given amount of time. Nevertheless the user is limited to the server-side pre-configured amount of location history entries. This is either True or False.",
+                  "isContextLine": true
+                },
+                {
+                  "lineNumber": 412,
+                  "content": "     LocationDataRetentionTime:"
+                },
+                {
+                  "lineNumber": 413,
+                  "content": "      type: string",
+                  "isContextLine": true
+                },
+                {
+                  "lineNumber": 414,
+                  "content": "      default: \"30\"",
+                  "isContextLine": true
+                },
+                {
+                  "lineNumber": 416,
+                  "content": "   MiataruLocation:"
+                },
+                {
+                  "lineNumber": 417,
+                  "content": "    type: array",
+                  "isContextLine": true
+                },
+                {
+                  "lineNumber": 418,
+                  "content": "    items:"
+                },
+                {
+                  "lineNumber": 419,
+                  "content": "     $ref: '#/definitions/MiataruLocation'",
+                  "isContextLine": true
+                },
+                {
+                  "lineNumber": 420,
+                  "content": " ACK:"
+                },
+                {
+                  "lineNumber": 421,
+                  "content": "  required:"
+                },
+                {
+                  "lineNumber": 422,
+                  "content": "  - MiataruResponse",
+                  "isContextLine": true
+                },
+                {
+                  "lineNumber": 423,
+                  "content": "  - MiataruVerboseResponse",
+                  "isContextLine": true
+                },
+                {
+                  "lineNumber": 424,
+                  "content": "  properties:"
+                },
+                {
+                  "lineNumber": 425,
+                  "content": "   MiataruResponse:"
+                },
+                {
+                  "lineNumber": 426,
+                  "content": "    type: string",
+                  "isContextLine": true
+                },
+                {
+                  "lineNumber": 427,
+                  "content": "    default: \"ACK\"",
+                  "isContextLine": true
+                },
+                {
+                  "lineNumber": 428,
+                  "content": "   MiataruVerboseResponse:"
+                },
+                {
+                  "lineNumber": 429,
+                  "content": "    type: string",
+                  "isContextLine": true
+                },
+                {
+                  "lineNumber": 430,
+                  "content": "    default: \"\"",
+                  "isContextLine": true
+                },
+                {
+                  "lineNumber": 431,
+                  "content": " MiataruSetDeviceKeyRequest:"
+                },
+                {
+                  "lineNumber": 432,
+                  "content": "  required:"
+                },
+                {
+                  "lineNumber": 433,
+                  "content": "  - MiataruSetDeviceKey",
+                  "isContextLine": true
+                },
+                {
+                  "lineNumber": 434,
+                  "content": "  properties:"
+                },
+                {
+                  "lineNumber": 435,
+                  "content": "   MiataruSetDeviceKey:"
+                },
+                {
+                  "lineNumber": 436,
+                  "content": "    type: object",
+                  "isContextLine": true
+                },
+                {
+                  "lineNumber": 437,
+                  "content": "    required:"
+                },
+                {
+                  "lineNumber": 438,
+                  "content": "    - DeviceID",
+                  "isContextLine": true
+                },
+                {
+                  "lineNumber": 439,
+                  "content": "    - NewDeviceKey",
+                  "isContextLine": true
+                },
+                {
+                  "lineNumber": 440,
+                  "content": "    properties:"
+                },
+                {
+                  "lineNumber": 441,
+                  "content": "     DeviceID:"
+                },
+                {
+                  "lineNumber": 442,
+                  "content": "      type: string",
+                  "isContextLine": true
+                },
+                {
+                  "lineNumber": 443,
+                  "content": "      description: the device ID of the calling device",
+                  "isContextLine": true
+                },
+                {
+                  "lineNumber": 445,
+                  "content": "     NewDeviceKey:"
+                },
+                {
+                  "lineNumber": 446,
+                  "content": "      type: string",
+                  "isContextLine": true
+                },
+                {
+                  "lineNumber": 447,
+                  "content": "      description: the new device key to set (up to 256 characters unicode)",
+                  "isContextLine": true
+                },
+                {
+                  "lineNumber": 449,
+                  "content": " MiataruSetDeviceKeyResponse:"
+                },
+                {
+                  "lineNumber": 450,
+                  "content": "  required:"
+                },
+                {
+                  "lineNumber": 451,
+                  "content": "  - MiataruResponse",
+                  "isContextLine": true
+                },
+                {
+                  "lineNumber": 452,
+                  "content": "  - MiataruVerboseResponse",
+                  "isContextLine": true
+                },
+                {
+                  "lineNumber": 453,
+                  "content": "  properties:"
+                },
+                {
+                  "lineNumber": 454,
+                  "content": "   MiataruResponse:"
+                },
+                {
+                  "lineNumber": 455,
+                  "content": "    type: string",
+                  "isContextLine": true
+                },
+                {
+                  "lineNumber": 456,
+                  "content": "    default: \"ACK\"",
+                  "isContextLine": true
+                },
+                {
+                  "lineNumber": 457,
+                  "content": "   MiataruVerboseResponse:"
+                },
+                {
+                  "lineNumber": 458,
+                  "content": "    type: string",
+                  "isContextLine": true
+                },
+                {
+                  "lineNumber": 459,
+                  "content": "    default: \"Device key set successfully\"",
+                  "isContextLine": true
+                },
+                {
+                  "lineNumber": 460,
+                  "content": " MiataruSetAllowedDeviceListRequest:"
+                },
+                {
+                  "lineNumber": 461,
+                  "content": "  required:"
+                },
+                {
+                  "lineNumber": 462,
+                  "content": "  - MiataruSetAllowedDeviceList",
+                  "isContextLine": true
+                },
+                {
+                  "lineNumber": 463,
+                  "content": "  properties:"
+                },
+                {
+                  "lineNumber": 464,
+                  "content": "   MiataruSetAllowedDeviceList:"
+                },
+                {
+                  "lineNumber": 465,
+                  "content": "    type: object",
+                  "isContextLine": true
+                },
+                {
+                  "lineNumber": 466,
+                  "content": "    required:"
+                },
+                {
+                  "lineNumber": 467,
+                  "content": "    - DeviceID",
+                  "isContextLine": true
+                },
+                {
+                  "lineNumber": 468,
+                  "content": "    - DeviceKey",
+                  "isContextLine": true
+                },
+                {
+                  "lineNumber": 470,
+                  "content": "    properties:"
+                },
+                {
+                  "lineNumber": 471,
+                  "content": "     DeviceID:"
+                },
+                {
+                  "lineNumber": 472,
+                  "content": "      type: string",
+                  "isContextLine": true
+                },
+                {
+                  "lineNumber": 473,
+                  "content": "      description: the device ID of the calling device",
+                  "isContextLine": true
+                },
+                {
+                  "lineNumber": 475,
+                  "content": "     DeviceKey:"
+                },
+                {
+                  "lineNumber": 476,
+                  "content": "      type: string",
+                  "isContextLine": true
+                },
+                {
+                  "lineNumber": 477,
+                  "content": "      description: the device key matching for the specific DeviceID",
+                  "isContextLine": true
+                },
+                {
+                  "lineNumber": 479,
+                  "content": "     allowedDevices:"
+                },
+                {
+                  "lineNumber": 480,
+                  "content": "      type: array",
+                  "isContextLine": true
+                },
+                {
+                  "lineNumber": 481,
+                  "content": "      description: array containing allowedDevice data structure elements (up to 256)",
+                  "isContextLine": true
+                },
+                {
+                  "lineNumber": 483,
+                  "content": "      items:"
+                },
+                {
+                  "lineNumber": 484,
+                  "content": "       $ref: '#/definitions/MiataruAllowedDevice'",
+                  "isContextLine": true
+                },
+                {
+                  "lineNumber": 485,
+                  "content": " MiataruAllowedDevice:"
+                },
+                {
+                  "lineNumber": 486,
+                  "content": "  type: object",
+                  "isContextLine": true
+                },
+                {
+                  "lineNumber": 487,
+                  "content": "  required:"
+                },
+                {
+                  "lineNumber": 488,
+                  "content": "  - DeviceID",
+                  "isContextLine": true
+                },
+                {
+                  "lineNumber": 489,
+                  "content": "  - hasCurrentLocationAccess",
+                  "isContextLine": true
+                },
+                {
+                  "lineNumber": 491,
+                  "content": "  properties:"
+                },
+                {
+                  "lineNumber": 492,
+                  "content": "   DeviceID:"
+                },
+                {
+                  "lineNumber": 493,
+                  "content": "    type: string",
+                  "isContextLine": true
+                },
+                {
+                  "lineNumber": 494,
+                  "content": "    description: the DeviceID of the device that is allowed access",
+                  "isContextLine": true
+                },
+                {
+                  "lineNumber": 495,
+                  "content": "   hasCurrentLocationAccess:"
+                },
+                {
+                  "lineNumber": 496,
+                  "content": "    type: boolean",
+                  "isContextLine": true
+                },
+                {
+                  "lineNumber": 497,
+                  "content": "    description: true if this device has permission to access current location",
+                  "isContextLine": true
+                },
+                {
+                  "lineNumber": 499,
+                  "content": "   hasHistoryAccess:"
+                },
+                {
+                  "lineNumber": 500,
+                  "content": "    type: boolean",
+                  "isContextLine": true
+                },
+                {
+                  "lineNumber": 501,
+                  "content": "    description: true if this device has permission to access location history",
+                  "isContextLine": true
+                },
+                {
+                  "lineNumber": 503,
+                  "content": " MiataruSetAllowedDeviceListResponse:"
+                },
+                {
+                  "lineNumber": 504,
+                  "content": "  required:"
+                },
+                {
+                  "lineNumber": 505,
+                  "content": "  - MiataruResponse",
+                  "isContextLine": true
+                },
+                {
+                  "lineNumber": 506,
+                  "content": "  - MiataruVerboseResponse",
+                  "isContextLine": true
+                },
+                {
+                  "lineNumber": 507,
+                  "content": "  properties:"
+                },
+                {
+                  "lineNumber": 508,
+                  "content": "   MiataruResponse:"
+                },
+                {
+                  "lineNumber": 509,
+                  "content": "    type: string",
+                  "isContextLine": true
+                },
+                {
+                  "lineNumber": 510,
+                  "content": "    default: \"ACK\"",
+                  "isContextLine": true
+                },
+                {
+                  "lineNumber": 511,
+                  "content": "   MiataruVerboseResponse:"
+                },
+                {
+                  "lineNumber": 512,
+                  "content": "    type: string",
+                  "isContextLine": true
+                },
+                {
+                  "lineNumber": 513,
+                  "content": "    default: \"Allowed devices list updated successfully\"",
+                  "isContextLine": true
+                }
+              ]
+            }
+          ],
+          "totalLines": 413,
+          "totalMatchedLines": 191
+        }
+      }
+    }
+  }
+}
+```
+Status: **completed**
+
+
+</details>
+</tool-use>
+
+---
+
+<tool-use data-tool-type="unknown" data-tool-name="ripgrep_raw_search">
+<details>
+<summary>Tool use: **ripgrep_raw_search**</summary>
+
+
+Parameters:
+
+```json
+{
+  "pattern": "properties:\\s*$",
+  "path": "/Users/bietiekay/code/miataru-server/docs/swagger.yaml",
+  "contextAfter": 3,
+  "caseInsensitive": false
+}
+```
+Result:
+
+```json
+{
+  "success": {
+    "pattern": "properties:\\s*$",
+    "path": "/Users/bietiekay/code/miataru-server/docs/swagger.yaml",
+    "outputMode": "content",
+    "workspaceResults": {
+      "/Users/bietiekay/code/miataru-server": {
+        "content": {
+          "matches": [
+            {
+              "file": "docs/swagger.yaml",
+              "matches": [
+                {
+                  "lineNumber": 201,
+                  "content": "  properties:"
+                },
+                {
+                  "lineNumber": 202,
+                  "content": "   DeviceID:",
+                  "isContextLine": true
+                },
+                {
+                  "lineNumber": 203,
+                  "content": "    type: string",
+                  "isContextLine": true
+                },
+                {
+                  "lineNumber": 204,
+                  "content": "    description: the device id of the visiting device. If this is an empty string the deviceID is unknown/was not reported.",
+                  "isContextLine": true
+                },
+                {
+                  "lineNumber": 211,
+                  "content": "  properties:"
+                },
+                {
+                  "lineNumber": 212,
+                  "content": "   MiataruGetVisitorHistory:",
+                  "isContextLine": true
+                },
+                {
+                  "lineNumber": 213,
+                  "content": "    type: object",
+                  "isContextLine": true
+                },
+                {
+                  "lineNumber": 214,
+                  "content": "    required:",
+                  "isContextLine": true
+                },
+                {
+                  "lineNumber": 217,
+                  "content": "    properties:"
+                },
+                {
+                  "lineNumber": 218,
+                  "content": "     Device:",
+                  "isContextLine": true
+                },
+                {
+                  "lineNumber": 219,
+                  "content": "      type: string",
+                  "isContextLine": true
+                },
+                {
+                  "lineNumber": 220,
+                  "content": "      description: the device id of which the visitor history is requested",
+                  "isContextLine": true
+                },
+                {
+                  "lineNumber": 230,
+                  "content": "  properties:"
+                },
+                {
+                  "lineNumber": 231,
+                  "content": "   MiataruServerConfig:",
+                  "isContextLine": true
+                },
+                {
+                  "lineNumber": 232,
+                  "content": "    type: object",
+                  "isContextLine": true
+                },
+                {
+                  "lineNumber": 233,
+                  "content": "    description: holds information about the server side settings of the visitor history and about the available device related visitor history.",
+                  "isContextLine": true
+                },
+                {
+                  "lineNumber": 237,
+                  "content": "    properties:"
+                },
+                {
+                  "lineNumber": 238,
+                  "content": "     MaximumNumberOfVisitorHistory:",
+                  "isContextLine": true
+                },
+                {
+                  "lineNumber": 239,
+                  "content": "      type: string",
+                  "isContextLine": true
+                },
+                {
+                  "lineNumber": 240,
+                  "content": "      description: a server-side setting that controls up to how many Visitors the server is storing in the Visitor History before it removes the oldest one.",
+                  "isContextLine": true
+                },
+                {
+                  "lineNumber": 253,
+                  "content": "  properties:"
+                },
+                {
+                  "lineNumber": 254,
+                  "content": "   MiataruServerConfig:",
+                  "isContextLine": true
+                },
+                {
+                  "lineNumber": 255,
+                  "content": "    type: object",
+                  "isContextLine": true
+                },
+                {
+                  "lineNumber": 256,
+                  "content": "    description: holds information about the basic configuration settings on server side.",
+                  "isContextLine": true
+                },
+                {
+                  "lineNumber": 260,
+                  "content": "    properties:"
+                },
+                {
+                  "lineNumber": 261,
+                  "content": "     MaximumNumberOfLocationUpdates:",
+                  "isContextLine": true
+                },
+                {
+                  "lineNumber": 262,
+                  "content": "      type: string",
+                  "isContextLine": true
+                },
+                {
+                  "lineNumber": 263,
+                  "content": "      description: the amount of locations the server is storing per device at maximum before it will remove the oldest one (FiFo)",
+                  "isContextLine": true
+                },
+                {
+                  "lineNumber": 275,
+                  "content": "  properties:"
+                },
+                {
+                  "lineNumber": 276,
+                  "content": "   MiataruConfig:",
+                  "isContextLine": true
+                },
+                {
+                  "lineNumber": 277,
+                  "content": "    type: object",
+                  "isContextLine": true
+                },
+                {
+                  "lineNumber": 278,
+                  "content": "    description: the configuration for this request. please note that it's optional.",
+                  "isContextLine": true
+                },
+                {
+                  "lineNumber": 281,
+                  "content": "    properties:"
+                },
+                {
+                  "lineNumber": 282,
+                  "content": "     RequestMiataruDeviceID:",
+                  "isContextLine": true
+                },
+                {
+                  "lineNumber": 283,
+                  "content": "      type: string",
+                  "isContextLine": true
+                },
+                {
+                  "lineNumber": 284,
+                  "content": "      description: RequestMiataruDeviceID should be the ID of the device the request is sent from (or an identifier like an URL).",
+                  "isContextLine": true
+                },
+                {
+                  "lineNumber": 292,
+                  "content": "    properties:"
+                },
+                {
+                  "lineNumber": 293,
+                  "content": "     Device:",
+                  "isContextLine": true
+                },
+                {
+                  "lineNumber": 294,
+                  "content": "      type: string",
+                  "isContextLine": true
+                },
+                {
+                  "lineNumber": 295,
+                  "content": "      description: the device id of which the location history shall be requested",
+                  "isContextLine": true
+                },
+                {
+                  "lineNumber": 305,
+                  "content": "  properties:"
+                },
+                {
+                  "lineNumber": 306,
+                  "content": "   Device:",
+                  "isContextLine": true
+                },
+                {
+                  "lineNumber": 307,
+                  "content": "    type: string",
+                  "isContextLine": true
+                },
+                {
+                  "lineNumber": 308,
+                  "content": "    description: the unique device id of a device.",
+                  "isContextLine": true
+                },
+                {
+                  "lineNumber": 313,
+                  "content": "  properties:"
+                },
+                {
+                  "lineNumber": 314,
+                  "content": "   MiataruConfig:",
+                  "isContextLine": true
+                },
+                {
+                  "lineNumber": 315,
+                  "content": "    type: object",
+                  "isContextLine": true
+                },
+                {
+                  "lineNumber": 316,
+                  "content": "    description: the configuration for this request. please note that it's optional.",
+                  "isContextLine": true
+                },
+                {
+                  "lineNumber": 319,
+                  "content": "    properties:"
+                },
+                {
+                  "lineNumber": 320,
+                  "content": "     RequestMiataruDeviceID:",
+                  "isContextLine": true
+                },
+                {
+                  "lineNumber": 321,
+                  "content": "      type: string",
+                  "isContextLine": true
+                },
+                {
+                  "lineNumber": 322,
+                  "content": "      description: RequestMiataruDeviceID should be the ID of the device the request is sent from (or an identifier like an URL).",
+                  "isContextLine": true
+                },
+                {
+                  "lineNumber": 337,
+                  "content": "  properties:"
+                },
+                {
+                  "lineNumber": 338,
+                  "content": "   Device:",
+                  "isContextLine": true
+                },
+                {
+                  "lineNumber": 339,
+                  "content": "    type: string",
+                  "isContextLine": true
+                },
+                {
+                  "lineNumber": 340,
+                  "content": "    description: the unique id of this device. This needs to be unique as it is the only piece of information directly pointing towards this one device. Generating a GUID per device is recommended.",
+                  "isContextLine": true
+                },
+                {
+                  "lineNumber": 364,
+                  "content": "  properties:"
+                },
+                {
+                  "lineNumber": 365,
+                  "content": "   geometry:",
+                  "isContextLine": true
+                },
+                {
+                  "lineNumber": 366,
+                  "content": "    type: object",
+                  "isContextLine": true
+                },
+                {
+                  "lineNumber": 367,
+                  "content": "    required:",
+                  "isContextLine": true
+                },
+                {
+                  "lineNumber": 370,
+                  "content": "    properties:"
+                },
+                {
+                  "lineNumber": 371,
+                  "content": "     type:",
+                  "isContextLine": true
+                },
+                {
+                  "lineNumber": 372,
+                  "content": "      type: string",
+                  "isContextLine": true
+                },
+                {
+                  "lineNumber": 373,
+                  "content": "     coordinates:",
+                  "isContextLine": true
+                },
+                {
+                  "lineNumber": 380,
+                  "content": "   properties:"
+                },
+                {
+                  "lineNumber": 381,
+                  "content": "    type: object",
+                  "isContextLine": true
+                },
+                {
+                  "lineNumber": 382,
+                  "content": "    required:",
+                  "isContextLine": true
+                },
+                {
+                  "lineNumber": 383,
+                  "content": "    - name",
+                  "isContextLine": true
+                },
+                {
+                  "lineNumber": 384,
+                  "content": "    properties:"
+                },
+                {
+                  "lineNumber": 385,
+                  "content": "     name:",
+                  "isContextLine": true
+                },
+                {
+                  "lineNumber": 386,
+                  "content": "      type: string",
+                  "isContextLine": true
+                },
+                {
+                  "lineNumber": 387,
+                  "content": " MiataruGetLocationResponse:",
+                  "isContextLine": true
+                },
+                {
+                  "lineNumber": 391,
+                  "content": "  properties:"
+                },
+                {
+                  "lineNumber": 392,
+                  "content": "   MiataruLocation:",
+                  "isContextLine": true
+                },
+                {
+                  "lineNumber": 393,
+                  "content": "    type: array",
+                  "isContextLine": true
+                },
+                {
+                  "lineNumber": 394,
+                  "content": "    items: ",
+                  "isContextLine": true
+                },
+                {
+                  "lineNumber": 400,
+                  "content": "  properties:"
+                },
+                {
+                  "lineNumber": 401,
+                  "content": "   MiataruConfig:",
+                  "isContextLine": true
+                },
+                {
+                  "lineNumber": 402,
+                  "content": "    type: object",
+                  "isContextLine": true
+                },
+                {
+                  "lineNumber": 403,
+                  "content": "    description: the configuration for this request.",
+                  "isContextLine": true
+                },
+                {
+                  "lineNumber": 407,
+                  "content": "    properties:"
+                },
+                {
+                  "lineNumber": 408,
+                  "content": "     EnableLocationHistory:",
+                  "isContextLine": true
+                },
+                {
+                  "lineNumber": 409,
+                  "content": "      type: string",
+                  "isContextLine": true
+                },
+                {
+                  "lineNumber": 410,
+                  "content": "      description: If the client tells the server to store a location history the server automatically disables the pre-configured data time-out behavior that removes location data after a given amount of time. Nevertheless the user is limited to the server-side pre-configured amount of location history entries. This is either True or False.",
+                  "isContextLine": true
+                },
+                {
+                  "lineNumber": 424,
+                  "content": "  properties:"
+                },
+                {
+                  "lineNumber": 425,
+                  "content": "   MiataruResponse:",
+                  "isContextLine": true
+                },
+                {
+                  "lineNumber": 426,
+                  "content": "    type: string",
+                  "isContextLine": true
+                },
+                {
+                  "lineNumber": 427,
+                  "content": "    default: \"ACK\"",
+                  "isContextLine": true
+                },
+                {
+                  "lineNumber": 434,
+                  "content": "  properties:"
+                },
+                {
+                  "lineNumber": 435,
+                  "content": "   MiataruSetDeviceKey:",
+                  "isContextLine": true
+                },
+                {
+                  "lineNumber": 436,
+                  "content": "    type: object",
+                  "isContextLine": true
+                },
+                {
+                  "lineNumber": 437,
+                  "content": "    required:",
+                  "isContextLine": true
+                },
+                {
+                  "lineNumber": 440,
+                  "content": "    properties:"
+                },
+                {
+                  "lineNumber": 441,
+                  "content": "     DeviceID:",
+                  "isContextLine": true
+                },
+                {
+                  "lineNumber": 442,
+                  "content": "      type: string",
+                  "isContextLine": true
+                },
+                {
+                  "lineNumber": 443,
+                  "content": "      description: the device ID of the calling device",
+                  "isContextLine": true
+                },
+                {
+                  "lineNumber": 453,
+                  "content": "  properties:"
+                },
+                {
+                  "lineNumber": 454,
+                  "content": "   MiataruResponse:",
+                  "isContextLine": true
+                },
+                {
+                  "lineNumber": 455,
+                  "content": "    type: string",
+                  "isContextLine": true
+                },
+                {
+                  "lineNumber": 456,
+                  "content": "    default: \"ACK\"",
+                  "isContextLine": true
+                },
+                {
+                  "lineNumber": 463,
+                  "content": "  properties:"
+                },
+                {
+                  "lineNumber": 464,
+                  "content": "   MiataruSetAllowedDeviceList:",
+                  "isContextLine": true
+                },
+                {
+                  "lineNumber": 465,
+                  "content": "    type: object",
+                  "isContextLine": true
+                },
+                {
+                  "lineNumber": 466,
+                  "content": "    required:",
+                  "isContextLine": true
+                },
+                {
+                  "lineNumber": 470,
+                  "content": "    properties:"
+                },
+                {
+                  "lineNumber": 471,
+                  "content": "     DeviceID:",
+                  "isContextLine": true
+                },
+                {
+                  "lineNumber": 472,
+                  "content": "      type: string",
+                  "isContextLine": true
+                },
+                {
+                  "lineNumber": 473,
+                  "content": "      description: the device ID of the calling device",
+                  "isContextLine": true
+                },
+                {
+                  "lineNumber": 491,
+                  "content": "  properties:"
+                },
+                {
+                  "lineNumber": 492,
+                  "content": "   DeviceID:",
+                  "isContextLine": true
+                },
+                {
+                  "lineNumber": 493,
+                  "content": "    type: string",
+                  "isContextLine": true
+                },
+                {
+                  "lineNumber": 494,
+                  "content": "    description: the DeviceID of the device that is allowed access",
+                  "isContextLine": true
+                },
+                {
+                  "lineNumber": 507,
+                  "content": "  properties:"
+                },
+                {
+                  "lineNumber": 508,
+                  "content": "   MiataruResponse:",
+                  "isContextLine": true
+                },
+                {
+                  "lineNumber": 509,
+                  "content": "    type: string",
+                  "isContextLine": true
+                },
+                {
+                  "lineNumber": 510,
+                  "content": "    default: \"ACK\"",
+                  "isContextLine": true
+                }
+              ]
+            }
+          ],
+          "totalLines": 116,
+          "totalMatchedLines": 29
+        }
+      }
+    }
+  }
+}
+```
+Status: **completed**
+
+
+</details>
+</tool-use>
+
+---
+
+<tool-use data-tool-type="read" data-tool-name="read_file_v2">
+<details><summary>Tool use: **read_file_v2** • Read file: /Users/bietiekay/code/miataru-server/docs/swagger.yaml</summary>
+
+</details>
+</tool-use>
+
+---
+
+
+Checking which definitions are missing `type: object`:
+
+
+---
+
+<tool-use data-tool-type="unknown" data-tool-name="ripgrep_raw_search">
+<details>
+<summary>Tool use: **ripgrep_raw_search**</summary>
+
+
+Parameters:
+
+```json
+{
+  "pattern": "^ [A-Z][a-zA-Z]*:",
+  "path": "/Users/bietiekay/code/miataru-server/docs/swagger.yaml",
+  "contextAfter": 2,
+  "caseInsensitive": false
+}
+```
+Result:
+
+```json
+{
+  "success": {
+    "pattern": "^ [A-Z][a-zA-Z]*:",
+    "path": "/Users/bietiekay/code/miataru-server/docs/swagger.yaml",
+    "outputMode": "content",
+    "workspaceResults": {
+      "/Users/bietiekay/code/miataru-server": {
+        "content": {
+          "matches": [
+            {
+              "file": "docs/swagger.yaml",
+              "matches": [
+                {
+                  "lineNumber": 197,
+                  "content": " MiataruVisitors:"
+                },
+                {
+                  "lineNumber": 198,
+                  "content": "  required:",
+                  "isContextLine": true
+                },
+                {
+                  "lineNumber": 199,
+                  "content": "  - DeviceID",
+                  "isContextLine": true
+                },
+                {
+                  "lineNumber": 208,
+                  "content": " MiataruGetVisitorHistoryRequest:"
+                },
+                {
+                  "lineNumber": 209,
+                  "content": "  required:",
+                  "isContextLine": true
+                },
+                {
+                  "lineNumber": 210,
+                  "content": "  - MiataruGetVisitorHistory",
+                  "isContextLine": true
+                },
+                {
+                  "lineNumber": 226,
+                  "content": " MiataruGetVisitorHistoryResponse:"
+                },
+                {
+                  "lineNumber": 227,
+                  "content": "  required:",
+                  "isContextLine": true
+                },
+                {
+                  "lineNumber": 228,
+                  "content": "  - MiataruServerConfig",
+                  "isContextLine": true
+                },
+                {
+                  "lineNumber": 249,
+                  "content": " MiataruGetLocationHistoryResponse:"
+                },
+                {
+                  "lineNumber": 250,
+                  "content": "  required:",
+                  "isContextLine": true
+                },
+                {
+                  "lineNumber": 251,
+                  "content": "  - MiataruServerConfig",
+                  "isContextLine": true
+                },
+                {
+                  "lineNumber": 272,
+                  "content": " MiataruGetLocationHistoryRequest:"
+                },
+                {
+                  "lineNumber": 273,
+                  "content": "  required:",
+                  "isContextLine": true
+                },
+                {
+                  "lineNumber": 274,
+                  "content": "  - MiataruGetLocationHistory",
+                  "isContextLine": true
+                },
+                {
+                  "lineNumber": 301,
+                  "content": " MiataruGetLocationDevice:"
+                },
+                {
+                  "lineNumber": 302,
+                  "content": "  type: object",
+                  "isContextLine": true
+                },
+                {
+                  "lineNumber": 303,
+                  "content": "  required:",
+                  "isContextLine": true
+                },
+                {
+                  "lineNumber": 310,
+                  "content": " MiataruGetLocationRequest:"
+                },
+                {
+                  "lineNumber": 311,
+                  "content": "  required:",
+                  "isContextLine": true
+                },
+                {
+                  "lineNumber": 312,
+                  "content": "  - MiataruGetLocation",
+                  "isContextLine": true
+                },
+                {
+                  "lineNumber": 329,
+                  "content": " MiataruLocation:"
+                },
+                {
+                  "lineNumber": 330,
+                  "content": "  type: object",
+                  "isContextLine": true
+                },
+                {
+                  "lineNumber": 331,
+                  "content": "  required:",
+                  "isContextLine": true
+                },
+                {
+                  "lineNumber": 358,
+                  "content": " MiataruGetLocationGeoJSONResponse:"
+                },
+                {
+                  "lineNumber": 359,
+                  "content": "  type: object",
+                  "isContextLine": true
+                },
+                {
+                  "lineNumber": 360,
+                  "content": "  required:",
+                  "isContextLine": true
+                },
+                {
+                  "lineNumber": 387,
+                  "content": " MiataruGetLocationResponse:"
+                },
+                {
+                  "lineNumber": 388,
+                  "content": "  type: object",
+                  "isContextLine": true
+                },
+                {
+                  "lineNumber": 389,
+                  "content": "  required:",
+                  "isContextLine": true
+                },
+                {
+                  "lineNumber": 396,
+                  "content": " MiataruUpdateLocationRequest:"
+                },
+                {
+                  "lineNumber": 397,
+                  "content": "  required:",
+                  "isContextLine": true
+                },
+                {
+                  "lineNumber": 398,
+                  "content": "  - MiataruConfig",
+                  "isContextLine": true
+                },
+                {
+                  "lineNumber": 420,
+                  "content": " ACK:"
+                },
+                {
+                  "lineNumber": 421,
+                  "content": "  required:",
+                  "isContextLine": true
+                },
+                {
+                  "lineNumber": 422,
+                  "content": "  - MiataruResponse",
+                  "isContextLine": true
+                },
+                {
+                  "lineNumber": 431,
+                  "content": " MiataruSetDeviceKeyRequest:"
+                },
+                {
+                  "lineNumber": 432,
+                  "content": "  required:",
+                  "isContextLine": true
+                },
+                {
+                  "lineNumber": 433,
+                  "content": "  - MiataruSetDeviceKey",
+                  "isContextLine": true
+                },
+                {
+                  "lineNumber": 449,
+                  "content": " MiataruSetDeviceKeyResponse:"
+                },
+                {
+                  "lineNumber": 450,
+                  "content": "  required:",
+                  "isContextLine": true
+                },
+                {
+                  "lineNumber": 451,
+                  "content": "  - MiataruResponse",
+                  "isContextLine": true
+                },
+                {
+                  "lineNumber": 460,
+                  "content": " MiataruSetAllowedDeviceListRequest:"
+                },
+                {
+                  "lineNumber": 461,
+                  "content": "  required:",
+                  "isContextLine": true
+                },
+                {
+                  "lineNumber": 462,
+                  "content": "  - MiataruSetAllowedDeviceList",
+                  "isContextLine": true
+                },
+                {
+                  "lineNumber": 485,
+                  "content": " MiataruAllowedDevice:"
+                },
+                {
+                  "lineNumber": 486,
+                  "content": "  type: object",
+                  "isContextLine": true
+                },
+                {
+                  "lineNumber": 487,
+                  "content": "  required:",
+                  "isContextLine": true
+                },
+                {
+                  "lineNumber": 503,
+                  "content": " MiataruSetAllowedDeviceListResponse:"
+                },
+                {
+                  "lineNumber": 504,
+                  "content": "  required:",
+                  "isContextLine": true
+                },
+                {
+                  "lineNumber": 505,
+                  "content": "  - MiataruResponse",
+                  "isContextLine": true
+                }
+              ]
+            }
+          ],
+          "totalLines": 51,
+          "totalMatchedLines": 17
+        }
+      }
+    }
+  }
+}
+```
+Status: **completed**
+
+
+</details>
+</tool-use>
+
+---
+
+
+Several definitions are missing `type: object`. In Swagger 2.0, object definitions must explicitly declare `type: object`. Adding it to the missing definitions:
+
+
+---
+
+<tool-use data-tool-type="write" data-tool-name="edit_file_v2">
+
+<details><summary>Tool use: **edit_file_v2** • Edit file: /Users/bietiekay/code/miataru-server/docs/swagger.yaml</summary>
+
+</details>
+
+</tool-use>
+
+---
+
+<tool-use data-tool-type="write" data-tool-name="edit_file_v2">
+
+<details><summary>Tool use: **edit_file_v2** • Edit file: /Users/bietiekay/code/miataru-server/docs/swagger.yaml</summary>
+
+</details>
+
+</tool-use>
+
+---
+
+<tool-use data-tool-type="write" data-tool-name="edit_file_v2">
+
+<details><summary>Tool use: **edit_file_v2** • Edit file: /Users/bietiekay/code/miataru-server/docs/swagger.yaml</summary>
+
+</details>
+
+</tool-use>
+
+---
+
+<tool-use data-tool-type="write" data-tool-name="edit_file_v2">
+
+<details><summary>Tool use: **edit_file_v2** • Edit file: /Users/bietiekay/code/miataru-server/docs/swagger.yaml</summary>
+
+</details>
+
+</tool-use>
+
+---
+
+<tool-use data-tool-type="write" data-tool-name="edit_file_v2">
+
+<details><summary>Tool use: **edit_file_v2** • Edit file: /Users/bietiekay/code/miataru-server/docs/swagger.yaml</summary>
+
+</details>
+
+</tool-use>
+
+---
+
+<tool-use data-tool-type="write" data-tool-name="edit_file_v2">
+
+<details><summary>Tool use: **edit_file_v2** • Edit file: /Users/bietiekay/code/miataru-server/docs/swagger.yaml</summary>
+
+</details>
+
+</tool-use>
+
+---
+
+<tool-use data-tool-type="write" data-tool-name="edit_file_v2">
+
+<details><summary>Tool use: **edit_file_v2** • Edit file: /Users/bietiekay/code/miataru-server/docs/swagger.yaml</summary>
+
+</details>
+
+</tool-use>
+
+---
+
+<tool-use data-tool-type="write" data-tool-name="edit_file_v2">
+
+<details><summary>Tool use: **edit_file_v2** • Edit file: /Users/bietiekay/code/miataru-server/docs/swagger.yaml</summary>
+
+</details>
+
+</tool-use>
+
+---
+
+<tool-use data-tool-type="write" data-tool-name="edit_file_v2">
+
+<details><summary>Tool use: **edit_file_v2** • Edit file: /Users/bietiekay/code/miataru-server/docs/swagger.yaml</summary>
+
+</details>
+
+</tool-use>
+
+---
+
+<tool-use data-tool-type="write" data-tool-name="edit_file_v2">
+
+<details><summary>Tool use: **edit_file_v2** • Edit file: /Users/bietiekay/code/miataru-server/docs/swagger.yaml</summary>
+
+</details>
+
+</tool-use>
+
+---
+
+<tool-use data-tool-type="write" data-tool-name="edit_file_v2">
+
+<details><summary>Tool use: **edit_file_v2** • Edit file: /Users/bietiekay/code/miataru-server/docs/swagger.yaml</summary>
+
+</details>
+
+</tool-use>
+
+---
+
+<tool-use data-tool-type="write" data-tool-name="edit_file_v2">
+
+<details><summary>Tool use: **edit_file_v2** • Edit file: /Users/bietiekay/code/miataru-server/docs/swagger.yaml</summary>
+
+</details>
+
+</tool-use>
+
+---
+
+<tool-use data-tool-type="shell" data-tool-name="run_terminal_command_v2">
+<details><summary>Tool use: **run_terminal_command_v2** • Run command: cd /Users/bietiekay/code/miataru-server && node -e "const yaml = require('js-yaml'); const fs = require('fs'); try { const doc = yaml.load(fs.readFileSync('docs/swagger.yaml', 'utf8')); console.log('✓ YAML is valid'); console.log('✓ Definitions:', Object.keys(doc.definitions || {}).length); } catch(e) { console.log('✗ Error:', e.message.split('\\n')[0]); }"</summary>
+
+```bash
+cd /Users/bietiekay/code/miataru-server && node -e "const yaml = require('js-yaml'); const fs = require('fs'); try { const doc = yaml.load(fs.readFileSync('docs/swagger.yaml', 'utf8')); console.log('✓ YAML is valid'); console.log('✓ Definitions:', Object.keys(doc.definitions || {}).length); } catch(e) { console.log('✗ Error:', e.message.split('\\n')[0]); }"
+```
+
+```
+✓ YAML is valid
+✓ Definitions: 17
+
+```
+</details>
+</tool-use>
+
+---
+
+
+Fixed the issue: 12 definitions were missing `type: object`. In Swagger 2.0, object definitions must explicitly declare `type: object`; without it, some parsers treat it as null/undefined, causing the error.
+
+**What I fixed:**
+- Added `type: object` to all definitions that were missing it:
+  - `MiataruVisitors`
+  - `MiataruGetVisitorHistoryRequest`
+  - `MiataruGetVisitorHistoryResponse`
+  - `MiataruGetLocationHistoryResponse`
+  - `MiataruGetLocationHistoryRequest`
+  - `MiataruGetLocationRequest`
+  - `MiataruUpdateLocationRequest`
+  - `ACK`
+  - `MiataruSetDeviceKeyRequest`
+  - `MiataruSetDeviceKeyResponse`
+  - `MiataruSetAllowedDeviceListRequest`
+  - `MiataruSetAllowedDeviceListResponse`
+
+The YAML is valid and all definitions now have explicit type declarations. This should resolve the "TypeError: Swagger 2.0 does not support null types" error. Try loading the swagger.yaml file in your old Swagger explorer again; it should work now.
+
+---
+
+_**User**_
+
+still TypeError: Swagger 2.0 does not support null types ([object Object]).
+
+---
+
+_**Agent (model default, mode Agent)**_
+
+
+Checking nested object properties that might be missing `type: object`:
+
+
+---
+
+<tool-use data-tool-type="unknown" data-tool-name="ripgrep_raw_search">
+<details>
+<summary>Tool use: **ripgrep_raw_search**</summary>
+
+
+Parameters:
+
+```json
+{
+  "pattern": "^\\s+\\w+:\\s*$",
+  "path": "/Users/bietiekay/code/miataru-server/docs/swagger.yaml",
+  "contextAfter": 3,
+  "caseInsensitive": false
+}
+```
+Result:
+
+```json
+{
+  "success": {
+    "pattern": "^\\s+\\w+:\\s*$",
+    "path": "/Users/bietiekay/code/miataru-server/docs/swagger.yaml",
+    "outputMode": "content",
+    "workspaceResults": {
+      "/Users/bietiekay/code/miataru-server": {
+        "content": {
+          "matches": [
+            {
+              "file": "docs/swagger.yaml",
+              "matches": [
+                {
+                  "lineNumber": 12,
+                  "content": " contact:"
+                },
+                {
+                  "lineNumber": 13,
+                  "content": "  name: Miataru Team",
+                  "isContextLine": true
+                },
+                {
+                  "lineNumber": 14,
+                  "content": "  email: info@miataru.com",
+                  "isContextLine": true
+                },
+                {
+                  "lineNumber": 15,
+                  "content": "  url: http://miataru.com",
+                  "isContextLine": true
+                },
+                {
+                  "lineNumber": 16,
+                  "content": " license:"
+                },
+                {
+                  "lineNumber": 17,
+                  "content": "  name: Public Domain",
+                  "isContextLine": true
+                },
+                {
+                  "lineNumber": 18,
+                  "content": "  url: https://raw.githubusercontent.com/miataru/miataru-protocol-specification/master/LICENSE",
+                  "isContextLine": true
+                },
+                {
+                  "lineNumber": 19,
+                  "content": "# during dev, should point to your local machine",
+                  "isContextLine": true
+                },
+                {
+                  "lineNumber": 32,
+                  "content": "  post:"
+                },
+                {
+                  "lineNumber": 33,
+                  "content": "   tags:"
+                },
+                {
+                  "lineNumber": 34,
+                  "content": "   - updateLocation",
+                  "isContextLine": true
+                },
+                {
+                  "lineNumber": 35,
+                  "content": "   description: |",
+                  "isContextLine": true
+                },
+                {
+                  "lineNumber": 36,
+                  "content": "     This method is used to update the location of a device. The device does not need to be known already to the Miataru server but it rather creates a unique identifier for itself in the client application. This unique identifier, or device ID is then used to address this particular device.",
+                  "isContextLine": true
+                },
+                {
+                  "lineNumber": 40,
+                  "content": "   produces:"
+                },
+                {
+                  "lineNumber": 41,
+                  "content": "   - application/json",
+                  "isContextLine": true
+                },
+                {
+                  "lineNumber": 42,
+                  "content": "   parameters:"
+                },
+                {
+                  "lineNumber": 43,
+                  "content": "   - name: body",
+                  "isContextLine": true
+                },
+                {
+                  "lineNumber": 44,
+                  "content": "     in: body",
+                  "isContextLine": true
+                },
+                {
+                  "lineNumber": 45,
+                  "content": "     description: the body of this UpdateLocation POST request contains the JSON formatted parameters.",
+                  "isContextLine": true
+                },
+                {
+                  "lineNumber": 47,
+                  "content": "     schema:"
+                },
+                {
+                  "lineNumber": 48,
+                  "content": "      $ref: '#/definitions/MiataruUpdateLocationRequest'",
+                  "isContextLine": true
+                },
+                {
+                  "lineNumber": 49,
+                  "content": "   responses:"
+                },
+                {
+                  "lineNumber": 50,
+                  "content": "    default:"
+                },
+                {
+                  "lineNumber": 51,
+                  "content": "     description: successful request",
+                  "isContextLine": true
+                },
+                {
+                  "lineNumber": 52,
+                  "content": "     schema:"
+                },
+                {
+                  "lineNumber": 53,
+                  "content": "      $ref: '#/definitions/ACK'",
+                  "isContextLine": true
+                },
+                {
+                  "lineNumber": 54,
+                  "content": " /GetLocation:",
+                  "isContextLine": true
+                },
+                {
+                  "lineNumber": 55,
+                  "content": "  post:"
+                },
+                {
+                  "lineNumber": 56,
+                  "content": "   tags:"
+                },
+                {
+                  "lineNumber": 57,
+                  "content": "   - getLocation",
+                  "isContextLine": true
+                },
+                {
+                  "lineNumber": 58,
+                  "content": "   description: |",
+                  "isContextLine": true
+                },
+                {
+                  "lineNumber": 59,
+                  "content": "     To retrieve a specific devices latest known location the /GetLocation method is used. Please note that the MiataruConfig portion is optional. RequestMiataruDeviceID should be the ID of the device the request is sent from (or an identifier like an URL).",
+                  "isContextLine": true
+                },
+                {
+                  "lineNumber": 63,
+                  "content": "   produces:"
+                },
+                {
+                  "lineNumber": 64,
+                  "content": "   - application/json",
+                  "isContextLine": true
+                },
+                {
+                  "lineNumber": 65,
+                  "content": "   parameters:"
+                },
+                {
+                  "lineNumber": 66,
+                  "content": "   - name: body",
+                  "isContextLine": true
+                },
+                {
+                  "lineNumber": 67,
+                  "content": "     in: body",
+                  "isContextLine": true
+                },
+                {
+                  "lineNumber": 68,
+                  "content": "     description: the complex JSON formatted datastructure to get the location of one or more devices.",
+                  "isContextLine": true
+                },
+                {
+                  "lineNumber": 70,
+                  "content": "     schema:"
+                },
+                {
+                  "lineNumber": 71,
+                  "content": "      $ref: '#/definitions/MiataruGetLocationRequest'",
+                  "isContextLine": true
+                },
+                {
+                  "lineNumber": 72,
+                  "content": "   responses:"
+                },
+                {
+                  "lineNumber": 73,
+                  "content": "    default:"
+                },
+                {
+                  "lineNumber": 74,
+                  "content": "     description: successful location responses",
+                  "isContextLine": true
+                },
+                {
+                  "lineNumber": 75,
+                  "content": "     schema:"
+                },
+                {
+                  "lineNumber": 76,
+                  "content": "      $ref: '#/definitions/MiataruGetLocationResponse'",
+                  "isContextLine": true
+                },
+                {
+                  "lineNumber": 77,
+                  "content": " /GetLocationGeoJSON/{deviceID}:",
+                  "isContextLine": true
+                },
+                {
+                  "lineNumber": 78,
+                  "content": "  get:"
+                },
+                {
+                  "lineNumber": 79,
+                  "content": "   tags:"
+                },
+                {
+                  "lineNumber": 80,
+                  "content": "   - getLocation",
+                  "isContextLine": true
+                },
+                {
+                  "lineNumber": 81,
+                  "content": "   description: |",
+                  "isContextLine": true
+                },
+                {
+                  "lineNumber": 82,
+                  "content": "     Retrieves a devices Location in GeoJSON format.",
+                  "isContextLine": true
+                },
+                {
+                  "lineNumber": 86,
+                  "content": "   produces:"
+                },
+                {
+                  "lineNumber": 87,
+                  "content": "   - application/json",
+                  "isContextLine": true
+                },
+                {
+                  "lineNumber": 88,
+                  "content": "   parameters:"
+                },
+                {
+                  "lineNumber": 89,
+                  "content": "   - name: deviceID",
+                  "isContextLine": true
+                },
+                {
+                  "lineNumber": 90,
+                  "content": "     in: path",
+                  "isContextLine": true
+                },
+                {
+                  "lineNumber": 91,
+                  "content": "     type: string",
+                  "isContextLine": true
+                },
+                {
+                  "lineNumber": 95,
+                  "content": "   responses:"
+                },
+                {
+                  "lineNumber": 96,
+                  "content": "    default:"
+                },
+                {
+                  "lineNumber": 97,
+                  "content": "     description: geoJSON formatted device location",
+                  "isContextLine": true
+                },
+                {
+                  "lineNumber": 98,
+                  "content": "     schema:"
+                },
+                {
+                  "lineNumber": 99,
+                  "content": "      $ref: '#/definitions/MiataruGetLocationGeoJSONResponse'",
+                  "isContextLine": true
+                },
+                {
+                  "lineNumber": 100,
+                  "content": " /GetLocationHistory:",
+                  "isContextLine": true
+                },
+                {
+                  "lineNumber": 101,
+                  "content": "  post:"
+                },
+                {
+                  "lineNumber": 102,
+                  "content": "   tags:"
+                },
+                {
+                  "lineNumber": 103,
+                  "content": "   - getLocation",
+                  "isContextLine": true
+                },
+                {
+                  "lineNumber": 104,
+                  "content": "   description: |",
+                  "isContextLine": true
+                },
+                {
+                  "lineNumber": 105,
+                  "content": "     Location History is stored on the server only if the client told the server to do so using the \"EnableLocationHistory\" setting in the Location Update requests. For transitions of enabling/disabling that functionality - Everytime a Location Update is received by the server with \"EnableLocationHistory=false\" the server removes all stored Location History till that point. There is a server-side setting that controls up to how many Location Updates the server is storing in the Location History before it removes the oldest one. To request the Location History of a particular device the client sends the following POST request to the GetLocationHistory service URL. Please note that the MiataruConfig portion is optional. RequestMiataruDeviceID should be the ID of the device the request is sent from (or an identifier like an URL).",
+                  "isContextLine": true
+                },
+                {
+                  "lineNumber": 109,
+                  "content": "   produces:"
+                },
+                {
+                  "lineNumber": 110,
+                  "content": "   - application/json",
+                  "isContextLine": true
+                },
+                {
+                  "lineNumber": 111,
+                  "content": "   parameters:"
+                },
+                {
+                  "lineNumber": 112,
+                  "content": "   - name: body",
+                  "isContextLine": true
+                },
+                {
+                  "lineNumber": 113,
+                  "content": "     in: body",
+                  "isContextLine": true
+                },
+                {
+                  "lineNumber": 114,
+                  "content": "     description: the complex JSON formatted datastructure to get the location history of one device",
+                  "isContextLine": true
+                },
+                {
+                  "lineNumber": 116,
+                  "content": "     schema: "
+                },
+                {
+                  "lineNumber": 117,
+                  "content": "      $ref: '#/definitions/MiataruGetLocationHistoryRequest'",
+                  "isContextLine": true
+                },
+                {
+                  "lineNumber": 118,
+                  "content": "   responses:"
+                },
+                {
+                  "lineNumber": 119,
+                  "content": "    default:"
+                },
+                {
+                  "lineNumber": 120,
+                  "content": "     description: successful location history response",
+                  "isContextLine": true
+                },
+                {
+                  "lineNumber": 121,
+                  "content": "     schema:"
+                },
+                {
+                  "lineNumber": 122,
+                  "content": "      $ref: '#/definitions/MiataruGetLocationHistoryResponse'",
+                  "isContextLine": true
+                },
+                {
+                  "lineNumber": 123,
+                  "content": " /GetVisitorHistory:",
+                  "isContextLine": true
+                },
+                {
+                  "lineNumber": 124,
+                  "content": "  post:"
+                },
+                {
+                  "lineNumber": 125,
+                  "content": "   tags:"
+                },
+                {
+                  "lineNumber": 126,
+                  "content": "   - getVisitorHistory",
+                  "isContextLine": true
+                },
+                {
+                  "lineNumber": 127,
+                  "content": "   description: |",
+                  "isContextLine": true
+                },
+                {
+                  "lineNumber": 128,
+                  "content": "     Visitor History is stored on the server with every request to the location or location history information of a device. There is a server-side setting that controls up to how many Visitors the server is storing in the Visitor History before it removes the oldest one. To request the Visitor History of a particular device the client sends the following POST request to the GetVisitorHistory service URL.",
+                  "isContextLine": true
+                },
+                {
+                  "lineNumber": 132,
+                  "content": "   produces:"
+                },
+                {
+                  "lineNumber": 133,
+                  "content": "   - application/json",
+                  "isContextLine": true
+                },
+                {
+                  "lineNumber": 134,
+                  "content": "   parameters:"
+                },
+                {
+                  "lineNumber": 135,
+                  "content": "   - name: body",
+                  "isContextLine": true
+                },
+                {
+                  "lineNumber": 136,
+                  "content": "     in: body",
+                  "isContextLine": true
+                },
+                {
+                  "lineNumber": 137,
+                  "content": "     description: the complex JSON formatted datastructure to get the visitor history of one device",
+                  "isContextLine": true
+                },
+                {
+                  "lineNumber": 139,
+                  "content": "     schema:"
+                },
+                {
+                  "lineNumber": 140,
+                  "content": "      $ref: '#/definitions/MiataruGetVisitorHistoryRequest'",
+                  "isContextLine": true
+                },
+                {
+                  "lineNumber": 141,
+                  "content": "   responses:"
+                },
+                {
+                  "lineNumber": 142,
+                  "content": "    default:"
+                },
+                {
+                  "lineNumber": 143,
+                  "content": "     description: visitor history response",
+                  "isContextLine": true
+                },
+                {
+                  "lineNumber": 144,
+                  "content": "     schema:"
+                },
+                {
+                  "lineNumber": 145,
+                  "content": "      $ref: '#/definitions/MiataruGetVisitorHistoryResponse'",
+                  "isContextLine": true
+                },
+                {
+                  "lineNumber": 146,
+                  "content": " /setDeviceKey:",
+                  "isContextLine": true
+                },
+                {
+                  "lineNumber": 147,
+                  "content": "  post:"
+                },
+                {
+                  "lineNumber": 148,
+                  "content": "   tags:"
+                },
+                {
+                  "lineNumber": 149,
+                  "content": "   - security",
+                  "isContextLine": true
+                },
+                {
+                  "lineNumber": 150,
+                  "content": "   description: |",
+                  "isContextLine": true
+                },
+                {
+                  "lineNumber": 151,
+                  "content": "     Sets or changes the DeviceKey for a device. The DeviceKey is a 256 character unicode string that is used to authenticate write operations and visitor history access.",
+                  "isContextLine": true
+                },
+                {
+                  "lineNumber": 155,
+                  "content": "   produces:"
+                },
+                {
+                  "lineNumber": 156,
+                  "content": "   - application/json",
+                  "isContextLine": true
+                },
+                {
+                  "lineNumber": 157,
+                  "content": "   parameters:"
+                },
+                {
+                  "lineNumber": 158,
+                  "content": "   - name: body",
+                  "isContextLine": true
+                },
+                {
+                  "lineNumber": 159,
+                  "content": "     in: body",
+                  "isContextLine": true
+                },
+                {
+                  "lineNumber": 160,
+                  "content": "     description: the JSON formatted request to set or change a device key",
+                  "isContextLine": true
+                },
+                {
+                  "lineNumber": 162,
+                  "content": "     schema:"
+                },
+                {
+                  "lineNumber": 163,
+                  "content": "      $ref: '#/definitions/MiataruSetDeviceKeyRequest'",
+                  "isContextLine": true
+                },
+                {
+                  "lineNumber": 164,
+                  "content": "   responses:"
+                },
+                {
+                  "lineNumber": 165,
+                  "content": "    default:"
+                },
+                {
+                  "lineNumber": 166,
+                  "content": "     description: Device key set successfully",
+                  "isContextLine": true
+                },
+                {
+                  "lineNumber": 167,
+                  "content": "     schema:"
+                },
+                {
+                  "lineNumber": 168,
+                  "content": "      $ref: '#/definitions/MiataruSetDeviceKeyResponse'",
+                  "isContextLine": true
+                },
+                {
+                  "lineNumber": 169,
+                  "content": " /setAllowedDeviceList:",
+                  "isContextLine": true
+                },
+                {
+                  "lineNumber": 170,
+                  "content": "  post:"
+                },
+                {
+                  "lineNumber": 171,
+                  "content": "   tags:"
+                },
+                {
+                  "lineNumber": 172,
+                  "content": "   - security",
+                  "isContextLine": true
+                },
+                {
+                  "lineNumber": 173,
+                  "content": "   description: |",
+                  "isContextLine": true
+                },
+                {
+                  "lineNumber": 174,
+                  "content": "     Sets or updates the allowed devices list for a device. This list controls which devices can access the location and location history of the target device.",
+                  "isContextLine": true
+                },
+                {
+                  "lineNumber": 180,
+                  "content": "   produces:"
+                },
+                {
+                  "lineNumber": 181,
+                  "content": "   - application/json",
+                  "isContextLine": true
+                },
+                {
+                  "lineNumber": 182,
+                  "content": "   parameters:"
+                },
+                {
+                  "lineNumber": 183,
+                  "content": "   - name: body",
+                  "isContextLine": true
+                },
+                {
+                  "lineNumber": 184,
+                  "content": "     in: body",
+                  "isContextLine": true
+                },
+                {
+                  "lineNumber": 185,
+                  "content": "     description: the JSON formatted request to set or update the allowed devices list",
+                  "isContextLine": true
+                },
+                {
+                  "lineNumber": 187,
+                  "content": "     schema:"
+                },
+                {
+                  "lineNumber": 188,
+                  "content": "      $ref: '#/definitions/MiataruSetAllowedDeviceListRequest'",
+                  "isContextLine": true
+                },
+                {
+                  "lineNumber": 189,
+                  "content": "   responses:"
+                },
+                {
+                  "lineNumber": 190,
+                  "content": "    default:"
+                },
+                {
+                  "lineNumber": 191,
+                  "content": "     description: Allowed devices list updated successfully",
+                  "isContextLine": true
+                },
+                {
+                  "lineNumber": 192,
+                  "content": "     schema:"
+                },
+                {
+                  "lineNumber": 193,
+                  "content": "      $ref: '#/definitions/MiataruSetAllowedDeviceListResponse'",
+                  "isContextLine": true
+                },
+                {
+                  "lineNumber": 194,
+                  "isContextLine": true
+                },
+                {
+                  "lineNumber": 195,
+                  "content": "# complex objects have schema definitions",
+                  "isContextLine": true
+                },
+                {
+                  "lineNumber": 197,
+                  "content": " MiataruVisitors:"
+                },
+                {
+                  "lineNumber": 198,
+                  "content": "  type: object",
+                  "isContextLine": true
+                },
+                {
+                  "lineNumber": 199,
+                  "content": "  required:"
+                },
+                {
+                  "lineNumber": 200,
+                  "content": "  - DeviceID",
+                  "isContextLine": true
+                },
+                {
+                  "lineNumber": 201,
+                  "content": "  - TimeStamp",
+                  "isContextLine": true
+                },
+                {
+                  "lineNumber": 202,
+                  "content": "  properties:"
+                },
+                {
+                  "lineNumber": 203,
+                  "content": "   DeviceID:"
+                },
+                {
+                  "lineNumber": 204,
+                  "content": "    type: string",
+                  "isContextLine": true
+                },
+                {
+                  "lineNumber": 205,
+                  "content": "    description: the device id of the visiting device. If this is an empty string the deviceID is unknown/was not reported.",
+                  "isContextLine": true
+                },
+                {
+                  "lineNumber": 206,
+                  "content": "   TimeStamp:"
+                },
+                {
+                  "lineNumber": 207,
+                  "content": "    type: string",
+                  "isContextLine": true
+                },
+                {
+                  "lineNumber": 208,
+                  "content": "    description: the javascript timestamp of the visit",
+                  "isContextLine": true
+                },
+                {
+                  "lineNumber": 209,
+                  "content": " MiataruGetVisitorHistoryRequest:"
+                },
+                {
+                  "lineNumber": 210,
+                  "content": "  type: object",
+                  "isContextLine": true
+                },
+                {
+                  "lineNumber": 211,
+                  "content": "  required:"
+                },
+                {
+                  "lineNumber": 212,
+                  "content": "  - MiataruGetVisitorHistory",
+                  "isContextLine": true
+                },
+                {
+                  "lineNumber": 213,
+                  "content": "  properties:"
+                },
+                {
+                  "lineNumber": 214,
+                  "content": "   MiataruGetVisitorHistory:"
+                },
+                {
+                  "lineNumber": 215,
+                  "content": "    type: object",
+                  "isContextLine": true
+                },
+                {
+                  "lineNumber": 216,
+                  "content": "    required:"
+                },
+                {
+                  "lineNumber": 217,
+                  "content": "    - Device",
+                  "isContextLine": true
+                },
+                {
+                  "lineNumber": 218,
+                  "content": "    - Amount",
+                  "isContextLine": true
+                },
+                {
+                  "lineNumber": 219,
+                  "content": "    properties:"
+                },
+                {
+                  "lineNumber": 220,
+                  "content": "     Device:"
+                },
+                {
+                  "lineNumber": 221,
+                  "content": "      type: string",
+                  "isContextLine": true
+                },
+                {
+                  "lineNumber": 222,
+                  "content": "      description: the device id of which the visitor history is requested",
+                  "isContextLine": true
+                },
+                {
+                  "lineNumber": 223,
+                  "content": "      default: \"7b8e6e0ee5296db345162dc2ef652c1350761823\"",
+                  "isContextLine": true
+                },
+                {
+                  "lineNumber": 224,
+                  "content": "     Amount:"
+                },
+                {
+                  "lineNumber": 225,
+                  "content": "      type: string",
+                  "isContextLine": true
+                },
+                {
+                  "lineNumber": 226,
+                  "content": "      description: the maximum number of visitor history entries to be retrieved",
+                  "isContextLine": true
+                },
+                {
+                  "lineNumber": 227,
+                  "content": "      default: \"10\"",
+                  "isContextLine": true
+                },
+                {
+                  "lineNumber": 228,
+                  "content": " MiataruGetVisitorHistoryResponse:"
+                },
+                {
+                  "lineNumber": 229,
+                  "content": "  type: object",
+                  "isContextLine": true
+                },
+                {
+                  "lineNumber": 230,
+                  "content": "  required:"
+                },
+                {
+                  "lineNumber": 231,
+                  "content": "  - MiataruServerConfig",
+                  "isContextLine": true
+                },
+                {
+                  "lineNumber": 232,
+                  "content": "  - MiataruVisitors",
+                  "isContextLine": true
+                },
+                {
+                  "lineNumber": 233,
+                  "content": "  properties:"
+                },
+                {
+                  "lineNumber": 234,
+                  "content": "   MiataruServerConfig:"
+                },
+                {
+                  "lineNumber": 235,
+                  "content": "    type: object",
+                  "isContextLine": true
+                },
+                {
+                  "lineNumber": 236,
+                  "content": "    description: holds information about the server side settings of the visitor history and about the available device related visitor history.",
+                  "isContextLine": true
+                },
+                {
+                  "lineNumber": 237,
+                  "content": "    required:"
+                },
+                {
+                  "lineNumber": 238,
+                  "content": "    - MaximumNumberOfVisitorHistory",
+                  "isContextLine": true
+                },
+                {
+                  "lineNumber": 239,
+                  "content": "    - AvailableVisitorHistory",
+                  "isContextLine": true
+                },
+                {
+                  "lineNumber": 240,
+                  "content": "    properties:"
+                },
+                {
+                  "lineNumber": 241,
+                  "content": "     MaximumNumberOfVisitorHistory:"
+                },
+                {
+                  "lineNumber": 242,
+                  "content": "      type: string",
+                  "isContextLine": true
+                },
+                {
+                  "lineNumber": 243,
+                  "content": "      description: a server-side setting that controls up to how many Visitors the server is storing in the Visitor History before it removes the oldest one.",
+                  "isContextLine": true
+                },
+                {
+                  "lineNumber": 244,
+                  "content": "     AvailableVisitorHistory:"
+                },
+                {
+                  "lineNumber": 245,
+                  "content": "      type: string",
+                  "isContextLine": true
+                },
+                {
+                  "lineNumber": 246,
+                  "content": "      description: the number of available visitor history entries for this device. If the client requested more Visitor Updates than there are available the server will return those available.",
+                  "isContextLine": true
+                },
+                {
+                  "lineNumber": 247,
+                  "content": "   MiataruVisitors:"
+                },
+                {
+                  "lineNumber": 248,
+                  "content": "    type: array",
+                  "isContextLine": true
+                },
+                {
+                  "lineNumber": 249,
+                  "content": "    description: The server will answer back with an Array of MiataruVisitors if there are Visitors, or an empty array when there are none.",
+                  "isContextLine": true
+                },
+                {
+                  "lineNumber": 250,
+                  "content": "    items:"
+                },
+                {
+                  "lineNumber": 251,
+                  "content": "     $ref: '#/definitions/MiataruVisitors'",
+                  "isContextLine": true
+                },
+                {
+                  "lineNumber": 252,
+                  "content": " MiataruGetLocationHistoryResponse:"
+                },
+                {
+                  "lineNumber": 253,
+                  "content": "  type: object",
+                  "isContextLine": true
+                },
+                {
+                  "lineNumber": 254,
+                  "content": "  required:"
+                },
+                {
+                  "lineNumber": 255,
+                  "content": "  - MiataruServerConfig",
+                  "isContextLine": true
+                },
+                {
+                  "lineNumber": 256,
+                  "content": "  - MiataruLocation",
+                  "isContextLine": true
+                },
+                {
+                  "lineNumber": 257,
+                  "content": "  properties:"
+                },
+                {
+                  "lineNumber": 258,
+                  "content": "   MiataruServerConfig:"
+                },
+                {
+                  "lineNumber": 259,
+                  "content": "    type: object",
+                  "isContextLine": true
+                },
+                {
+                  "lineNumber": 260,
+                  "content": "    description: holds information about the basic configuration settings on server side.",
+                  "isContextLine": true
+                },
+                {
+                  "lineNumber": 261,
+                  "content": "    required:"
+                },
+                {
+                  "lineNumber": 262,
+                  "content": "    - MaximumNumberOfLocationUpdates",
+                  "isContextLine": true
+                },
+                {
+                  "lineNumber": 263,
+                  "content": "    - AvailableDeviceLocationUpdates",
+                  "isContextLine": true
+                },
+                {
+                  "lineNumber": 264,
+                  "content": "    properties:"
+                },
+                {
+                  "lineNumber": 265,
+                  "content": "     MaximumNumberOfLocationUpdates:"
+                },
+                {
+                  "lineNumber": 266,
+                  "content": "      type: string",
+                  "isContextLine": true
+                },
+                {
+                  "lineNumber": 267,
+                  "content": "      description: the amount of locations the server is storing per device at maximum before it will remove the oldest one (FiFo)",
+                  "isContextLine": true
+                },
+                {
+                  "lineNumber": 268,
+                  "content": "     AvailableDeviceLocationUpdates:"
+                },
+                {
+                  "lineNumber": 269,
+                  "content": "      type: string",
+                  "isContextLine": true
+                },
+                {
+                  "lineNumber": 270,
+                  "content": "      description: the number of locations stored for this particular device",
+                  "isContextLine": true
+                },
+                {
+                  "lineNumber": 271,
+                  "content": "   MiataruLocation:"
+                },
+                {
+                  "lineNumber": 272,
+                  "content": "    type: array",
+                  "isContextLine": true
+                },
+                {
+                  "lineNumber": 273,
+                  "content": "    description: holds all location information of a given device or is an empty array if device not found or no location information is stored.",
+                  "isContextLine": true
+                },
+                {
+                  "lineNumber": 274,
+                  "content": "    items:"
+                },
+                {
+                  "lineNumber": 275,
+                  "content": "     $ref: '#/definitions/MiataruLocation'",
+                  "isContextLine": true
+                },
+                {
+                  "lineNumber": 276,
+                  "content": " MiataruGetLocationHistoryRequest:"
+                },
+                {
+                  "lineNumber": 277,
+                  "content": "  type: object",
+                  "isContextLine": true
+                },
+                {
+                  "lineNumber": 278,
+                  "content": "  required:"
+                },
+                {
+                  "lineNumber": 279,
+                  "content": "  - MiataruGetLocationHistory",
+                  "isContextLine": true
+                },
+                {
+                  "lineNumber": 280,
+                  "content": "  properties:"
+                },
+                {
+                  "lineNumber": 281,
+                  "content": "   MiataruConfig:"
+                },
+                {
+                  "lineNumber": 282,
+                  "content": "    type: object",
+                  "isContextLine": true
+                },
+                {
+                  "lineNumber": 283,
+                  "content": "    description: the configuration for this request. please note that it's optional.",
+                  "isContextLine": true
+                },
+                {
+                  "lineNumber": 284,
+                  "content": "    required:"
+                },
+                {
+                  "lineNumber": 285,
+                  "content": "    - RequestMiataruDeviceID",
+                  "isContextLine": true
+                },
+                {
+                  "lineNumber": 286,
+                  "content": "    properties:"
+                },
+                {
+                  "lineNumber": 287,
+                  "content": "     RequestMiataruDeviceID:"
+                },
+                {
+                  "lineNumber": 288,
+                  "content": "      type: string",
+                  "isContextLine": true
+                },
+                {
+                  "lineNumber": 289,
+                  "content": "      description: RequestMiataruDeviceID should be the ID of the device the request is sent from (or an identifier like an URL).",
+                  "isContextLine": true
+                },
+                {
+                  "lineNumber": 290,
+                  "content": "      default: \"6140c3c0-4a7d-40d2-99ab-39414cac3509\"",
+                  "isContextLine": true
+                },
+                {
+                  "lineNumber": 291,
+                  "content": "   MiataruGetLocationHistory:"
+                },
+                {
+                  "lineNumber": 292,
+                  "content": "    type: object",
+                  "isContextLine": true
+                },
+                {
+                  "lineNumber": 293,
+                  "content": "    description: one device id for which the location history should be retrieved.",
+                  "isContextLine": true
+                },
+                {
+                  "lineNumber": 294,
+                  "content": "    required:"
+                },
+                {
+                  "lineNumber": 295,
+                  "content": "    - Device",
+                  "isContextLine": true
+                },
+                {
+                  "lineNumber": 296,
+                  "content": "    - Amount",
+                  "isContextLine": true
+                },
+                {
+                  "lineNumber": 297,
+                  "content": "    properties:"
+                },
+                {
+                  "lineNumber": 298,
+                  "content": "     Device:"
+                },
+                {
+                  "lineNumber": 299,
+                  "content": "      type: string",
+                  "isContextLine": true
+                },
+                {
+                  "lineNumber": 300,
+                  "content": "      description: the device id of which the location history shall be requested",
+                  "isContextLine": true
+                },
+                {
+                  "lineNumber": 301,
+                  "content": "      default: \"7b8e6e0ee5296db345162dc2ef652c1350761823\"",
+                  "isContextLine": true
+                },
+                {
+                  "lineNumber": 302,
+                  "content": "     Amount:"
+                },
+                {
+                  "lineNumber": 303,
+                  "content": "      type: string",
+                  "isContextLine": true
+                },
+                {
+                  "lineNumber": 304,
+                  "content": "      description: the maximum number of location history entries that are requested.",
+                  "isContextLine": true
+                },
+                {
+                  "lineNumber": 305,
+                  "content": "      default: \"10\"",
+                  "isContextLine": true
+                },
+                {
+                  "lineNumber": 306,
+                  "content": " MiataruGetLocationDevice:"
+                },
+                {
+                  "lineNumber": 307,
+                  "content": "  type: object",
+                  "isContextLine": true
+                },
+                {
+                  "lineNumber": 308,
+                  "content": "  required:"
+                },
+                {
+                  "lineNumber": 309,
+                  "content": "  - Device",
+                  "isContextLine": true
+                },
+                {
+                  "lineNumber": 310,
+                  "content": "  properties:"
+                },
+                {
+                  "lineNumber": 311,
+                  "content": "   Device:"
+                },
+                {
+                  "lineNumber": 312,
+                  "content": "    type: string",
+                  "isContextLine": true
+                },
+                {
+                  "lineNumber": 313,
+                  "content": "    description: the unique device id of a device.",
+                  "isContextLine": true
+                },
+                {
+                  "lineNumber": 314,
+                  "content": "    default: \"7b8e6e0ee5296db345162dc2ef652c1350761823\"",
+                  "isContextLine": true
+                },
+                {
+                  "lineNumber": 315,
+                  "content": " MiataruGetLocationRequest:"
+                },
+                {
+                  "lineNumber": 316,
+                  "content": "  type: object",
+                  "isContextLine": true
+                },
+                {
+                  "lineNumber": 317,
+                  "content": "  required:"
+                },
+                {
+                  "lineNumber": 318,
+                  "content": "  - MiataruGetLocation",
+                  "isContextLine": true
+                },
+                {
+                  "lineNumber": 319,
+                  "content": "  properties:"
+                },
+                {
+                  "lineNumber": 320,
+                  "content": "   MiataruConfig:"
+                },
+                {
+                  "lineNumber": 321,
+                  "content": "    type: object",
+                  "isContextLine": true
+                },
+                {
+                  "lineNumber": 322,
+                  "content": "    description: the configuration for this request. please note that it's optional.",
+                  "isContextLine": true
+                },
+                {
+                  "lineNumber": 323,
+                  "content": "    required:"
+                },
+                {
+                  "lineNumber": 324,
+                  "content": "    - RequestMiataruDeviceID",
+                  "isContextLine": true
+                },
+                {
+                  "lineNumber": 325,
+                  "content": "    properties:"
+                },
+                {
+                  "lineNumber": 326,
+                  "content": "     RequestMiataruDeviceID:"
+                },
+                {
+                  "lineNumber": 327,
+                  "content": "      type: string",
+                  "isContextLine": true
+                },
+                {
+                  "lineNumber": 328,
+                  "content": "      description: RequestMiataruDeviceID should be the ID of the device the request is sent from (or an identifier like an URL).",
+                  "isContextLine": true
+                },
+                {
+                  "lineNumber": 329,
+                  "content": "      default: \"6140c3c0-4a7d-40d2-99ab-39414cac3509\"",
+                  "isContextLine": true
+                },
+                {
+                  "lineNumber": 330,
+                  "content": "   MiataruGetLocation:"
+                },
+                {
+                  "lineNumber": 331,
+                  "content": "    type: array",
+                  "isContextLine": true
+                },
+                {
+                  "lineNumber": 332,
+                  "content": "    description: one or more devices in an array for which the location should be retrieved.",
+                  "isContextLine": true
+                },
+                {
+                  "lineNumber": 333,
+                  "content": "    items: "
+                },
+                {
+                  "lineNumber": 334,
+                  "content": "     $ref: '#/definitions/MiataruGetLocationDevice'",
+                  "isContextLine": true
+                },
+                {
+                  "lineNumber": 335,
+                  "content": " MiataruLocation:"
+                },
+                {
+                  "lineNumber": 336,
+                  "content": "  type: object",
+                  "isContextLine": true
+                },
+                {
+                  "lineNumber": 337,
+                  "content": "  required:"
+                },
+                {
+                  "lineNumber": 338,
+                  "content": "  - Device",
+                  "isContextLine": true
+                },
+                {
+                  "lineNumber": 339,
+                  "content": "  - Timestamp",
+                  "isContextLine": true
+                },
+                {
+                  "lineNumber": 340,
+                  "content": "  - Longitude",
+                  "isContextLine": true
+                },
+                {
+                  "lineNumber": 343,
+                  "content": "  properties:"
+                },
+                {
+                  "lineNumber": 344,
+                  "content": "   Device:"
+                },
+                {
+                  "lineNumber": 345,
+                  "content": "    type: string",
+                  "isContextLine": true
+                },
+                {
+                  "lineNumber": 346,
+                  "content": "    description: the unique id of this device. This needs to be unique as it is the only piece of information directly pointing towards this one device. Generating a GUID per device is recommended.",
+                  "isContextLine": true
+                },
+                {
+                  "lineNumber": 347,
+                  "content": "    default: \"7b8e6e0ee5296db345162dc2ef652c1350761823\"",
+                  "isContextLine": true
+                },
+                {
+                  "lineNumber": 348,
+                  "content": "   Timestamp:"
+                },
+                {
+                  "lineNumber": 349,
+                  "content": "    type: string",
+                  "isContextLine": true
+                },
+                {
+                  "lineNumber": 350,
+                  "content": "    description: the javascript timestamp of this location update",
+                  "isContextLine": true
+                },
+                {
+                  "lineNumber": 351,
+                  "content": "    default: \"1441360863\"",
+                  "isContextLine": true
+                },
+                {
+                  "lineNumber": 352,
+                  "content": "   Longitude:"
+                },
+                {
+                  "lineNumber": 353,
+                  "content": "    type: string",
+                  "isContextLine": true
+                },
+                {
+                  "lineNumber": 354,
+                  "content": "    description: longitude of the position that is reported",
+                  "isContextLine": true
+                },
+                {
+                  "lineNumber": 355,
+                  "content": "    default: \"-4.394531\"",
+                  "isContextLine": true
+                },
+                {
+                  "lineNumber": 356,
+                  "content": "   Latitude:"
+                },
+                {
+                  "lineNumber": 357,
+                  "content": "    type: string",
+                  "isContextLine": true
+                },
+                {
+                  "lineNumber": 358,
+                  "content": "    description: latitude of the position that is reported",
+                  "isContextLine": true
+                },
+                {
+                  "lineNumber": 359,
+                  "content": "    default: \"41.079351\"",
+                  "isContextLine": true
+                },
+                {
+                  "lineNumber": 360,
+                  "content": "   HorizontalAccuracy:"
+                },
+                {
+                  "lineNumber": 361,
+                  "content": "    type: string",
+                  "isContextLine": true
+                },
+                {
+                  "lineNumber": 362,
+                  "content": "    description: the accuracy of this location update in meters",
+                  "isContextLine": true
+                },
+                {
+                  "lineNumber": 363,
+                  "content": "    default: \"50\"",
+                  "isContextLine": true
+                },
+                {
+                  "lineNumber": 364,
+                  "content": " MiataruGetLocationGeoJSONResponse:"
+                },
+                {
+                  "lineNumber": 365,
+                  "content": "  type: object",
+                  "isContextLine": true
+                },
+                {
+                  "lineNumber": 366,
+                  "content": "  required:"
+                },
+                {
+                  "lineNumber": 367,
+                  "content": "  - geometry",
+                  "isContextLine": true
+                },
+                {
+                  "lineNumber": 368,
+                  "content": "  - type",
+                  "isContextLine": true
+                },
+                {
+                  "lineNumber": 369,
+                  "content": "  - properties",
+                  "isContextLine": true
+                },
+                {
+                  "lineNumber": 370,
+                  "content": "  properties:"
+                },
+                {
+                  "lineNumber": 371,
+                  "content": "   geometry:"
+                },
+                {
+                  "lineNumber": 372,
+                  "content": "    type: object",
+                  "isContextLine": true
+                },
+                {
+                  "lineNumber": 373,
+                  "content": "    required:"
+                },
+                {
+                  "lineNumber": 374,
+                  "content": "    - type",
+                  "isContextLine": true
+                },
+                {
+                  "lineNumber": 375,
+                  "content": "    - coordinates",
+                  "isContextLine": true
+                },
+                {
+                  "lineNumber": 376,
+                  "content": "    properties:"
+                },
+                {
+                  "lineNumber": 377,
+                  "content": "     type:"
+                },
+                {
+                  "lineNumber": 378,
+                  "content": "      type: string",
+                  "isContextLine": true
+                },
+                {
+                  "lineNumber": 379,
+                  "content": "     coordinates:"
+                },
+                {
+                  "lineNumber": 380,
+                  "content": "      type: array",
+                  "isContextLine": true
+                },
+                {
+                  "lineNumber": 381,
+                  "content": "      items:"
+                },
+                {
+                  "lineNumber": 382,
+                  "content": "       type: number",
+                  "isContextLine": true
+                },
+                {
+                  "lineNumber": 383,
+                  "content": "       format: float",
+                  "isContextLine": true
+                },
+                {
+                  "lineNumber": 384,
+                  "content": "   type:"
+                },
+                {
+                  "lineNumber": 385,
+                  "content": "    type: string",
+                  "isContextLine": true
+                },
+                {
+                  "lineNumber": 386,
+                  "content": "   properties:"
+                },
+                {
+                  "lineNumber": 387,
+                  "content": "    type: object",
+                  "isContextLine": true
+                },
+                {
+                  "lineNumber": 388,
+                  "content": "    required:"
+                },
+                {
+                  "lineNumber": 389,
+                  "content": "    - name",
+                  "isContextLine": true
+                },
+                {
+                  "lineNumber": 390,
+                  "content": "    properties:"
+                },
+                {
+                  "lineNumber": 391,
+                  "content": "     name:"
+                },
+                {
+                  "lineNumber": 392,
+                  "content": "      type: string",
+                  "isContextLine": true
+                },
+                {
+                  "lineNumber": 393,
+                  "content": " MiataruGetLocationResponse:"
+                },
+                {
+                  "lineNumber": 394,
+                  "content": "  type: object",
+                  "isContextLine": true
+                },
+                {
+                  "lineNumber": 395,
+                  "content": "  required:"
+                },
+                {
+                  "lineNumber": 396,
+                  "content": "  - MiataruLocation",
+                  "isContextLine": true
+                },
+                {
+                  "lineNumber": 397,
+                  "content": "  properties:"
+                },
+                {
+                  "lineNumber": 398,
+                  "content": "   MiataruLocation:"
+                },
+                {
+                  "lineNumber": 399,
+                  "content": "    type: array",
+                  "isContextLine": true
+                },
+                {
+                  "lineNumber": 400,
+                  "content": "    items: "
+                },
+                {
+                  "lineNumber": 401,
+                  "content": "     $ref: '#/definitions/MiataruLocation'",
+                  "isContextLine": true
+                },
+                {
+                  "lineNumber": 402,
+                  "content": " MiataruUpdateLocationRequest:"
+                },
+                {
+                  "lineNumber": 403,
+                  "content": "  type: object",
+                  "isContextLine": true
+                },
+                {
+                  "lineNumber": 404,
+                  "content": "  required:"
+                },
+                {
+                  "lineNumber": 405,
+                  "content": "  - MiataruConfig",
+                  "isContextLine": true
+                },
+                {
+                  "lineNumber": 406,
+                  "content": "  - MiataruLocation",
+                  "isContextLine": true
+                },
+                {
+                  "lineNumber": 407,
+                  "content": "  properties:"
+                },
+                {
+                  "lineNumber": 408,
+                  "content": "   MiataruConfig:"
+                },
+                {
+                  "lineNumber": 409,
+                  "content": "    type: object",
+                  "isContextLine": true
+                },
+                {
+                  "lineNumber": 410,
+                  "content": "    description: the configuration for this request.",
+                  "isContextLine": true
+                },
+                {
+                  "lineNumber": 411,
+                  "content": "    required:"
+                },
+                {
+                  "lineNumber": 412,
+                  "content": "    - EnableLocationHistory",
+                  "isContextLine": true
+                },
+                {
+                  "lineNumber": 413,
+                  "content": "    - LocationDataRetentionTime",
+                  "isContextLine": true
+                },
+                {
+                  "lineNumber": 414,
+                  "content": "    properties:"
+                },
+                {
+                  "lineNumber": 415,
+                  "content": "     EnableLocationHistory:"
+                },
+                {
+                  "lineNumber": 416,
+                  "content": "      type: string",
+                  "isContextLine": true
+                },
+                {
+                  "lineNumber": 417,
+                  "content": "      description: If the client tells the server to store a location history the server automatically disables the pre-configured data time-out behavior that removes location data after a given amount of time. Nevertheless the user is limited to the server-side pre-configured amount of location history entries. This is either True or False.",
+                  "isContextLine": true
+                },
+                {
+                  "lineNumber": 418,
+                  "content": "      default: \"False\"",
+                  "isContextLine": true
+                },
+                {
+                  "lineNumber": 419,
+                  "content": "     LocationDataRetentionTime:"
+                },
+                {
+                  "lineNumber": 420,
+                  "content": "      type: string",
+                  "isContextLine": true
+                },
+                {
+                  "lineNumber": 421,
+                  "content": "      default: \"30\"",
+                  "isContextLine": true
+                },
+                {
+                  "lineNumber": 422,
+                  "content": "      description: The LocationDataRetentionTime is the amount of minutes the server will keep that Location Data before it is removed/deleted automatically.",
+                  "isContextLine": true
+                },
+                {
+                  "lineNumber": 423,
+                  "content": "   MiataruLocation:"
+                },
+                {
+                  "lineNumber": 424,
+                  "content": "    type: array",
+                  "isContextLine": true
+                },
+                {
+                  "lineNumber": 425,
+                  "content": "    items:"
+                },
+                {
+                  "lineNumber": 426,
+                  "content": "     $ref: '#/definitions/MiataruLocation'",
+                  "isContextLine": true
+                },
+                {
+                  "lineNumber": 427,
+                  "content": " ACK:"
+                },
+                {
+                  "lineNumber": 428,
+                  "content": "  type: object",
+                  "isContextLine": true
+                },
+                {
+                  "lineNumber": 429,
+                  "content": "  required:"
+                },
+                {
+                  "lineNumber": 430,
+                  "content": "  - MiataruResponse",
+                  "isContextLine": true
+                },
+                {
+                  "lineNumber": 431,
+                  "content": "  - MiataruVerboseResponse",
+                  "isContextLine": true
+                },
+                {
+                  "lineNumber": 432,
+                  "content": "  properties:"
+                },
+                {
+                  "lineNumber": 433,
+                  "content": "   MiataruResponse:"
+                },
+                {
+                  "lineNumber": 434,
+                  "content": "    type: string",
+                  "isContextLine": true
+                },
+                {
+                  "lineNumber": 435,
+                  "content": "    default: \"ACK\"",
+                  "isContextLine": true
+                },
+                {
+                  "lineNumber": 436,
+                  "content": "   MiataruVerboseResponse:"
+                },
+                {
+                  "lineNumber": 437,
+                  "content": "    type: string",
+                  "isContextLine": true
+                },
+                {
+                  "lineNumber": 438,
+                  "content": "    default: \"\"",
+                  "isContextLine": true
+                },
+                {
+                  "lineNumber": 439,
+                  "content": " MiataruSetDeviceKeyRequest:"
+                },
+                {
+                  "lineNumber": 440,
+                  "content": "  type: object",
+                  "isContextLine": true
+                },
+                {
+                  "lineNumber": 441,
+                  "content": "  required:"
+                },
+                {
+                  "lineNumber": 442,
+                  "content": "  - MiataruSetDeviceKey",
+                  "isContextLine": true
+                },
+                {
+                  "lineNumber": 443,
+                  "content": "  properties:"
+                },
+                {
+                  "lineNumber": 444,
+                  "content": "   MiataruSetDeviceKey:"
+                },
+                {
+                  "lineNumber": 445,
+                  "content": "    type: object",
+                  "isContextLine": true
+                },
+                {
+                  "lineNumber": 446,
+                  "content": "    required:"
+                },
+                {
+                  "lineNumber": 447,
+                  "content": "    - DeviceID",
+                  "isContextLine": true
+                },
+                {
+                  "lineNumber": 448,
+                  "content": "    - NewDeviceKey",
+                  "isContextLine": true
+                },
+                {
+                  "lineNumber": 449,
+                  "content": "    properties:"
+                },
+                {
+                  "lineNumber": 450,
+                  "content": "     DeviceID:"
+                },
+                {
+                  "lineNumber": 451,
+                  "content": "      type: string",
+                  "isContextLine": true
+                },
+                {
+                  "lineNumber": 452,
+                  "content": "      description: the device ID of the calling device",
+                  "isContextLine": true
+                },
+                {
+                  "lineNumber": 453,
+                  "content": "      default: \"7b8e6e0ee5296db345162dc2ef652c1350761823\"",
+                  "isContextLine": true
+                },
+                {
+                  "lineNumber": 454,
+                  "content": "     NewDeviceKey:"
+                },
+                {
+                  "lineNumber": 455,
+                  "content": "      type: string",
+                  "isContextLine": true
+                },
+                {
+                  "lineNumber": 456,
+                  "content": "      description: the new device key to set (up to 256 characters unicode)",
+                  "isContextLine": true
+                },
+                {
+                  "lineNumber": 457,
+                  "content": "      maxLength: 256",
+                  "isContextLine": true
+                },
+                {
+                  "lineNumber": 458,
+                  "content": " MiataruSetDeviceKeyResponse:"
+                },
+                {
+                  "lineNumber": 459,
+                  "content": "  type: object",
+                  "isContextLine": true
+                },
+                {
+                  "lineNumber": 460,
+                  "content": "  required:"
+                },
+                {
+                  "lineNumber": 461,
+                  "content": "  - MiataruResponse",
+                  "isContextLine": true
+                },
+                {
+                  "lineNumber": 462,
+                  "content": "  - MiataruVerboseResponse",
+                  "isContextLine": true
+                },
+                {
+                  "lineNumber": 463,
+                  "content": "  properties:"
+                },
+                {
+                  "lineNumber": 464,
+                  "content": "   MiataruResponse:"
+                },
+                {
+                  "lineNumber": 465,
+                  "content": "    type: string",
+                  "isContextLine": true
+                },
+                {
+                  "lineNumber": 466,
+                  "content": "    default: \"ACK\"",
+                  "isContextLine": true
+                },
+                {
+                  "lineNumber": 467,
+                  "content": "   MiataruVerboseResponse:"
+                },
+                {
+                  "lineNumber": 468,
+                  "content": "    type: string",
+                  "isContextLine": true
+                },
+                {
+                  "lineNumber": 469,
+                  "content": "    default: \"Device key set successfully\"",
+                  "isContextLine": true
+                },
+                {
+                  "lineNumber": 470,
+                  "content": " MiataruSetAllowedDeviceListRequest:"
+                },
+                {
+                  "lineNumber": 471,
+                  "content": "  type: object",
+                  "isContextLine": true
+                },
+                {
+                  "lineNumber": 472,
+                  "content": "  required:"
+                },
+                {
+                  "lineNumber": 473,
+                  "content": "  - MiataruSetAllowedDeviceList",
+                  "isContextLine": true
+                },
+                {
+                  "lineNumber": 474,
+                  "content": "  properties:"
+                },
+                {
+                  "lineNumber": 475,
+                  "content": "   MiataruSetAllowedDeviceList:"
+                },
+                {
+                  "lineNumber": 476,
+                  "content": "    type: object",
+                  "isContextLine": true
+                },
+                {
+                  "lineNumber": 477,
+                  "content": "    required:"
+                },
+                {
+                  "lineNumber": 478,
+                  "content": "    - DeviceID",
+                  "isContextLine": true
+                },
+                {
+                  "lineNumber": 479,
+                  "content": "    - DeviceKey",
+                  "isContextLine": true
+                },
+                {
+                  "lineNumber": 480,
+                  "content": "    - allowedDevices",
+                  "isContextLine": true
+                },
+                {
+                  "lineNumber": 481,
+                  "content": "    properties:"
+                },
+                {
+                  "lineNumber": 482,
+                  "content": "     DeviceID:"
+                },
+                {
+                  "lineNumber": 483,
+                  "content": "      type: string",
+                  "isContextLine": true
+                },
+                {
+                  "lineNumber": 484,
+                  "content": "      description: the device ID of the calling device",
+                  "isContextLine": true
+                },
+                {
+                  "lineNumber": 485,
+                  "content": "      default: \"7b8e6e0ee5296db345162dc2ef652c1350761823\"",
+                  "isContextLine": true
+                },
+                {
+                  "lineNumber": 486,
+                  "content": "     DeviceKey:"
+                },
+                {
+                  "lineNumber": 487,
+                  "content": "      type: string",
+                  "isContextLine": true
+                },
+                {
+                  "lineNumber": 488,
+                  "content": "      description: the device key matching for the specific DeviceID",
+                  "isContextLine": true
+                },
+                {
+                  "lineNumber": 489,
+                  "content": "      maxLength: 256",
+                  "isContextLine": true
+                },
+                {
+                  "lineNumber": 490,
+                  "content": "     allowedDevices:"
+                },
+                {
+                  "lineNumber": 491,
+                  "content": "      type: array",
+                  "isContextLine": true
+                },
+                {
+                  "lineNumber": 492,
+                  "content": "      description: array containing allowedDevice data structure elements (up to 256)",
+                  "isContextLine": true
+                },
+                {
+                  "lineNumber": 493,
+                  "content": "      maxItems: 256",
+                  "isContextLine": true
+                },
+                {
+                  "lineNumber": 494,
+                  "content": "      items:"
+                },
+                {
+                  "lineNumber": 495,
+                  "content": "       $ref: '#/definitions/MiataruAllowedDevice'",
+                  "isContextLine": true
+                },
+                {
+                  "lineNumber": 496,
+                  "content": " MiataruAllowedDevice:"
+                },
+                {
+                  "lineNumber": 497,
+                  "content": "  type: object",
+                  "isContextLine": true
+                },
+                {
+                  "lineNumber": 498,
+                  "content": "  required:"
+                },
+                {
+                  "lineNumber": 499,
+                  "content": "  - DeviceID",
+                  "isContextLine": true
+                },
+                {
+                  "lineNumber": 500,
+                  "content": "  - hasCurrentLocationAccess",
+                  "isContextLine": true
+                },
+                {
+                  "lineNumber": 501,
+                  "content": "  - hasHistoryAccess",
+                  "isContextLine": true
+                },
+                {
+                  "lineNumber": 502,
+                  "content": "  properties:"
+                },
+                {
+                  "lineNumber": 503,
+                  "content": "   DeviceID:"
+                },
+                {
+                  "lineNumber": 504,
+                  "content": "    type: string",
+                  "isContextLine": true
+                },
+                {
+                  "lineNumber": 505,
+                  "content": "    description: the DeviceID of the device that is allowed access",
+                  "isContextLine": true
+                },
+                {
+                  "lineNumber": 506,
+                  "content": "   hasCurrentLocationAccess:"
+                },
+                {
+                  "lineNumber": 507,
+                  "content": "    type: boolean",
+                  "isContextLine": true
+                },
+                {
+                  "lineNumber": 508,
+                  "content": "    description: true if this device has permission to access current location",
+                  "isContextLine": true
+                },
+                {
+                  "lineNumber": 509,
+                  "content": "    default: false",
+                  "isContextLine": true
+                },
+                {
+                  "lineNumber": 510,
+                  "content": "   hasHistoryAccess:"
+                },
+                {
+                  "lineNumber": 511,
+                  "content": "    type: boolean",
+                  "isContextLine": true
+                },
+                {
+                  "lineNumber": 512,
+                  "content": "    description: true if this device has permission to access location history",
+                  "isContextLine": true
+                },
+                {
+                  "lineNumber": 513,
+                  "content": "    default: false",
+                  "isContextLine": true
+                },
+                {
+                  "lineNumber": 514,
+                  "content": " MiataruSetAllowedDeviceListResponse:"
+                },
+                {
+                  "lineNumber": 515,
+                  "content": "  type: object",
+                  "isContextLine": true
+                },
+                {
+                  "lineNumber": 516,
+                  "content": "  required:"
+                },
+                {
+                  "lineNumber": 517,
+                  "content": "  - MiataruResponse",
+                  "isContextLine": true
+                },
+                {
+                  "lineNumber": 518,
+                  "content": "  - MiataruVerboseResponse",
+                  "isContextLine": true
+                },
+                {
+                  "lineNumber": 519,
+                  "content": "  properties:"
+                },
+                {
+                  "lineNumber": 520,
+                  "content": "   MiataruResponse:"
+                },
+                {
+                  "lineNumber": 521,
+                  "content": "    type: string",
+                  "isContextLine": true
+                },
+                {
+                  "lineNumber": 522,
+                  "content": "    default: \"ACK\"",
+                  "isContextLine": true
+                },
+                {
+                  "lineNumber": 523,
+                  "content": "   MiataruVerboseResponse:"
+                },
+                {
+                  "lineNumber": 524,
+                  "content": "    type: string",
+                  "isContextLine": true
+                },
+                {
+                  "lineNumber": 525,
+                  "content": "    default: \"Allowed devices list updated successfully\"",
+                  "isContextLine": true
+                }
+              ]
+            }
+          ],
+          "totalLines": 467,
+          "totalMatchedLines": 191
+        }
+      }
+    }
+  }
+}
+```
+Status: **completed**
+
+
+</details>
+</tool-use>
+
+---
+
+<tool-use data-tool-type="read" data-tool-name="read_file_v2">
+<details><summary>Tool use: **read_file_v2** • Read file: /Users/bietiekay/code/miataru-server/docs/swagger.yaml</summary>
+
+</details>
+</tool-use>
+
+---
+
+
+Checking if optional `MiataruConfig` properties are causing issues. Verifying all properties have explicit types:
+
+
+---
+
+<tool-use data-tool-type="shell" data-tool-name="run_terminal_command_v2">
+<details><summary>Tool use: **run_terminal_command_v2** • Run command: cd /Users/bietiekay/code/miataru-server && node << 'EOF'
+const yaml = require('js-yaml');
+const fs = require('fs');
+
+function checkDefinition(def, name, path = '') {
+  const issues = [];
+  
+  if (!def.type && def.properties) {
+    issues.push(`${path}${name}: missing type (has properties but no type)`);
+  }
+  
+  if (def.properties) {
+    for (const [propName, propDef] of Object.entries(def.properties)) {
+      if (!propDef.type && propDef.properties) {
+        issues.push(`${path}${name}.${propName}: missing type (has properties but no type)`);
+      }
+      if (propDef.type === 'object' && propDef.properties) {
+        const nested = checkDefinition(propDef, propName, `${path}${name}.`);
+        issues.push(...nested);
+      }
+    }
+  }
+  
+  return issues;
+}
+
+try {
+  const doc = yaml.load(fs.readFileSync('docs/swagger.yaml', 'utf8'));
+  const issues = [];
+  
+  for (const [defName, def] of Object.entries(doc.definitions || {})) {
+    const defIssues = checkDefinition(def, defName);
+    issues.push(...defIssues);
+  }
+  
+  if (issues.length > 0) {
+    console.log('Issues found:');
+    issues.forEach(i => console.log('  -', i));
+  } else {
+    console.log('✓ All definitions have proper types');
+  }
+} catch(e) {
+  console.log('Error:', e.message);
+}
+EOF
+</summary>
+
+```bash
+cd /Users/bietiekay/code/miataru-server && node << 'EOF'
+const yaml = require('js-yaml');
+const fs = require('fs');
+
+function checkDefinition(def, name, path = '') {
+  const issues = [];
+  
+  if (!def.type && def.properties) {
+    issues.push(`${path}${name}: missing type (has properties but no type)`);
+  }
+  
+  if (def.properties) {
+    for (const [propName, propDef] of Object.entries(def.properties)) {
+      if (!propDef.type && propDef.properties) {
+        issues.push(`${path}${name}.${propName}: missing type (has properties but no type)`);
+      }
+      if (propDef.type === 'object' && propDef.properties) {
+        const nested = checkDefinition(propDef, propName, `${path}${name}.`);
+        issues.push(...nested);
+      }
+    }
+  }
+  
+  return issues;
+}
+
+try {
+  const doc = yaml.load(fs.readFileSync('docs/swagger.yaml', 'utf8'));
+  const issues = [];
+  
+  for (const [defName, def] of Object.entries(doc.definitions || {})) {
+    const defIssues = checkDefinition(def, defName);
+    issues.push(...defIssues);
+  }
+  
+  if (issues.length > 0) {
+    console.log('Issues found:');
+    issues.forEach(i => console.log('  -', i));
+  } else {
+    console.log('✓ All definitions have proper types');
+  }
+} catch(e) {
+  console.log('Error:', e.message);
+}
+EOF
+
+```
+
+```
+✓ All definitions have proper types
+
+```
+</details>
+</tool-use>
+
+---
+
+
+All types look correct. Checking if optional object properties are causing issues. Some old Swagger explorers may misinterpret optional object properties. Checking the exact structure:
+
+
+---
+
+<tool-use data-tool-type="read" data-tool-name="read_file_v2">
+<details><summary>Tool use: **read_file_v2** • Read file: /Users/bietiekay/code/miataru-server/docs/swagger.yaml</summary>
+
+</details>
+</tool-use>
+
+---
+
+<tool-use data-tool-type="shell" data-tool-name="run_terminal_command_v2">
+<details><summary>Tool use: **run_terminal_command_v2** • Run command: cd /Users/bietiekay/code/miataru-server && node << 'EOF'
+const yaml = require('js-yaml');
+const fs = require('fs');
+
+try {
+  const doc = yaml.load(fs.readFileSync('docs/swagger.yaml', 'utf8'));
+  
+  // Check for any properties that might be problematic
+  function findOptionalObjects(def, name, path = '') {
+    const issues = [];
+    
+    if (def.properties && def.required) {
+      for (const [propName, propDef] of Object.entries(def.properties)) {
+        const isRequired = def.required.includes(propName);
+        if (!isRequired && propDef.type === 'object') {
+          issues.push(`${path}${name}.${propName}: optional object property (not in required array)`);
+        }
+        if (propDef.type === 'object' && propDef.properties) {
+          const nested = findOptionalObjects(propDef, propName, `${path}${name}.`);
+          issues.push(...nested);
+        }
+      }
+    }
+    
+    return issues;
+  }
+  
+  const issues = [];
+  for (const [defName, def] of Object.entries(doc.definitions || {})) {
+    const defIssues = findOptionalObjects(def, defName);
+    issues.push(...defIssues);
+  }
+  
+  if (issues.length > 0) {
+    console.log('Optional object properties found (might cause issues):');
+    issues.forEach(i => console.log('  -', i));
+  } else {
+    console.log('No optional object properties found');
+  }
+} catch(e) {
+  console.log('Error:', e.message);
+}
+EOF
+</summary>
+
+```bash
+cd /Users/bietiekay/code/miataru-server && node << 'EOF'
+const yaml = require('js-yaml');
+const fs = require('fs');
+
+try {
+  const doc = yaml.load(fs.readFileSync('docs/swagger.yaml', 'utf8'));
+  
+  // Check for any properties that might be problematic
+  function findOptionalObjects(def, name, path = '') {
+    const issues = [];
+    
+    if (def.properties && def.required) {
+      for (const [propName, propDef] of Object.entries(def.properties)) {
+        const isRequired = def.required.includes(propName);
+        if (!isRequired && propDef.type === 'object') {
+          issues.push(`${path}${name}.${propName}: optional object property (not in required array)`);
+        }
+        if (propDef.type === 'object' && propDef.properties) {
+          const nested = findOptionalObjects(propDef, propName, `${path}${name}.`);
+          issues.push(...nested);
+        }
+      }
+    }
+    
+    return issues;
+  }
+  
+  const issues = [];
+  for (const [defName, def] of Object.entries(doc.definitions || {})) {
+    const defIssues = findOptionalObjects(def, defName);
+    issues.push(...defIssues);
+  }
+  
+  if (issues.length > 0) {
+    console.log('Optional object properties found (might cause issues):');
+    issues.forEach(i => console.log('  -', i));
+  } else {
+    console.log('No optional object properties found');
+  }
+} catch(e) {
+  console.log('Error:', e.message);
+}
+EOF
+
+```
+
+```
+Optional object properties found (might cause issues):
+  - MiataruGetLocationHistoryRequest.MiataruConfig: optional object property (not in required array)
+  - MiataruGetLocationRequest.MiataruConfig: optional object property (not in required array)
+
+```
+</details>
+</tool-use>
+
+---
+
+
+Optional `MiataruConfig` object properties may be causing the issue. Some old Swagger explorers treat optional objects as nullable, which Swagger 2.0 doesn't support. Ensuring these are handled correctly. Checking if we can add a workaround or if the issue is elsewhere:
+
+
+---
+
+<tool-use data-tool-type="shell" data-tool-name="run_terminal_command_v2">
+<details><summary>Tool use: **run_terminal_command_v2** • Run command: cd /Users/bietiekay/code/miataru-server && node << 'EOF'
+const yaml = require('js-yaml');
+const fs = require('fs');
+
+try {
+  const doc = yaml.load(fs.readFileSync('docs/swagger.yaml', 'utf8'));
+  
+  // Try to find any property that might be missing a type or have null
+  function deepCheck(obj, path = '') {
+    const issues = [];
+    
+    if (Array.isArray(obj)) {
+      obj.forEach((item, i) => {
+        issues.push(...deepCheck(item, `${path}[${i}]`));
+      });
+    } else if (obj && typeof obj === 'object') {
+      // Check if type is explicitly null or undefined
+      if (obj.type === null || obj.type === undefined) {
+        if (obj.properties || obj.items || obj.$ref) {
+          issues.push(`${path}: has null/undefined type but has schema definition`);
+        }
+      }
+      
+      // Check all properties
+      for (const [key, value] of Object.entries(obj)) {
+        if (value && typeof value === 'object') {
+          issues.push(...deepCheck(value, path ? `${path}.${key}` : key));
+        }
+      }
+    }
+    
+    return issues;
+  }
+  
+  const issues = deepCheck(doc);
+  if (issues.length > 0) {
+    console.log('Potential issues:');
+    issues.forEach(i => console.log('  -', i));
+  } else {
+    console.log('No obvious null type issues found');
+  }
+} catch(e) {
+  console.log('Error:', e.message);
+}
+EOF
+</summary>
+
+```bash
+cd /Users/bietiekay/code/miataru-server && node << 'EOF'
+const yaml = require('js-yaml');
+const fs = require('fs');
+
+try {
+  const doc = yaml.load(fs.readFileSync('docs/swagger.yaml', 'utf8'));
+  
+  // Try to find any property that might be missing a type or have null
+  function deepCheck(obj, path = '') {
+    const issues = [];
+    
+    if (Array.isArray(obj)) {
+      obj.forEach((item, i) => {
+        issues.push(...deepCheck(item, `${path}[${i}]`));
+      });
+    } else if (obj && typeof obj === 'object') {
+      // Check if type is explicitly null or undefined
+      if (obj.type === null || obj.type === undefined) {
+        if (obj.properties || obj.items || obj.$ref) {
+          issues.push(`${path}: has null/undefined type but has schema definition`);
+        }
+      }
+      
+      // Check all properties
+      for (const [key, value] of Object.entries(obj)) {
+        if (value && typeof value === 'object') {
+          issues.push(...deepCheck(value, path ? `${path}.${key}` : key));
+        }
+      }
+    }
+    
+    return issues;
+  }
+  
+  const issues = deepCheck(doc);
+  if (issues.length > 0) {
+    console.log('Potential issues:');
+    issues.forEach(i => console.log('  -', i));
+  } else {
+    console.log('No obvious null type issues found');
+  }
+} catch(e) {
+  console.log('Error:', e.message);
+}
+EOF
+
+```
+
+```
+Potential issues:
+  - paths./UpdateLocation.post.parameters[0].schema: has null/undefined type but has schema definition
+  - paths./UpdateLocation.post.responses.default.schema: has null/undefined type but has schema definition
+  - paths./GetLocation.post.parameters[0].schema: has null/undefined type but has schema definition
+  - paths./GetLocation.post.responses.default.schema: has null/undefined type but has schema definition
+  - paths./GetLocationGeoJSON/{deviceID}.get.responses.default.schema: has null/undefined type but has schema definition
+  - paths./GetLocationHistory.post.parameters[0].schema: has null/undefined type but has schema definition
+  - paths./GetLocationHistory.post.responses.default.schema: has null/undefined type but has schema definition
+  - paths./GetVisitorHistory.post.parameters[0].schema: has null/undefined type but has schema definition
+  - paths./GetVisitorHistory.post.responses.default.schema: has null/undefined type but has schema definition
+  - paths./setDeviceKey.post.parameters[0].schema: has null/undefined type but has schema definition
+  - paths./setDeviceKey.post.responses.default.schema: has null/undefined type but has schema definition
+  - paths./setAllowedDeviceList.post.parameters[0].schema: has null/undefined type but has schema definition
+  - paths./setAllowedDeviceList.post.responses.default.schema: has null/undefined type but has schema definition
+  - definitions.MiataruGetVisitorHistoryResponse.properties.MiataruVisitors.items: has null/undefined type but has schema definition
+  - definitions.MiataruGetLocationHistoryResponse.properties.MiataruLocation.items: has null/undefined type but has schema definition
+  - definitions.MiataruGetLocationRequest.properties.MiataruGetLocation.items: has null/undefined type but has schema definition
+  - definitions.MiataruGetLocationResponse.properties.MiataruLocation.items: has null/undefined type but has schema definition
+  - definitions.MiataruUpdateLocationRequest.properties.MiataruLocation.items: has null/undefined type but has schema definition
+  - definitions.MiataruSetAllowedDeviceListRequest.properties.MiataruSetAllowedDeviceList.properties.allowedDevices.items: has null/undefined type but has schema definition
+
+```
+</details>
+</tool-use>
+
+---
+
+
+The issue is with `items` that use `$ref`. In Swagger 2.0, when `items` uses `$ref`, it should only contain `$ref` (no `type`). Checking the current structure:
+
+
+---
+
+<tool-use data-tool-type="unknown" data-tool-name="ripgrep_raw_search">
+<details>
+<summary>Tool use: **ripgrep_raw_search**</summary>
+
+
+Parameters:
+
+```json
+{
+  "pattern": "items:",
+  "path": "/Users/bietiekay/code/miataru-server/docs/swagger.yaml",
+  "contextAfter": 2,
+  "caseInsensitive": false
+}
+```
+Result:
+
+```json
+{
+  "success": {
+    "pattern": "items:",
+    "path": "/Users/bietiekay/code/miataru-server/docs/swagger.yaml",
+    "outputMode": "content",
+    "workspaceResults": {
+      "/Users/bietiekay/code/miataru-server": {
+        "content": {
+          "matches": [
+            {
+              "file": "docs/swagger.yaml",
+              "matches": [
+                {
+                  "lineNumber": 250,
+                  "content": "    items:"
+                },
+                {
+                  "lineNumber": 251,
+                  "content": "     $ref: '#/definitions/MiataruVisitors'",
+                  "isContextLine": true
+                },
+                {
+                  "lineNumber": 252,
+                  "content": " MiataruGetLocationHistoryResponse:",
+                  "isContextLine": true
+                },
+                {
+                  "lineNumber": 274,
+                  "content": "    items:"
+                },
+                {
+                  "lineNumber": 275,
+                  "content": "     $ref: '#/definitions/MiataruLocation'",
+                  "isContextLine": true
+                },
+                {
+                  "lineNumber": 276,
+                  "content": " MiataruGetLocationHistoryRequest:",
+                  "isContextLine": true
+                },
+                {
+                  "lineNumber": 333,
+                  "content": "    items: "
+                },
+                {
+                  "lineNumber": 334,
+                  "content": "     $ref: '#/definitions/MiataruGetLocationDevice'",
+                  "isContextLine": true
+                },
+                {
+                  "lineNumber": 335,
+                  "content": " MiataruLocation:",
+                  "isContextLine": true
+                },
+                {
+                  "lineNumber": 381,
+                  "content": "      items:"
+                },
+                {
+                  "lineNumber": 382,
+                  "content": "       type: number",
+                  "isContextLine": true
+                },
+                {
+                  "lineNumber": 383,
+                  "content": "       format: float",
+                  "isContextLine": true
+                },
+                {
+                  "lineNumber": 400,
+                  "content": "    items: "
+                },
+                {
+                  "lineNumber": 401,
+                  "content": "     $ref: '#/definitions/MiataruLocation'",
+                  "isContextLine": true
+                },
+                {
+                  "lineNumber": 402,
+                  "content": " MiataruUpdateLocationRequest:",
+                  "isContextLine": true
+                },
+                {
+                  "lineNumber": 425,
+                  "content": "    items:"
+                },
+                {
+                  "lineNumber": 426,
+                  "content": "     $ref: '#/definitions/MiataruLocation'",
+                  "isContextLine": true
+                },
+                {
+                  "lineNumber": 427,
+                  "content": " ACK:",
+                  "isContextLine": true
+                },
+                {
+                  "lineNumber": 494,
+                  "content": "      items:"
+                },
+                {
+                  "lineNumber": 495,
+                  "content": "       $ref: '#/definitions/MiataruAllowedDevice'",
+                  "isContextLine": true
+                },
+                {
+                  "lineNumber": 496,
+                  "content": " MiataruAllowedDevice:",
+                  "isContextLine": true
+                }
+              ]
+            }
+          ],
+          "totalLines": 21,
+          "totalMatchedLines": 7
+        }
+      }
+    }
+  }
+}
+```
+Status: **completed**
+
+
+</details>
+</tool-use>
+
+---
+
+
+The `items` with `$ref` look correct. Checking if the old Swagger explorer expects a different structure. Verifying the exact format of schema objects that use `$ref`:
+
+
+---
+
+<tool-use data-tool-type="read" data-tool-name="read_file_v2">
+<details><summary>Tool use: **read_file_v2** • Read file: /Users/bietiekay/code/miataru-server/docs/swagger.yaml</summary>
+
+</details>
+</tool-use>
+
+---
+
+<tool-use data-tool-type="read" data-tool-name="read_file_v2">
+<details><summary>Tool use: **read_file_v2** • Read file: /Users/bietiekay/code/miataru-server/docs/swagger.yaml</summary>
+
+</details>
+</tool-use>
+
+---
+
+
+Structure looks correct. Some old Swagger explorers may expect explicit types even when using `$ref`. Checking if we can add a workaround. Since the error persists, trying a different approach: ensuring all schema references are properly formatted and checking for any edge cases:
+
+
+---
+
+<tool-use data-tool-type="shell" data-tool-name="run_terminal_command_v2">
+<details><summary>Tool use: **run_terminal_command_v2** • Run command: cd /Users/bietiekay/code/miataru-server && python3 -c "
+import yaml
+import json
+
+with open('docs/swagger.yaml', 'r') as f:
+    doc = yaml.safe_load(f)
+    
+# Check for any schema objects that might be problematic
+def check_schema(obj, path=''):
+    issues = []
+    if isinstance(obj, dict):
+        # Check if this is a schema object with $ref
+        if '$ref' in obj:
+            # In Swagger 2.0, schema with $ref should ONLY have $ref
+            other_keys = [k for k in obj.keys() if k != '$ref']
+            if other_keys:
+                issues.append(f'{path}: schema with $ref has extra keys: {other_keys}')
+        # Check for null type
+        if 'type' in obj and obj['type'] is None:
+            issues.append(f'{path}: has type: null')
+        # Recursively check
+        for k, v in obj.items():
+            issues.extend(check_schema(v, f'{path}.{k}' if path else k))
+    elif isinstance(obj, list):
+        for i, item in enumerate(obj):
+            issues.extend(check_schema(item, f'{path}[{i}]'))
+    return issues
+
+issues = check_schema(doc)
+if issues:
+    for issue in issues:
+        print(f'  - {issue}')
+else:
+    print('No schema issues found')
+" 2>&1 || echo "Python check failed, trying alternative..."</summary>
+
+```bash
+cd /Users/bietiekay/code/miataru-server && python3 -c "
+import yaml
+import json
+
+with open('docs/swagger.yaml', 'r') as f:
+    doc = yaml.safe_load(f)
+    
+# Check for any schema objects that might be problematic
+def check_schema(obj, path=''):
+    issues = []
+    if isinstance(obj, dict):
+        # Check if this is a schema object with $ref
+        if '$ref' in obj:
+            # In Swagger 2.0, schema with $ref should ONLY have $ref
+            other_keys = [k for k in obj.keys() if k != '$ref']
+            if other_keys:
+                issues.append(f'{path}: schema with $ref has extra keys: {other_keys}')
+        # Check for null type
+        if 'type' in obj and obj['type'] is None:
+            issues.append(f'{path}: has type: null')
+        # Recursively check
+        for k, v in obj.items():
+            issues.extend(check_schema(v, f'{path}.{k}' if path else k))
+    elif isinstance(obj, list):
+        for i, item in enumerate(obj):
+            issues.extend(check_schema(item, f'{path}[{i}]'))
+    return issues
+
+issues = check_schema(doc)
+if issues:
+    for issue in issues:
+        print(f'  - {issue}')
+else:
+    print('No schema issues found')
+" 2>&1 || echo "Python check failed, trying alternative..."
+```
+
+```
+Traceback (most recent call last):
+  File "&lt;string&gt;", line 2, in &lt;module&gt;
+    import yaml
+ModuleNotFoundError: No module named 'yaml'
+Python check failed, trying alternative...
+
+```
+</details>
+</tool-use>
+
+---
+
+
+Trying a different approach: some old Swagger explorers may misinterpret optional object properties. Checking if we can restructure the optional `MiataruConfig` properties or if the issue is elsewhere. Reviewing the original format for comparison:
+
+
+---
+
+<tool-use data-tool-type="unknown" data-tool-name="web_fetch">
+<details>
+<summary>Tool use: **web_fetch**</summary>
+
+
+Parameters:
+
+```json
+{
+  "url": "https://raw.githubusercontent.com/miataru/miataru-protocol-specification/swagger/miataru-v1/api/swagger/swagger.yaml"
+}
+```
+Result:
+
+```json
+{
+  "url": "https://raw.githubusercontent.com/miataru/miataru-protocol-specification/swagger/miataru-v1/api/swagger/swagger.yaml",
+  "markdown": "swagger: \"2.0\"\ninfo:\n version: \"1.0.0\"\n title: Miataru\n description: The Miataru API is very simple and straight forward. Generally you're posting (HTTP POST) a JSON formatted request to a service method locations and you get back a JSON formatted answer. Please take into consideration that this has the request-for-comment status and that it can change while there's work done on client and server applications. Versioning therefore is done by prepending the version number - /v1/ for version 1 - to the method call.\n contact:\n name: Miataru Team\n email: info@miataru.com\n url: http://miataru.com\n license:\n name: Public Domain\n url: https://raw.githubusercontent.com/miataru/miataru-protocol-specification/master/LICENSE\n# during dev, should point to your local machine\nhost: service.miataru.com\nbasePath: /v1\nschemes:\n # tip: remove http to make production-grade\n - http\n - https\nconsumes:\n - application/json\nproduces:\n - application/json\npaths:\n /UpdateLocation:\n post:\n tags:\n - updateLocation\n description: This method is used to update the location of a device. The device does not need to be known already to the Miataru server but it rather creates a unique identifier for itself in the client application. This unique identifier, or device ID is then used to address this particular device.\n operationId: updateLocation\n produces:\n - application/json\n parameters:\n - name: body\n in: body\n description: the body of this UpdateLocation POST request contains the JSON formatted parameters.\n required: true\n schema:\n $ref: '#/definitions/MiataruUpdateLocationRequest'\n responses:\n default:\n description: successful request\n schema:\n $ref: '#/definitions/ACK'\n /GetLocation:\n post:\n tags:\n - getLocation\n description: To retrieve a specific devices latest known location the /GetLocation method is used. Please note that the MiataruConfig portion is optional. RequestMiataruDeviceID should be the ID of the device the request is sent from (or an identifier like an URL).\n operationId: getLocation\n produces:\n - application/json\n parameters:\n - name: body\n in: body\n description: the complex JSON formatted datastructure to get the location of one or more devices.\n required: true\n schema:\n $ref: '#/definitions/MiataruGetLocationRequest'\n responses:\n default:\n description: successful location responses\n schema:\n $ref: '#/definitions/MiataruGetLocationResponse'\n /GetLocationGeoJSON/{deviceID}:\n get:\n tags:\n - getLocation\n description: Retrieves a devices Location in GeoJSON format.\n operationId: getLocationGeoJSON\n produces:\n - application/json\n parameters:\n - name: deviceID\n in: path\n type: string\n required: true\n description: the unique device ID of the device the location is requested from\n default: \"7b8e6e0ee5296db345162dc2ef652c1350761823\"\n responses:\n default:\n description: geoJSON formatted device location\n schema:\n $ref: '#/definitions/MiataruGetLocationGeoJSONResponse'\n /GetLocationHistory:\n post:\n tags:\n - getLocation\n description: Location History is stored on the server only if the client told the server to do so using the “EnableLocationHistory” setting in the Location Update requests. For transitions of enabling/disabling that functionality - Everytime a Location Update is received by the server with “EnableLocationHistory=false” the server removes all stored Location History till that point. There is a server-side setting that controls up to how many Location Updates the server is storing in the Location History before it removes the oldest one. To request the Location History of a particular device the client sends the following POST request to the GetLocationHistory service URL. Please note that the MiataruConfig portion is optional. RequestMiataruDeviceID should be the ID of the device the request is sent from (or an identifier like an URL).\n operationId: getLocationHistory\n produces:\n - application/json\n parameters:\n - name: body\n in: body\n description: the complex JSON formatted datastructure to get the location history of one device\n required: true\n schema: \n $ref: '#/definitions/MiataruGetLocationHistoryRequest'\n responses:\n default:\n description: successful location history response\n schema:\n $ref: '#/definitions/MiataruGetLocationHistoryResponse'\n /GetVisitorHistory:\n post:\n tags:\n - getVisitorHistory\n description: Visitor History is stored on the server with every request to the location or location history information of a device. There is a server-side setting that controls up to how many Visitors the server is storing in the Visitor History before it removes the oldest one. To request the Visitor History of a particular device the client sends the following POST request to the GetVisitorHistory service URL.\n operationId: getVisitorHistory\n produces:\n - application/json\n parameters:\n - name: body\n in: body\n description: the complex JSON formatted datastructure to get the visitor history of one device\n required: true\n schema:\n $ref: '#/definitions/MiataruGetVisitorHistoryRequest'\n responses:\n default:\n description: visitor history response\n schema:\n $ref: '#/definitions/MiataruGetVisitorHistoryResponse'\n\n# complex objects have schema definitions\ndefinitions:\n MiataruVisitors:\n required:\n - DeviceID\n - TimeStamp\n properties:\n DeviceID:\n type: string\n description: the device id of the visiting device. If this is an empty string the deviceID is unknown/was not reported.\n TimeStamp:\n type: string\n description: the javascript timestamp of the visit\n MiataruGetVisitorHistoryRequest:\n required:\n - MiataruGetVisitorHistory\n properties:\n MiataruGetVisitorHistory:\n type: object\n required:\n - Device\n - Amount\n properties:\n Device:\n type: string\n description: the device id of which the visitor history is requested\n default: \"7b8e6e0ee5296db345162dc2ef652c1350761823\"\n Amount:\n type: string\n description: the maximum number of visitor history entries to be retrieved\n default: \"10\"\n MiataruGetVisitorHistoryResponse:\n required:\n - MiataruServerConfig\n - MiataruVisitors\n properties:\n MiataruServerConfig:\n type: object\n description: holds information about the server side settings of the visitor history and about the available device related visitor history.\n required:\n - MaximumNumberOfVisitorHistory\n - AvailableVisitorHistory\n properties:\n MaximumNumberOfVisitorHistory:\n type: string\n description: a server-side setting that controls up to how many Visitors the server is storing in the Visitor History before it removes the oldest one.\n AvailableVisitorHistory:\n type: string\n description: the number of available visitor history entries for this device. If the client requested more Visitor Updates than there are available the server will return those available.\n MiataruVisitors:\n type: array\n description: The server will answer back with an Array of MiataruVisitors if there are Visitors, or an empty array when there are none.\n items:\n $ref: '#/definitions/MiataruVisitors'\n MiataruGetLocationHistoryResponse:\n required:\n - MiataruServerConfig\n - MiataruLocation\n properties:\n MiataruServerConfig:\n type: object\n description: holds information about the basic configuration settings on server side.\n required:\n - MaximumNumberOfLocationUpdates\n - AvailableDeviceLocationUpdates\n properties:\n MaximumNumberOfLocationUpdates:\n type: string\n description: the amount of locations the server is storing per device at maximum before it will remove the oldest one (FiFo)\n AvailableDeviceLocationUpdates:\n type: string\n description: the number of locations stored for this particular device\n MiataruLocation:\n type: array\n description: holds all location information of a given device or is an empty array if device not found or no location information is stored.\n items:\n $ref: '#/definitions/MiataruLocation'\n MiataruGetLocationHistoryRequest:\n required:\n - MiataruGetLocationHistory\n properties:\n MiataruConfig:\n type: object\n description: the configuration for this request. please note that it's optional.\n required:\n - RequestMiataruDeviceID\n properties:\n RequestMiataruDeviceID:\n type: string\n description: RequestMiataruDeviceID should be the ID of the device the request is sent from (or an identifier like an URL).\n default: \"6140c3c0-4a7d-40d2-99ab-39414cac3509\"\n MiataruGetLocationHistory:\n type: object\n description: one device id for which the location history should be retrieved.\n required:\n - Device\n - Amount\n properties:\n Device:\n type: string\n description: the device id of which the location history shall be requested\n default: \"7b8e6e0ee5296db345162dc2ef652c1350761823\"\n Amount:\n type: string\n description: the maximum number of location history entries that are requested.\n default: \"10\"\n MiataruGetLocationDevice:\n type: object\n required:\n - Device\n properties:\n Device:\n type: string\n description: the unique device id of a device.\n default: \"7b8e6e0ee5296db345162dc2ef652c1350761823\"\n MiataruGetLocationRequest:\n required:\n - MiataruGetLocation\n properties:\n MiataruConfig:\n type: object\n description: the configuration for this request. please note that it's optional.\n required:\n - RequestMiataruDeviceID\n properties:\n RequestMiataruDeviceID:\n type: string\n description: RequestMiataruDeviceID should be the ID of the device the request is sent from (or an identifier like an URL).\n default: \"6140c3c0-4a7d-40d2-99ab-39414cac3509\"\n MiataruGetLocation:\n type: array\n description: one or more devices in an array for which the location should be retrieved.\n items: \n $ref: '#/definitions/MiataruGetLocationDevice'\n MiataruLocation:\n type: object\n required:\n - Device\n - Timestamp\n - Longitude\n - Latitude\n - HorizontalAccuracy\n properties:\n Device:\n type: string\n description: the unique id of this device. This needs to be unique as it is the only piece of information directly pointing towards this one device. Generating a GUID per device is recommended.\n default: \"7b8e6e0ee5296db345162dc2ef652c1350761823\"\n Timestamp:\n type: string\n description: the javascript timestamp of this location update\n default: \"1441360863\"\n Longitude:\n type: string\n description: longitude of the position that is reported\n default: \"-4.394531\"\n Latitude:\n type: string\n description: latitude of the position that is reported\n default: \"41.079351\"\n HorizontalAccuracy:\n type: string\n description: the accuracy of this location update in meters\n default: \"50\"\n MiataruGetLocationGeoJSONResponse:\n type: object\n required:\n - geometry\n - type\n - properties\n properties:\n geometry:\n type: object\n required:\n - type\n - coordinates\n properties:\n type:\n type: string\n coordinates:\n type: array\n items:\n type: number\n format: float\n type:\n type: string\n properties:\n type: object\n required:\n - name\n properties:\n name:\n type: string\n MiataruGetLocationResponse:\n type: object\n required:\n - MiataruLocation\n properties:\n MiataruLocation:\n type: array\n items: \n $ref: '#/definitions/MiataruLocation'\n MiataruUpdateLocationRequest:\n required:\n - MiataruConfig\n - MiataruLocation\n properties:\n MiataruConfig:\n type: object\n description: the configuration for this request.\n required:\n - EnableLocationHistory\n - LocationDataRetentionTime\n properties:\n EnableLocationHistory:\n type: string\n description: If the client tells the server to store a location history the server automatically disables the pre-configured data time-out behavior that removes location data after a given amount of time. Nevertheless the user is limited to the server-side pre-configured amount of location history entries. This is either True or False.\n default: \"False\"\n LocationDataRetentionTime:\n type: string\n default: \"30\"\n description: The LocationDataRetentionTime is the amount of minutes the server will keep that Location Data before it is removed/deleted automatically.\n MiataruLocation:\n type: array\n items:\n $ref: '#/definitions/MiataruLocation'\n ACK:\n required:\n - MiataruResponse\n - MiataruVerboseResponse\n properties:\n MiataruResponse:\n type: string\n default: \"ACK\"\n MiataruVerboseResponse:\n type: string"
+}
+```
+User decision: **accepted**
+
+Status: **completed**
+
+
+</details>
+</tool-use>
+
+---
+
+
+Comparing with the original: some definitions don't have `type: object` (e.g., `MiataruVisitors`, `ACK`). The old explorer may expect that format. Removing `type: object` from definitions that match the original pattern:
+
+
+---
+
+<tool-use data-tool-type="write" data-tool-name="edit_file_v2">
+
+<details><summary>Tool use: **edit_file_v2** • Edit file: /Users/bietiekay/code/miataru-server/docs/swagger.yaml</summary>
+
+</details>
+
+</tool-use>
+
+---
+
+<tool-use data-tool-type="write" data-tool-name="edit_file_v2">
+
+<details><summary>Tool use: **edit_file_v2** • Edit file: /Users/bietiekay/code/miataru-server/docs/swagger.yaml</summary>
+
+</details>
+
+</tool-use>
+
+---
+
+<tool-use data-tool-type="write" data-tool-name="edit_file_v2">
+
+<details><summary>Tool use: **edit_file_v2** • Edit file: /Users/bietiekay/code/miataru-server/docs/swagger.yaml</summary>
+
+</details>
+
+</tool-use>
+
+---
+
+<tool-use data-tool-type="write" data-tool-name="edit_file_v2">
+
+<details><summary>Tool use: **edit_file_v2** • Edit file: /Users/bietiekay/code/miataru-server/docs/swagger.yaml</summary>
+
+</details>
+
+</tool-use>
+
+---
+
+<tool-use data-tool-type="write" data-tool-name="edit_file_v2">
+
+<details><summary>Tool use: **edit_file_v2** • Edit file: /Users/bietiekay/code/miataru-server/docs/swagger.yaml</summary>
+
+</details>
+
+</tool-use>
+
+---
+
+<tool-use data-tool-type="write" data-tool-name="edit_file_v2">
+
+<details><summary>Tool use: **edit_file_v2** • Edit file: /Users/bietiekay/code/miataru-server/docs/swagger.yaml</summary>
+
+</details>
+
+</tool-use>
+
+---
+
+<tool-use data-tool-type="write" data-tool-name="edit_file_v2">
+
+<details><summary>Tool use: **edit_file_v2** • Edit file: /Users/bietiekay/code/miataru-server/docs/swagger.yaml</summary>
+
+</details>
+
+</tool-use>
+
+---
+
+<tool-use data-tool-type="write" data-tool-name="edit_file_v2">
+
+<details><summary>Tool use: **edit_file_v2** • Edit file: /Users/bietiekay/code/miataru-server/docs/swagger.yaml</summary>
+
+</details>
+
+</tool-use>
+
+---
+
+<tool-use data-tool-type="write" data-tool-name="edit_file_v2">
+
+<details><summary>Tool use: **edit_file_v2** • Edit file: /Users/bietiekay/code/miataru-server/docs/swagger.yaml</summary>
+
+</details>
+
+</tool-use>
+
+---
+
+<tool-use data-tool-type="write" data-tool-name="edit_file_v2">
+
+<details><summary>Tool use: **edit_file_v2** • Edit file: /Users/bietiekay/code/miataru-server/docs/swagger.yaml</summary>
+
+</details>
+
+</tool-use>
+
+---
+
+<tool-use data-tool-type="write" data-tool-name="edit_file_v2">
+
+<details><summary>Tool use: **edit_file_v2** • Edit file: /Users/bietiekay/code/miataru-server/docs/swagger.yaml</summary>
+
+</details>
+
+</tool-use>
+
+---
+
+<tool-use data-tool-type="write" data-tool-name="edit_file_v2">
+
+<details><summary>Tool use: **edit_file_v2** • Edit file: /Users/bietiekay/code/miataru-server/docs/swagger.yaml</summary>
+
+</details>
+
+</tool-use>
+
+---
+
+<tool-use data-tool-type="shell" data-tool-name="run_terminal_command_v2">
+<details><summary>Tool use: **run_terminal_command_v2**</summary>
+
+</details>
+</tool-use>
+
+---
+
