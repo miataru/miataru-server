@@ -96,6 +96,9 @@ describe('DeleteLocation', function() {
 
                     // Verify data exists
                     var getLocationRequest = {
+                        "MiataruConfig": {
+                            "RequestMiataruDeviceID": "test-client"
+                        },
                         "MiataruGetLocation": [{"Device": TEST_DEVICE}]
                     };
 
@@ -242,6 +245,9 @@ describe('DeleteLocation', function() {
 
                     // Step 2: Verify location data exists
                     var getLocationRequest = {
+                        "MiataruConfig": {
+                            "RequestMiataruDeviceID": "test-client"
+                        },
                         "MiataruGetLocation": [{"Device": deviceId}]
                     };
 

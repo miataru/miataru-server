@@ -1,8 +1,18 @@
 # miataru-server
 
-**Version 1.3.0** - Modernized server with enhanced features and improved security
+**Version 2.0.0** - Security and privacy enhancements with API 1.1 support
 
 This is the source code of a Miataru server side implementation. You can get more information [here](http://www.miataru.com).
+
+## What's New in Version 2.0 / API 1.1
+
+Version 2.0 introduces significant security and privacy enhancements while maintaining full backward compatibility with API 1.0:
+
+- **DeviceKey Authentication** - Protect write operations and visitor history access with device-specific keys
+- **Allowed Devices List** - Granular access control for location data sharing
+- **Full Backward Compatibility** - All existing API 1.0 clients continue to work without modification
+
+See [API 1.1 Security Documentation](docs/API_1.1_SECURITY.md) for detailed information.
 
 ## What is Miataru?
 
@@ -32,6 +42,8 @@ The Miataru server provides both versioned (v1) and legacy API endpoints for max
 - **POST** `/v1/GetLocationHistory` - Retrieve location history
 - **POST** `/v1/GetVisitorHistory` - Retrieve visitor history
 - **POST** `/v1/DeleteLocation` - Delete all location data for a device
+- **POST** `/v1/setDeviceKey` - Set or change device key (API 1.1)
+- **POST** `/v1/setAllowedDeviceList` - Manage allowed devices list (API 1.1)
 
 ### Legacy API (Backward Compatibility)
 - **POST** `/UpdateLocation` - Store location data
@@ -41,6 +53,38 @@ The Miataru server provides both versioned (v1) and legacy API endpoints for max
 - **POST** `/GetLocationHistory` - Retrieve location history
 - **POST** `/GetVisitorHistory` - Retrieve visitor history
 - **POST** `/DeleteLocation` - Delete all location data for a device
+- **POST** `/setDeviceKey` - Set or change device key (API 1.1)
+- **POST** `/setAllowedDeviceList` - Manage allowed devices list (API 1.1)
+
+## Security Features (API 1.1)
+
+### DeviceKey Authentication
+
+DeviceKey provides authentication for write operations and visitor history access. Once set, devices must provide the correct DeviceKey to:
+- Update location data
+- Access visitor history
+
+See [API 1.1 Security Documentation](docs/API_1.1_SECURITY.md) for details.
+
+### Allowed Devices List
+
+The allowed devices list provides granular access control, allowing you to specify which devices can access:
+- Current location (via GetLocation)
+- Location history (via GetLocationHistory)
+
+See [API 1.1 Security Documentation](docs/API_1.1_SECURITY.md) for details.
+
+## Migration from API 1.0
+
+All existing API 1.0 clients continue to work without modification. Security features are opt-in:
+
+- Devices without DeviceKey set work exactly as before
+- Devices without allowed devices list work exactly as before
+- All existing endpoints maintain the same response format
+
+**Breaking Change:** GetLocationGeoJSON returns 401 Unauthorized when DeviceKey is set. See [Compatibility Assessment](docs/COMPATIBILITY_ASSESSMENT.md) for details.
+
+For client migration guidance, see [iOS Client Adoption Guide](docs/CLIENT_ADOPTION_API_1.1.md).
 
 ## Run the Server
 
@@ -458,6 +502,7 @@ make run-all-tests
 - **New Fields Tests**: Enhanced location data with Speed, BatteryLevel, Altitude
 - **DeleteLocation Tests**: Data deletion functionality
 - **Error Handling Tests**: Invalid request scenarios
+- **Security Tests**: DeviceKey authentication and allowed devices access control (API 1.1)
 
 ### Test Files Structure
 ```
@@ -467,14 +512,20 @@ tests/
 │   ├── requestDevice.tests.js
 │   ├── requestLocationIntegration.tests.js
 │   ├── responseDeleteLocation.tests.js
-│   └── responseLocationGeoJSON.tests.js
+│   ├── responseLocationGeoJSON.tests.js
+│   ├── deviceKey.tests.js
+│   ├── allowedDevices.tests.js
+│   ├── requestSetDeviceKey.tests.js
+│   └── requestSetAllowedDeviceList.tests.js
 ├── integration/             # Integration tests for API endpoints
 │   ├── api.tests.js
 │   ├── backwardCompatibility.tests.js
 │   ├── cors.tests.js
 │   ├── deleteLocation.tests.js
 │   ├── newFields.tests.js
-│   └── unknownDevice.tests.js
+│   ├── unknownDevice.tests.js
+│   ├── deviceKey.tests.js
+│   └── allowedDevices.tests.js
 └── testFiles/              # Test utilities and mock data
     └── calls.js
 ```
@@ -507,7 +558,37 @@ tests/
 
 ## Changelog
 
-### Version 1.1.0 (Latest)
+### Version 2.0.0 (Latest) - API 1.1
+
+#### Security & Privacy Features
+- **DeviceKey Authentication**: Protect write operations and visitor history access
+- **Allowed Devices List**: Granular access control for location data sharing
+- **Full Backward Compatibility**: All API 1.0 clients continue to work without modification
+
+#### New Endpoints
+- **POST** `/v1/setDeviceKey` - Set or change device key
+- **POST** `/v1/setAllowedDeviceList` - Manage allowed devices list
+
+#### Enhanced Endpoints
+- **UpdateLocation**: Optional DeviceKey parameter for authentication
+- **GetVisitorHistory**: Optional DeviceKey parameter for authentication
+- **GetLocation**: Access control via allowed devices list
+- **GetLocationHistory**: Access control via allowed devices list
+- **GetLocationGeoJSON**: Returns 401 when DeviceKey is set (security measure)
+
+#### Documentation
+- **API 1.1 Security Documentation**: Comprehensive guide to security features
+- **iOS Client Adoption Guide**: Step-by-step migration instructions
+- **Swagger 1.1 Specification**: Complete API documentation
+- **Compatibility Assessment**: Detailed backward compatibility analysis
+
+#### Testing
+- **DeviceKey Tests**: Unit and integration tests for DeviceKey functionality
+- **Allowed Devices Tests**: Unit and integration tests for access control
+- **Security Tests**: Comprehensive security scenario coverage
+- **Backward Compatibility Tests**: Enhanced to cover API 1.0/1.1 scenarios
+
+### Version 1.1.0
 
 #### New Features
 - **DeleteLocation API**: Complete data deletion functionality for devices

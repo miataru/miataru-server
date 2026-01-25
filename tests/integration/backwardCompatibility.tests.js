@@ -38,6 +38,9 @@ describe('Backward Compatibility Tests', function() {
 
         it('should return old format data for old clients', function(done) {
             var oldFormatGet = {
+                "MiataruConfig": {
+                    "RequestMiataruDeviceID": "old-client"
+                },
                 "MiataruGetLocation": [{
                     "Device": OLD_CLIENT_DEVICE
                 }]
@@ -66,6 +69,9 @@ describe('Backward Compatibility Tests', function() {
 
         it('should work with old format in location history', function(done) {
             var oldFormatHistory = {
+                "MiataruConfig": {
+                    "RequestMiataruDeviceID": "old-client"
+                },
                 "MiataruGetLocationHistory": {
                     "Device": OLD_CLIENT_DEVICE,
                     "Amount": "25"
@@ -119,6 +125,9 @@ describe('Backward Compatibility Tests', function() {
 
         it('should work with legacy /GetLocation endpoint', function(done) {
             var legacyGet = {
+                "MiataruConfig": {
+                    "RequestMiataruDeviceID": "legacy-client"
+                },
                 "MiataruGetLocation": [{
                     "Device": LEGACY_DEVICE
                 }]
@@ -277,6 +286,9 @@ describe('Backward Compatibility Tests', function() {
 
         it('should accept Amount before Device in the history request', function(done) {
             var reversedPayload = {
+                "MiataruConfig": {
+                    "RequestMiataruDeviceID": "test-client"
+                },
                 "MiataruGetLocationHistory": {
                     "Amount": "5",
                     "Device": ORDER_DEVICE
@@ -297,6 +309,9 @@ describe('Backward Compatibility Tests', function() {
 
         it('should accept lower-case field names regardless of order', function(done) {
             var lowercasePayload = {
+                "MiataruConfig": {
+                    "RequestMiataruDeviceID": "test-client"
+                },
                 "MiataruGetLocationHistory": {
                     "amount": 3,
                     "device": ORDER_DEVICE
@@ -317,6 +332,9 @@ describe('Backward Compatibility Tests', function() {
 
         it('should accept Map style payloads in Device, Amount order', function(done) {
             var mapPayload = {
+                "MiataruConfig": {
+                    "RequestMiataruDeviceID": "test-client"
+                },
                 "MiataruGetLocationHistory": [
                     ["Device", ORDER_DEVICE],
                     ["Amount", "5"]
@@ -337,6 +355,9 @@ describe('Backward Compatibility Tests', function() {
 
         it('should accept Map style payloads in Amount, Device order', function(done) {
             var reversedMapPayload = {
+                "MiataruConfig": {
+                    "RequestMiataruDeviceID": "test-client"
+                },
                 "MiataruGetLocationHistory": [
                     ["Amount", "5"],
                     ["Device", ORDER_DEVICE]
@@ -357,6 +378,9 @@ describe('Backward Compatibility Tests', function() {
 
         it('should accept key=value string payloads in Device, Amount order', function(done) {
             var keyValuePayload = {
+                "MiataruConfig": {
+                    "RequestMiataruDeviceID": "test-client"
+                },
                 "MiataruGetLocationHistory": "Device=" + ORDER_DEVICE + "&Amount=5"
             };
 
@@ -374,6 +398,9 @@ describe('Backward Compatibility Tests', function() {
 
         it('should accept key=value string payloads in Amount, Device order', function(done) {
             var reversedKeyValuePayload = {
+                "MiataruConfig": {
+                    "RequestMiataruDeviceID": "test-client"
+                },
                 "MiataruGetLocationHistory": "Amount=5&Device=" + ORDER_DEVICE
             };
 

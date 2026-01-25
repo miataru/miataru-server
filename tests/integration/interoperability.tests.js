@@ -35,6 +35,9 @@ describe('Interoperability Tests', function() {
 
                     // Step 2: New client reads location (should not have new fields)
                     var newClientGet = {
+                        "MiataruConfig": {
+                            "RequestMiataruDeviceID": "new-client"
+                        },
                         "MiataruGetLocation": [{
                             "Device": SHARED_DEVICE
                         }]
@@ -86,6 +89,9 @@ describe('Interoperability Tests', function() {
 
                     // Step 2: Old client reads location (should still work, but may see new fields)
                     var oldClientGet = {
+                        "MiataruConfig": {
+                            "RequestMiataruDeviceID": "old-client"
+                        },
                         "MiataruGetLocation": [{
                             "Device": NEW_CLIENT_DEVICE
                         }]
@@ -189,6 +195,9 @@ describe('Interoperability Tests', function() {
 
             function checkHistory() {
                 var getHistoryData = {
+                    "MiataruConfig": {
+                        "RequestMiataruDeviceID": "test-client"
+                    },
                     "MiataruGetLocationHistory": {
                         "Device": MIXED_DEVICE,
                         "Amount": "25"
@@ -260,6 +269,9 @@ describe('Interoperability Tests', function() {
 
                     // Read via legacy endpoint
                     var legacyGet = {
+                        "MiataruConfig": {
+                            "RequestMiataruDeviceID": "test-client"
+                        },
                         "MiataruGetLocation": [{
                             "Device": VERSION_DEVICE
                         }]
@@ -366,6 +378,9 @@ describe('Interoperability Tests', function() {
             function verifyFinalState() {
                 // Check current location
                 var getLocationData = {
+                    "MiataruConfig": {
+                        "RequestMiataruDeviceID": "test-client"
+                    },
                     "MiataruGetLocation": [{
                         "Device": PERSISTENCE_DEVICE
                     }]
@@ -392,6 +407,9 @@ describe('Interoperability Tests', function() {
 
             function checkHistory() {
                 var getHistoryData = {
+                    "MiataruConfig": {
+                        "RequestMiataruDeviceID": "test-client"
+                    },
                     "MiataruGetLocationHistory": {
                         "Device": PERSISTENCE_DEVICE,
                         "Amount": "25"
