@@ -47,14 +47,10 @@ paths:
  schema:
  $ref: '#/definitions/MiataruUpdateLocationRequest'
  responses:
- 200:
+ default:
  description: successful request
  schema:
  $ref: '#/definitions/ACK'
- 403:
- description: Forbidden - DeviceKey mismatch or missing when required
- schema:
- $ref: '#/definitions/Error'
  /GetLocation:
  post:
  tags:
@@ -74,7 +70,7 @@ paths:
  schema:
  $ref: '#/definitions/MiataruGetLocationRequest'
  responses:
- 200:
+ default:
  description: successful location responses
  schema:
  $ref: '#/definitions/MiataruGetLocationResponse'
@@ -97,14 +93,10 @@ paths:
  description: the unique device ID of the device the location is requested from
  default: "7b8e6e0ee5296db345162dc2ef652c1350761823"
  responses:
- 200:
+ default:
  description: geoJSON formatted device location
  schema:
  $ref: '#/definitions/MiataruGetLocationGeoJSONResponse'
- 401:
- description: Unauthorized - DeviceKey is set for this device
- schema:
- $ref: '#/definitions/Error'
  /GetLocationHistory:
  post:
  tags:
@@ -124,7 +116,7 @@ paths:
  schema: 
  $ref: '#/definitions/MiataruGetLocationHistoryRequest'
  responses:
- 200:
+ default:
  description: successful location history response
  schema:
  $ref: '#/definitions/MiataruGetLocationHistoryResponse'
@@ -147,14 +139,10 @@ paths:
  schema:
  $ref: '#/definitions/MiataruGetVisitorHistoryRequest'
  responses:
- 200:
+ default:
  description: visitor history response
  schema:
  $ref: '#/definitions/MiataruGetVisitorHistoryResponse'
- 403:
- description: Forbidden - DeviceKey mismatch or missing when required
- schema:
- $ref: '#/definitions/Error'
  /setDeviceKey:
  post:
  tags:
@@ -174,18 +162,10 @@ paths:
  schema:
  $ref: '#/definitions/MiataruSetDeviceKeyRequest'
  responses:
- 200:
+ default:
  description: Device key set successfully
  schema:
  $ref: '#/definitions/MiataruSetDeviceKeyResponse'
- 400:
- description: Bad Request - Invalid input
- schema:
- $ref: '#/definitions/Error'
- 403:
- description: Forbidden - CurrentDeviceKey does not match
- schema:
- $ref: '#/definitions/Error'
  /setAllowedDeviceList:
  post:
  tags:
@@ -207,18 +187,10 @@ paths:
  schema:
  $ref: '#/definitions/MiataruSetAllowedDeviceListRequest'
  responses:
- 200:
+ default:
  description: Allowed devices list updated successfully
  schema:
  $ref: '#/definitions/MiataruSetAllowedDeviceListResponse'
- 400:
- description: Bad Request - Invalid input
- schema:
- $ref: '#/definitions/Error'
- 403:
- description: Forbidden - DeviceKey does not match
- schema:
- $ref: '#/definitions/Error'
 
 # complex objects have schema definitions
 definitions:
