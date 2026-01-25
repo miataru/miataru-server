@@ -195,6 +195,7 @@ paths:
 # complex objects have schema definitions
 definitions:
  MiataruVisitors:
+  type: object
   required:
   - DeviceID
   - TimeStamp
@@ -206,6 +207,7 @@ definitions:
     type: string
     description: the javascript timestamp of the visit
  MiataruGetVisitorHistoryRequest:
+  type: object
   required:
   - MiataruGetVisitorHistory
   properties:
@@ -224,6 +226,7 @@ definitions:
       description: the maximum number of visitor history entries to be retrieved
       default: "10"
  MiataruGetVisitorHistoryResponse:
+  type: object
   required:
   - MiataruServerConfig
   - MiataruVisitors
@@ -247,6 +250,7 @@ definitions:
     items:
      $ref: '#/definitions/MiataruVisitors'
  MiataruGetLocationHistoryResponse:
+  type: object
   required:
   - MiataruServerConfig
   - MiataruLocation
@@ -270,6 +274,7 @@ definitions:
     items:
      $ref: '#/definitions/MiataruLocation'
  MiataruGetLocationHistoryRequest:
+  type: object
   required:
   - MiataruGetLocationHistory
   properties:
@@ -308,6 +313,7 @@ definitions:
     description: the unique device id of a device.
     default: "7b8e6e0ee5296db345162dc2ef652c1350761823"
  MiataruGetLocationRequest:
+  type: object
   required:
   - MiataruGetLocation
   properties:
@@ -394,6 +400,7 @@ definitions:
     items: 
      $ref: '#/definitions/MiataruLocation'
  MiataruUpdateLocationRequest:
+  type: object
   required:
   - MiataruConfig
   - MiataruLocation
@@ -418,6 +425,7 @@ definitions:
     items:
      $ref: '#/definitions/MiataruLocation'
  ACK:
+  type: object
   required:
   - MiataruResponse
   - MiataruVerboseResponse
@@ -429,6 +437,7 @@ definitions:
     type: string
     default: ""
  MiataruSetDeviceKeyRequest:
+  type: object
   required:
   - MiataruSetDeviceKey
   properties:
@@ -447,6 +456,7 @@ definitions:
       description: the new device key to set (up to 256 characters unicode)
       maxLength: 256
  MiataruSetDeviceKeyResponse:
+  type: object
   required:
   - MiataruResponse
   - MiataruVerboseResponse
@@ -458,6 +468,7 @@ definitions:
     type: string
     default: "Device key set successfully"
  MiataruSetAllowedDeviceListRequest:
+  type: object
   required:
   - MiataruSetAllowedDeviceList
   properties:
@@ -501,6 +512,7 @@ definitions:
     description: true if this device has permission to access location history
     default: false
  MiataruSetAllowedDeviceListResponse:
+  type: object
   required:
   - MiataruResponse
   - MiataruVerboseResponse
