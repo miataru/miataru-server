@@ -10,12 +10,12 @@ info:
    - Allowed devices list for granular access control to location data
    - Full backward compatibility with API 1.0 clients
  contact:
- name: Miataru Team
- email: info@miataru.com
- url: http://miataru.com
+  name: Miataru Team
+  email: info@miataru.com
+  url: http://miataru.com
  license:
- name: Public Domain
- url: https://raw.githubusercontent.com/miataru/miataru-protocol-specification/master/LICENSE
+  name: Public Domain
+  url: https://raw.githubusercontent.com/miataru/miataru-protocol-specification/master/LICENSE
 # during dev, should point to your local machine
 host: service.miataru.com
 basePath: /v1
@@ -29,504 +29,488 @@ produces:
  - application/json
 paths:
  /UpdateLocation:
- post:
- tags:
- - updateLocation
- description: |
-   This method is used to update the location of a device. The device does not need to be known already to the Miataru server but it rather creates a unique identifier for itself in the client application. This unique identifier, or device ID is then used to address this particular device.
-   
-   API 1.1: If a DeviceKey has been set for a device (via /setDeviceKey), the DeviceKey parameter must be provided in each MiataruLocation element and must match the stored key. If the keys do not match, a 403 Forbidden error is returned.
- operationId: updateLocation
- produces:
- - application/json
- parameters:
- - name: body
- in: body
- description: the body of this UpdateLocation POST request contains the JSON formatted parameters.
- required: true
- schema:
- $ref: '#/definitions/MiataruUpdateLocationRequest'
- responses:
- default:
- description: successful request
- schema:
- $ref: '#/definitions/ACK'
+  post:
+   tags:
+   - updateLocation
+   description: |
+     This method is used to update the location of a device. The device does not need to be known already to the Miataru server but it rather creates a unique identifier for itself in the client application. This unique identifier, or device ID is then used to address this particular device.
+     
+     API 1.1: If a DeviceKey has been set for a device (via /setDeviceKey), the DeviceKey parameter must be provided in each MiataruLocation element and must match the stored key. If the keys do not match, a 403 Forbidden error is returned.
+   operationId: updateLocation
+   produces:
+   - application/json
+   parameters:
+   - name: body
+     in: body
+     description: the body of this UpdateLocation POST request contains the JSON formatted parameters.
+     required: true
+     schema:
+      $ref: '#/definitions/MiataruUpdateLocationRequest'
+   responses:
+    default:
+     description: successful request
+     schema:
+      $ref: '#/definitions/ACK'
  /GetLocation:
- post:
- tags:
- - getLocation
- description: |
-   To retrieve a specific devices latest known location the /GetLocation method is used. Please note that the MiataruConfig portion is optional. RequestMiataruDeviceID should be the ID of the device the request is sent from (or an identifier like an URL).
-   
-   API 1.1: If an allowed devices list has been set for a device (via /setAllowedDeviceList), only devices with hasCurrentLocationAccess permission will receive location data. Devices without permission will receive the location as if the device doesn't exist.
- operationId: getLocation
- produces:
- - application/json
- parameters:
- - name: body
- in: body
- description: the complex JSON formatted datastructure to get the location of one or more devices.
- required: true
- schema:
- $ref: '#/definitions/MiataruGetLocationRequest'
- responses:
- default:
- description: successful location responses
- schema:
- $ref: '#/definitions/MiataruGetLocationResponse'
+  post:
+   tags:
+   - getLocation
+   description: |
+     To retrieve a specific devices latest known location the /GetLocation method is used. Please note that the MiataruConfig portion is optional. RequestMiataruDeviceID should be the ID of the device the request is sent from (or an identifier like an URL).
+     
+     API 1.1: If an allowed devices list has been set for a device (via /setAllowedDeviceList), only devices with hasCurrentLocationAccess permission will receive location data. Devices without permission will receive the location as if the device doesn't exist.
+   operationId: getLocation
+   produces:
+   - application/json
+   parameters:
+   - name: body
+     in: body
+     description: the complex JSON formatted datastructure to get the location of one or more devices.
+     required: true
+     schema:
+      $ref: '#/definitions/MiataruGetLocationRequest'
+   responses:
+    default:
+     description: successful location responses
+     schema:
+      $ref: '#/definitions/MiataruGetLocationResponse'
  /GetLocationGeoJSON/{deviceID}:
- get:
- tags:
- - getLocation
- description: |
-   Retrieves a devices Location in GeoJSON format.
-   
-   API 1.1 BREAKING CHANGE: If a DeviceKey has been set for the requested device, this endpoint will return a 401 Unauthorized error. This is a security measure to prevent unauthorized access to location data via the public GET endpoint.
- operationId: getLocationGeoJSON
- produces:
- - application/json
- parameters:
- - name: deviceID
- in: path
- type: string
- required: true
- description: the unique device ID of the device the location is requested from
- default: "7b8e6e0ee5296db345162dc2ef652c1350761823"
- responses:
- default:
- description: geoJSON formatted device location
- schema:
- $ref: '#/definitions/MiataruGetLocationGeoJSONResponse'
+  get:
+   tags:
+   - getLocation
+   description: |
+     Retrieves a devices Location in GeoJSON format.
+     
+     API 1.1 BREAKING CHANGE: If a DeviceKey has been set for the requested device, this endpoint will return a 401 Unauthorized error. This is a security measure to prevent unauthorized access to location data via the public GET endpoint.
+   operationId: getLocationGeoJSON
+   produces:
+   - application/json
+   parameters:
+   - name: deviceID
+     in: path
+     type: string
+     required: true
+     description: the unique device ID of the device the location is requested from
+     default: "7b8e6e0ee5296db345162dc2ef652c1350761823"
+   responses:
+    default:
+     description: geoJSON formatted device location
+     schema:
+      $ref: '#/definitions/MiataruGetLocationGeoJSONResponse'
  /GetLocationHistory:
- post:
- tags:
- - getLocation
- description: |
-   Location History is stored on the server only if the client told the server to do so using the "EnableLocationHistory" setting in the Location Update requests. For transitions of enabling/disabling that functionality - Everytime a Location Update is received by the server with "EnableLocationHistory=false" the server removes all stored Location History till that point. There is a server-side setting that controls up to how many Location Updates the server is storing in the Location History before it removes the oldest one. To request the Location History of a particular device the client sends the following POST request to the GetLocationHistory service URL. Please note that the MiataruConfig portion is optional. RequestMiataruDeviceID should be the ID of the device the request is sent from (or an identifier like an URL).
-   
-   API 1.1: If an allowed devices list has been set for a device (via /setAllowedDeviceList), only devices with hasHistoryAccess permission will receive location history data. Devices without permission will receive an empty history (as if history doesn't exist).
- operationId: getLocationHistory
- produces:
- - application/json
- parameters:
- - name: body
- in: body
- description: the complex JSON formatted datastructure to get the location history of one device
- required: true
- schema: 
- $ref: '#/definitions/MiataruGetLocationHistoryRequest'
- responses:
- default:
- description: successful location history response
- schema:
- $ref: '#/definitions/MiataruGetLocationHistoryResponse'
+  post:
+   tags:
+   - getLocation
+   description: |
+     Location History is stored on the server only if the client told the server to do so using the "EnableLocationHistory" setting in the Location Update requests. For transitions of enabling/disabling that functionality - Everytime a Location Update is received by the server with "EnableLocationHistory=false" the server removes all stored Location History till that point. There is a server-side setting that controls up to how many Location Updates the server is storing in the Location History before it removes the oldest one. To request the Location History of a particular device the client sends the following POST request to the GetLocationHistory service URL. Please note that the MiataruConfig portion is optional. RequestMiataruDeviceID should be the ID of the device the request is sent from (or an identifier like an URL).
+     
+     API 1.1: If an allowed devices list has been set for a device (via /setAllowedDeviceList), only devices with hasHistoryAccess permission will receive location history data. Devices without permission will receive an empty history (as if history doesn't exist).
+   operationId: getLocationHistory
+   produces:
+   - application/json
+   parameters:
+   - name: body
+     in: body
+     description: the complex JSON formatted datastructure to get the location history of one device
+     required: true
+     schema: 
+      $ref: '#/definitions/MiataruGetLocationHistoryRequest'
+   responses:
+    default:
+     description: successful location history response
+     schema:
+      $ref: '#/definitions/MiataruGetLocationHistoryResponse'
  /GetVisitorHistory:
- post:
- tags:
- - getVisitorHistory
- description: |
-   Visitor History is stored on the server with every request to the location or location history information of a device. There is a server-side setting that controls up to how many Visitors the server is storing in the Visitor History before it removes the oldest one. To request the Visitor History of a particular device the client sends the following POST request to the GetVisitorHistory service URL.
-   
-   API 1.1: If a DeviceKey has been set for a device (via /setDeviceKey), the DeviceKey parameter must be provided and must match the stored key. If the keys do not match, a 403 Forbidden error is returned.
- operationId: getVisitorHistory
- produces:
- - application/json
- parameters:
- - name: body
- in: body
- description: the complex JSON formatted datastructure to get the visitor history of one device
- required: true
- schema:
- $ref: '#/definitions/MiataruGetVisitorHistoryRequest'
- responses:
- default:
- description: visitor history response
- schema:
- $ref: '#/definitions/MiataruGetVisitorHistoryResponse'
+  post:
+   tags:
+   - getVisitorHistory
+   description: |
+     Visitor History is stored on the server with every request to the location or location history information of a device. There is a server-side setting that controls up to how many Visitors the server is storing in the Visitor History before it removes the oldest one. To request the Visitor History of a particular device the client sends the following POST request to the GetVisitorHistory service URL.
+     
+     API 1.1: If a DeviceKey has been set for a device (via /setDeviceKey), the DeviceKey parameter must be provided and must match the stored key. If the keys do not match, a 403 Forbidden error is returned.
+   operationId: getVisitorHistory
+   produces:
+   - application/json
+   parameters:
+   - name: body
+     in: body
+     description: the complex JSON formatted datastructure to get the visitor history of one device
+     required: true
+     schema:
+      $ref: '#/definitions/MiataruGetVisitorHistoryRequest'
+   responses:
+    default:
+     description: visitor history response
+     schema:
+      $ref: '#/definitions/MiataruGetVisitorHistoryResponse'
  /setDeviceKey:
- post:
- tags:
- - security
- description: |
-   Sets or changes the DeviceKey for a device. The DeviceKey is a 256 character unicode string that is used to authenticate write operations and visitor history access.
-   
-   For first-time setup (no existing key), CurrentDeviceKey can be null or empty. To change an existing key, CurrentDeviceKey must be provided and must match the stored key.
- operationId: setDeviceKey
- produces:
- - application/json
- parameters:
- - name: body
- in: body
- description: the JSON formatted request to set or change a device key
- required: true
- schema:
- $ref: '#/definitions/MiataruSetDeviceKeyRequest'
- responses:
- default:
- description: Device key set successfully
- schema:
- $ref: '#/definitions/MiataruSetDeviceKeyResponse'
+  post:
+   tags:
+   - security
+   description: |
+     Sets or changes the DeviceKey for a device. The DeviceKey is a 256 character unicode string that is used to authenticate write operations and visitor history access.
+     
+     For first-time setup (no existing key), CurrentDeviceKey can be null or empty. To change an existing key, CurrentDeviceKey must be provided and must match the stored key.
+   operationId: setDeviceKey
+   produces:
+   - application/json
+   parameters:
+   - name: body
+     in: body
+     description: the JSON formatted request to set or change a device key
+     required: true
+     schema:
+      $ref: '#/definitions/MiataruSetDeviceKeyRequest'
+   responses:
+    default:
+     description: Device key set successfully
+     schema:
+      $ref: '#/definitions/MiataruSetDeviceKeyResponse'
  /setAllowedDeviceList:
- post:
- tags:
- - security
- description: |
-   Sets or updates the allowed devices list for a device. This list controls which devices can access the location and location history of the target device.
-   
-   The client is expected to maintain the full list on the client-side and always sends the complete list to update. Any changes (additions, deletions, updates) are carried out by sending the full updated list.
-   
-   Requires valid DeviceKey authentication.
- operationId: setAllowedDeviceList
- produces:
- - application/json
- parameters:
- - name: body
- in: body
- description: the JSON formatted request to set or update the allowed devices list
- required: true
- schema:
- $ref: '#/definitions/MiataruSetAllowedDeviceListRequest'
- responses:
- default:
- description: Allowed devices list updated successfully
- schema:
- $ref: '#/definitions/MiataruSetAllowedDeviceListResponse'
+  post:
+   tags:
+   - security
+   description: |
+     Sets or updates the allowed devices list for a device. This list controls which devices can access the location and location history of the target device.
+     
+     The client is expected to maintain the full list on the client-side and always sends the complete list to update. Any changes (additions, deletions, updates) are carried out by sending the full updated list.
+     
+     Requires valid DeviceKey authentication.
+   operationId: setAllowedDeviceList
+   produces:
+   - application/json
+   parameters:
+   - name: body
+     in: body
+     description: the JSON formatted request to set or update the allowed devices list
+     required: true
+     schema:
+      $ref: '#/definitions/MiataruSetAllowedDeviceListRequest'
+   responses:
+    default:
+     description: Allowed devices list updated successfully
+     schema:
+      $ref: '#/definitions/MiataruSetAllowedDeviceListResponse'
 
 # complex objects have schema definitions
 definitions:
- Error:
- type: object
- required:
- - error
- properties:
- error:
- type: string
- description: Error message description
  MiataruVisitors:
- required:
- - DeviceID
- - TimeStamp
- properties:
- DeviceID:
- type: string
- description: the device id of the visiting device. If this is an empty string the deviceID is unknown/was not reported.
- TimeStamp:
- type: string
- description: the javascript timestamp of the visit
+  required:
+  - DeviceID
+  - TimeStamp
+  properties:
+   DeviceID:
+    type: string
+    description: the device id of the visiting device. If this is an empty string the deviceID is unknown/was not reported.
+   TimeStamp:
+    type: string
+    description: the javascript timestamp of the visit
  MiataruGetVisitorHistoryRequest:
- required:
- - MiataruGetVisitorHistory
- properties:
- MiataruGetVisitorHistory:
- type: object
- required:
- - Device
- - Amount
- properties:
- Device:
- type: string
- description: the device id of which the visitor history is requested
- default: "7b8e6e0ee5296db345162dc2ef652c1350761823"
- Amount:
- type: string
- description: the maximum number of visitor history entries to be retrieved
- default: "10"
- DeviceKey:
- type: string
- description: "(API 1.1) Optional DeviceKey for authentication. Required if DeviceKey has been set for this device."
- maxLength: 256
+  required:
+  - MiataruGetVisitorHistory
+  properties:
+   MiataruGetVisitorHistory:
+    type: object
+    required:
+    - Device
+    - Amount
+    properties:
+     Device:
+      type: string
+      description: the device id of which the visitor history is requested
+      default: "7b8e6e0ee5296db345162dc2ef652c1350761823"
+     Amount:
+      type: string
+      description: the maximum number of visitor history entries to be retrieved
+      default: "10"
  MiataruGetVisitorHistoryResponse:
- required:
- - MiataruServerConfig
- - MiataruVisitors
- properties:
+  required:
+  - MiataruServerConfig
+  - MiataruVisitors
+  properties:
  MiataruServerConfig:
- type: object
- description: holds information about the server side settings of the visitor history and about the available device related visitor history.
- required:
- - MaximumNumberOfVisitorHistory
- - AvailableVisitorHistory
- properties:
- MaximumNumberOfVisitorHistory:
- type: string
- description: a server-side setting that controls up to how many Visitors the server is storing in the Visitor History before it removes the oldest one.
- AvailableVisitorHistory:
- type: string
- description: the number of available visitor history entries for this device. If the client requested more Visitor Updates than there are available the server will return those available.
- MiataruVisitors:
- type: array
- description: The server will answer back with an Array of MiataruVisitors if there are Visitors, or an empty array when there are none.
- items:
- $ref: '#/definitions/MiataruVisitors'
+  type: object
+  description: holds information about the server side settings of the visitor history and about the available device related visitor history.
+  required:
+  - MaximumNumberOfVisitorHistory
+  - AvailableVisitorHistory
+  properties:
+   MaximumNumberOfVisitorHistory:
+    type: string
+    description: a server-side setting that controls up to how many Visitors the server is storing in the Visitor History before it removes the oldest one.
+   AvailableVisitorHistory:
+    type: string
+    description: the number of available visitor history entries for this device. If the client requested more Visitor Updates than there are available the server will return those available.
+   MiataruVisitors:
+    type: array
+    description: The server will answer back with an Array of MiataruVisitors if there are Visitors, or an empty array when there are none.
+    items:
+     $ref: '#/definitions/MiataruVisitors'
  MiataruGetLocationHistoryResponse:
- required:
- - MiataruServerConfig
- - MiataruLocation
- properties:
- MiataruServerConfig:
- type: object
- description: holds information about the basic configuration settings on server side.
- required:
- - MaximumNumberOfLocationUpdates
- - AvailableDeviceLocationUpdates
- properties:
- MaximumNumberOfLocationUpdates:
- type: string
- description: the amount of locations the server is storing per device at maximum before it will remove the oldest one (FiFo)
- AvailableDeviceLocationUpdates:
- type: string
- description: the number of locations stored for this particular device
- MiataruLocation:
- type: array
- description: holds all location information of a given device or is an empty array if device not found or no location information is stored.
- items:
- $ref: '#/definitions/MiataruLocation'
+  required:
+  - MiataruServerConfig
+  - MiataruLocation
+  properties:
+   MiataruServerConfig:
+    type: object
+    description: holds information about the basic configuration settings on server side.
+    required:
+    - MaximumNumberOfLocationUpdates
+    - AvailableDeviceLocationUpdates
+    properties:
+     MaximumNumberOfLocationUpdates:
+      type: string
+      description: the amount of locations the server is storing per device at maximum before it will remove the oldest one (FiFo)
+     AvailableDeviceLocationUpdates:
+      type: string
+      description: the number of locations stored for this particular device
+   MiataruLocation:
+    type: array
+    description: holds all location information of a given device or is an empty array if device not found or no location information is stored.
+    items:
+     $ref: '#/definitions/MiataruLocation'
  MiataruGetLocationHistoryRequest:
- required:
- - MiataruGetLocationHistory
- properties:
- MiataruConfig:
- type: object
- description: the configuration for this request. please note that it's optional.
- required:
- - RequestMiataruDeviceID
- properties:
- RequestMiataruDeviceID:
- type: string
- description: RequestMiataruDeviceID should be the ID of the device the request is sent from (or an identifier like an URL).
- default: "6140c3c0-4a7d-40d2-99ab-39414cac3509"
- MiataruGetLocationHistory:
- type: object
- description: one device id for which the location history should be retrieved.
- required:
- - Device
- - Amount
- properties:
- Device:
- type: string
- description: the device id of which the location history shall be requested
- default: "7b8e6e0ee5296db345162dc2ef652c1350761823"
- Amount:
- type: string
- description: the maximum number of location history entries that are requested.
- default: "10"
+  required:
+  - MiataruGetLocationHistory
+  properties:
+   MiataruConfig:
+    type: object
+    description: the configuration for this request. please note that it's optional.
+    required:
+    - RequestMiataruDeviceID
+    properties:
+     RequestMiataruDeviceID:
+      type: string
+      description: RequestMiataruDeviceID should be the ID of the device the request is sent from (or an identifier like an URL).
+      default: "6140c3c0-4a7d-40d2-99ab-39414cac3509"
+   MiataruGetLocationHistory:
+    type: object
+    description: one device id for which the location history should be retrieved.
+    required:
+    - Device
+    - Amount
+    properties:
+     Device:
+      type: string
+      description: the device id of which the location history shall be requested
+      default: "7b8e6e0ee5296db345162dc2ef652c1350761823"
+     Amount:
+      type: string
+      description: the maximum number of location history entries that are requested.
+      default: "10"
  MiataruGetLocationDevice:
- type: object
- required:
- - Device
- properties:
- Device:
- type: string
- description: the unique device id of a device.
- default: "7b8e6e0ee5296db345162dc2ef652c1350761823"
+  type: object
+  required:
+  - Device
+  properties:
+   Device:
+    type: string
+    description: the unique device id of a device.
+    default: "7b8e6e0ee5296db345162dc2ef652c1350761823"
  MiataruGetLocationRequest:
- required:
- - MiataruGetLocation
- properties:
- MiataruConfig:
- type: object
- description: the configuration for this request. please note that it's optional.
- required:
- - RequestMiataruDeviceID
- properties:
- RequestMiataruDeviceID:
- type: string
- description: RequestMiataruDeviceID should be the ID of the device the request is sent from (or an identifier like an URL).
- default: "6140c3c0-4a7d-40d2-99ab-39414cac3509"
- MiataruGetLocation:
- type: array
- description: one or more devices in an array for which the location should be retrieved.
- items: 
- $ref: '#/definitions/MiataruGetLocationDevice'
+  required:
+  - MiataruGetLocation
+  properties:
+   MiataruConfig:
+    type: object
+    description: the configuration for this request. please note that it's optional.
+    required:
+    - RequestMiataruDeviceID
+    properties:
+     RequestMiataruDeviceID:
+      type: string
+      description: RequestMiataruDeviceID should be the ID of the device the request is sent from (or an identifier like an URL).
+      default: "6140c3c0-4a7d-40d2-99ab-39414cac3509"
+   MiataruGetLocation:
+    type: array
+    description: one or more devices in an array for which the location should be retrieved.
+    items: 
+     $ref: '#/definitions/MiataruGetLocationDevice'
  MiataruLocation:
- type: object
- required:
- - Device
- - Timestamp
- - Longitude
- - Latitude
- - HorizontalAccuracy
- properties:
- Device:
- type: string
- description: the unique id of this device. This needs to be unique as it is the only piece of information directly pointing towards this one device. Generating a GUID per device is recommended.
- default: "7b8e6e0ee5296db345162dc2ef652c1350761823"
- Timestamp:
- type: string
- description: the javascript timestamp of this location update
- default: "1441360863"
- Longitude:
- type: string
- description: longitude of the position that is reported
- default: "-4.394531"
- Latitude:
- type: string
- description: latitude of the position that is reported
- default: "41.079351"
- HorizontalAccuracy:
- type: string
- description: the accuracy of this location update in meters
- default: "50"
- DeviceKey:
- type: string
- description: "(API 1.1) Optional DeviceKey for authentication. Required if DeviceKey has been set for this device. Must be placed right under the Device parameter."
- maxLength: 256
+  type: object
+  required:
+  - Device
+  - Timestamp
+  - Longitude
+  - Latitude
+  - HorizontalAccuracy
+  properties:
+   Device:
+    type: string
+    description: the unique id of this device. This needs to be unique as it is the only piece of information directly pointing towards this one device. Generating a GUID per device is recommended.
+    default: "7b8e6e0ee5296db345162dc2ef652c1350761823"
+   Timestamp:
+    type: string
+    description: the javascript timestamp of this location update
+    default: "1441360863"
+   Longitude:
+    type: string
+    description: longitude of the position that is reported
+    default: "-4.394531"
+   Latitude:
+    type: string
+    description: latitude of the position that is reported
+    default: "41.079351"
+   HorizontalAccuracy:
+    type: string
+    description: the accuracy of this location update in meters
+    default: "50"
  MiataruGetLocationGeoJSONResponse:
- type: object
- required:
- - geometry
- - type
- - properties
- properties:
- geometry:
- type: object
- required:
- - type
- - coordinates
- properties:
- type:
- type: string
- coordinates:
- type: array
- items:
- type: number
- format: float
- type:
- type: string
- properties:
- type: object
- required:
- - name
- properties:
- name:
- type: string
+  type: object
+  required:
+  - geometry
+  - type
+  - properties
+  properties:
+   geometry:
+    type: object
+    required:
+    - type
+    - coordinates
+    properties:
+     type:
+      type: string
+     coordinates:
+      type: array
+      items:
+       type: number
+       format: float
+   type:
+    type: string
+   properties:
+    type: object
+    required:
+    - name
+    properties:
+     name:
+      type: string
  MiataruGetLocationResponse:
- type: object
- required:
- - MiataruLocation
- properties:
- MiataruLocation:
- type: array
- items: 
- $ref: '#/definitions/MiataruLocation'
+  type: object
+  required:
+  - MiataruLocation
+  properties:
+   MiataruLocation:
+    type: array
+    items: 
+     $ref: '#/definitions/MiataruLocation'
  MiataruUpdateLocationRequest:
- required:
- - MiataruConfig
- - MiataruLocation
- properties:
- MiataruConfig:
- type: object
- description: the configuration for this request.
- required:
- - EnableLocationHistory
- - LocationDataRetentionTime
- properties:
- EnableLocationHistory:
- type: string
- description: If the client tells the server to store a location history the server automatically disables the pre-configured data time-out behavior that removes location data after a given amount of time. Nevertheless the user is limited to the server-side pre-configured amount of location history entries. This is either True or False.
- default: "False"
- LocationDataRetentionTime:
- type: string
- default: "30"
- description: The LocationDataRetentionTime is the amount of minutes the server will keep that Location Data before it is removed/deleted automatically.
- MiataruLocation:
- type: array
- items:
- $ref: '#/definitions/MiataruLocation'
+  required:
+  - MiataruConfig
+  - MiataruLocation
+  properties:
+   MiataruConfig:
+    type: object
+    description: the configuration for this request.
+    required:
+    - EnableLocationHistory
+    - LocationDataRetentionTime
+    properties:
+     EnableLocationHistory:
+      type: string
+      description: If the client tells the server to store a location history the server automatically disables the pre-configured data time-out behavior that removes location data after a given amount of time. Nevertheless the user is limited to the server-side pre-configured amount of location history entries. This is either True or False.
+      default: "False"
+     LocationDataRetentionTime:
+      type: string
+      default: "30"
+      description: The LocationDataRetentionTime is the amount of minutes the server will keep that Location Data before it is removed/deleted automatically.
+   MiataruLocation:
+    type: array
+    items:
+     $ref: '#/definitions/MiataruLocation'
  ACK:
- required:
- - MiataruResponse
- - MiataruVerboseResponse
- properties:
- MiataruResponse:
- type: string
- default: "ACK"
- MiataruVerboseResponse:
- type: string
+  required:
+  - MiataruResponse
+  - MiataruVerboseResponse
+  properties:
+   MiataruResponse:
+    type: string
+    default: "ACK"
+   MiataruVerboseResponse:
+    type: string
  MiataruSetDeviceKeyRequest:
- required:
- - MiataruSetDeviceKey
- properties:
- MiataruSetDeviceKey:
- type: object
- required:
- - DeviceID
- - NewDeviceKey
- properties:
- DeviceID:
- type: string
- description: the device ID of the calling device
- default: "7b8e6e0ee5296db345162dc2ef652c1350761823"
- CurrentDeviceKey:
- type: string
- description: the current device key (can be null/empty for first-time setup)
- maxLength: 256
- NewDeviceKey:
- type: string
- description: the new device key to set (up to 256 characters unicode)
- maxLength: 256
+  required:
+  - MiataruSetDeviceKey
+  properties:
+   MiataruSetDeviceKey:
+    type: object
+    required:
+    - DeviceID
+    - NewDeviceKey
+    properties:
+     DeviceID:
+      type: string
+      description: the device ID of the calling device
+      default: "7b8e6e0ee5296db345162dc2ef652c1350761823"
+     CurrentDeviceKey:
+      type: string
+      description: the current device key (can be null/empty for first-time setup)
+      maxLength: 256
+     NewDeviceKey:
+      type: string
+      description: the new device key to set (up to 256 characters unicode)
+      maxLength: 256
  MiataruSetDeviceKeyResponse:
- required:
- - MiataruResponse
- - MiataruVerboseResponse
- properties:
- MiataruResponse:
- type: string
- default: "ACK"
- MiataruVerboseResponse:
- type: string
- default: "Device key set successfully"
+  required:
+  - MiataruResponse
+  - MiataruVerboseResponse
+  properties:
+   MiataruResponse:
+    type: string
+    default: "ACK"
+   MiataruVerboseResponse:
+    type: string
+    default: "Device key set successfully"
  MiataruSetAllowedDeviceListRequest:
- required:
- - MiataruSetAllowedDeviceList
- properties:
- MiataruSetAllowedDeviceList:
- type: object
- required:
- - DeviceID
- - DeviceKey
- - allowedDevices
- properties:
- DeviceID:
- type: string
- description: the device ID of the calling device
- default: "7b8e6e0ee5296db345162dc2ef652c1350761823"
- DeviceKey:
- type: string
- description: the device key matching for the specific DeviceID
- maxLength: 256
- allowedDevices:
- type: array
- description: array containing allowedDevice data structure elements (up to 256)
- maxItems: 256
- items:
- $ref: '#/definitions/MiataruAllowedDevice'
+  required:
+  - MiataruSetAllowedDeviceList
+  properties:
+   MiataruSetAllowedDeviceList:
+    type: object
+    required:
+    - DeviceID
+    - DeviceKey
+    - allowedDevices
+    properties:
+     DeviceID:
+      type: string
+      description: the device ID of the calling device
+      default: "7b8e6e0ee5296db345162dc2ef652c1350761823"
+     DeviceKey:
+      type: string
+      description: the device key matching for the specific DeviceID
+      maxLength: 256
+     allowedDevices:
+      type: array
+      description: array containing allowedDevice data structure elements (up to 256)
+      maxItems: 256
+      items:
+       $ref: '#/definitions/MiataruAllowedDevice'
  MiataruAllowedDevice:
- type: object
- required:
- - DeviceID
- - hasCurrentLocationAccess
- - hasHistoryAccess
- properties:
- DeviceID:
- type: string
- description: the DeviceID of the device that is allowed access
- hasCurrentLocationAccess:
- type: boolean
- description: true if this device has permission to access current location
- default: false
- hasHistoryAccess:
- type: boolean
- description: true if this device has permission to access location history
- default: false
+  type: object
+  required:
+  - DeviceID
+  - hasCurrentLocationAccess
+  - hasHistoryAccess
+  properties:
+   DeviceID:
+    type: string
+    description: the DeviceID of the device that is allowed access
+   hasCurrentLocationAccess:
+    type: boolean
+    description: true if this device has permission to access current location
+    default: false
+   hasHistoryAccess:
+    type: boolean
+    description: true if this device has permission to access location history
+    default: false
  MiataruSetAllowedDeviceListResponse:
- required:
- - MiataruResponse
- - MiataruVerboseResponse
- properties:
- MiataruResponse:
- type: string
- default: "ACK"
- MiataruVerboseResponse:
- type: string
- default: "Allowed devices list updated successfully"
+  required:
+  - MiataruResponse
+  - MiataruVerboseResponse
+  properties:
+   MiataruResponse:
+    type: string
+    default: "ACK"
+   MiataruVerboseResponse:
+    type: string
+    default: "Allowed devices list updated successfully"
