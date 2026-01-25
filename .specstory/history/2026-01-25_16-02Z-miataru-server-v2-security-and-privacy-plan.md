@@ -431,3 +431,73 @@ The document is ready to use and provides a complete overview of version 2.0.
 
 ---
 
+_**User**_
+
+summarize the whatsnew for a good release-notes text (short)
+
+---
+
+_**Agent (model default, mode Agent)**_
+
+
+Creating a concise release notes summary:
+
+
+---
+
+<tool-use data-tool-type="read" data-tool-name="read_file_v2">
+<details><summary>Tool use: **read_file_v2** • Read file: /Users/bietiekay/code/miataru-server/docs/WHATS_NEW_V2.md</summary>
+
+</details>
+</tool-use>
+
+---
+
+
+Creating a concise release notes summary:
+
+
+---
+
+<tool-use data-tool-type="write" data-tool-name="edit_file_v2">
+
+<details><summary>Tool use: **edit_file_v2** • Edit file: /Users/bietiekay/code/miataru-server/docs/RELEASE_NOTES_V2.md</summary>
+
+</details>
+
+</tool-use>
+
+---
+
+
+Created a release notes document. Here's a short summary you can use:
+
+---
+
+## Release Notes - Version 2.0.0
+
+**miataru-server 2.0.0** | **miataru API 1.1.0**
+
+### Major Release: Security & Privacy Enhancements
+
+Version 2.0 adds security features while maintaining full backward compatibility with v1.0 clients. All security features are opt-in.
+
+**New Features:**
+- **DeviceKey Authentication** - Secure device-level authentication using cryptographic keys. New endpoint: `POST /v1/setDeviceKey`
+- **Allowed Devices Access Control** - Fine-grained permissions for location sharing with separate controls for current location and history. New endpoint: `POST /v1/setAllowedDeviceList`
+
+**Enhanced Endpoints:**
+- UpdateLocation, GetLocation, GetLocationHistory, and GetVisitorHistory now support optional DeviceKey validation and access control
+
+**Breaking Change:**
+- GetLocationGeoJSON returns `401 Unauthorized` when DeviceKey is set. Use `GetLocation` instead or disable DeviceKey if GeoJSON access is required.
+
+**Backward Compatibility:**
+- All v1.0 endpoints continue to work unchanged. No action required for existing deployments.
+
+---
+
+The full release notes document is saved at `docs/RELEASE_NOTES_V2.md` for reference.
+
+---
+
