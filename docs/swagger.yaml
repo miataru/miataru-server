@@ -150,7 +150,7 @@ paths:
    description: |
      Sets or changes the DeviceKey for a device. The DeviceKey is a 256 character unicode string that is used to authenticate write operations and visitor history access.
      
-     For first-time setup (no existing key), CurrentDeviceKey can be null or empty. To change an existing key, CurrentDeviceKey must be provided and must match the stored key.
+     For first-time setup (no existing key), CurrentDeviceKey is optional and can be omitted or an empty string. To change an existing key, CurrentDeviceKey must be provided and must match the stored key.
    operationId: setDeviceKey
    produces:
    - application/json
@@ -427,6 +427,7 @@ definitions:
     default: "ACK"
    MiataruVerboseResponse:
     type: string
+    default: ""
  MiataruSetDeviceKeyRequest:
   required:
   - MiataruSetDeviceKey
@@ -443,7 +444,7 @@ definitions:
       default: "7b8e6e0ee5296db345162dc2ef652c1350761823"
      CurrentDeviceKey:
       type: string
-      description: the current device key (can be null/empty for first-time setup)
+      description: the current device key (optional for first-time setup, can be omitted or empty string)
       maxLength: 256
      NewDeviceKey:
       type: string
