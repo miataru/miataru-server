@@ -12628,10 +12628,110 @@ Comparing with the original: some definitions don't have `type: object` (e.g., `
 ---
 
 <tool-use data-tool-type="shell" data-tool-name="run_terminal_command_v2">
-<details><summary>Tool use: **run_terminal_command_v2**</summary>
+<details><summary>Tool use: **run_terminal_command_v2** • Run command: cd /Users/bietiekay/code/miataru-server && node -e "const yaml = require('js-yaml'); const fs = require('fs'); try { const doc = yaml.load(fs.readFileSync('docs/swagger.yaml', 'utf8')); console.log('✓ YAML is valid'); console.log('✓ Definitions:', Object.keys(doc.definitions || {}).length); } catch(e) { console.log('✗ Error:', e.message.split('\\n')[0]); }"</summary>
+
+```bash
+cd /Users/bietiekay/code/miataru-server && node -e "const yaml = require('js-yaml'); const fs = require('fs'); try { const doc = yaml.load(fs.readFileSync('docs/swagger.yaml', 'utf8')); console.log('✓ YAML is valid'); console.log('✓ Definitions:', Object.keys(doc.definitions || {}).length); } catch(e) { console.log('✗ Error:', e.message.split('\\n')[0]); }"
+```
+
+```
+✓ YAML is valid
+✓ Definitions: 17
+
+```
+</details>
+</tool-use>
+
+---
+
+
+Removed `type: object` from definitions that match the original format. In the original swagger.yaml, definitions with `properties` don't always include `type: object`; `properties` implies an object.
+
+**What I changed:**
+- Removed `type: object` from definitions that match the original pattern:
+  - `MiataruVisitors`
+  - `MiataruGetVisitorHistoryRequest`
+  - `MiataruGetVisitorHistoryResponse`
+  - `MiataruGetLocationHistoryResponse`
+  - `MiataruGetLocationHistoryRequest`
+  - `MiataruGetLocationRequest`
+  - `MiataruUpdateLocationRequest`
+  - `ACK`
+  - `MiataruSetDeviceKeyRequest`
+  - `MiataruSetDeviceKeyResponse`
+  - `MiataruSetAllowedDeviceListRequest`
+  - `MiataruSetAllowedDeviceListResponse`
+
+- Kept `type: object` on definitions that had it in the original:
+  - `MiataruGetLocationDevice`
+  - `MiataruLocation`
+  - `MiataruGetLocationGeoJSONResponse`
+  - `MiataruGetLocationResponse`
+  - `MiataruAllowedDevice`
+
+The YAML is valid and now matches the original format. This should resolve the null types error. The old Swagger explorer likely expects definitions without explicit `type: object` when they have `properties`. Try loading it again.
+
+---
+
+_**User**_
+
+add the CurrentDeviceKey to the setkey do not leave it out
+
+---
+
+_**Agent (model default, mode Agent)**_
+
+
+Restoring `CurrentDeviceKey` to the `setDeviceKey` definition:
+
+
+---
+
+<tool-use data-tool-type="read" data-tool-name="read_file_v2">
+<details><summary>Tool use: **read_file_v2** • Read file: /Users/bietiekay/code/miataru-server/docs/swagger.yaml</summary>
 
 </details>
 </tool-use>
+
+---
+
+<tool-use data-tool-type="write" data-tool-name="edit_file_v2">
+
+<details><summary>Tool use: **edit_file_v2** • Edit file: /Users/bietiekay/code/miataru-server/docs/swagger.yaml</summary>
+
+</details>
+
+</tool-use>
+
+---
+
+<tool-use data-tool-type="shell" data-tool-name="run_terminal_command_v2">
+<details><summary>Tool use: **run_terminal_command_v2** • Run command: cd /Users/bietiekay/code/miataru-server && node -e "const yaml = require('js-yaml'); const fs = require('fs'); try { const doc = yaml.load(fs.readFileSync('docs/swagger.yaml', 'utf8')); console.log('✓ YAML is valid'); } catch(e) { console.log('✗ Error:', e.message.split('\\n')[0]); }"</summary>
+
+```bash
+cd /Users/bietiekay/code/miataru-server && node -e "const yaml = require('js-yaml'); const fs = require('fs'); try { const doc = yaml.load(fs.readFileSync('docs/swagger.yaml', 'utf8')); console.log('✓ YAML is valid'); } catch(e) { console.log('✗ Error:', e.message.split('\\n')[0]); }"
+```
+
+```
+✓ YAML is valid
+
+```
+</details>
+</tool-use>
+
+---
+
+
+Restored `CurrentDeviceKey` to the `MiataruSetDeviceKeyRequest` definition.
+
+**What I added:**
+- `CurrentDeviceKey` property with:
+  - `type: string`
+  - Description indicating it's optional for first-time setup
+  - `default: ""` to avoid null type issues
+  - `maxLength: 256` to match `NewDeviceKey`
+
+The YAML is valid. `CurrentDeviceKey` is now back in the schema and should work with the old Swagger explorer since it has an explicit type and default value.
 
 ---
 
