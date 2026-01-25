@@ -10,6 +10,9 @@ describe('Unknown Device ID Handling', function() {
     describe('GetLocation endpoint', function() {
         it('should return null for unknown device ID', function(done) {
             var getLocationRequest = {
+                "MiataruConfig": {
+                    "RequestMiataruDeviceID": "test-client"
+                },
                 "MiataruGetLocation": [{"Device": UNKNOWN_DEVICE_ID}]
             };
 
@@ -27,6 +30,9 @@ describe('Unknown Device ID Handling', function() {
 
         it('should return null for unknown device ID (non-versioned endpoint)', function(done) {
             var getLocationRequest = {
+                "MiataruConfig": {
+                    "RequestMiataruDeviceID": "test-client"
+                },
                 "MiataruGetLocation": [{"Device": UNKNOWN_DEVICE_ID}]
             };
 
@@ -44,6 +50,9 @@ describe('Unknown Device ID Handling', function() {
 
         it('should handle multiple unknown device IDs', function(done) {
             var getLocationRequest = {
+                "MiataruConfig": {
+                    "RequestMiataruDeviceID": "test-client"
+                },
                 "MiataruGetLocation": [
                     {"Device": UNKNOWN_DEVICE_ID},
                     {"Device": "another-unknown-device-67890"}
@@ -123,6 +132,9 @@ describe('Unknown Device ID Handling', function() {
     describe('GetLocationHistory endpoint', function() {
         it('should return empty history for unknown device ID', function(done) {
             var getHistoryRequest = {
+                "MiataruConfig": {
+                    "RequestMiataruDeviceID": "test-client"
+                },
                 "MiataruGetLocationHistory": {
                     "Device": UNKNOWN_DEVICE_ID,
                     "Amount": 10
@@ -144,6 +156,9 @@ describe('Unknown Device ID Handling', function() {
 
         it('should return empty history for unknown device ID (non-versioned endpoint)', function(done) {
             var getHistoryRequest = {
+                "MiataruConfig": {
+                    "RequestMiataruDeviceID": "test-client"
+                },
                 "MiataruGetLocationHistory": {
                     "Device": UNKNOWN_DEVICE_ID,
                     "Amount": 10
@@ -314,6 +329,9 @@ describe('Unknown Device ID Handling', function() {
 
         it('should handle mixed known and unknown devices in GetLocation', function(done) {
             var getLocationRequest = {
+                "MiataruConfig": {
+                    "RequestMiataruDeviceID": "test-client"
+                },
                 "MiataruGetLocation": [
                     {"Device": KNOWN_DEVICE_ID},
                     {"Device": ANOTHER_UNKNOWN_DEVICE_ID}
@@ -363,6 +381,9 @@ describe('Unknown Device ID Handling', function() {
             // This test would require injecting malformed data into Redis
             // For now, we'll test that the error handling is in place
             var getLocationRequest = {
+                "MiataruConfig": {
+                    "RequestMiataruDeviceID": "test-client"
+                },
                 "MiataruGetLocation": [{"Device": "truly-unknown-device-for-error-test"}]
             };
 

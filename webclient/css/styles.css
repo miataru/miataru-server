@@ -1,0 +1,438 @@
+body {
+    margin: 0;
+    padding: 0;
+    height: 100vh;
+    display: flex;
+    flex-direction: column;
+}
+
+.toolbar {
+    background-color: #f8f9fa;
+    padding: 10px;
+    display: flex;
+    gap: 10px;
+    box-shadow: 0 2px 4px rgba(0,0,0,0.1);
+}
+
+.toolbar-logo {
+    width: 29px;
+    height: 29px;
+    vertical-align: middle;
+}
+
+.toolbar a {
+    display: flex;
+    align-items: center;
+}
+
+#searchInput {
+    flex-grow: 1;
+    padding: 8px;
+    border: 1px solid #ddd;
+    border-radius: 4px;
+}
+
+#searchButton {
+    padding: 8px 16px;
+    background-color: #007bff;
+    color: white;
+    border: none;
+    border-radius: 4px;
+    cursor: pointer;
+}
+
+#searchButton:hover {
+    background-color: #0056b3;
+}
+
+#map {
+    flex-grow: 1;
+    width: 100%;
+}
+
+.custom-pin {
+    background: none;
+    border: none;
+}
+
+.custom-pin svg {
+    filter: drop-shadow(0 1px 3px rgba(0,0,0,0.3));
+}
+
+@media screen and (max-width: 640px) {
+    .toolbar {
+        display: none;
+    }
+    
+    #map {
+        height: 100vh;
+    }
+}
+
+#savedDevices {
+    min-width: 200px;
+    padding: 8px;
+    border: 1px solid #ddd;
+    border-radius: 4px;
+    background-color: white;
+}
+
+/* Modal Styles */
+.modal {
+    display: none;
+    position: fixed;
+    top: 0;
+    left: 0;
+    width: 100%;
+    height: 100%;
+    background-color: rgba(0, 0, 0, 0.5);
+    z-index: 1000;
+    align-items: center;
+    justify-content: center;
+}
+
+.modal-content {
+    background-color: white;
+    padding: 20px;
+    border-radius: 8px;
+    box-shadow: 0 2px 10px rgba(0, 0, 0, 0.1);
+    width: 300px;
+}
+
+.modal h3 {
+    margin: 0 0 15px 0;
+    color: #333;
+}
+
+#deviceNameInput {
+    width: 100%;
+    padding: 8px;
+    margin-bottom: 15px;
+    border: 1px solid #ddd;
+    border-radius: 4px;
+    box-sizing: border-box;
+}
+
+.modal-buttons {
+    display: flex;
+    gap: 10px;
+    justify-content: flex-end;
+}
+
+.modal-buttons button {
+    padding: 8px 16px;
+    border: none;
+    border-radius: 4px;
+    cursor: pointer;
+}
+
+#saveDeviceButton {
+    background-color: #007bff;
+    color: white;
+}
+
+#saveDeviceButton:hover {
+    background-color: #0056b3;
+}
+
+#cancelSaveButton {
+    background-color: #6c757d;
+    color: white;
+}
+
+#cancelSaveButton:hover {
+    background-color: #545b62;
+}
+
+/* Popup Button Styles */
+.popup-buttons {
+    display: flex;
+    gap: 8px;
+    margin-top: 10px;
+}
+
+.rename-btn, .save-device-btn, .history-device {
+    padding: 4px 8px;
+    background-color: #007bff;
+    color: white;
+    border: none;
+    border-radius: 4px;
+    cursor: pointer;
+}
+
+.rename-btn:hover, .save-device-btn:hover, .history-device:hover {
+    background-color: #0056b3;
+}
+
+.delete-btn {
+    padding: 4px 10px;
+    background-color: #dc3545;
+    color: white;
+    border: none;
+    border-radius: 4px;
+    cursor: pointer;
+    font-size: 16px;
+    line-height: 1;
+}
+
+.delete-btn:hover {
+    background-color: #c82333;
+}
+
+/* Zusätzliche Styles für den Lösch-Dialog */
+#deleteDeviceModal .modal-content {
+    max-width: 400px;
+}
+
+#deleteDeviceModal p {
+    margin: 0 0 20px 0;
+    color: #666;
+}
+
+#confirmDeleteButton {
+    background-color: #dc3545;
+}
+
+#confirmDeleteButton:hover {
+    background-color: #c82333;
+}
+
+/* Styles für den Auto-Center Toggle Button */
+.auto-center-button {
+    width: 30px;
+    height: 30px;
+    background-color: white;
+    border: 2px solid rgba(0,0,0,0.2);
+    border-radius: 4px;
+    cursor: pointer;
+    padding: 0;
+    line-height: 30px;
+    text-align: center;
+    font-size: 16px;
+}
+
+.auto-center-button.active {
+    background-color: #007bff;
+    color: white;
+}
+
+.auto-center-button:hover {
+    background-color: #f4f4f4;
+}
+
+.auto-center-button.active:hover {
+    background-color: #0056b3;
+}
+
+/* Help Button Style */
+.help-button {
+    padding: 8px 12px;
+    background-color: #6c757d;
+    color: white;
+    border: none;
+    border-radius: 4px;
+    cursor: pointer;
+    font-weight: bold;
+}
+
+.help-button:hover {
+    background-color: #545b62;
+}
+
+/* Help Modal Styles */
+.help-content {
+    max-width: 600px;
+    width: auto;
+}
+
+.help-text {
+    margin-bottom: 20px;
+    line-height: 1.5;
+}
+
+.demo-section {
+    margin: 20px 0;
+    text-align: center;
+}
+
+.qr-code {
+    max-width: 200px;
+    margin: 15px auto;
+    display: block;
+}
+
+.links-section {
+    margin: 20px 0;
+}
+
+.links-section a {
+    color: #007bff;
+    text-decoration: none;
+}
+
+.links-section a:hover {
+    text-decoration: underline;
+}
+
+.copyright {
+    margin-top: 20px;
+    color: #666;
+    font-size: 0.9em;
+    text-align: center;
+}
+
+.demo-link {
+    color: #007bff;
+    text-decoration: none;
+    font-weight: bold;
+}
+
+.demo-link:hover {
+    text-decoration: underline;
+}
+
+/* Tooltip Style Button */
+.tooltip-style-button {
+    width: 30px;
+    height: 30px;
+    background-color: white;
+    border: 2px solid rgba(0,0,0,0.2);
+    border-radius: 4px;
+    cursor: pointer;
+    padding: 0;
+    line-height: 30px;
+    text-align: center;
+    font-size: 16px;
+}
+
+.tooltip-style-button.simple {
+    background-color: #6c757d;
+    color: white;
+}
+
+.tooltip-style-button:hover {
+    background-color: #f4f4f4;
+}
+
+.tooltip-style-button.simple:hover {
+    background-color: #545b62;
+}
+
+/* Embed Button Style */
+.embed-button {
+    padding: 8px 12px;
+    background-color: #6c757d;
+    color: white;
+    border: none;
+    border-radius: 4px;
+    cursor: pointer;
+    font-weight: bold;
+    font-family: monospace;
+}
+
+.embed-button:hover {
+    background-color: #545b62;
+}
+
+/* Code Block Styles */
+.code-block {
+    background-color: #f8f9fa;
+    border: 1px solid #ddd;
+    border-radius: 4px;
+    padding: 15px;
+    margin: 15px 0;
+    position: relative;
+    overflow-x: auto;
+}
+
+.code-block pre {
+    margin: 0;
+    white-space: pre-wrap;
+    font-family: monospace;
+}
+
+.copy-button {
+    position: absolute;
+    top: 8px;
+    right: 8px;
+    padding: 4px 8px;
+    background-color: #007bff;
+    color: white;
+    border: none;
+    border-radius: 4px;
+    cursor: pointer;
+}
+
+.copy-button:hover {
+    background-color: #0056b3;
+}
+
+.embed-example {
+    margin: 20px 0;
+    border: 1px solid #ddd;
+    border-radius: 4px;
+    padding: 15px;
+    background-color: #f8f9fa;
+}
+
+.embed-example iframe {
+    display: block;
+    margin: 0 auto;
+    max-width: 100%;
+}
+
+.device-controls {
+    display: flex;
+    gap: 8px;
+    margin-top: 8px;
+}
+
+.device-controls button {
+    padding: 4px 8px;
+    border: 1px solid #ccc;
+    border-radius: 4px;
+    background: #fff;
+    cursor: pointer;
+}
+
+.device-controls button:hover {
+    background: #f0f0f0;
+}
+
+/* Settings Button Style */
+.settings-button {
+    padding: 8px 12px;
+    background-color: #6c757d;
+    color: white;
+    border: none;
+    border-radius: 4px;
+    cursor: pointer;
+    font-size: 16px;
+}
+
+.settings-button:hover {
+    background-color: #545b62;
+}
+
+/* Settings Modal Styles */
+.settings-form {
+    margin-bottom: 20px;
+}
+
+.setting-group {
+    margin-bottom: 15px;
+}
+
+.setting-group label {
+    display: block;
+    margin-bottom: 5px;
+    color: #333;
+}
+
+.setting-group input {
+    width: 100%;
+    padding: 8px;
+    border: 1px solid #ddd;
+    border-radius: 4px;
+    box-sizing: border-box;
+} 
