@@ -501,3 +501,97 @@ The full release notes document is saved at `docs/RELEASE_NOTES_V2.md` for refer
 
 ---
 
+_**User**_
+
+give me this release notes as markdown
+
+---
+
+_**Agent (model default, mode Agent)**_
+
+
+Providing the release notes markdown:
+
+
+---
+
+<tool-use data-tool-type="read" data-tool-name="read_file_v2">
+<details><summary>Tool use: **read_file_v2** • Read file: /Users/bietiekay/code/miataru-server/docs/RELEASE_NOTES_V2.md</summary>
+
+</details>
+</tool-use>
+
+---
+
+
+Release notes markdown:
+
+```markdown
+# Release Notes - Version 2.0.0
+
+**miataru-server 2.0.0** | **miataru API 1.1.0**
+
+## 🎉 Major Release: Security & Privacy Enhancements
+
+Version 2.0 introduces enterprise-grade security features while maintaining **full backward compatibility** with existing v1.0 clients. All security features are **opt-in** and don't affect existing deployments.
+
+## ✨ New Features
+
+### DeviceKey Authentication
+- Secure device-level authentication using cryptographic keys (up to 256 Unicode characters)
+- Protects location updates, visitor history, and access control configuration
+- New endpoint: `POST /v1/setDeviceKey` for key management
+
+### Allowed Devices Access Control
+- Fine-grained permissions for location sharing
+- Separate controls for current location and history access
+- Privacy-first design: location hidden from unauthorized devices
+- New endpoint: `POST /v1/setAllowedDeviceList` for access management
+
+## 🔄 Enhanced Endpoints
+
+- **UpdateLocation**: Optional DeviceKey validation when enabled
+- **GetLocation**: Access control via allowed devices list
+- **GetLocationHistory**: Privacy-first with granular permissions
+- **GetVisitorHistory**: DeviceKey authentication support
+
+## ⚠️ Breaking Change
+
+- **GetLocationGeoJSON**: Returns `401 Unauthorized` when DeviceKey is set for requested devices
+  - *Migration*: Use `GetLocation` and format as GeoJSON client-side, or disable DeviceKey if GeoJSON access is required
+
+## 🔒 Security Improvements
+
+- DeviceKey authentication prevents unauthorized location updates
+- Fine-grained access control limits who can view location data
+- Privacy-first defaults protect user data
+- Constant-time key comparison prevents timing attacks
+
+## ✅ Backward Compatibility
+
+- All v1.0 endpoints continue to work unchanged
+- Optional parameters can be omitted
+- Default behavior unchanged when security features are disabled
+- Legacy endpoints (`/UpdateLocation`, `/GetLocation`, etc.) continue to work
+
+## 📚 Documentation
+
+- Complete migration guide: [CLIENT_ADOPTION_API_1.1.md](CLIENT_ADOPTION_API_1.1.md)
+- Security documentation: [API_1.1_SECURITY.md](API_1.1_SECURITY.md)
+- Full changelog: [WHATS_NEW_V2.md](WHATS_NEW_V2.md)
+
+## 🚀 Upgrade Notes
+
+**No action required** - Version 2.0 is fully backward compatible. Existing deployments continue to work without modification.
+
+For clients adopting new security features, see the migration guide above.
+
+---
+
+*For detailed information, see [WHATS_NEW_V2.md](WHATS_NEW_V2.md)*
+```
+
+Saved at `docs/RELEASE_NOTES_V2.md`. Copy the markdown above to use it elsewhere.
+
+---
+
