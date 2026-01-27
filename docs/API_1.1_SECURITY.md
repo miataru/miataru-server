@@ -4,8 +4,66 @@
 
 API version 1.1 introduces security and privacy enhancements to the Miataru server while maintaining full backward compatibility with API 1.0 clients. These features include:
 
-1. **DeviceKey Authentication** - Protects write operations and visitor history access
-2. **Allowed Devices List** - Granular access control for location data sharing
+1. **RequestMiataruDeviceID (Mandatory)** - Required identifier for all GetLocation and GetLocationHistory requests
+2. **DeviceKey Authentication** - Protects write operations and visitor history access
+3. **Allowed Devices List** - Granular access control for location data sharing
+
+## RequestMiataruDeviceID (Mandatory in API 1.1)
+
+**BREAKING CHANGE:** Starting with API 1.1, `RequestMiataruDeviceID` is now **mandatory** for all `GetLocation` and `GetLocationHistory` requests. Requests without this field will return a 400 Bad Request error.
+
+### Purpose
+
+The `RequestMiataruDeviceID` identifies the device making the request. This is used for:
+- Access control (allowed devices list)
+- Visitor history tracking
+- Security auditing
+
+### Usage
+
+Include `RequestMiataruDeviceID` in the `MiataruConfig` object:
+
+**GetLocation:**
+```json
+{
+  "MiataruConfig": {
+    "RequestMiataruDeviceID": "your-client-identifier"
+  },
+  "MiataruGetLocation": [
+    {
+      "Device": "target-device-id"
+    }
+  ]
+}
+```
+
+**GetLocationHistory:**
+```json
+{
+  "MiataruConfig": {
+    "RequestMiataruDeviceID": "your-client-identifier"
+  },
+  "MiataruGetLocationHistory": {
+    "Device": "target-device-id",
+    "Amount": "10"
+  }
+}
+```
+
+### Migration
+
+**For existing clients:** Update all `GetLocation` and `GetLocationHistory` requests to include `RequestMiataruDeviceID` in the `MiataruConfig` object. The identifier can be:
+- A unique device ID
+- An application identifier
+- A URL or domain name
+- Any string that identifies the requesting client
+
+**Error Response:**
+```json
+{
+  "error": "Bad Request: RequestMiataruDeviceID is required"
+}
+```
 
 ## DeviceKey Concept
 
@@ -136,7 +194,9 @@ Use the `/v1/setAllowedDeviceList` endpoint to set or update the allowed devices
 
 ### API 1.0 Clients
 
-All existing API 1.0 clients continue to work without modification:
+**REQUIRED UPDATE:** All clients must add `RequestMiataruDeviceID` to `GetLocation` and `GetLocationHistory` requests. This is the only breaking change.
+
+After adding `RequestMiataruDeviceID`, all other features remain backward compatible:
 
 - Devices without DeviceKey set work exactly as before
 - Devices without allowed devices list work exactly as before
@@ -145,11 +205,19 @@ All existing API 1.0 clients continue to work without modification:
 
 ### Migration Path
 
-1. **Optional Migration**: Clients can opt-in to security features by setting DeviceKey
-2. **Gradual Rollout**: Set DeviceKey for devices that need protection
-3. **No Breaking Changes**: Existing clients continue to work
+1. **Required Update**: Add `RequestMiataruDeviceID` to all GetLocation and GetLocationHistory requests
+2. **Optional Migration**: Clients can opt-in to security features by setting DeviceKey
+3. **Gradual Rollout**: Set DeviceKey for devices that need protection
 
 ## Breaking Changes
+
+### RequestMiataruDeviceID is Mandatory
+
+**BREAKING CHANGE:** `RequestMiataruDeviceID` is now mandatory for all `GetLocation` and `GetLocationHistory` requests. Requests without this field will return 400 Bad Request.
+
+**Impact:** All clients must update their GetLocation and GetLocationHistory requests to include `RequestMiataruDeviceID` in the `MiataruConfig` object.
+
+**Migration:** See the [RequestMiataruDeviceID section](#requestmiatarudeviceid-mandatory-in-api-11) above for details.
 
 ### GetLocationGeoJSON
 
@@ -179,6 +247,8 @@ This is a security measure to prevent unauthorized access to location data via t
 ## Error Codes
 
 - **400 Bad Request** - Invalid input (missing required fields, invalid format)
+  - Missing or empty `RequestMiataruDeviceID` in GetLocation or GetLocationHistory
+  - Invalid request structure
 - **401 Unauthorized** - GetLocationGeoJSON called when DeviceKey is set
 - **403 Forbidden** - DeviceKey mismatch or access denied
 - **500 Internal Server Error** - Server-side error

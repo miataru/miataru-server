@@ -8,9 +8,10 @@ This is the source code of a Miataru server side implementation. You can get mor
 
 Version 2.0 introduces significant security and privacy enhancements while maintaining full backward compatibility with API 1.0:
 
+- **RequestMiataruDeviceID (Mandatory)** - Required identifier for all GetLocation and GetLocationHistory requests
 - **DeviceKey Authentication** - Protect write operations and visitor history access with device-specific keys
 - **Allowed Devices List** - Granular access control for location data sharing
-- **Full Backward Compatibility** - All existing API 1.0 clients continue to work without modification
+- **Full Backward Compatibility** - All existing API 1.0 clients continue to work without modification (after adding RequestMiataruDeviceID)
 
 See [API 1.1 Security Documentation](docs/API_1.1_SECURITY.md) for detailed information.
 
@@ -76,16 +77,41 @@ See [API 1.1 Security Documentation](docs/API_1.1_SECURITY.md) for details.
 
 ## Migration from API 1.0
 
-All existing API 1.0 clients continue to work without modification. Security features are opt-in:
+**IMPORTANT:** All clients must update their `GetLocation` and `GetLocationHistory` requests to include `RequestMiataruDeviceID` in the `MiataruConfig` object. Requests without this field will return 400 Bad Request.
 
+### Required Update: RequestMiataruDeviceID
+
+Add `MiataruConfig` with `RequestMiataruDeviceID` to all GetLocation and GetLocationHistory requests:
+
+```json
+{
+  "MiataruConfig": {
+    "RequestMiataruDeviceID": "your-client-identifier"
+  },
+  "MiataruGetLocation": [...]
+}
+```
+
+The identifier can be:
+- A unique device ID
+- An application identifier  
+- A URL or domain name
+- Any string that identifies the requesting client
+
+### Other Changes
+
+Security features are opt-in:
 - Devices without DeviceKey set work exactly as before
 - Devices without allowed devices list work exactly as before
 - All existing endpoints maintain the same response format
 
-**Breaking Changse:** 
-- **RequestMiataruDeviceID** is mandatory: Made RequestMiataruDeviceID mandatory in all GetLocation functions
+**Breaking Changes:** 
+- **RequestMiataruDeviceID is mandatory** for GetLocation and GetLocationHistory - See [Migration Guide](docs/MIGRATION_REQUESTMIATARUDEVICEID.md)
 - **GetLocationGeoJSON returns 401 Unauthorized when DeviceKey is set**. See [Compatibility Assessment](docs/COMPATIBILITY_ASSESSMENT.md) for details.
-For client migration guidance, see [iOS Client Adoption Guide](docs/CLIENT_ADOPTION_API_1.1.md).
+
+For client migration guidance:
+- **Quick Migration**: [RequestMiataruDeviceID Migration Guide](docs/MIGRATION_REQUESTMIATARUDEVICEID.md)
+- **Full Guide**: [iOS Client Adoption Guide](docs/CLIENT_ADOPTION_API_1.1.md)
 
 ## Run the Server
 
