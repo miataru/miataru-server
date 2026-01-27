@@ -6,11 +6,11 @@ This is the source code of a Miataru server side implementation. You can get mor
 
 ## What's New in Version 2.0 / API 1.1
 
-Version 2.0 introduces significant security and privacy enhancements while maintaining full backward compatibility with API 1.0:
+Version 2.0 introduces significant security and privacy enhancements while maintaining broad backward compatibility with API 1.0 (with required RequestMiataruDeviceID for GetLocation/GetLocationHistory and the documented GetLocationGeoJSON change):
 
 - **DeviceKey Authentication** - Protect write operations and visitor history access with device-specific keys
 - **Allowed Devices List** - Granular access control for location data sharing
-- **Full Backward Compatibility** - All existing API 1.0 clients continue to work without modification
+- **Broad Backward Compatibility** - Most API 1.0 clients continue to work (GetLocation/GetLocationHistory require `RequestMiataruDeviceID`)
 
 See [API 1.1 Security Documentation](docs/API_1.1_SECURITY.md) for detailed information.
 
@@ -76,7 +76,7 @@ See [API 1.1 Security Documentation](docs/API_1.1_SECURITY.md) for details.
 
 ## Migration from API 1.0
 
-All existing API 1.0 clients continue to work without modification. Security features are opt-in:
+Most existing API 1.0 clients continue to work without modification. GetLocation/GetLocationHistory clients must include `RequestMiataruDeviceID`; other security features remain opt-in:
 
 - Devices without DeviceKey set work exactly as before
 - Devices without allowed devices list work exactly as before
@@ -117,7 +117,7 @@ curl -H 'Content-Type: application/json' -X POST 'http://localhost:8090/v1/Updat
 **Retrieve a location:**
 ```bash
 curl -H 'Content-Type: application/json' -X POST 'http://localhost:8090/v1/GetLocation' \
-  -d '{"MiataruGetLocation":[{"Device":"7b8e6e0ee5296db345162dc2ef652c1350761823"}]}'
+  -d '{"MiataruGetLocation":[{"Device":"7b8e6e0ee5296db345162dc2ef652c1350761823"}],"MiataruConfig":{"RequestMiataruDeviceID":"requesting-device-id"}}'
 ```
 
 **Delete all location data for a device:**
@@ -452,7 +452,7 @@ The following properties are **optional** and default to `-1` when not provided:
 
 ## Backward Compatibility
 
-The Miataru server maintains full backward compatibility with previous versions:
+The Miataru server maintains broad backward compatibility with previous versions, with GetLocation/GetLocationHistory requiring `RequestMiataruDeviceID`:
 
 ### Legacy Client Support
 
@@ -469,9 +469,9 @@ The Miataru server maintains full backward compatibility with previous versions:
 
 ### Migration Notes
 
-Existing clients do not need any changes. The server will:
+Existing clients typically do not need changes, except for GetLocation/GetLocationHistory which now require `RequestMiataruDeviceID`. The server will:
 
-1. Accept requests in the old format without new fields
+1. Accept requests in the old format without new fields (aside from the required `RequestMiataruDeviceID` in GetLocation/GetLocationHistory)
 2. Accept requests with `false` values for required properties  
 3. Continue to validate missing properties and throw appropriate errors
 4. Handle new fields gracefully when provided
@@ -564,7 +564,7 @@ tests/
 #### Security & Privacy Features
 - **DeviceKey Authentication**: Protect write operations and visitor history access
 - **Allowed Devices List**: Granular access control for location data sharing
-- **Full Backward Compatibility**: All API 1.0 clients continue to work without modification
+- **Broad Backward Compatibility**: Most API 1.0 clients continue to work (GetLocation/GetLocationHistory require `RequestMiataruDeviceID`)
 
 #### New Endpoints
 - **POST** `/v1/setDeviceKey` - Set or change device key
@@ -573,8 +573,8 @@ tests/
 #### Enhanced Endpoints
 - **UpdateLocation**: Optional DeviceKey parameter for authentication
 - **GetVisitorHistory**: Optional DeviceKey parameter for authentication
-- **GetLocation**: Access control via allowed devices list
-- **GetLocationHistory**: Access control via allowed devices list
+- **GetLocation**: Requires `RequestMiataruDeviceID` and supports access control via allowed devices list
+- **GetLocationHistory**: Requires `RequestMiataruDeviceID` and supports access control via allowed devices list
 - **GetLocationGeoJSON**: Returns 401 when DeviceKey is set (security measure)
 
 #### Documentation

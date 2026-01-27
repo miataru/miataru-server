@@ -32,7 +32,7 @@
 ### FR-002: Get current location data
 - **Priority**: Must
 - **Description**: The server shall return the last known location for each requested device.
-- **Inputs / Triggers**: HTTP POST `/v1/GetLocation` or `/GetLocation` with `MiataruGetLocation` array; optional `MiataruConfig.RequestMiataruDeviceID` for visitor tracking. (Evidence: README.md L27-L43, L72-L76; lib/routes/location/index.js L10-L23; lib/routes/location/v1/inputParser.js L64-L75)
+- **Inputs / Triggers**: HTTP POST `/v1/GetLocation` or `/GetLocation` with `MiataruGetLocation` array; required `MiataruConfig.RequestMiataruDeviceID` for visitor tracking and access control. (Evidence: README.md L27-L43, L72-L76; lib/routes/location/index.js L10-L23; lib/routes/location/v1/inputParser.js L64-L75)
 - **Outputs / Effects**: Returns `MiataruLocation` array with entries or null if missing; may record visitor history per config. (Evidence: lib/routes/location/v1/location.js L354-L398; lib/models/ResponseLocation.js L9-L13)
 - **Acceptance Criteria**:
   - Returns `MiataruLocation` array matching requested device order. (Evidence: lib/models/ResponseLocation.js L9-L13)
@@ -43,7 +43,7 @@
 ### FR-003: Get location history
 - **Priority**: Must
 - **Description**: The server shall return the most recent location history entries up to the requested amount.
-- **Inputs / Triggers**: HTTP POST `/v1/GetLocationHistory` or `/GetLocationHistory` with `MiataruGetLocationHistory.Device` and `.Amount`; optional `MiataruConfig.RequestMiataruDeviceID`. (Evidence: README.md L32-L43; lib/routes/location/index.js L15-L29; lib/models/RequestLocationHistory.js L136-L171)
+- **Inputs / Triggers**: HTTP POST `/v1/GetLocationHistory` or `/GetLocationHistory` with `MiataruGetLocationHistory.Device` and `.Amount`; required `MiataruConfig.RequestMiataruDeviceID`. (Evidence: README.md L32-L43; lib/routes/location/index.js L15-L29; lib/models/RequestLocationHistory.js L136-L171)
 - **Outputs / Effects**: Returns `MiataruLocation` list with server config metadata; may record visitor history. (Evidence: lib/models/ResponseLocationHistory.js L7-L15; lib/routes/location/v1/location.js L186-L276)
 - **Acceptance Criteria**:
   - Rejects missing/invalid device or amount with 400. (Evidence: lib/models/RequestLocationHistory.js L160-L162)

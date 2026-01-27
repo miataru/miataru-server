@@ -4,7 +4,7 @@
 
 ## 🎉 Major Release: Security & Privacy Enhancements
 
-Version 2.0 introduces enterprise-grade security features while maintaining **full backward compatibility** with existing v1.0 clients. All security features are **opt-in** and don't affect existing deployments.
+Version 2.0 introduces enterprise-grade security features while maintaining **broad backward compatibility** with existing v1.0 clients. Security features remain opt-in, but GetLocation/GetLocationHistory now require `RequestMiataruDeviceID`.
 
 ## ✨ New Features
 
@@ -22,11 +22,14 @@ Version 2.0 introduces enterprise-grade security features while maintaining **fu
 ## 🔄 Enhanced Endpoints
 
 - **UpdateLocation**: Optional DeviceKey validation when enabled
-- **GetLocation**: Access control via allowed devices list
-- **GetLocationHistory**: Privacy-first with granular permissions
+- **GetLocation**: Requires `RequestMiataruDeviceID` and supports access control via allowed devices list
+- **GetLocationHistory**: Requires `RequestMiataruDeviceID` and enforces granular permissions
 - **GetVisitorHistory**: DeviceKey authentication support
 
-## ⚠️ Breaking Change
+## ⚠️ Breaking Changes
+
+- **GetLocation / GetLocationHistory**: `MiataruConfig.RequestMiataruDeviceID` is now mandatory
+  - *Migration*: Include a non-empty `RequestMiataruDeviceID` in all GetLocation/GetLocationHistory requests
 
 - **GetLocationGeoJSON**: Returns `401 Unauthorized` when DeviceKey is set for requested devices
   - *Migration*: Use `GetLocation` and format as GeoJSON client-side, or disable DeviceKey if GeoJSON access is required
@@ -40,8 +43,8 @@ Version 2.0 introduces enterprise-grade security features while maintaining **fu
 
 ## ✅ Backward Compatibility
 
-- All v1.0 endpoints continue to work unchanged
-- Optional parameters can be omitted
+- Most v1.0 endpoints continue to work unchanged
+- Optional parameters can be omitted (except `RequestMiataruDeviceID` for GetLocation/GetLocationHistory)
 - Default behavior unchanged when security features are disabled
 - Legacy endpoints (`/UpdateLocation`, `/GetLocation`, etc.) continue to work
 
@@ -53,7 +56,7 @@ Version 2.0 introduces enterprise-grade security features while maintaining **fu
 
 ## 🚀 Upgrade Notes
 
-**No action required** - Version 2.0 is fully backward compatible. Existing deployments continue to work without modification.
+**Action required for GetLocation/GetLocationHistory clients** - Update requests to include `RequestMiataruDeviceID`. Other endpoints remain backward compatible.
 
 For clients adopting new security features, see the migration guide above.
 
