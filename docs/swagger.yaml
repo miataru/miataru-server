@@ -56,7 +56,7 @@ paths:
    tags:
    - getLocation
    description: |
-     To retrieve a specific devices latest known location the /GetLocation method is used. Please note that the MiataruConfig portion is optional. RequestMiataruDeviceID should be the ID of the device the request is sent from (or an identifier like an URL).
+     To retrieve a specific devices latest known location the /GetLocation method is used. The MiataruConfig portion is required and must include RequestMiataruDeviceID (the ID of the device the request is sent from, or an identifier like a URL).
      
      API 1.1: If an allowed devices list has been set for a device (via /setAllowedDeviceList), only devices with hasCurrentLocationAccess permission will receive location data. Devices without permission will receive the location as if the device doesn't exist.
    operationId: getLocation
@@ -102,7 +102,7 @@ paths:
    tags:
    - getLocation
    description: |
-     Location History is stored on the server only if the client told the server to do so using the "EnableLocationHistory" setting in the Location Update requests. For transitions of enabling/disabling that functionality - Everytime a Location Update is received by the server with "EnableLocationHistory=false" the server removes all stored Location History till that point. There is a server-side setting that controls up to how many Location Updates the server is storing in the Location History before it removes the oldest one. To request the Location History of a particular device the client sends the following POST request to the GetLocationHistory service URL. Please note that the MiataruConfig portion is optional. RequestMiataruDeviceID should be the ID of the device the request is sent from (or an identifier like an URL).
+     Location History is stored on the server only if the client told the server to do so using the "EnableLocationHistory" setting in the Location Update requests. For transitions of enabling/disabling that functionality - Everytime a Location Update is received by the server with "EnableLocationHistory=false" the server removes all stored Location History till that point. There is a server-side setting that controls up to how many Location Updates the server is storing in the Location History before it removes the oldest one. To request the Location History of a particular device the client sends the following POST request to the GetLocationHistory service URL. The MiataruConfig portion is required and must include RequestMiataruDeviceID (the ID of the device the request is sent from, or an identifier like a URL).
      
      API 1.1: If an allowed devices list has been set for a device (via /setAllowedDeviceList), only devices with hasHistoryAccess permission will receive location history data. Devices without permission will receive an empty history (as if history doesn't exist).
    operationId: getLocationHistory
@@ -271,11 +271,12 @@ definitions:
      $ref: '#/definitions/MiataruLocation'
  MiataruGetLocationHistoryRequest:
   required:
+  - MiataruConfig
   - MiataruGetLocationHistory
   properties:
    MiataruConfig:
     type: object
-    description: the configuration for this request. please note that it's optional.
+    description: the configuration for this request. RequestMiataruDeviceID is required.
     required:
     - RequestMiataruDeviceID
     properties:
@@ -309,11 +310,12 @@ definitions:
     default: "7b8e6e0ee5296db345162dc2ef652c1350761823"
  MiataruGetLocationRequest:
   required:
+  - MiataruConfig
   - MiataruGetLocation
   properties:
    MiataruConfig:
     type: object
-    description: the configuration for this request. please note that it's optional.
+    description: the configuration for this request. RequestMiataruDeviceID is required.
     required:
     - RequestMiataruDeviceID
     properties:

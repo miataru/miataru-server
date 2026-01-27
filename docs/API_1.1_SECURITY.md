@@ -2,7 +2,7 @@
 
 ## Overview
 
-API version 1.1 introduces security and privacy enhancements to the Miataru server while maintaining full backward compatibility with API 1.0 clients. These features include:
+API version 1.1 introduces security and privacy enhancements to the Miataru server while maintaining broad backward compatibility with API 1.0 clients (GetLocation/GetLocationHistory now require `RequestMiataruDeviceID`). These features include:
 
 1. **DeviceKey Authentication** - Protects write operations and visitor history access
 2. **Allowed Devices List** - Granular access control for location data sharing
@@ -123,12 +123,12 @@ Use the `/v1/setAllowedDeviceList` endpoint to set or update the allowed devices
 ### Access Control Behavior
 
 **GetLocation:**
-- If allowed devices list is **not enabled**: Returns location data (backward compatible)
+- If allowed devices list is **not enabled**: Returns location data when `RequestMiataruDeviceID` is provided (backward compatible)
 - If allowed devices list is **enabled**: Only devices with `hasCurrentLocationAccess: true` receive location data
 - Devices without permission receive location as `null` (as if device doesn't exist)
 
 **GetLocationHistory:**
-- If allowed devices list is **not enabled**: Returns location history (backward compatible)
+- If allowed devices list is **not enabled**: Returns location history when `RequestMiataruDeviceID` is provided (backward compatible)
 - If allowed devices list is **enabled**: Only devices with `hasHistoryAccess: true` receive location history
 - Devices without permission receive empty history (as if history doesn't exist)
 
@@ -136,7 +136,7 @@ Use the `/v1/setAllowedDeviceList` endpoint to set or update the allowed devices
 
 ### API 1.0 Clients
 
-All existing API 1.0 clients continue to work without modification:
+Most existing API 1.0 clients continue to work without modification (GetLocation/GetLocationHistory must include `RequestMiataruDeviceID`):
 
 - Devices without DeviceKey set work exactly as before
 - Devices without allowed devices list work exactly as before
@@ -147,9 +147,13 @@ All existing API 1.0 clients continue to work without modification:
 
 1. **Optional Migration**: Clients can opt-in to security features by setting DeviceKey
 2. **Gradual Rollout**: Set DeviceKey for devices that need protection
-3. **No Breaking Changes**: Existing clients continue to work
+3. **Breaking Change**: GetLocation/GetLocationHistory now require `RequestMiataruDeviceID`
 
 ## Breaking Changes
+
+### GetLocation / GetLocationHistory
+
+**BREAKING CHANGE:** `MiataruConfig.RequestMiataruDeviceID` is required for GetLocation and GetLocationHistory requests. Missing or empty values return **400 Bad Request**.
 
 ### GetLocationGeoJSON
 

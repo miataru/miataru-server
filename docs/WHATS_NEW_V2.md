@@ -3,7 +3,7 @@
 **miataru-server Version 2.0.0** - Security and Privacy Enhancements  
 **miataru API Version 1.1.0** - Device Authentication and Access Control
 
-Version 2.0 introduces comprehensive security and privacy enhancements to the Miataru server, including DeviceKey authentication and fine-grained access control through allowed devices lists. All new features are **fully backward compatible** with existing v1.0 clients.
+Version 2.0 introduces comprehensive security and privacy enhancements to the Miataru server, including DeviceKey authentication and fine-grained access control through allowed devices lists. Most features remain backward compatible with v1.0 clients, with new requirements for GetLocation/GetLocationHistory and the documented GetLocationGeoJSON behavior change.
 
 ## Overview
 
@@ -16,11 +16,11 @@ These features work together to provide enterprise-grade security while maintain
 
 ## Key Highlights
 
-- ✅ **Full Backward Compatibility** - All existing v1.0 clients continue to work without modification
+- ✅ **Broad Backward Compatibility** - Most existing v1.0 clients continue to work without modification
 - ✅ **Optional Security** - Security features are opt-in and don't affect existing deployments
 - ✅ **Privacy-First Design** - Default behavior prioritizes user privacy
 - ✅ **Simple Migration Path** - Easy adoption for clients that want enhanced security
-- ✅ **No Breaking Changes** - Except for one documented change to GetLocationGeoJSON behavior
+- ⚠️ **Breaking Changes** - RequestMiataruDeviceID is required for GetLocation/GetLocationHistory, plus the documented GetLocationGeoJSON behavior change
 
 ## New Security Features
 
@@ -269,10 +269,12 @@ curl -H 'Content-Type: application/json' -X POST 'http://localhost:8090/v1/setAl
 {
   "MiataruGetLocation": [
     {
-      "Device": "target-device-id",
-      "RequestMiataruDeviceID": "requesting-device-id"
+      "Device": "target-device-id"
     }
-  ]
+  ],
+  "MiataruConfig": {
+    "RequestMiataruDeviceID": "requesting-device-id"
+  }
 }
 ```
 
@@ -280,7 +282,7 @@ curl -H 'Content-Type: application/json' -X POST 'http://localhost:8090/v1/setAl
 
 - **Allowed Devices Enabled**: Only devices in the allowed list with `hasCurrentLocationAccess: true` can access location
 - **Not in List**: Devices not in the allowed list receive no location data (as if device doesn't exist)
-- **Allowed Devices Not Enabled**: Works as before - all devices can access location (backward compatible)
+- **Allowed Devices Not Enabled**: Works as before once `RequestMiataruDeviceID` is provided (backward compatible)
 
 #### Privacy Protection
 
@@ -297,12 +299,13 @@ When allowed devices list is enabled:
 
 ```json
 {
-  "MiataruGetLocationHistory": [
-    {
-      "Device": "target-device-id",
-      "RequestMiataruDeviceID": "requesting-device-id"
-    }
-  ]
+  "MiataruGetLocationHistory": {
+    "Device": "target-device-id",
+    "Amount": "10"
+  },
+  "MiataruConfig": {
+    "RequestMiataruDeviceID": "requesting-device-id"
+  }
 }
 ```
 
@@ -311,7 +314,7 @@ When allowed devices list is enabled:
 - **Allowed Devices Enabled**: Only devices with `hasHistoryAccess: true` can access history
 - **Not in List**: Devices not in the list or without history permission receive no history
 - **Allowed Devices Not Enabled**: Default behavior is privacy-first (history not returned by default)
-- **Backward Compatibility**: Existing behavior preserved when no allowed devices list is set
+- **Backward Compatibility**: Existing behavior preserved when no allowed devices list is set (with `RequestMiataruDeviceID`)
 
 ### POST `/v1/GetVisitorHistory`
 
@@ -550,6 +553,7 @@ POST /v1/GetLocation
 ### Migration Checklist
 
 - [ ] Review breaking changes (GetLocationGeoJSON)
+- [ ] Ensure GetLocation/GetLocationHistory include `RequestMiataruDeviceID`
 - [ ] Test existing client functionality (should work unchanged)
 - [ ] Decide if DeviceKey authentication is needed
 - [ ] Decide if allowed devices access control is needed
@@ -562,11 +566,11 @@ POST /v1/GetLocation
 
 ### Compatibility Guarantees
 
-Version 2.0 maintains **full backward compatibility** with v1.0:
+Version 2.0 maintains **broad backward compatibility** with v1.0, with `RequestMiataruDeviceID` required for GetLocation/GetLocationHistory:
 
-1. **All v1.0 Endpoints Work**: Every existing endpoint continues to function
+1. **Most v1.0 Endpoints Work**: Existing endpoints continue to function with the noted GetLocation/GetLocationHistory requirement
 2. **Optional Parameters**: New parameters (DeviceKey) are optional
-3. **Default Behavior**: When security features are disabled, behavior matches v1.0
+3. **Default Behavior**: When security features are disabled, behavior matches v1.0 (with `RequestMiataruDeviceID` provided)
 4. **Response Format**: Response structure remains unchanged
 5. **Legacy Endpoints**: Non-versioned endpoints continue to work
 
@@ -575,8 +579,8 @@ Version 2.0 maintains **full backward compatibility** with v1.0:
 | Feature | v1.0 Client | v1.1 Client (No Security) | v1.1 Client (With Security) |
 |---------|------------|---------------------------|------------------------------|
 | UpdateLocation | ✅ Works | ✅ Works | ✅ Works (with DeviceKey) |
-| GetLocation | ✅ Works | ✅ Works | ✅ Works (with access control) |
-| GetLocationHistory | ✅ Works | ✅ Works | ✅ Works (with access control) |
+| GetLocation | ⚠️ Requires `RequestMiataruDeviceID` | ✅ Works (with RequestMiataruDeviceID) | ✅ Works (with RequestMiataruDeviceID, access control) |
+| GetLocationHistory | ⚠️ Requires `RequestMiataruDeviceID` | ✅ Works (with RequestMiataruDeviceID) | ✅ Works (with RequestMiataruDeviceID, access control) |
 | GetVisitorHistory | ✅ Works | ✅ Works | ✅ Works (with DeviceKey) |
 | GetLocationGeoJSON | ✅ Works | ✅ Works | ❌ 401 (DeviceKey set) |
 | DeleteLocation | ✅ Works | ✅ Works | ✅ Works |
@@ -584,6 +588,7 @@ Version 2.0 maintains **full backward compatibility** with v1.0:
 ### Graceful Degradation
 
 - **Missing DeviceKey**: When DeviceKey is required but not provided, operation fails with 403
+- **Missing RequestMiataruDeviceID**: GetLocation/GetLocationHistory requests fail with 400
 - **Not in Allowed List**: When access control is enabled, unauthorized devices receive no data (no error)
 - **Security Disabled**: All features work exactly as v1.0 when security is not enabled
 
