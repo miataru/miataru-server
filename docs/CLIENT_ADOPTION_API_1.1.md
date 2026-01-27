@@ -4,9 +4,72 @@ This guide provides step-by-step instructions for updating the iOS client applic
 
 ## Overview
 
-API 1.1 introduces two main security features:
-1. **DeviceKey** - Authentication for write operations
-2. **Allowed Devices List** - Access control for location sharing
+API 1.1 introduces three main changes:
+1. **RequestMiataruDeviceID (Mandatory)** - Required for all GetLocation and GetLocationHistory requests
+2. **DeviceKey** - Authentication for write operations
+3. **Allowed Devices List** - Access control for location sharing
+
+## Step 0: Add RequestMiataruDeviceID (Required)
+
+**BREAKING CHANGE:** `RequestMiataruDeviceID` is now mandatory for all `GetLocation` and `GetLocationHistory` requests.
+
+### 0.1 Update GetLocation Requests
+
+Add `MiataruConfig` with `RequestMiataruDeviceID` to all GetLocation requests:
+
+```swift
+struct GetLocationRequest: Codable {
+    let MiataruConfig: MiataruConfig
+    let MiataruGetLocation: [MiataruGetLocationDevice]
+}
+
+struct MiataruConfig: Codable {
+    let RequestMiataruDeviceID: String
+}
+
+struct MiataruGetLocationDevice: Codable {
+    let Device: String
+}
+
+// Usage
+let request = GetLocationRequest(
+    MiataruConfig: MiataruConfig(
+        RequestMiataruDeviceID: UIDevice.current.identifierForVendor?.uuidString ?? "unknown"
+    ),
+    MiataruGetLocation: [
+        MiataruGetLocationDevice(Device: targetDeviceID)
+    ]
+)
+```
+
+### 0.2 Update GetLocationHistory Requests
+
+Similarly update GetLocationHistory requests:
+
+```swift
+struct GetLocationHistoryRequest: Codable {
+    let MiataruConfig: MiataruConfig
+    let MiataruGetLocationHistory: MiataruGetLocationHistory
+}
+
+struct MiataruGetLocationHistory: Codable {
+    let Device: String
+    let Amount: String
+}
+
+// Usage
+let request = GetLocationHistoryRequest(
+    MiataruConfig: MiataruConfig(
+        RequestMiataruDeviceID: UIDevice.current.identifierForVendor?.uuidString ?? "unknown"
+    ),
+    MiataruGetLocationHistory: MiataruGetLocationHistory(
+        Device: targetDeviceID,
+        Amount: "100"
+    )
+)
+```
+
+**Note:** Without `RequestMiataruDeviceID`, requests will return 400 Bad Request.
 
 ## Prerequisites
 

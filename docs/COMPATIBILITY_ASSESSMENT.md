@@ -2,7 +2,7 @@
 
 ## Executive Summary
 
-Miataru Server 2.0 and API 1.1 maintain **full backward compatibility** with API 1.0 clients. All existing endpoints continue to work without modification. Security features are **opt-in** and do not affect existing clients unless explicitly enabled.
+Miataru Server 2.0 and API 1.1 maintain **full backward compatibility** with API 1.0 clients, with one **required update**: `RequestMiataruDeviceID` is now mandatory for `GetLocation` and `GetLocationHistory` requests. All other security features are **opt-in** and do not affect existing clients unless explicitly enabled.
 
 ## Backward Compatibility Guarantees
 
@@ -37,6 +37,34 @@ When security features are **not enabled**, behavior is identical to API 1.0:
 - All error codes remain unchanged (except new 401/403 for security features)
 
 ## Breaking Changes
+
+### RequestMiataruDeviceID is Now Mandatory
+
+**Endpoints:** `POST /v1/GetLocation`, `POST /v1/GetLocationHistory`
+
+**Change:** `RequestMiataruDeviceID` is now mandatory in the `MiataruConfig` object. Requests without this field will return 400 Bad Request.
+
+**Impact:** 
+- **High** - All clients must update their GetLocation and GetLocationHistory requests
+- **None** for UpdateLocation, GetVisitorHistory, DeleteLocation, and other endpoints
+
+**Migration:** Add `MiataruConfig` with `RequestMiataruDeviceID` to all GetLocation and GetLocationHistory requests:
+
+```json
+{
+  "MiataruConfig": {
+    "RequestMiataruDeviceID": "your-client-identifier"
+  },
+  "MiataruGetLocation": [...]
+}
+```
+
+**Error Response:**
+```json
+{
+  "error": "Bad Request: RequestMiataruDeviceID is required"
+}
+```
 
 ### GetLocationGeoJSON - 401 Unauthorized
 
@@ -82,6 +110,7 @@ When security features are **not enabled**, behavior is identical to API 1.0:
 
 | Scenario | API 1.0 Client | API 1.1 Client | Result |
 |----------|----------------|----------------|--------|
+| Missing RequestMiataruDeviceID | Works | 400 Bad Request | ⚠️ Requires update |
 | No allowed devices list | Works | Works | ✅ Compatible |
 | Allowed devices list, has access | N/A | Works | ✅ Compatible |
 | Allowed devices list, no access | N/A | Returns null | ⚠️ Different behavior |
@@ -90,6 +119,7 @@ When security features are **not enabled**, behavior is identical to API 1.0:
 
 | Scenario | API 1.0 Client | API 1.1 Client | Result |
 |----------|----------------|----------------|--------|
+| Missing RequestMiataruDeviceID | Works | 400 Bad Request | ⚠️ Requires update |
 | No allowed devices list | Works | Works | ✅ Compatible |
 | Allowed devices list, has access | N/A | Works | ✅ Compatible |
 | Allowed devices list, no access | N/A | Returns empty | ⚠️ Different behavior |
