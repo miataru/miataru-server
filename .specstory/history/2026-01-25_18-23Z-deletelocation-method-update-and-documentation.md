@@ -13641,3 +13641,11766 @@ Should I implement these changes?
 
 ---
 
+_**User**_
+
+make a good plan, include updating all documentation, readme, examples and mentions of DeleteLocation. Add tests and run them all for the new behaviour/deviceKey capability. Adjust the swagger.yaml to reflect the missing function and behaviour. Scan for other functions that might have been missed
+
+---
+
+_**Agent (model default, mode Agent)**_
+
+
+Researching the codebase to draft the plan. Exploring DeviceKey implementation, tests, and other endpoints that might need protection.
+
+
+---
+
+<tool-use data-tool-type="read" data-tool-name="read_file_v2">
+<details><summary>Tool use: **read_file_v2** • Read file: /Users/bietiekay/code/miataru-server/lib/models/RequestLocation.js</summary>
+
+</details>
+</tool-use>
+
+---
+
+<tool-use data-tool-type="read" data-tool-name="read_file_v2">
+<details><summary>Tool use: **read_file_v2** • Read file: /Users/bietiekay/code/miataru-server/lib/models/RequestVisitorHistory.js</summary>
+
+</details>
+</tool-use>
+
+---
+
+<tool-use data-tool-type="read" data-tool-name="read_file_v2">
+<details><summary>Tool use: **read_file_v2** • Read file: /Users/bietiekay/code/miataru-server/lib/utils/deviceKey.js</summary>
+
+</details>
+</tool-use>
+
+---
+
+<tool-use data-tool-type="read" data-tool-name="read_file_v2">
+<details><summary>Tool use: **read_file_v2** • Read file: /Users/bietiekay/code/miataru-server/tests/integration/deleteLocation.tests.js</summary>
+
+</details>
+</tool-use>
+
+---
+
+<tool-use data-tool-type="read" data-tool-name="read_file_v2">
+<details><summary>Tool use: **read_file_v2** • Read file: /Users/bietiekay/code/miataru-server/tests/integration/deviceKey.tests.js</summary>
+
+</details>
+</tool-use>
+
+---
+
+<tool-use data-tool-type="read" data-tool-name="read_file_v2">
+<details><summary>Tool use: **read_file_v2** • Read file: /Users/bietiekay/code/miataru-server/docs/swagger.yaml</summary>
+
+</details>
+</tool-use>
+
+---
+
+
+Searching for DeleteLocation references and reviewing swagger.yaml:
+
+
+---
+
+<tool-use data-tool-type="unknown" data-tool-name="ripgrep_raw_search">
+<details>
+<summary>Tool use: **ripgrep_raw_search**</summary>
+
+
+Parameters:
+
+```json
+{
+  "pattern": "DeleteLocation|deleteLocation",
+  "path": "docs/swagger.yaml",
+  "caseInsensitive": false
+}
+```
+Result:
+
+```json
+{
+  "success": {
+    "pattern": "DeleteLocation|deleteLocation",
+    "path": "docs/swagger.yaml",
+    "outputMode": "content",
+    "workspaceResults": {
+      "/Users/bietiekay/code/miataru-server": {
+        "content": {}
+      }
+    }
+  }
+}
+```
+Status: **completed**
+
+
+</details>
+</tool-use>
+
+---
+
+<tool-use data-tool-type="unknown" data-tool-name="semantic_search_full">
+<details>
+<summary>Tool use: **semantic_search_full**</summary>
+
+
+Parameters:
+
+```json
+{
+  "query": "setAllowedDeviceList DeviceKey authentication required",
+  "topK": 10,
+  "explanation": ""
+}
+```
+Result:
+
+```json
+{
+  "codeResults": [
+    {
+      "codeBlock": {
+        "relativeWorkspacePath": "./lib/routes/location/v1/location.js",
+        "range": {
+          "startPosition": {
+            "line": 877,
+            "column": 1
+          },
+          "endPosition": {
+            "line": 932,
+            "column": 35
+          }
+        },
+        "contents": "/**\n * SetAllowedDeviceList\n * Sets or updates the allowed devices list for a device\n * @param req\n * @param res\n * @param next\n */\nfunction setAllowedDeviceList(req, res, next) {\n    var request = req.MIATARU.request;\n    var deviceId = request.deviceId();\n    var deviceKey = request.deviceKey();\n    var allowedDevices = request.allowedDevices();\n\n    seq()\n        .seq(function() {\n            var done = this;\n            // Validate DeviceKey first\n            deviceKeyUtils.validateDeviceKey(deviceId, deviceKey, function(error, isValid) {\n                if (error) {\n                    return done(error);\n                }\n\n                if (!isValid) {\n                    return done(new errors.ForbiddenError('DeviceKey does not match'));\n                }\n\n                done();\n            });\n        })\n        .seq(function() {\n            var done = this;\n            // Set the allowed devices list\n            allowedDevicesUtils.setAllowedDevices(deviceId, allowedDevices, function(error) {\n                if (error) {\n                    return done(error);\n                }\n\n                done();\n            });\n        })\n        .seq(function() {\n            res.send((new models.ResponseSetAllowedDeviceList()).data());\n        })\n        .catch(function(error) {\n            if (error instanceof errors.ForbiddenError) {\n                return next(error);\n            }\n            next(new errors.InternalServerError(error));\n        });\n}\n\n\nmodule.exports = {\n    updateLocation: updateLocation,",
+        "signatures": {},
+        "detailedLines": [
+          {
+            "text": "/**",
+            "lineNumber": 880
+          },
+          {
+            "text": " * SetAllowedDeviceList",
+            "lineNumber": 881
+          },
+          {
+            "text": " * Sets or updates the allowed devices list for a device",
+            "lineNumber": 882
+          },
+          {
+            "text": " * @param req",
+            "lineNumber": 883
+          },
+          {
+            "text": " * @param res",
+            "lineNumber": 884
+          },
+          {
+            "text": " * @param next",
+            "lineNumber": 885
+          },
+          {
+            "text": " */",
+            "lineNumber": 886
+          },
+          {
+            "text": "function setAllowedDeviceList(req, res, next) {",
+            "lineNumber": 887,
+            "isSignature": true
+          },
+          {
+            "text": "    var request = req.MIATARU.request;",
+            "lineNumber": 888
+          },
+          {
+            "text": "    var deviceId = request.deviceId();",
+            "lineNumber": 889
+          },
+          {
+            "text": "    var deviceKey = request.deviceKey();",
+            "lineNumber": 890
+          },
+          {
+            "text": "    var allowedDevices = request.allowedDevices();",
+            "lineNumber": 891
+          },
+          {
+            "lineNumber": 892
+          },
+          {
+            "text": "    seq()",
+            "lineNumber": 893
+          },
+          {
+            "text": "        .seq(function() {",
+            "lineNumber": 894
+          },
+          {
+            "text": "            var done = this;",
+            "lineNumber": 895
+          },
+          {
+            "text": "            // Validate DeviceKey first",
+            "lineNumber": 896
+          },
+          {
+            "text": "            deviceKeyUtils.validateDeviceKey(deviceId, deviceKey, function(error, isValid) {",
+            "lineNumber": 897
+          },
+          {
+            "text": "                if (error) {",
+            "lineNumber": 898
+          },
+          {
+            "text": "                    return done(error);",
+            "lineNumber": 899
+          },
+          {
+            "text": "                }",
+            "lineNumber": 900
+          },
+          {
+            "lineNumber": 901
+          },
+          {
+            "text": "                if (!isValid) {",
+            "lineNumber": 902
+          },
+          {
+            "text": "                    return done(new errors.ForbiddenError('DeviceKey does not match'));",
+            "lineNumber": 903
+          },
+          {
+            "text": "                }",
+            "lineNumber": 904
+          },
+          {
+            "lineNumber": 905
+          },
+          {
+            "text": "                done();",
+            "lineNumber": 906
+          },
+          {
+            "text": "            });",
+            "lineNumber": 907
+          },
+          {
+            "text": "        })",
+            "lineNumber": 908
+          },
+          {
+            "text": "        .seq(function() {",
+            "lineNumber": 909
+          },
+          {
+            "text": "            var done = this;",
+            "lineNumber": 910
+          },
+          {
+            "text": "            // Set the allowed devices list",
+            "lineNumber": 911
+          },
+          {
+            "text": "            allowedDevicesUtils.setAllowedDevices(deviceId, allowedDevices, function(error) {",
+            "lineNumber": 912
+          },
+          {
+            "text": "                if (error) {",
+            "lineNumber": 913
+          },
+          {
+            "text": "                    return done(error);",
+            "lineNumber": 914
+          },
+          {
+            "text": "                }",
+            "lineNumber": 915
+          },
+          {
+            "lineNumber": 916
+          },
+          {
+            "text": "                done();",
+            "lineNumber": 917
+          },
+          {
+            "text": "            });",
+            "lineNumber": 918
+          },
+          {
+            "text": "        })",
+            "lineNumber": 919
+          },
+          {
+            "text": "        .seq(function() {",
+            "lineNumber": 920
+          },
+          {
+            "text": "            res.send((new models.ResponseSetAllowedDeviceList()).data());",
+            "lineNumber": 921
+          },
+          {
+            "text": "        })",
+            "lineNumber": 922
+          },
+          {
+            "text": "        .catch(function(error) {",
+            "lineNumber": 923
+          },
+          {
+            "text": "            if (error instanceof errors.ForbiddenError) {",
+            "lineNumber": 924
+          },
+          {
+            "text": "                return next(error);",
+            "lineNumber": 925
+          },
+          {
+            "text": "            }",
+            "lineNumber": 926
+          },
+          {
+            "text": "            next(new errors.InternalServerError(error));",
+            "lineNumber": 927
+          },
+          {
+            "text": "        });",
+            "lineNumber": 928
+          },
+          {
+            "text": "}",
+            "lineNumber": 929,
+            "isSignature": true
+          },
+          {
+            "lineNumber": 930
+          },
+          {
+            "lineNumber": 931
+          },
+          {
+            "text": "module.exports = {",
+            "lineNumber": 932
+          },
+          {
+            "text": "    updateLocation: updateLocation,",
+            "lineNumber": 933
+          }
+        ]
+      },
+      "score": 0.5181108117103577
+    },
+    {
+      "codeBlock": {
+        "relativeWorkspacePath": "./docs/WHATS_NEW_V2.md",
+        "range": {
+          "startPosition": {
+            "line": 143
+          },
+          "endPosition": {
+            "line": 220
+          }
+        },
+        "contents": "#### Request Format\n\n&#96;&#96;&#96;json\n{\n  \"MiataruSetAllowedDeviceList\": {\n    \"DeviceID\": \"device-id-here\",\n    \"DeviceKey\": \"your-device-key\",\n    \"allowedDevices\": [\n      {\n        \"DeviceID\": \"friend-device-1\",\n        \"hasCurrentLocationAccess\": true,\n        \"hasHistoryAccess\": false\n      },\n      {\n        \"DeviceID\": \"family-device-2\",\n        \"hasCurrentLocationAccess\": true,\n        \"hasHistoryAccess\": true\n      }\n    ]\n  }\n}\n&#96;&#96;&#96;\n\n#### Request Parameters\n\n- **DeviceID** (required): The device identifier (owner device)\n- **DeviceKey** (required): DeviceKey for authentication\n- **allowedDevices** (required): Array of allowed devices (max 256 devices)\n  - **DeviceID** (required): The device identifier that will have access\n  - **hasCurrentLocationAccess** (required): Boolean - permission to access current location\n  - **hasHistoryAccess** (required): Boolean - permission to access location history\n\n#### Response Format\n\n**Success (200 OK):**\n&#96;&#96;&#96;json\n{\n  \"MiataruResponse\": \"ACK\",\n  \"MiataruVerboseResponse\": \"Allowed devices list updated for device: device-id-here\",\n  \"MiataruAllowedDevicesCount\": 2\n}\n&#96;&#96;&#96;\n\n**Error (403 Forbidden):**\n&#96;&#96;&#96;json\n{\n  \"error\": \"DeviceKey does not match stored key\"\n}\n&#96;&#96;&#96;\n\n#### Example Usage\n\n&#96;&#96;&#96;bash\ncurl -H 'Content-Type: application/json' -X POST 'http://localhost:8090/v1/setAllowedDeviceList' \\\n  -d '{\n    \"MiataruSetAllowedDeviceList\": {\n      \"DeviceID\": \"my-device-123\",\n      \"DeviceKey\": \"my-secure-key-12345\",\n      \"allowedDevices\": [\n        {\n          \"DeviceID\": \"friend-device-1\",\n          \"hasCurrentLocationAccess\": true,\n          \"hasHistoryAccess\": false\n        }\n      ]\n    }\n  }'\n&#96;&#96;&#96;\n\n#### Important Notes\n\n- **Full List Replacement**: Each call replaces the entire allowed devices list. The client must maintain and send the complete list.\n- **Maximum 256 Devices**: The allowed devices list is limited to 256 devices\n- **DeviceKey Required**: This endpoint requires DeviceKey authentication\n- **Empty List**: To disable access control, send an empty array &#96;[]&#96;",
+        "signatures": {},
+        "detailedLines": [
+          {
+            "text": "#### Request Format",
+            "lineNumber": 145
+          },
+          {
+            "lineNumber": 146
+          },
+          {
+            "text": "&#96;&#96;&#96;json",
+            "lineNumber": 147
+          },
+          {
+            "text": "{",
+            "lineNumber": 148
+          },
+          {
+            "text": "  \"MiataruSetAllowedDeviceList\": {",
+            "lineNumber": 149
+          },
+          {
+            "text": "    \"DeviceID\": \"device-id-here\",",
+            "lineNumber": 150
+          },
+          {
+            "text": "    \"DeviceKey\": \"your-device-key\",",
+            "lineNumber": 151
+          },
+          {
+            "text": "    \"allowedDevices\": [",
+            "lineNumber": 152
+          },
+          {
+            "text": "      {",
+            "lineNumber": 153
+          },
+          {
+            "text": "        \"DeviceID\": \"friend-device-1\",",
+            "lineNumber": 154
+          },
+          {
+            "text": "        \"hasCurrentLocationAccess\": true,",
+            "lineNumber": 155
+          },
+          {
+            "text": "        \"hasHistoryAccess\": false",
+            "lineNumber": 156
+          },
+          {
+            "text": "      },",
+            "lineNumber": 157
+          },
+          {
+            "text": "      {",
+            "lineNumber": 158
+          },
+          {
+            "text": "        \"DeviceID\": \"family-device-2\",",
+            "lineNumber": 159
+          },
+          {
+            "text": "        \"hasCurrentLocationAccess\": true,",
+            "lineNumber": 160
+          },
+          {
+            "text": "        \"hasHistoryAccess\": true",
+            "lineNumber": 161
+          },
+          {
+            "text": "      }",
+            "lineNumber": 162
+          },
+          {
+            "text": "    ]",
+            "lineNumber": 163
+          },
+          {
+            "text": "  }",
+            "lineNumber": 164
+          },
+          {
+            "text": "}",
+            "lineNumber": 165
+          },
+          {
+            "text": "&#96;&#96;&#96;",
+            "lineNumber": 166
+          },
+          {
+            "lineNumber": 167
+          },
+          {
+            "text": "#### Request Parameters",
+            "lineNumber": 168
+          },
+          {
+            "lineNumber": 169
+          },
+          {
+            "text": "- **DeviceID** (required): The device identifier (owner device)",
+            "lineNumber": 170
+          },
+          {
+            "text": "- **DeviceKey** (required): DeviceKey for authentication",
+            "lineNumber": 171
+          },
+          {
+            "text": "- **allowedDevices** (required): Array of allowed devices (max 256 devices)",
+            "lineNumber": 172
+          },
+          {
+            "text": "  - **DeviceID** (required): The device identifier that will have access",
+            "lineNumber": 173
+          },
+          {
+            "text": "  - **hasCurrentLocationAccess** (required): Boolean - permission to access current location",
+            "lineNumber": 174
+          },
+          {
+            "text": "  - **hasHistoryAccess** (required): Boolean - permission to access location history",
+            "lineNumber": 175
+          },
+          {
+            "lineNumber": 176
+          },
+          {
+            "text": "#### Response Format",
+            "lineNumber": 177
+          },
+          {
+            "lineNumber": 178
+          },
+          {
+            "text": "**Success (200 OK):**",
+            "lineNumber": 179
+          },
+          {
+            "text": "&#96;&#96;&#96;json",
+            "lineNumber": 180
+          },
+          {
+            "text": "{",
+            "lineNumber": 181
+          },
+          {
+            "text": "  \"MiataruResponse\": \"ACK\",",
+            "lineNumber": 182
+          },
+          {
+            "text": "  \"MiataruVerboseResponse\": \"Allowed devices list updated for device: device-id-here\",",
+            "lineNumber": 183
+          },
+          {
+            "text": "  \"MiataruAllowedDevicesCount\": 2",
+            "lineNumber": 184
+          },
+          {
+            "text": "}",
+            "lineNumber": 185
+          },
+          {
+            "text": "&#96;&#96;&#96;",
+            "lineNumber": 186
+          },
+          {
+            "lineNumber": 187
+          },
+          {
+            "text": "**Error (403 Forbidden):**",
+            "lineNumber": 188
+          },
+          {
+            "text": "&#96;&#96;&#96;json",
+            "lineNumber": 189
+          },
+          {
+            "text": "{",
+            "lineNumber": 190
+          },
+          {
+            "text": "  \"error\": \"DeviceKey does not match stored key\"",
+            "lineNumber": 191
+          },
+          {
+            "text": "}",
+            "lineNumber": 192
+          },
+          {
+            "text": "&#96;&#96;&#96;",
+            "lineNumber": 193
+          },
+          {
+            "lineNumber": 194
+          },
+          {
+            "text": "#### Example Usage",
+            "lineNumber": 195
+          },
+          {
+            "lineNumber": 196
+          },
+          {
+            "text": "&#96;&#96;&#96;bash",
+            "lineNumber": 197
+          },
+          {
+            "text": "curl -H 'Content-Type: application/json' -X POST 'http://localhost:8090/v1/setAllowedDeviceList' \\",
+            "lineNumber": 198
+          },
+          {
+            "text": "  -d '{",
+            "lineNumber": 199
+          },
+          {
+            "text": "    \"MiataruSetAllowedDeviceList\": {",
+            "lineNumber": 200
+          },
+          {
+            "text": "      \"DeviceID\": \"my-device-123\",",
+            "lineNumber": 201
+          },
+          {
+            "text": "      \"DeviceKey\": \"my-secure-key-12345\",",
+            "lineNumber": 202
+          },
+          {
+            "text": "      \"allowedDevices\": [",
+            "lineNumber": 203
+          },
+          {
+            "text": "        {",
+            "lineNumber": 204
+          },
+          {
+            "text": "          \"DeviceID\": \"friend-device-1\",",
+            "lineNumber": 205
+          },
+          {
+            "text": "          \"hasCurrentLocationAccess\": true,",
+            "lineNumber": 206
+          },
+          {
+            "text": "          \"hasHistoryAccess\": false",
+            "lineNumber": 207
+          },
+          {
+            "text": "        }",
+            "lineNumber": 208
+          },
+          {
+            "text": "      ]",
+            "lineNumber": 209
+          },
+          {
+            "text": "    }",
+            "lineNumber": 210
+          },
+          {
+            "text": "  }'",
+            "lineNumber": 211
+          },
+          {
+            "text": "&#96;&#96;&#96;",
+            "lineNumber": 212
+          },
+          {
+            "lineNumber": 213
+          },
+          {
+            "text": "#### Important Notes",
+            "lineNumber": 214
+          },
+          {
+            "lineNumber": 215
+          },
+          {
+            "text": "- **Full List Replacement**: Each call replaces the entire allowed devices list. The client must maintain and send the complete list.",
+            "lineNumber": 216
+          },
+          {
+            "text": "- **Maximum 256 Devices**: The allowed devices list is limited to 256 devices",
+            "lineNumber": 217
+          },
+          {
+            "text": "- **DeviceKey Required**: This endpoint requires DeviceKey authentication",
+            "lineNumber": 218
+          },
+          {
+            "text": "- **Empty List**: To disable access control, send an empty array &#96;[]&#96;",
+            "lineNumber": 219
+          }
+        ]
+      },
+      "score": 0.46153783798217773
+    },
+    {
+      "codeBlock": {
+        "relativeWorkspacePath": "./docs/WHATS_NEW_V2.md",
+        "range": {
+          "startPosition": {
+            "line": 33
+          },
+          "endPosition": {
+            "line": 74
+          }
+        },
+        "contents": "2. **Key Validation**: When a DeviceKey is set, protected endpoints require the key to be provided\n3. **Key Management**: DeviceKeys can be changed by providing the current key along with the new key\n\n#### Protected Operations\n\nThe following operations require DeviceKey authentication when a DeviceKey is set for the device:\n\n- **UpdateLocation** - Prevents unauthorized location updates\n- **GetVisitorHistory** - Protects access to visitor tracking data\n- **SetAllowedDeviceList** - Secures access control configuration\n\n#### Benefits\n\n- **Prevent Unauthorized Updates**: Only devices with the correct key can update location data\n- **Protect Sensitive Data**: Visitor history requires authentication\n- **Secure Configuration**: Access control settings are protected\n\n### Allowed Devices Access Control\n\nAllowed Devices provides fine-grained access control, allowing device owners to specify exactly which devices can access their location data and what type of access they have.\n\n#### How It Works\n\n1. **Enable Access Control**: Device owner sets an allowed devices list using &#96;/v1/setAllowedDeviceList&#96;\n2. **Permission Types**: Each allowed device can have two types of permissions:\n   - **Current Location Access** (&#96;hasCurrentLocationAccess&#96;) - Can retrieve current location\n   - **History Access** (&#96;hasHistoryAccess&#96;) - Can retrieve location history\n3. **Privacy-First Default**: When enabled, only devices in the list can access location data\n\n#### Access Control Behavior\n\n- **GetLocation**: Returns location only if requesting device has &#96;hasCurrentLocationAccess&#96; permission\n- **GetLocationHistory**: Returns history only if requesting device has &#96;hasHistoryAccess&#96; permission\n- **Default Behavior**: When no allowed devices list is set, behavior matches v1.0 (backward compatible)\n\n#### Benefits\n\n- **Granular Control**: Separate permissions for current location vs. history\n- **Privacy Protection**: Location data is hidden from unauthorized devices\n- **Flexible Sharing**: Easy to grant or revoke access to specific devices",
+        "signatures": {},
+        "detailedLines": [
+          {
+            "text": "2. **Key Validation**: When a DeviceKey is set, protected endpoints require the key to be provided",
+            "lineNumber": 34
+          },
+          {
+            "text": "3. **Key Management**: DeviceKeys can be changed by providing the current key along with the new key",
+            "lineNumber": 35
+          },
+          {
+            "lineNumber": 36
+          },
+          {
+            "text": "#### Protected Operations",
+            "lineNumber": 37
+          },
+          {
+            "lineNumber": 38
+          },
+          {
+            "text": "The following operations require DeviceKey authentication when a DeviceKey is set for the device:",
+            "lineNumber": 39
+          },
+          {
+            "lineNumber": 40
+          },
+          {
+            "text": "- **UpdateLocation** - Prevents unauthorized location updates",
+            "lineNumber": 41
+          },
+          {
+            "text": "- **GetVisitorHistory** - Protects access to visitor tracking data",
+            "lineNumber": 42
+          },
+          {
+            "text": "- **SetAllowedDeviceList** - Secures access control configuration",
+            "lineNumber": 43
+          },
+          {
+            "lineNumber": 44
+          },
+          {
+            "text": "#### Benefits",
+            "lineNumber": 45
+          },
+          {
+            "lineNumber": 46
+          },
+          {
+            "text": "- **Prevent Unauthorized Updates**: Only devices with the correct key can update location data",
+            "lineNumber": 47
+          },
+          {
+            "text": "- **Protect Sensitive Data**: Visitor history requires authentication",
+            "lineNumber": 48
+          },
+          {
+            "text": "- **Secure Configuration**: Access control settings are protected",
+            "lineNumber": 49
+          },
+          {
+            "lineNumber": 50
+          },
+          {
+            "text": "### Allowed Devices Access Control",
+            "lineNumber": 51
+          },
+          {
+            "lineNumber": 52
+          },
+          {
+            "text": "Allowed Devices provides fine-grained access control, allowing device owners to specify exactly which devices can access their location data and what type of access they have.",
+            "lineNumber": 53
+          },
+          {
+            "lineNumber": 54
+          },
+          {
+            "text": "#### How It Works",
+            "lineNumber": 55
+          },
+          {
+            "lineNumber": 56
+          },
+          {
+            "text": "1. **Enable Access Control**: Device owner sets an allowed devices list using &#96;/v1/setAllowedDeviceList&#96;",
+            "lineNumber": 57
+          },
+          {
+            "text": "2. **Permission Types**: Each allowed device can have two types of permissions:",
+            "lineNumber": 58
+          },
+          {
+            "text": "   - **Current Location Access** (&#96;hasCurrentLocationAccess&#96;) - Can retrieve current location",
+            "lineNumber": 59
+          },
+          {
+            "text": "   - **History Access** (&#96;hasHistoryAccess&#96;) - Can retrieve location history",
+            "lineNumber": 60
+          },
+          {
+            "text": "3. **Privacy-First Default**: When enabled, only devices in the list can access location data",
+            "lineNumber": 61
+          },
+          {
+            "lineNumber": 62
+          },
+          {
+            "text": "#### Access Control Behavior",
+            "lineNumber": 63
+          },
+          {
+            "lineNumber": 64
+          },
+          {
+            "text": "- **GetLocation**: Returns location only if requesting device has &#96;hasCurrentLocationAccess&#96; permission",
+            "lineNumber": 65
+          },
+          {
+            "text": "- **GetLocationHistory**: Returns history only if requesting device has &#96;hasHistoryAccess&#96; permission",
+            "lineNumber": 66
+          },
+          {
+            "text": "- **Default Behavior**: When no allowed devices list is set, behavior matches v1.0 (backward compatible)",
+            "lineNumber": 67
+          },
+          {
+            "lineNumber": 68
+          },
+          {
+            "text": "#### Benefits",
+            "lineNumber": 69
+          },
+          {
+            "lineNumber": 70
+          },
+          {
+            "text": "- **Granular Control**: Separate permissions for current location vs. history",
+            "lineNumber": 71
+          },
+          {
+            "text": "- **Privacy Protection**: Location data is hidden from unauthorized devices",
+            "lineNumber": 72
+          },
+          {
+            "text": "- **Flexible Sharing**: Easy to grant or revoke access to specific devices",
+            "lineNumber": 73
+          }
+        ]
+      },
+      "score": 0.45767533779144287
+    },
+    {
+      "codeBlock": {
+        "relativeWorkspacePath": "./docs/API_1.1_SECURITY.md",
+        "range": {
+          "startPosition": {
+            "line": 147
+          },
+          "endPosition": {
+            "line": 203
+          }
+        },
+        "contents": "- **hasHistoryAccess** - Permission to access location history via GetLocationHistory\n\n### Setting Allowed Devices List\n\nUse the &#96;/v1/setAllowedDeviceList&#96; endpoint to set or update the allowed devices list:\n\n&#96;&#96;&#96;json\n{\n  \"MiataruSetAllowedDeviceList\": {\n    \"DeviceID\": \"your-device-id\",\n    \"DeviceKey\": \"your-secure-key-here\",\n    \"allowedDevices\": [\n      {\n        \"DeviceID\": \"friend-device-id\",\n        \"hasCurrentLocationAccess\": true,\n        \"hasHistoryAccess\": false\n      },\n      {\n        \"DeviceID\": \"family-device-id\",\n        \"hasCurrentLocationAccess\": true,\n        \"hasHistoryAccess\": true\n      }\n    ]\n  }\n}\n&#96;&#96;&#96;\n\n**Important Notes:**\n- The client is expected to maintain the full list on the client-side\n- Always send the complete list to update (server replaces the entire list)\n- Maximum 256 devices in the list\n- Requires valid DeviceKey authentication\n\n### Access Control Behavior\n\n**GetLocation:**\n- If allowed devices list is **not enabled**: Returns location data when &#96;RequestMiataruDeviceID&#96; is provided (backward compatible)\n- If allowed devices list is **enabled**: Only devices with &#96;hasCurrentLocationAccess: true&#96; receive location data\n- Devices without permission receive location as &#96;null&#96; (as if device doesn't exist)\n\n**GetLocationHistory:**\n- If allowed devices list is **not enabled**: Returns location history when &#96;RequestMiataruDeviceID&#96; is provided (backward compatible)\n- If allowed devices list is **enabled**: Only devices with &#96;hasHistoryAccess: true&#96; receive location history\n- Devices without permission receive empty history (as if history doesn't exist)\n\n## Backward Compatibility\n\n### API 1.0 Clients\n\n**REQUIRED UPDATE:** All clients must add &#96;RequestMiataruDeviceID&#96; to &#96;GetLocation&#96; and &#96;GetLocationHistory&#96; requests. This is the only breaking change.\n\nAfter adding &#96;RequestMiataruDeviceID&#96;, all other features remain backward compatible:\n\n- Devices without DeviceKey set work exactly as before\n- Devices without allowed devices list work exactly as before\n- All existing endpoints maintain the same response format",
+        "signatures": {},
+        "detailedLines": [
+          {
+            "text": "- **hasHistoryAccess** - Permission to access location history via GetLocationHistory",
+            "lineNumber": 148
+          },
+          {
+            "lineNumber": 149
+          },
+          {
+            "text": "### Setting Allowed Devices List",
+            "lineNumber": 150
+          },
+          {
+            "lineNumber": 151
+          },
+          {
+            "text": "Use the &#96;/v1/setAllowedDeviceList&#96; endpoint to set or update the allowed devices list:",
+            "lineNumber": 152
+          },
+          {
+            "lineNumber": 153
+          },
+          {
+            "text": "&#96;&#96;&#96;json",
+            "lineNumber": 154
+          },
+          {
+            "text": "{",
+            "lineNumber": 155
+          },
+          {
+            "text": "  \"MiataruSetAllowedDeviceList\": {",
+            "lineNumber": 156
+          },
+          {
+            "text": "    \"DeviceID\": \"your-device-id\",",
+            "lineNumber": 157
+          },
+          {
+            "text": "    \"DeviceKey\": \"your-secure-key-here\",",
+            "lineNumber": 158
+          },
+          {
+            "text": "    \"allowedDevices\": [",
+            "lineNumber": 159
+          },
+          {
+            "text": "      {",
+            "lineNumber": 160
+          },
+          {
+            "text": "        \"DeviceID\": \"friend-device-id\",",
+            "lineNumber": 161
+          },
+          {
+            "text": "        \"hasCurrentLocationAccess\": true,",
+            "lineNumber": 162
+          },
+          {
+            "text": "        \"hasHistoryAccess\": false",
+            "lineNumber": 163
+          },
+          {
+            "text": "      },",
+            "lineNumber": 164
+          },
+          {
+            "text": "      {",
+            "lineNumber": 165
+          },
+          {
+            "text": "        \"DeviceID\": \"family-device-id\",",
+            "lineNumber": 166
+          },
+          {
+            "text": "        \"hasCurrentLocationAccess\": true,",
+            "lineNumber": 167
+          },
+          {
+            "text": "        \"hasHistoryAccess\": true",
+            "lineNumber": 168
+          },
+          {
+            "text": "      }",
+            "lineNumber": 169
+          },
+          {
+            "text": "    ]",
+            "lineNumber": 170
+          },
+          {
+            "text": "  }",
+            "lineNumber": 171
+          },
+          {
+            "text": "}",
+            "lineNumber": 172
+          },
+          {
+            "text": "&#96;&#96;&#96;",
+            "lineNumber": 173
+          },
+          {
+            "lineNumber": 174
+          },
+          {
+            "text": "**Important Notes:**",
+            "lineNumber": 175
+          },
+          {
+            "text": "- The client is expected to maintain the full list on the client-side",
+            "lineNumber": 176
+          },
+          {
+            "text": "- Always send the complete list to update (server replaces the entire list)",
+            "lineNumber": 177
+          },
+          {
+            "text": "- Maximum 256 devices in the list",
+            "lineNumber": 178
+          },
+          {
+            "text": "- Requires valid DeviceKey authentication",
+            "lineNumber": 179
+          },
+          {
+            "lineNumber": 180
+          },
+          {
+            "text": "### Access Control Behavior",
+            "lineNumber": 181
+          },
+          {
+            "lineNumber": 182
+          },
+          {
+            "text": "**GetLocation:**",
+            "lineNumber": 183
+          },
+          {
+            "text": "- If allowed devices list is **not enabled**: Returns location data when &#96;RequestMiataruDeviceID&#96; is provided (backward compatible)",
+            "lineNumber": 184
+          },
+          {
+            "text": "- If allowed devices list is **enabled**: Only devices with &#96;hasCurrentLocationAccess: true&#96; receive location data",
+            "lineNumber": 185
+          },
+          {
+            "text": "- Devices without permission receive location as &#96;null&#96; (as if device doesn't exist)",
+            "lineNumber": 186
+          },
+          {
+            "lineNumber": 187
+          },
+          {
+            "text": "**GetLocationHistory:**",
+            "lineNumber": 188
+          },
+          {
+            "text": "- If allowed devices list is **not enabled**: Returns location history when &#96;RequestMiataruDeviceID&#96; is provided (backward compatible)",
+            "lineNumber": 189
+          },
+          {
+            "text": "- If allowed devices list is **enabled**: Only devices with &#96;hasHistoryAccess: true&#96; receive location history",
+            "lineNumber": 190
+          },
+          {
+            "text": "- Devices without permission receive empty history (as if history doesn't exist)",
+            "lineNumber": 191
+          },
+          {
+            "lineNumber": 192
+          },
+          {
+            "text": "## Backward Compatibility",
+            "lineNumber": 193
+          },
+          {
+            "lineNumber": 194
+          },
+          {
+            "text": "### API 1.0 Clients",
+            "lineNumber": 195
+          },
+          {
+            "lineNumber": 196
+          },
+          {
+            "text": "**REQUIRED UPDATE:** All clients must add &#96;RequestMiataruDeviceID&#96; to &#96;GetLocation&#96; and &#96;GetLocationHistory&#96; requests. This is the only breaking change.",
+            "lineNumber": 197
+          },
+          {
+            "lineNumber": 198
+          },
+          {
+            "text": "After adding &#96;RequestMiataruDeviceID&#96;, all other features remain backward compatible:",
+            "lineNumber": 199
+          },
+          {
+            "lineNumber": 200
+          },
+          {
+            "text": "- Devices without DeviceKey set work exactly as before",
+            "lineNumber": 201
+          },
+          {
+            "text": "- Devices without allowed devices list work exactly as before",
+            "lineNumber": 202
+          },
+          {
+            "text": "- All existing endpoints maintain the same response format",
+            "lineNumber": 203
+          }
+        ]
+      },
+      "score": 0.44783496856689453
+    },
+    {
+      "codeBlock": {
+        "relativeWorkspacePath": "./docs/CLIENT_ADOPTION_API_1.1.md",
+        "range": {
+          "startPosition": {
+            "line": 341
+          },
+          "endPosition": {
+            "line": 394
+          }
+        },
+        "contents": "func setAllowedDevicesList(deviceID: String, allowedDevices: [AllowedDevice], completion: @escaping (Result&lt;Void, Error&gt;) -&gt; Void) {\n    // Get DeviceKey from keychain\n    guard let deviceKey = DeviceKeyManager.shared.getDeviceKey(for: deviceID) else {\n        completion(.failure(NSError(domain: \"AllowedDevicesError\", code: -1, userInfo: [NSLocalizedDescriptionKey: \"DeviceKey not found\"])))\n        return\n    }\n    \n    let allowedDevicesArray = allowedDevices.map { device -&gt; [String: Any] in\n        return [\n            \"DeviceID\": device.deviceID,\n            \"hasCurrentLocationAccess\": device.hasCurrentLocationAccess,\n            \"hasHistoryAccess\": device.hasHistoryAccess\n        ]\n    }\n    \n    let requestBody: [String: Any] = [\n        \"MiataruSetAllowedDeviceList\": [\n            \"DeviceID\": deviceID,\n            \"DeviceKey\": deviceKey,\n            \"allowedDevices\": allowedDevicesArray\n        ]\n    ]\n    \n    makeAPICall(endpoint: \"/v1/setAllowedDeviceList\", method: \"POST\", body: requestBody) { result in\n        switch result {\n        case .success(let response):\n            if let miataruResponse = response[\"MiataruResponse\"] as? String,\n               miataruResponse == \"ACK\" {\n                completion(.success(()))\n            } else {\n                completion(.failure(NSError(domain: \"AllowedDevicesError\", code: -1, userInfo: [NSLocalizedDescriptionKey: \"Invalid response\"])))\n            }\n        case .failure(let error):\n            if let httpError = error as? HTTPError, httpError.statusCode == 403 {\n                completion(.failure(NSError(domain: \"AllowedDevicesError\", code: 403, userInfo: [NSLocalizedDescriptionKey: \"DeviceKey authentication failed\"])))\n            } else {\n                completion(.failure(error))\n            }\n        }\n    }\n}\n&#96;&#96;&#96;\n\n## Step 6: User Interface Updates\n\n### 6.1 DeviceKey Setup Screen\n\nCreate a settings screen where users can:\n- Enable/disable DeviceKey protection\n- View DeviceKey status\n- Change DeviceKey (requires current key)\n- Reset DeviceKey (requires server-side support or user confirmation)",
+        "signatures": {},
+        "detailedLines": [
+          {
+            "text": "func setAllowedDevicesList(deviceID: String, allowedDevices: [AllowedDevice], completion: @escaping (Result&lt;Void, Error&gt;) -&gt; Void) {",
+            "lineNumber": 342
+          },
+          {
+            "text": "    // Get DeviceKey from keychain",
+            "lineNumber": 343
+          },
+          {
+            "text": "    guard let deviceKey = DeviceKeyManager.shared.getDeviceKey(for: deviceID) else {",
+            "lineNumber": 344
+          },
+          {
+            "text": "        completion(.failure(NSError(domain: \"AllowedDevicesError\", code: -1, userInfo: [NSLocalizedDescriptionKey: \"DeviceKey not found\"])))",
+            "lineNumber": 345
+          },
+          {
+            "text": "        return",
+            "lineNumber": 346
+          },
+          {
+            "text": "    }",
+            "lineNumber": 347
+          },
+          {
+            "text": "    ",
+            "lineNumber": 348
+          },
+          {
+            "text": "    let allowedDevicesArray = allowedDevices.map { device -&gt; [String: Any] in",
+            "lineNumber": 349
+          },
+          {
+            "text": "        return [",
+            "lineNumber": 350
+          },
+          {
+            "text": "            \"DeviceID\": device.deviceID,",
+            "lineNumber": 351
+          },
+          {
+            "text": "            \"hasCurrentLocationAccess\": device.hasCurrentLocationAccess,",
+            "lineNumber": 352
+          },
+          {
+            "text": "            \"hasHistoryAccess\": device.hasHistoryAccess",
+            "lineNumber": 353
+          },
+          {
+            "text": "        ]",
+            "lineNumber": 354
+          },
+          {
+            "text": "    }",
+            "lineNumber": 355
+          },
+          {
+            "text": "    ",
+            "lineNumber": 356
+          },
+          {
+            "text": "    let requestBody: [String: Any] = [",
+            "lineNumber": 357
+          },
+          {
+            "text": "        \"MiataruSetAllowedDeviceList\": [",
+            "lineNumber": 358
+          },
+          {
+            "text": "            \"DeviceID\": deviceID,",
+            "lineNumber": 359
+          },
+          {
+            "text": "            \"DeviceKey\": deviceKey,",
+            "lineNumber": 360
+          },
+          {
+            "text": "            \"allowedDevices\": allowedDevicesArray",
+            "lineNumber": 361
+          },
+          {
+            "text": "        ]",
+            "lineNumber": 362
+          },
+          {
+            "text": "    ]",
+            "lineNumber": 363
+          },
+          {
+            "text": "    ",
+            "lineNumber": 364
+          },
+          {
+            "text": "    makeAPICall(endpoint: \"/v1/setAllowedDeviceList\", method: \"POST\", body: requestBody) { result in",
+            "lineNumber": 365
+          },
+          {
+            "text": "        switch result {",
+            "lineNumber": 366
+          },
+          {
+            "text": "        case .success(let response):",
+            "lineNumber": 367
+          },
+          {
+            "text": "            if let miataruResponse = response[\"MiataruResponse\"] as? String,",
+            "lineNumber": 368
+          },
+          {
+            "text": "               miataruResponse == \"ACK\" {",
+            "lineNumber": 369
+          },
+          {
+            "text": "                completion(.success(()))",
+            "lineNumber": 370
+          },
+          {
+            "text": "            } else {",
+            "lineNumber": 371
+          },
+          {
+            "text": "                completion(.failure(NSError(domain: \"AllowedDevicesError\", code: -1, userInfo: [NSLocalizedDescriptionKey: \"Invalid response\"])))",
+            "lineNumber": 372
+          },
+          {
+            "text": "            }",
+            "lineNumber": 373
+          },
+          {
+            "text": "        case .failure(let error):",
+            "lineNumber": 374
+          },
+          {
+            "text": "            if let httpError = error as? HTTPError, httpError.statusCode == 403 {",
+            "lineNumber": 375
+          },
+          {
+            "text": "                completion(.failure(NSError(domain: \"AllowedDevicesError\", code: 403, userInfo: [NSLocalizedDescriptionKey: \"DeviceKey authentication failed\"])))",
+            "lineNumber": 376
+          },
+          {
+            "text": "            } else {",
+            "lineNumber": 377
+          },
+          {
+            "text": "                completion(.failure(error))",
+            "lineNumber": 378
+          },
+          {
+            "text": "            }",
+            "lineNumber": 379
+          },
+          {
+            "text": "        }",
+            "lineNumber": 380
+          },
+          {
+            "text": "    }",
+            "lineNumber": 381
+          },
+          {
+            "text": "}",
+            "lineNumber": 382
+          },
+          {
+            "text": "&#96;&#96;&#96;",
+            "lineNumber": 383
+          },
+          {
+            "lineNumber": 384
+          },
+          {
+            "text": "## Step 6: User Interface Updates",
+            "lineNumber": 385
+          },
+          {
+            "lineNumber": 386
+          },
+          {
+            "text": "### 6.1 DeviceKey Setup Screen",
+            "lineNumber": 387
+          },
+          {
+            "lineNumber": 388
+          },
+          {
+            "text": "Create a settings screen where users can:",
+            "lineNumber": 389
+          },
+          {
+            "text": "- Enable/disable DeviceKey protection",
+            "lineNumber": 390
+          },
+          {
+            "text": "- View DeviceKey status",
+            "lineNumber": 391
+          },
+          {
+            "text": "- Change DeviceKey (requires current key)",
+            "lineNumber": 392
+          },
+          {
+            "text": "- Reset DeviceKey (requires server-side support or user confirmation)",
+            "lineNumber": 393
+          }
+        ]
+      },
+      "score": 0.44254958629608154
+    },
+    {
+      "codeBlock": {
+        "relativeWorkspacePath": "./docs/API_1.1_SECURITY.md",
+        "range": {
+          "startPosition": {
+            "line": 67
+          },
+          "endPosition": {
+            "line": 152
+          }
+        },
+        "contents": "## DeviceKey Concept\n\nThe DeviceKey is a 256-character unicode string that acts as a password for a device. Once set, it must be provided for:\n\n- **UpdateLocation** - Writing location data to the server\n- **GetVisitorHistory** - Accessing visitor history information\n\n### Setting a DeviceKey\n\nUse the &#96;/v1/setDeviceKey&#96; endpoint to set or change a device key:\n\n**First-time setup (no existing key):**\n&#96;&#96;&#96;json\n{\n  \"MiataruSetDeviceKey\": {\n    \"DeviceID\": \"your-device-id\",\n    \"CurrentDeviceKey\": null,\n    \"NewDeviceKey\": \"your-secure-key-here\"\n  }\n}\n&#96;&#96;&#96;\n\n**Changing an existing key:**\n&#96;&#96;&#96;json\n{\n  \"MiataruSetDeviceKey\": {\n    \"DeviceID\": \"your-device-id\",\n    \"CurrentDeviceKey\": \"old-key\",\n    \"NewDeviceKey\": \"new-key\"\n  }\n}\n&#96;&#96;&#96;\n\n### Using DeviceKey in UpdateLocation\n\nWhen a DeviceKey is set for a device, it must be included in each &#96;MiataruLocation&#96; element:\n\n&#96;&#96;&#96;json\n{\n  \"MiataruLocation\": [\n    {\n      \"Device\": \"your-device-id\",\n      \"DeviceKey\": \"your-secure-key-here\",\n      \"Timestamp\": \"1376735651302\",\n      \"Longitude\": \"10.837502\",\n      \"Latitude\": \"49.828925\",\n      \"HorizontalAccuracy\": \"50.00\"\n    }\n  ]\n}\n&#96;&#96;&#96;\n\n**Important:** The DeviceKey parameter should be placed right under the Device parameter in the MiataruLocation array element.\n\n### Using DeviceKey in GetVisitorHistory\n\nWhen a DeviceKey is set for a device, it must be included in the request:\n\n&#96;&#96;&#96;json\n{\n  \"MiataruGetVisitorHistory\": {\n    \"Device\": \"your-device-id\",\n    \"Amount\": \"10\",\n    \"DeviceKey\": \"your-secure-key-here\"\n  }\n}\n&#96;&#96;&#96;\n\n### Error Responses\n\n- **403 Forbidden** - Returned when:\n  - DeviceKey is required but not provided\n  - DeviceKey does not match the stored key\n  - CurrentDeviceKey does not match when changing an existing key\n\n## Allowed Devices List\n\nThe allowed devices list controls which devices can access location and location history data for a specific device. This provides granular access control:\n\n- **hasCurrentLocationAccess** - Permission to access current location via GetLocation\n- **hasHistoryAccess** - Permission to access location history via GetLocationHistory\n\n### Setting Allowed Devices List\n\nUse the &#96;/v1/setAllowedDeviceList&#96; endpoint to set or update the allowed devices list:",
+        "signatures": {},
+        "detailedLines": [
+          {
+            "text": "## DeviceKey Concept",
+            "lineNumber": 68
+          },
+          {
+            "lineNumber": 69
+          },
+          {
+            "text": "The DeviceKey is a 256-character unicode string that acts as a password for a device. Once set, it must be provided for:",
+            "lineNumber": 70
+          },
+          {
+            "lineNumber": 71
+          },
+          {
+            "text": "- **UpdateLocation** - Writing location data to the server",
+            "lineNumber": 72
+          },
+          {
+            "text": "- **GetVisitorHistory** - Accessing visitor history information",
+            "lineNumber": 73
+          },
+          {
+            "lineNumber": 74
+          },
+          {
+            "text": "### Setting a DeviceKey",
+            "lineNumber": 75
+          },
+          {
+            "lineNumber": 76
+          },
+          {
+            "text": "Use the &#96;/v1/setDeviceKey&#96; endpoint to set or change a device key:",
+            "lineNumber": 77
+          },
+          {
+            "lineNumber": 78
+          },
+          {
+            "text": "**First-time setup (no existing key):**",
+            "lineNumber": 79
+          },
+          {
+            "text": "&#96;&#96;&#96;json",
+            "lineNumber": 80
+          },
+          {
+            "text": "{",
+            "lineNumber": 81
+          },
+          {
+            "text": "  \"MiataruSetDeviceKey\": {",
+            "lineNumber": 82
+          },
+          {
+            "text": "    \"DeviceID\": \"your-device-id\",",
+            "lineNumber": 83
+          },
+          {
+            "text": "    \"CurrentDeviceKey\": null,",
+            "lineNumber": 84
+          },
+          {
+            "text": "    \"NewDeviceKey\": \"your-secure-key-here\"",
+            "lineNumber": 85
+          },
+          {
+            "text": "  }",
+            "lineNumber": 86
+          },
+          {
+            "text": "}",
+            "lineNumber": 87
+          },
+          {
+            "text": "&#96;&#96;&#96;",
+            "lineNumber": 88
+          },
+          {
+            "lineNumber": 89
+          },
+          {
+            "text": "**Changing an existing key:**",
+            "lineNumber": 90
+          },
+          {
+            "text": "&#96;&#96;&#96;json",
+            "lineNumber": 91
+          },
+          {
+            "text": "{",
+            "lineNumber": 92
+          },
+          {
+            "text": "  \"MiataruSetDeviceKey\": {",
+            "lineNumber": 93
+          },
+          {
+            "text": "    \"DeviceID\": \"your-device-id\",",
+            "lineNumber": 94
+          },
+          {
+            "text": "    \"CurrentDeviceKey\": \"old-key\",",
+            "lineNumber": 95
+          },
+          {
+            "text": "    \"NewDeviceKey\": \"new-key\"",
+            "lineNumber": 96
+          },
+          {
+            "text": "  }",
+            "lineNumber": 97
+          },
+          {
+            "text": "}",
+            "lineNumber": 98
+          },
+          {
+            "text": "&#96;&#96;&#96;",
+            "lineNumber": 99
+          },
+          {
+            "lineNumber": 100
+          },
+          {
+            "text": "### Using DeviceKey in UpdateLocation",
+            "lineNumber": 101
+          },
+          {
+            "lineNumber": 102
+          },
+          {
+            "text": "When a DeviceKey is set for a device, it must be included in each &#96;MiataruLocation&#96; element:",
+            "lineNumber": 103
+          },
+          {
+            "lineNumber": 104
+          },
+          {
+            "text": "&#96;&#96;&#96;json",
+            "lineNumber": 105
+          },
+          {
+            "text": "{",
+            "lineNumber": 106
+          },
+          {
+            "text": "  \"MiataruLocation\": [",
+            "lineNumber": 107
+          },
+          {
+            "text": "    {",
+            "lineNumber": 108
+          },
+          {
+            "text": "      \"Device\": \"your-device-id\",",
+            "lineNumber": 109
+          },
+          {
+            "text": "      \"DeviceKey\": \"your-secure-key-here\",",
+            "lineNumber": 110
+          },
+          {
+            "text": "      \"Timestamp\": \"1376735651302\",",
+            "lineNumber": 111
+          },
+          {
+            "text": "      \"Longitude\": \"10.837502\",",
+            "lineNumber": 112
+          },
+          {
+            "text": "      \"Latitude\": \"49.828925\",",
+            "lineNumber": 113
+          },
+          {
+            "text": "      \"HorizontalAccuracy\": \"50.00\"",
+            "lineNumber": 114
+          },
+          {
+            "text": "    }",
+            "lineNumber": 115
+          },
+          {
+            "text": "  ]",
+            "lineNumber": 116
+          },
+          {
+            "text": "}",
+            "lineNumber": 117
+          },
+          {
+            "text": "&#96;&#96;&#96;",
+            "lineNumber": 118
+          },
+          {
+            "lineNumber": 119
+          },
+          {
+            "text": "**Important:** The DeviceKey parameter should be placed right under the Device parameter in the MiataruLocation array element.",
+            "lineNumber": 120
+          },
+          {
+            "lineNumber": 121
+          },
+          {
+            "text": "### Using DeviceKey in GetVisitorHistory",
+            "lineNumber": 122
+          },
+          {
+            "lineNumber": 123
+          },
+          {
+            "text": "When a DeviceKey is set for a device, it must be included in the request:",
+            "lineNumber": 124
+          },
+          {
+            "lineNumber": 125
+          },
+          {
+            "text": "&#96;&#96;&#96;json",
+            "lineNumber": 126
+          },
+          {
+            "text": "{",
+            "lineNumber": 127
+          },
+          {
+            "text": "  \"MiataruGetVisitorHistory\": {",
+            "lineNumber": 128
+          },
+          {
+            "text": "    \"Device\": \"your-device-id\",",
+            "lineNumber": 129
+          },
+          {
+            "text": "    \"Amount\": \"10\",",
+            "lineNumber": 130
+          },
+          {
+            "text": "    \"DeviceKey\": \"your-secure-key-here\"",
+            "lineNumber": 131
+          },
+          {
+            "text": "  }",
+            "lineNumber": 132
+          },
+          {
+            "text": "}",
+            "lineNumber": 133
+          },
+          {
+            "text": "&#96;&#96;&#96;",
+            "lineNumber": 134
+          },
+          {
+            "lineNumber": 135
+          },
+          {
+            "text": "### Error Responses",
+            "lineNumber": 136
+          },
+          {
+            "lineNumber": 137
+          },
+          {
+            "text": "- **403 Forbidden** - Returned when:",
+            "lineNumber": 138
+          },
+          {
+            "text": "  - DeviceKey is required but not provided",
+            "lineNumber": 139
+          },
+          {
+            "text": "  - DeviceKey does not match the stored key",
+            "lineNumber": 140
+          },
+          {
+            "text": "  - CurrentDeviceKey does not match when changing an existing key",
+            "lineNumber": 141
+          },
+          {
+            "lineNumber": 142
+          },
+          {
+            "text": "## Allowed Devices List",
+            "lineNumber": 143
+          },
+          {
+            "lineNumber": 144
+          },
+          {
+            "text": "The allowed devices list controls which devices can access location and location history data for a specific device. This provides granular access control:",
+            "lineNumber": 145
+          },
+          {
+            "lineNumber": 146
+          },
+          {
+            "text": "- **hasCurrentLocationAccess** - Permission to access current location via GetLocation",
+            "lineNumber": 147
+          },
+          {
+            "text": "- **hasHistoryAccess** - Permission to access location history via GetLocationHistory",
+            "lineNumber": 148
+          },
+          {
+            "lineNumber": 149
+          },
+          {
+            "text": "### Setting Allowed Devices List",
+            "lineNumber": 150
+          },
+          {
+            "lineNumber": 151
+          },
+          {
+            "text": "Use the &#96;/v1/setAllowedDeviceList&#96; endpoint to set or update the allowed devices list:",
+            "lineNumber": 152
+          }
+        ]
+      },
+      "score": 0.4402199983596802
+    },
+    {
+      "codeBlock": {
+        "relativeWorkspacePath": "./docs/swagger.yaml",
+        "range": {
+          "startPosition": {
+            "line": 192
+          },
+          "endPosition": {
+            "line": 245
+          }
+        },
+        "contents": "   responses:\n    200:\n     description: Device key set successfully\n     schema:\n      $ref: '#/definitions/MiataruSetDeviceKeyResponse'\n    400:\n     description: Bad Request - Invalid input\n     schema:\n      $ref: '#/definitions/Error'\n    403:\n     description: Forbidden - CurrentDeviceKey does not match\n     schema:\n      $ref: '#/definitions/Error'\n /setAllowedDeviceList:\n  post:\n   tags:\n   - security\n   description: |\n     Sets or updates the allowed devices list for a device. This list controls which devices can access the location and location history of the target device.\n     \n     The client is expected to maintain the full list on the client-side and always sends the complete list to update. Any changes (additions, deletions, updates) are carried out by sending the full updated list.\n     \n     Requires valid DeviceKey authentication.\n   operationId: setAllowedDeviceList\n   produces:\n   - application/json\n   parameters:\n   - name: body\n     in: body\n     description: the JSON formatted request to set or update the allowed devices list\n     required: true\n     schema:\n      $ref: '#/definitions/MiataruSetAllowedDeviceListRequest'\n   responses:\n    200:\n     description: Allowed devices list updated successfully\n     schema:\n      $ref: '#/definitions/MiataruSetAllowedDeviceListResponse'\n    400:\n     description: Bad Request - Invalid input\n     schema:\n      $ref: '#/definitions/Error'\n    403:\n     description: Forbidden - DeviceKey does not match\n     schema:\n      $ref: '#/definitions/Error'\n\n# complex objects have schema definitions\ndefinitions:\n Error:\n  type: object\n  required:\n  - error",
+        "signatures": {},
+        "detailedLines": [
+          {
+            "text": "   responses:",
+            "lineNumber": 193
+          },
+          {
+            "text": "    200:",
+            "lineNumber": 194
+          },
+          {
+            "text": "     description: Device key set successfully",
+            "lineNumber": 195
+          },
+          {
+            "text": "     schema:",
+            "lineNumber": 196
+          },
+          {
+            "text": "      $ref: '#/definitions/MiataruSetDeviceKeyResponse'",
+            "lineNumber": 197
+          },
+          {
+            "text": "    400:",
+            "lineNumber": 198
+          },
+          {
+            "text": "     description: Bad Request - Invalid input",
+            "lineNumber": 199
+          },
+          {
+            "text": "     schema:",
+            "lineNumber": 200
+          },
+          {
+            "text": "      $ref: '#/definitions/Error'",
+            "lineNumber": 201
+          },
+          {
+            "text": "    403:",
+            "lineNumber": 202
+          },
+          {
+            "text": "     description: Forbidden - CurrentDeviceKey does not match",
+            "lineNumber": 203
+          },
+          {
+            "text": "     schema:",
+            "lineNumber": 204
+          },
+          {
+            "text": "      $ref: '#/definitions/Error'",
+            "lineNumber": 205
+          },
+          {
+            "text": " /setAllowedDeviceList:",
+            "lineNumber": 206
+          },
+          {
+            "text": "  post:",
+            "lineNumber": 207
+          },
+          {
+            "text": "   tags:",
+            "lineNumber": 208
+          },
+          {
+            "text": "   - security",
+            "lineNumber": 209
+          },
+          {
+            "text": "   description: |",
+            "lineNumber": 210
+          },
+          {
+            "text": "     Sets or updates the allowed devices list for a device. This list controls which devices can access the location and location history of the target device.",
+            "lineNumber": 211
+          },
+          {
+            "text": "     ",
+            "lineNumber": 212
+          },
+          {
+            "text": "     The client is expected to maintain the full list on the client-side and always sends the complete list to update. Any changes (additions, deletions, updates) are carried out by sending the full updated list.",
+            "lineNumber": 213
+          },
+          {
+            "text": "     ",
+            "lineNumber": 214
+          },
+          {
+            "text": "     Requires valid DeviceKey authentication.",
+            "lineNumber": 215
+          },
+          {
+            "text": "   operationId: setAllowedDeviceList",
+            "lineNumber": 216
+          },
+          {
+            "text": "   produces:",
+            "lineNumber": 217
+          },
+          {
+            "text": "   - application/json",
+            "lineNumber": 218
+          },
+          {
+            "text": "   parameters:",
+            "lineNumber": 219
+          },
+          {
+            "text": "   - name: body",
+            "lineNumber": 220
+          },
+          {
+            "text": "     in: body",
+            "lineNumber": 221
+          },
+          {
+            "text": "     description: the JSON formatted request to set or update the allowed devices list",
+            "lineNumber": 222
+          },
+          {
+            "text": "     required: true",
+            "lineNumber": 223
+          },
+          {
+            "text": "     schema:",
+            "lineNumber": 224
+          },
+          {
+            "text": "      $ref: '#/definitions/MiataruSetAllowedDeviceListRequest'",
+            "lineNumber": 225
+          },
+          {
+            "text": "   responses:",
+            "lineNumber": 226
+          },
+          {
+            "text": "    200:",
+            "lineNumber": 227
+          },
+          {
+            "text": "     description: Allowed devices list updated successfully",
+            "lineNumber": 228
+          },
+          {
+            "text": "     schema:",
+            "lineNumber": 229
+          },
+          {
+            "text": "      $ref: '#/definitions/MiataruSetAllowedDeviceListResponse'",
+            "lineNumber": 230
+          },
+          {
+            "text": "    400:",
+            "lineNumber": 231
+          },
+          {
+            "text": "     description: Bad Request - Invalid input",
+            "lineNumber": 232
+          },
+          {
+            "text": "     schema:",
+            "lineNumber": 233
+          },
+          {
+            "text": "      $ref: '#/definitions/Error'",
+            "lineNumber": 234
+          },
+          {
+            "text": "    403:",
+            "lineNumber": 235
+          },
+          {
+            "text": "     description: Forbidden - DeviceKey does not match",
+            "lineNumber": 236
+          },
+          {
+            "text": "     schema:",
+            "lineNumber": 237
+          },
+          {
+            "text": "      $ref: '#/definitions/Error'",
+            "lineNumber": 238
+          },
+          {
+            "lineNumber": 239
+          },
+          {
+            "text": "# complex objects have schema definitions",
+            "lineNumber": 240
+          },
+          {
+            "text": "definitions:",
+            "lineNumber": 241
+          },
+          {
+            "text": " Error:",
+            "lineNumber": 242
+          },
+          {
+            "text": "  type: object",
+            "lineNumber": 243
+          },
+          {
+            "text": "  required:",
+            "lineNumber": 244
+          },
+          {
+            "text": "  - error",
+            "lineNumber": 245
+          }
+        ]
+      },
+      "score": 0.4354094862937927
+    },
+    {
+      "codeBlock": {
+        "relativeWorkspacePath": "./lib/models/RequestSetAllowedDeviceList.js",
+        "range": {
+          "startPosition": {
+            "line": 10,
+            "column": 1
+          },
+          "endPosition": {
+            "line": 73
+          }
+        },
+        "contents": "RequestSetAllowedDeviceList.prototype.deviceId = function() {\n    return this._deviceId;\n};\n\nRequestSetAllowedDeviceList.prototype.deviceKey = function() {\n    return this._deviceKey;\n};\n\nRequestSetAllowedDeviceList.prototype.allowedDevices = function() {\n    return this._allowedDevices;\n};\n\nRequestSetAllowedDeviceList.prototype._validate = function() {\n    if (this._deviceId === null || this._deviceId === undefined || this._deviceId === '') {\n        throw new errors.BadRequestError('missing DeviceID');\n    }\n\n    if (this._deviceKey === null || this._deviceKey === undefined || this._deviceKey === '') {\n        throw new errors.BadRequestError('missing DeviceKey');\n    }\n\n    if (this._allowedDevices === null || this._allowedDevices === undefined) {\n        throw new errors.BadRequestError('missing allowedDevices');\n    }\n\n    if (!Array.isArray(this._allowedDevices)) {\n        throw new errors.BadRequestError('allowedDevices must be an array');\n    }\n\n    // Validate array size (max 256 elements)\n    if (this._allowedDevices.length &gt; 256) {\n        throw new errors.BadRequestError('allowedDevices array cannot exceed 256 elements');\n    }\n\n    // Validate each allowedDevice structure\n    this._allowedDevices.forEach",
+        "signatures": {},
+        "detailedLines": [
+          {
+            "text": "RequestSetAllowedDeviceList.prototype.deviceId = function() {",
+            "lineNumber": 13
+          },
+          {
+            "text": "    return this._deviceId;",
+            "lineNumber": 14
+          },
+          {
+            "text": "};",
+            "lineNumber": 15
+          },
+          {
+            "lineNumber": 16
+          },
+          {
+            "text": "RequestSetAllowedDeviceList.prototype.deviceKey = function() {",
+            "lineNumber": 17
+          },
+          {
+            "text": "    return this._deviceKey;",
+            "lineNumber": 18
+          },
+          {
+            "text": "};",
+            "lineNumber": 19
+          },
+          {
+            "lineNumber": 20
+          },
+          {
+            "text": "RequestSetAllowedDeviceList.prototype.allowedDevices = function() {",
+            "lineNumber": 21
+          },
+          {
+            "text": "    return this._allowedDevices;",
+            "lineNumber": 22
+          },
+          {
+            "text": "};",
+            "lineNumber": 23
+          },
+          {
+            "lineNumber": 24
+          },
+          {
+            "text": "RequestSetAllowedDeviceList.prototype._validate = function() {",
+            "lineNumber": 25
+          },
+          {
+            "text": "    if (this._deviceId === null || this._deviceId === undefined || this._deviceId === '') {",
+            "lineNumber": 26
+          },
+          {
+            "text": "        throw new errors.BadRequestError('missing DeviceID');",
+            "lineNumber": 27
+          },
+          {
+            "text": "    }",
+            "lineNumber": 28
+          },
+          {
+            "lineNumber": 29
+          },
+          {
+            "text": "    if (this._deviceKey === null || this._deviceKey === undefined || this._deviceKey === '') {",
+            "lineNumber": 30
+          },
+          {
+            "text": "        throw new errors.BadRequestError('missing DeviceKey');",
+            "lineNumber": 31
+          },
+          {
+            "text": "    }",
+            "lineNumber": 32
+          },
+          {
+            "lineNumber": 33
+          },
+          {
+            "text": "    if (this._allowedDevices === null || this._allowedDevices === undefined) {",
+            "lineNumber": 34
+          },
+          {
+            "text": "        throw new errors.BadRequestError('missing allowedDevices');",
+            "lineNumber": 35
+          },
+          {
+            "text": "    }",
+            "lineNumber": 36
+          },
+          {
+            "lineNumber": 37
+          },
+          {
+            "text": "    if (!Array.isArray(this._allowedDevices)) {",
+            "lineNumber": 38
+          },
+          {
+            "text": "        throw new errors.BadRequestError('allowedDevices must be an array');",
+            "lineNumber": 39
+          },
+          {
+            "text": "    }",
+            "lineNumber": 40
+          },
+          {
+            "lineNumber": 41
+          },
+          {
+            "text": "    // Validate array size (max 256 elements)",
+            "lineNumber": 42
+          },
+          {
+            "text": "    if (this._allowedDevices.length &gt; 256) {",
+            "lineNumber": 43
+          },
+          {
+            "text": "        throw new errors.BadRequestError('allowedDevices array cannot exceed 256 elements');",
+            "lineNumber": 44
+          },
+          {
+            "text": "    }",
+            "lineNumber": 45
+          },
+          {
+            "lineNumber": 46
+          },
+          {
+            "text": "    // Validate each allowedDevice structure",
+            "lineNumber": 47
+          },
+          {
+            "text": "    this._allowedDevices.forEach",
+            "lineNumber": 48
+          }
+        ]
+      },
+      "score": 0.4208252429962158
+    },
+    {
+      "codeBlock": {
+        "relativeWorkspacePath": "./docs/WHATS_NEW_V2.md",
+        "range": {
+          "startPosition": {
+            "line": 72
+          },
+          "endPosition": {
+            "line": 149,
+            "column": 4
+          }
+        },
+        "contents": "- **Flexible Sharing**: Easy to grant or revoke access to specific devices\n\n## New API Endpoints\n\n### POST &#96;/v1/setDeviceKey&#96;\n\nSet or change the DeviceKey for a device. This is the first step in enabling DeviceKey authentication.\n\n#### Request Format\n\n&#96;&#96;&#96;json\n{\n  \"MiataruSetDeviceKey\": {\n    \"DeviceID\": \"device-id-here\",\n    \"CurrentDeviceKey\": \"optional-current-key\",\n    \"NewDeviceKey\": \"your-new-256-char-max-key\"\n  }\n}\n&#96;&#96;&#96;\n\n#### Request Parameters\n\n- **DeviceID** (required): The device identifier\n- **CurrentDeviceKey** (optional): Required only when changing an existing key. Omit for first-time setup\n- **NewDeviceKey** (required): The new DeviceKey (max 256 Unicode characters)\n\n#### Response Format\n\n**Success (200 OK):**\n&#96;&#96;&#96;json\n{\n  \"MiataruResponse\": \"ACK\",\n  \"MiataruVerboseResponse\": \"DeviceKey set successfully for device: device-id-here\"\n}\n&#96;&#96;&#96;\n\n**Error (403 Forbidden):**\n&#96;&#96;&#96;json\n{\n  \"error\": \"CurrentDeviceKey does not match stored key\"\n}\n&#96;&#96;&#96;\n\n#### Example Usage\n\n**First-Time Setup:**\n&#96;&#96;&#96;bash\ncurl -H 'Content-Type: application/json' -X POST 'http://localhost:8090/v1/setDeviceKey' \\\n  -d '{\n    \"MiataruSetDeviceKey\": {\n      \"DeviceID\": \"my-device-123\",\n      \"NewDeviceKey\": \"my-secure-key-12345\"\n    }\n  }'\n&#96;&#96;&#96;\n\n**Change Existing Key:**\n&#96;&#96;&#96;bash\ncurl -H 'Content-Type: application/json' -X POST 'http://localhost:8090/v1/setDeviceKey' \\\n  -d '{\n    \"MiataruSetDeviceKey\": {\n      \"DeviceID\": \"my-device-123\",\n      \"CurrentDeviceKey\": \"my-secure-key-12345\",\n      \"NewDeviceKey\": \"my-new-secure-key-67890\"\n    }\n  }'\n&#96;&#96;&#96;\n\n### POST &#96;/v1/setAllowedDeviceList&#96;\n\nConfigure the allowed devices list for fine-grained access control. Requires DeviceKey authentication.\n\n#### Request Format\n\n&#96;&#96;&#96;json\n{\n  \"MiataruSetAllowedDeviceList\": {\n    ",
+        "signatures": {},
+        "detailedLines": [
+          {
+            "text": "- **Flexible Sharing**: Easy to grant or revoke access to specific devices",
+            "lineNumber": 73
+          },
+          {
+            "lineNumber": 74
+          },
+          {
+            "text": "## New API Endpoints",
+            "lineNumber": 75
+          },
+          {
+            "lineNumber": 76
+          },
+          {
+            "text": "### POST &#96;/v1/setDeviceKey&#96;",
+            "lineNumber": 77
+          },
+          {
+            "lineNumber": 78
+          },
+          {
+            "text": "Set or change the DeviceKey for a device. This is the first step in enabling DeviceKey authentication.",
+            "lineNumber": 79
+          },
+          {
+            "lineNumber": 80
+          },
+          {
+            "text": "#### Request Format",
+            "lineNumber": 81
+          },
+          {
+            "lineNumber": 82
+          },
+          {
+            "text": "&#96;&#96;&#96;json",
+            "lineNumber": 83
+          },
+          {
+            "text": "{",
+            "lineNumber": 84
+          },
+          {
+            "text": "  \"MiataruSetDeviceKey\": {",
+            "lineNumber": 85
+          },
+          {
+            "text": "    \"DeviceID\": \"device-id-here\",",
+            "lineNumber": 86
+          },
+          {
+            "text": "    \"CurrentDeviceKey\": \"optional-current-key\",",
+            "lineNumber": 87
+          },
+          {
+            "text": "    \"NewDeviceKey\": \"your-new-256-char-max-key\"",
+            "lineNumber": 88
+          },
+          {
+            "text": "  }",
+            "lineNumber": 89
+          },
+          {
+            "text": "}",
+            "lineNumber": 90
+          },
+          {
+            "text": "&#96;&#96;&#96;",
+            "lineNumber": 91
+          },
+          {
+            "lineNumber": 92
+          },
+          {
+            "text": "#### Request Parameters",
+            "lineNumber": 93
+          },
+          {
+            "lineNumber": 94
+          },
+          {
+            "text": "- **DeviceID** (required): The device identifier",
+            "lineNumber": 95
+          },
+          {
+            "text": "- **CurrentDeviceKey** (optional): Required only when changing an existing key. Omit for first-time setup",
+            "lineNumber": 96
+          },
+          {
+            "text": "- **NewDeviceKey** (required): The new DeviceKey (max 256 Unicode characters)",
+            "lineNumber": 97
+          },
+          {
+            "lineNumber": 98
+          },
+          {
+            "text": "#### Response Format",
+            "lineNumber": 99
+          },
+          {
+            "lineNumber": 100
+          },
+          {
+            "text": "**Success (200 OK):**",
+            "lineNumber": 101
+          },
+          {
+            "text": "&#96;&#96;&#96;json",
+            "lineNumber": 102
+          },
+          {
+            "text": "{",
+            "lineNumber": 103
+          },
+          {
+            "text": "  \"MiataruResponse\": \"ACK\",",
+            "lineNumber": 104
+          },
+          {
+            "text": "  \"MiataruVerboseResponse\": \"DeviceKey set successfully for device: device-id-here\"",
+            "lineNumber": 105
+          },
+          {
+            "text": "}",
+            "lineNumber": 106
+          },
+          {
+            "text": "&#96;&#96;&#96;",
+            "lineNumber": 107
+          },
+          {
+            "lineNumber": 108
+          },
+          {
+            "text": "**Error (403 Forbidden):**",
+            "lineNumber": 109
+          },
+          {
+            "text": "&#96;&#96;&#96;json",
+            "lineNumber": 110
+          },
+          {
+            "text": "{",
+            "lineNumber": 111
+          },
+          {
+            "text": "  \"error\": \"CurrentDeviceKey does not match stored key\"",
+            "lineNumber": 112
+          },
+          {
+            "text": "}",
+            "lineNumber": 113
+          },
+          {
+            "text": "&#96;&#96;&#96;",
+            "lineNumber": 114
+          },
+          {
+            "lineNumber": 115
+          },
+          {
+            "text": "#### Example Usage",
+            "lineNumber": 116
+          },
+          {
+            "lineNumber": 117
+          },
+          {
+            "text": "**First-Time Setup:**",
+            "lineNumber": 118
+          },
+          {
+            "text": "&#96;&#96;&#96;bash",
+            "lineNumber": 119
+          },
+          {
+            "text": "curl -H 'Content-Type: application/json' -X POST 'http://localhost:8090/v1/setDeviceKey' \\",
+            "lineNumber": 120
+          },
+          {
+            "text": "  -d '{",
+            "lineNumber": 121
+          },
+          {
+            "text": "    \"MiataruSetDeviceKey\": {",
+            "lineNumber": 122
+          },
+          {
+            "text": "      \"DeviceID\": \"my-device-123\",",
+            "lineNumber": 123
+          },
+          {
+            "text": "      \"NewDeviceKey\": \"my-secure-key-12345\"",
+            "lineNumber": 124
+          },
+          {
+            "text": "    }",
+            "lineNumber": 125
+          },
+          {
+            "text": "  }'",
+            "lineNumber": 126
+          },
+          {
+            "text": "&#96;&#96;&#96;",
+            "lineNumber": 127
+          },
+          {
+            "lineNumber": 128
+          },
+          {
+            "text": "**Change Existing Key:**",
+            "lineNumber": 129
+          },
+          {
+            "text": "&#96;&#96;&#96;bash",
+            "lineNumber": 130
+          },
+          {
+            "text": "curl -H 'Content-Type: application/json' -X POST 'http://localhost:8090/v1/setDeviceKey' \\",
+            "lineNumber": 131
+          },
+          {
+            "text": "  -d '{",
+            "lineNumber": 132
+          },
+          {
+            "text": "    \"MiataruSetDeviceKey\": {",
+            "lineNumber": 133
+          },
+          {
+            "text": "      \"DeviceID\": \"my-device-123\",",
+            "lineNumber": 134
+          },
+          {
+            "text": "      \"CurrentDeviceKey\": \"my-secure-key-12345\",",
+            "lineNumber": 135
+          },
+          {
+            "text": "      \"NewDeviceKey\": \"my-new-secure-key-67890\"",
+            "lineNumber": 136
+          },
+          {
+            "text": "    }",
+            "lineNumber": 137
+          },
+          {
+            "text": "  }'",
+            "lineNumber": 138
+          },
+          {
+            "text": "&#96;&#96;&#96;",
+            "lineNumber": 139
+          },
+          {
+            "lineNumber": 140
+          },
+          {
+            "text": "### POST &#96;/v1/setAllowedDeviceList&#96;",
+            "lineNumber": 141
+          },
+          {
+            "lineNumber": 142
+          },
+          {
+            "text": "Configure the allowed devices list for fine-grained access control. Requires DeviceKey authentication.",
+            "lineNumber": 143
+          },
+          {
+            "lineNumber": 144
+          },
+          {
+            "text": "#### Request Format",
+            "lineNumber": 145
+          },
+          {
+            "lineNumber": 146
+          },
+          {
+            "text": "&#96;&#96;&#96;json",
+            "lineNumber": 147
+          },
+          {
+            "text": "{",
+            "lineNumber": 148
+          },
+          {
+            "text": "  \"MiataruSetAllowedDeviceList\": {",
+            "lineNumber": 149
+          },
+          {
+            "text": "    ",
+            "lineNumber": 150
+          }
+        ]
+      },
+      "score": 0.4174419641494751
+    },
+    {
+      "codeBlock": {
+        "relativeWorkspacePath": "./docs/RELEASE_NOTES_V2.md",
+        "range": {
+          "startPosition": {},
+          "endPosition": {
+            "line": 43
+          }
+        },
+        "contents": "# Release Notes - Version 2.0.0\n\n**miataru-server 2.0.0** | **miataru API 1.1.0**\n\n## 🎉 Major Release: Security &amp; Privacy Enhancements\n\nVersion 2.0 introduces enterprise-grade security features while maintaining **broad backward compatibility** with existing v1.0 clients. Security features remain opt-in, but GetLocation/GetLocationHistory now require &#96;RequestMiataruDeviceID&#96;.\n\n## ✨ New Features\n\n### DeviceKey Authentication\n- Secure device-level authentication using cryptographic keys (up to 256 Unicode characters)\n- Protects location updates, visitor history, and access control configuration\n- New endpoint: &#96;POST /v1/setDeviceKey&#96; for key management\n\n### Allowed Devices Access Control\n- Fine-grained permissions for location sharing\n- Separate controls for current location and history access\n- Privacy-first design: location hidden from unauthorized devices\n- New endpoint: &#96;POST /v1/setAllowedDeviceList&#96; for access management\n\n## 🔄 Enhanced Endpoints\n\n- **UpdateLocation**: Optional DeviceKey validation when enabled\n- **GetLocation**: Requires &#96;RequestMiataruDeviceID&#96; and supports access control via allowed devices list\n- **GetLocationHistory**: Requires &#96;RequestMiataruDeviceID&#96; and enforces granular permissions\n- **GetVisitorHistory**: DeviceKey authentication support\n\n## ⚠️ Breaking Changes\n\n- **GetLocation / GetLocationHistory**: &#96;MiataruConfig.RequestMiataruDeviceID&#96; is now mandatory\n  - *Migration*: Include a non-empty &#96;RequestMiataruDeviceID&#96; in all GetLocation/GetLocationHistory requests\n\n- **GetLocationGeoJSON**: Returns &#96;401 Unauthorized&#96; when DeviceKey is set for requested devices\n  - *Migration*: Use &#96;GetLocation&#96; and format as GeoJSON client-side, or disable DeviceKey if GeoJSON access is required\n\n## 🔒 Security Improvements\n\n- DeviceKey authentication prevents unauthorized location updates\n- Fine-grained access control limits who can view location data\n- Privacy-first defaults protect user data\n- Constant-time key comparison prevents timing attacks",
+        "signatures": {},
+        "detailedLines": [
+          {
+            "text": "# Release Notes - Version 2.0.0",
+            "lineNumber": 1
+          },
+          {
+            "lineNumber": 2
+          },
+          {
+            "text": "**miataru-server 2.0.0** | **miataru API 1.1.0**",
+            "lineNumber": 3
+          },
+          {
+            "lineNumber": 4
+          },
+          {
+            "text": "## 🎉 Major Release: Security &amp; Privacy Enhancements",
+            "lineNumber": 5
+          },
+          {
+            "lineNumber": 6
+          },
+          {
+            "text": "Version 2.0 introduces enterprise-grade security features while maintaining **broad backward compatibility** with existing v1.0 clients. Security features remain opt-in, but GetLocation/GetLocationHistory now require &#96;RequestMiataruDeviceID&#96;.",
+            "lineNumber": 7
+          },
+          {
+            "lineNumber": 8
+          },
+          {
+            "text": "## ✨ New Features",
+            "lineNumber": 9
+          },
+          {
+            "lineNumber": 10
+          },
+          {
+            "text": "### DeviceKey Authentication",
+            "lineNumber": 11
+          },
+          {
+            "text": "- Secure device-level authentication using cryptographic keys (up to 256 Unicode characters)",
+            "lineNumber": 12
+          },
+          {
+            "text": "- Protects location updates, visitor history, and access control configuration",
+            "lineNumber": 13
+          },
+          {
+            "text": "- New endpoint: &#96;POST /v1/setDeviceKey&#96; for key management",
+            "lineNumber": 14
+          },
+          {
+            "lineNumber": 15
+          },
+          {
+            "text": "### Allowed Devices Access Control",
+            "lineNumber": 16
+          },
+          {
+            "text": "- Fine-grained permissions for location sharing",
+            "lineNumber": 17
+          },
+          {
+            "text": "- Separate controls for current location and history access",
+            "lineNumber": 18
+          },
+          {
+            "text": "- Privacy-first design: location hidden from unauthorized devices",
+            "lineNumber": 19
+          },
+          {
+            "text": "- New endpoint: &#96;POST /v1/setAllowedDeviceList&#96; for access management",
+            "lineNumber": 20
+          },
+          {
+            "lineNumber": 21
+          },
+          {
+            "text": "## 🔄 Enhanced Endpoints",
+            "lineNumber": 22
+          },
+          {
+            "lineNumber": 23
+          },
+          {
+            "text": "- **UpdateLocation**: Optional DeviceKey validation when enabled",
+            "lineNumber": 24
+          },
+          {
+            "text": "- **GetLocation**: Requires &#96;RequestMiataruDeviceID&#96; and supports access control via allowed devices list",
+            "lineNumber": 25
+          },
+          {
+            "text": "- **GetLocationHistory**: Requires &#96;RequestMiataruDeviceID&#96; and enforces granular permissions",
+            "lineNumber": 26
+          },
+          {
+            "text": "- **GetVisitorHistory**: DeviceKey authentication support",
+            "lineNumber": 27
+          },
+          {
+            "lineNumber": 28
+          },
+          {
+            "text": "## ⚠️ Breaking Changes",
+            "lineNumber": 29
+          },
+          {
+            "lineNumber": 30
+          },
+          {
+            "text": "- **GetLocation / GetLocationHistory**: &#96;MiataruConfig.RequestMiataruDeviceID&#96; is now mandatory",
+            "lineNumber": 31
+          },
+          {
+            "text": "  - *Migration*: Include a non-empty &#96;RequestMiataruDeviceID&#96; in all GetLocation/GetLocationHistory requests",
+            "lineNumber": 32
+          },
+          {
+            "lineNumber": 33
+          },
+          {
+            "text": "- **GetLocationGeoJSON**: Returns &#96;401 Unauthorized&#96; when DeviceKey is set for requested devices",
+            "lineNumber": 34
+          },
+          {
+            "text": "  - *Migration*: Use &#96;GetLocation&#96; and format as GeoJSON client-side, or disable DeviceKey if GeoJSON access is required",
+            "lineNumber": 35
+          },
+          {
+            "lineNumber": 36
+          },
+          {
+            "text": "## 🔒 Security Improvements",
+            "lineNumber": 37
+          },
+          {
+            "lineNumber": 38
+          },
+          {
+            "text": "- DeviceKey authentication prevents unauthorized location updates",
+            "lineNumber": 39
+          },
+          {
+            "text": "- Fine-grained access control limits who can view location data",
+            "lineNumber": 40
+          },
+          {
+            "text": "- Privacy-first defaults protect user data",
+            "lineNumber": 41
+          },
+          {
+            "text": "- Constant-time key comparison prevents timing attacks",
+            "lineNumber": 42
+          }
+        ]
+      },
+      "score": 0.40557873249053955
+    },
+    {
+      "codeBlock": {
+        "relativeWorkspacePath": "./lib/routes/location/v1/location.js",
+        "range": {
+          "startPosition": {
+            "line": 799,
+            "column": 1
+          },
+          "endPosition": {
+            "line": 877,
+            "column": 1
+          }
+        },
+        "contents": "/**\n * SetDeviceKey\n * Sets or changes the device key for a device\n * @param req\n * @param res\n * @param next\n */\nfunction setDeviceKey(req, res, next) {\n    var request = req.MIATARU.request;\n    var deviceId = request.deviceId();\n    var currentDeviceKey = request.currentDeviceKey();\n    var newDeviceKey = request.newDeviceKey();\n\n    seq()\n        .seq(function() {\n            var done = this;\n            // Check if device already has a key set\n            deviceKeyUtils.getDeviceKey(deviceId, function(error, storedKey) {\n                if (error) {\n                    return done(error);\n                }\n\n                done.vars = done.vars || {};\n                done.vars.storedKey = storedKey;\n                done();\n            });\n        })\n        .seq(function() {\n            var done = this;\n            var storedKey = (done.vars || {}).storedKey;\n\n            // If a key exists, validate CurrentDeviceKey\n            if (storedKey !== null &amp;&amp; storedKey !== undefined) {\n                // Key exists, so CurrentDeviceKey must be provided and match\n                if (!currentDeviceKey || currentDeviceKey === null || currentDeviceKey === '') {\n                    return done(new errors.ForbiddenError('CurrentDeviceKey is required to change existing key'));\n                }\n\n                // Validate CurrentDeviceKey matches stored key\n                deviceKeyUtils.validateDeviceKey(deviceId, currentDeviceKey, function(error, isValid) {\n                    if (error) {\n                        return done(error);\n                    }\n\n                    if (!isValid) {\n                        return done(new errors.ForbiddenError('CurrentDeviceKey does not match'));\n                    }\n\n                    done();\n                });\n            } else {\n                // No key exists, so CurrentDeviceKey should be null/empty (first-time setup)\n                // This is allowed, proceed\n                done();\n            }\n        })\n        .seq(function() {\n            var done = this;\n            // Set the new key\n            deviceKeyUtils.setDeviceKey\n\n\n\n\n}",
+        "signatures": {},
+        "detailedLines": [
+          {
+            "text": "/**",
+            "lineNumber": 802
+          },
+          {
+            "text": " * SetDeviceKey",
+            "lineNumber": 803
+          },
+          {
+            "text": " * Sets or changes the device key for a device",
+            "lineNumber": 804
+          },
+          {
+            "text": " * @param req",
+            "lineNumber": 805
+          },
+          {
+            "text": " * @param res",
+            "lineNumber": 806
+          },
+          {
+            "text": " * @param next",
+            "lineNumber": 807
+          },
+          {
+            "text": " */",
+            "lineNumber": 808
+          },
+          {
+            "text": "function setDeviceKey(req, res, next) {",
+            "lineNumber": 809,
+            "isSignature": true
+          },
+          {
+            "text": "    var request = req.MIATARU.request;",
+            "lineNumber": 810
+          },
+          {
+            "text": "    var deviceId = request.deviceId();",
+            "lineNumber": 811
+          },
+          {
+            "text": "    var currentDeviceKey = request.currentDeviceKey();",
+            "lineNumber": 812
+          },
+          {
+            "text": "    var newDeviceKey = request.newDeviceKey();",
+            "lineNumber": 813
+          },
+          {
+            "lineNumber": 814
+          },
+          {
+            "text": "    seq()",
+            "lineNumber": 815
+          },
+          {
+            "text": "        .seq(function() {",
+            "lineNumber": 816
+          },
+          {
+            "text": "            var done = this;",
+            "lineNumber": 817
+          },
+          {
+            "text": "            // Check if device already has a key set",
+            "lineNumber": 818
+          },
+          {
+            "text": "            deviceKeyUtils.getDeviceKey(deviceId, function(error, storedKey) {",
+            "lineNumber": 819
+          },
+          {
+            "text": "                if (error) {",
+            "lineNumber": 820
+          },
+          {
+            "text": "                    return done(error);",
+            "lineNumber": 821
+          },
+          {
+            "text": "                }",
+            "lineNumber": 822
+          },
+          {
+            "lineNumber": 823
+          },
+          {
+            "text": "                done.vars = done.vars || {};",
+            "lineNumber": 824
+          },
+          {
+            "text": "                done.vars.storedKey = storedKey;",
+            "lineNumber": 825
+          },
+          {
+            "text": "                done();",
+            "lineNumber": 826
+          },
+          {
+            "text": "            });",
+            "lineNumber": 827
+          },
+          {
+            "text": "        })",
+            "lineNumber": 828
+          },
+          {
+            "text": "        .seq(function() {",
+            "lineNumber": 829
+          },
+          {
+            "text": "            var done = this;",
+            "lineNumber": 830
+          },
+          {
+            "text": "            var storedKey = (done.vars || {}).storedKey;",
+            "lineNumber": 831
+          },
+          {
+            "lineNumber": 832
+          },
+          {
+            "text": "            // If a key exists, validate CurrentDeviceKey",
+            "lineNumber": 833
+          },
+          {
+            "text": "            if (storedKey !== null &amp;&amp; storedKey !== undefined) {",
+            "lineNumber": 834
+          },
+          {
+            "text": "                // Key exists, so CurrentDeviceKey must be provided and match",
+            "lineNumber": 835
+          },
+          {
+            "text": "                if (!currentDeviceKey || currentDeviceKey === null || currentDeviceKey === '') {",
+            "lineNumber": 836
+          },
+          {
+            "text": "                    return done(new errors.ForbiddenError('CurrentDeviceKey is required to change existing key'));",
+            "lineNumber": 837
+          },
+          {
+            "text": "                }",
+            "lineNumber": 838
+          },
+          {
+            "lineNumber": 839
+          },
+          {
+            "text": "                // Validate CurrentDeviceKey matches stored key",
+            "lineNumber": 840
+          },
+          {
+            "text": "                deviceKeyUtils.validateDeviceKey(deviceId, currentDeviceKey, function(error, isValid) {",
+            "lineNumber": 841
+          },
+          {
+            "text": "                    if (error) {",
+            "lineNumber": 842
+          },
+          {
+            "text": "                        return done(error);",
+            "lineNumber": 843
+          },
+          {
+            "text": "                    }",
+            "lineNumber": 844
+          },
+          {
+            "lineNumber": 845
+          },
+          {
+            "text": "                    if (!isValid) {",
+            "lineNumber": 846
+          },
+          {
+            "text": "                        return done(new errors.ForbiddenError('CurrentDeviceKey does not match'));",
+            "lineNumber": 847
+          },
+          {
+            "text": "                    }",
+            "lineNumber": 848
+          },
+          {
+            "lineNumber": 849
+          },
+          {
+            "text": "                    done();",
+            "lineNumber": 850
+          },
+          {
+            "text": "                });",
+            "lineNumber": 851
+          },
+          {
+            "text": "            } else {",
+            "lineNumber": 852
+          },
+          {
+            "text": "                // No key exists, so CurrentDeviceKey should be null/empty (first-time setup)",
+            "lineNumber": 853
+          },
+          {
+            "text": "                // This is allowed, proceed",
+            "lineNumber": 854
+          },
+          {
+            "text": "                done();",
+            "lineNumber": 855
+          },
+          {
+            "text": "            }",
+            "lineNumber": 856
+          },
+          {
+            "text": "        })",
+            "lineNumber": 857
+          },
+          {
+            "text": "        .seq(function() {",
+            "lineNumber": 858
+          },
+          {
+            "text": "            var done = this;",
+            "lineNumber": 859
+          },
+          {
+            "text": "            // Set the new key",
+            "lineNumber": 860
+          },
+          {
+            "text": "            deviceKeyUtils.setDeviceKey",
+            "lineNumber": 861
+          },
+          {
+            "lineNumber": 867
+          },
+          {
+            "lineNumber": 868
+          },
+          {
+            "lineNumber": 871
+          },
+          {
+            "lineNumber": 877
+          },
+          {
+            "text": "}",
+            "lineNumber": 878,
+            "isSignature": true
+          }
+        ]
+      },
+      "score": 0.4012733995914459
+    },
+    {
+      "codeBlock": {
+        "relativeWorkspacePath": "./docs/WHATS_NEW_V2.md",
+        "range": {
+          "startPosition": {
+            "line": 483
+          },
+          "endPosition": {
+            "line": 562
+          }
+        },
+        "contents": "&#96;&#96;&#96;\n\n**Step 3: Include DeviceKey for Visitor History**\n&#96;&#96;&#96;javascript\n// Get visitor history with DeviceKey\nPOST /v1/GetVisitorHistory\n{\n  \"MiataruGetVisitorHistory\": {\n    \"Device\": \"your-device-id\",\n    \"DeviceKey\": \"your-secure-key\"\n  }\n}\n&#96;&#96;&#96;\n\n#### Option 3: Adopt Allowed Devices Access Control\n\n**Step 1: Set DeviceKey** (required for access control)\n&#96;&#96;&#96;javascript\nPOST /v1/setDeviceKey\n{\n  \"MiataruSetDeviceKey\": {\n    \"DeviceID\": \"your-device-id\",\n    \"NewDeviceKey\": \"your-secure-key\"\n  }\n}\n&#96;&#96;&#96;\n\n**Step 2: Configure Allowed Devices**\n&#96;&#96;&#96;javascript\nPOST /v1/setAllowedDeviceList\n{\n  \"MiataruSetAllowedDeviceList\": {\n    \"DeviceID\": \"your-device-id\",\n    \"DeviceKey\": \"your-secure-key\",\n    \"allowedDevices\": [\n      {\n        \"DeviceID\": \"friend-device-1\",\n        \"hasCurrentLocationAccess\": true,\n        \"hasHistoryAccess\": false\n      }\n    ]\n  }\n}\n&#96;&#96;&#96;\n\n**Step 3: Handle Access Control**\n- Devices not in the allowed list will not receive location data\n- No error is returned - location is simply omitted\n- Check response to see if location data is present\n\n#### Option 4: Handle GetLocationGeoJSON Breaking Change\n\n**If using GetLocationGeoJSON with DeviceKey-enabled devices:**\n\n**Option A: Use GetLocation Instead**\n&#96;&#96;&#96;javascript\n// Instead of GetLocationGeoJSON\nPOST /v1/GetLocation\n// Format response as GeoJSON client-side\n&#96;&#96;&#96;\n\n**Option B: Disable DeviceKey**\n- Only if GeoJSON access is absolutely required\n- Consider security implications\n\n**Option C: Use Allowed Devices**\n- Use GetLocation with allowed devices list\n- Provides controlled access similar to GeoJSON\n\n### Migration Checklist\n\n- [ ] Review breaking changes (GetLocationGeoJSON)\n- [ ] Ensure GetLocation/GetLocationHistory include &#96;RequestMiataruDeviceID&#96;\n- [ ] Test existing client functionality (should work unchanged)\n- [ ] Decide if DeviceKey authentication is needed\n- [ ] Decide if allowed devices access control is needed\n- [ ] Update client code if adopting new features\n- [ ] Test new security features in development\n- [ ] Update error handling for new error codes (401, 403)",
+        "signatures": {},
+        "detailedLines": [
+          {
+            "text": "&#96;&#96;&#96;",
+            "lineNumber": 484
+          },
+          {
+            "lineNumber": 485
+          },
+          {
+            "text": "**Step 3: Include DeviceKey for Visitor History**",
+            "lineNumber": 486
+          },
+          {
+            "text": "&#96;&#96;&#96;javascript",
+            "lineNumber": 487
+          },
+          {
+            "text": "// Get visitor history with DeviceKey",
+            "lineNumber": 488
+          },
+          {
+            "text": "POST /v1/GetVisitorHistory",
+            "lineNumber": 489
+          },
+          {
+            "text": "{",
+            "lineNumber": 490
+          },
+          {
+            "text": "  \"MiataruGetVisitorHistory\": {",
+            "lineNumber": 491
+          },
+          {
+            "text": "    \"Device\": \"your-device-id\",",
+            "lineNumber": 492
+          },
+          {
+            "text": "    \"DeviceKey\": \"your-secure-key\"",
+            "lineNumber": 493
+          },
+          {
+            "text": "  }",
+            "lineNumber": 494
+          },
+          {
+            "text": "}",
+            "lineNumber": 495
+          },
+          {
+            "text": "&#96;&#96;&#96;",
+            "lineNumber": 496
+          },
+          {
+            "lineNumber": 497
+          },
+          {
+            "text": "#### Option 3: Adopt Allowed Devices Access Control",
+            "lineNumber": 498
+          },
+          {
+            "lineNumber": 499
+          },
+          {
+            "text": "**Step 1: Set DeviceKey** (required for access control)",
+            "lineNumber": 500
+          },
+          {
+            "text": "&#96;&#96;&#96;javascript",
+            "lineNumber": 501
+          },
+          {
+            "text": "POST /v1/setDeviceKey",
+            "lineNumber": 502
+          },
+          {
+            "text": "{",
+            "lineNumber": 503
+          },
+          {
+            "text": "  \"MiataruSetDeviceKey\": {",
+            "lineNumber": 504
+          },
+          {
+            "text": "    \"DeviceID\": \"your-device-id\",",
+            "lineNumber": 505
+          },
+          {
+            "text": "    \"NewDeviceKey\": \"your-secure-key\"",
+            "lineNumber": 506
+          },
+          {
+            "text": "  }",
+            "lineNumber": 507
+          },
+          {
+            "text": "}",
+            "lineNumber": 508
+          },
+          {
+            "text": "&#96;&#96;&#96;",
+            "lineNumber": 509
+          },
+          {
+            "lineNumber": 510
+          },
+          {
+            "text": "**Step 2: Configure Allowed Devices**",
+            "lineNumber": 511
+          },
+          {
+            "text": "&#96;&#96;&#96;javascript",
+            "lineNumber": 512
+          },
+          {
+            "text": "POST /v1/setAllowedDeviceList",
+            "lineNumber": 513
+          },
+          {
+            "text": "{",
+            "lineNumber": 514
+          },
+          {
+            "text": "  \"MiataruSetAllowedDeviceList\": {",
+            "lineNumber": 515
+          },
+          {
+            "text": "    \"DeviceID\": \"your-device-id\",",
+            "lineNumber": 516
+          },
+          {
+            "text": "    \"DeviceKey\": \"your-secure-key\",",
+            "lineNumber": 517
+          },
+          {
+            "text": "    \"allowedDevices\": [",
+            "lineNumber": 518
+          },
+          {
+            "text": "      {",
+            "lineNumber": 519
+          },
+          {
+            "text": "        \"DeviceID\": \"friend-device-1\",",
+            "lineNumber": 520
+          },
+          {
+            "text": "        \"hasCurrentLocationAccess\": true,",
+            "lineNumber": 521
+          },
+          {
+            "text": "        \"hasHistoryAccess\": false",
+            "lineNumber": 522
+          },
+          {
+            "text": "      }",
+            "lineNumber": 523
+          },
+          {
+            "text": "    ]",
+            "lineNumber": 524
+          },
+          {
+            "text": "  }",
+            "lineNumber": 525
+          },
+          {
+            "text": "}",
+            "lineNumber": 526
+          },
+          {
+            "text": "&#96;&#96;&#96;",
+            "lineNumber": 527
+          },
+          {
+            "lineNumber": 528
+          },
+          {
+            "text": "**Step 3: Handle Access Control**",
+            "lineNumber": 529
+          },
+          {
+            "text": "- Devices not in the allowed list will not receive location data",
+            "lineNumber": 530
+          },
+          {
+            "text": "- No error is returned - location is simply omitted",
+            "lineNumber": 531
+          },
+          {
+            "text": "- Check response to see if location data is present",
+            "lineNumber": 532
+          },
+          {
+            "lineNumber": 533
+          },
+          {
+            "text": "#### Option 4: Handle GetLocationGeoJSON Breaking Change",
+            "lineNumber": 534
+          },
+          {
+            "lineNumber": 535
+          },
+          {
+            "text": "**If using GetLocationGeoJSON with DeviceKey-enabled devices:**",
+            "lineNumber": 536
+          },
+          {
+            "lineNumber": 537
+          },
+          {
+            "text": "**Option A: Use GetLocation Instead**",
+            "lineNumber": 538
+          },
+          {
+            "text": "&#96;&#96;&#96;javascript",
+            "lineNumber": 539
+          },
+          {
+            "text": "// Instead of GetLocationGeoJSON",
+            "lineNumber": 540
+          },
+          {
+            "text": "POST /v1/GetLocation",
+            "lineNumber": 541
+          },
+          {
+            "text": "// Format response as GeoJSON client-side",
+            "lineNumber": 542
+          },
+          {
+            "text": "&#96;&#96;&#96;",
+            "lineNumber": 543
+          },
+          {
+            "lineNumber": 544
+          },
+          {
+            "text": "**Option B: Disable DeviceKey**",
+            "lineNumber": 545
+          },
+          {
+            "text": "- Only if GeoJSON access is absolutely required",
+            "lineNumber": 546
+          },
+          {
+            "text": "- Consider security implications",
+            "lineNumber": 547
+          },
+          {
+            "lineNumber": 548
+          },
+          {
+            "text": "**Option C: Use Allowed Devices**",
+            "lineNumber": 549
+          },
+          {
+            "text": "- Use GetLocation with allowed devices list",
+            "lineNumber": 550
+          },
+          {
+            "text": "- Provides controlled access similar to GeoJSON",
+            "lineNumber": 551
+          },
+          {
+            "lineNumber": 552
+          },
+          {
+            "text": "### Migration Checklist",
+            "lineNumber": 553
+          },
+          {
+            "lineNumber": 554
+          },
+          {
+            "text": "- [ ] Review breaking changes (GetLocationGeoJSON)",
+            "lineNumber": 555
+          },
+          {
+            "text": "- [ ] Ensure GetLocation/GetLocationHistory include &#96;RequestMiataruDeviceID&#96;",
+            "lineNumber": 556
+          },
+          {
+            "text": "- [ ] Test existing client functionality (should work unchanged)",
+            "lineNumber": 557
+          },
+          {
+            "text": "- [ ] Decide if DeviceKey authentication is needed",
+            "lineNumber": 558
+          },
+          {
+            "text": "- [ ] Decide if allowed devices access control is needed",
+            "lineNumber": 559
+          },
+          {
+            "text": "- [ ] Update client code if adopting new features",
+            "lineNumber": 560
+          },
+          {
+            "text": "- [ ] Test new security features in development",
+            "lineNumber": 561
+          },
+          {
+            "text": "- [ ] Update error handling for new error codes (401, 403)",
+            "lineNumber": 562
+          }
+        ]
+      },
+      "score": 0.39840200543403625
+    },
+    {
+      "codeBlock": {
+        "relativeWorkspacePath": "./lib/utils/allowedDevices.js",
+        "range": {
+          "startPosition": {
+            "line": 99,
+            "column": 1
+          },
+          "endPosition": {
+            "line": 187,
+            "column": 1
+          }
+        },
+        "contents": "/**\n * Set allowed devices list in Redis\n * Replaces entire list (client maintains full list)\n * @param {string} deviceId - The device ID\n * @param {Array} allowedDevices - Array of allowed device objects with DeviceID, hasCurrentLocationAccess, hasHistoryAccess\n * @param {function} callback - Callback function (error)\n */\nfunction setAllowedDevices(deviceId, allowedDevices, callback) {\n    if (!deviceId) {\n        return callback(new Error('Device ID is required'));\n    }\n\n    if (!Array.isArray(allowedDevices)) {\n        return callback(new Error('Allowed devices must be an array'));\n    }\n\n    // Validate array size (max 256 elements)\n    if (allowedDevices.length &gt; 256) {\n        return callback(new Error('Allowed devices array cannot exceed 256 elements'));\n    }\n\n    var hashKey = kb.build(deviceId, KEY_SUFFIX);\n    var flagKey = kb.build(deviceId, ENABLED_FLAG_SUFFIX);\n\n    // Delete existing hash first (to handle removals)\n}",
+        "signatures": {},
+        "detailedLines": [
+          {
+            "text": "/**",
+            "lineNumber": 102
+          },
+          {
+            "text": " * Set allowed devices list in Redis",
+            "lineNumber": 103
+          },
+          {
+            "text": " * Replaces entire list (client maintains full list)",
+            "lineNumber": 104
+          },
+          {
+            "text": " * @param {string} deviceId - The device ID",
+            "lineNumber": 105
+          },
+          {
+            "text": " * @param {Array} allowedDevices - Array of allowed device objects with DeviceID, hasCurrentLocationAccess, hasHistoryAccess",
+            "lineNumber": 106
+          },
+          {
+            "text": " * @param {function} callback - Callback function (error)",
+            "lineNumber": 107
+          },
+          {
+            "text": " */",
+            "lineNumber": 108
+          },
+          {
+            "text": "function setAllowedDevices(deviceId, allowedDevices, callback) {",
+            "lineNumber": 109,
+            "isSignature": true
+          },
+          {
+            "text": "    if (!deviceId) {",
+            "lineNumber": 110
+          },
+          {
+            "text": "        return callback(new Error('Device ID is required'));",
+            "lineNumber": 111
+          },
+          {
+            "text": "    }",
+            "lineNumber": 112
+          },
+          {
+            "lineNumber": 113
+          },
+          {
+            "text": "    if (!Array.isArray(allowedDevices)) {",
+            "lineNumber": 114
+          },
+          {
+            "text": "        return callback(new Error('Allowed devices must be an array'));",
+            "lineNumber": 115
+          },
+          {
+            "text": "    }",
+            "lineNumber": 116
+          },
+          {
+            "lineNumber": 117
+          },
+          {
+            "text": "    // Validate array size (max 256 elements)",
+            "lineNumber": 118
+          },
+          {
+            "text": "    if (allowedDevices.length &gt; 256) {",
+            "lineNumber": 119
+          },
+          {
+            "text": "        return callback(new Error('Allowed devices array cannot exceed 256 elements'));",
+            "lineNumber": 120
+          },
+          {
+            "text": "    }",
+            "lineNumber": 121
+          },
+          {
+            "lineNumber": 122
+          },
+          {
+            "text": "    var hashKey = kb.build(deviceId, KEY_SUFFIX);",
+            "lineNumber": 123
+          },
+          {
+            "text": "    var flagKey = kb.build(deviceId, ENABLED_FLAG_SUFFIX);",
+            "lineNumber": 124
+          },
+          {
+            "lineNumber": 125
+          },
+          {
+            "text": "    // Delete existing hash first (to handle removals)",
+            "lineNumber": 126
+          },
+          {
+            "text": "}",
+            "lineNumber": 188,
+            "isSignature": true
+          }
+        ]
+      },
+      "score": 0.3968021869659424
+    },
+    {
+      "codeBlock": {
+        "relativeWorkspacePath": "./.cursor/plans/miataru_server_2.0_api_1.1_security_implementation_0d55c5ea.plan.md",
+        "range": {
+          "startPosition": {
+            "line": 194
+          },
+          "endPosition": {
+            "line": 248
+          }
+        },
+        "contents": "- Add parsing for &#96;/v1/setDeviceKey&#96; endpoint\n- Add parsing for &#96;/v1/setAllowedDeviceList&#96; endpoint\n- Extend &#96;parseUpdateLocation&#96; to extract DeviceKey from MiataruLocation array elements\n- Extend &#96;parseGetVisitorHistory&#96; to extract DeviceKey from request body\n\n### Phase 4: Endpoint Implementations\n\n#### 4.1 setDeviceKey Endpoint\n\n**File**: &#96;lib/routes/location/v1/location.js&#96;\n\n- New function: &#96;setDeviceKey(req, res, next)&#96;\n- Validate CurrentDeviceKey if device already has a key set\n- If CurrentDeviceKey matches or no key exists, set NewDeviceKey\n- Return success response or 403 Forbidden if CurrentDeviceKey doesn't match\n- Store in Redis: &#96;miad:$deviceid:key&#96;\n\n#### 4.2 setAllowedDeviceList Endpoint\n\n**File**: &#96;lib/routes/location/v1/location.js&#96;\n\n- New function: &#96;setAllowedDeviceList(req, res, next)&#96;\n- Validate DeviceKey first (must match stored key)\n- Replace entire allowed devices list (client maintains full list)\n- Store as Redis hash: &#96;miad:$deviceid:allowed&#96;\n- Set flag: &#96;miad:$deviceid:allowed:enabled&#96; = \"1\"\n- Return success or 403 Forbidden if DeviceKey doesn't match\n\n#### 4.3 Modify updateLocation Function\n\n**File**: &#96;lib/routes/location/v1/location.js&#96;\n\n- Before updating location, check if DeviceKey is set for the device\n- If DeviceKey is set, validate provided DeviceKey matches stored key\n- If keys don't match, return 403 Forbidden\n- If no DeviceKey is set, proceed normally (backward compatible)\n- DeviceKey parameter is optional in MiataruLocation array elements\n\n#### 4.4 Modify getVisitorHistory Function\n\n**File**: &#96;lib/routes/location/v1/location.js&#96;\n\n- Before returning visitor history, check if DeviceKey is set for the device\n- If DeviceKey is set, validate provided DeviceKey matches stored key\n- If keys don't match, return 403 Forbidden\n- If no DeviceKey is set, proceed normally (backward compatible)\n\n#### 4.5 Modify getLocation Function\n\n**File**: &#96;lib/routes/location/v1/location.js&#96;\n\n- For each requested DeviceID, check if allowed devices list is enabled\n- If enabled, check if RequestMiataruDeviceID has &#96;hasCurrentLocationAccess&#96; permission",
+        "signatures": {},
+        "detailedLines": [
+          {
+            "text": "- Add parsing for &#96;/v1/setDeviceKey&#96; endpoint",
+            "lineNumber": 196
+          },
+          {
+            "text": "- Add parsing for &#96;/v1/setAllowedDeviceList&#96; endpoint",
+            "lineNumber": 197
+          },
+          {
+            "text": "- Extend &#96;parseUpdateLocation&#96; to extract DeviceKey from MiataruLocation array elements",
+            "lineNumber": 198
+          },
+          {
+            "text": "- Extend &#96;parseGetVisitorHistory&#96; to extract DeviceKey from request body",
+            "lineNumber": 199
+          },
+          {
+            "lineNumber": 200
+          },
+          {
+            "text": "### Phase 4: Endpoint Implementations",
+            "lineNumber": 201
+          },
+          {
+            "lineNumber": 202
+          },
+          {
+            "text": "#### 4.1 setDeviceKey Endpoint",
+            "lineNumber": 203
+          },
+          {
+            "lineNumber": 204
+          },
+          {
+            "text": "**File**: &#96;lib/routes/location/v1/location.js&#96;",
+            "lineNumber": 205
+          },
+          {
+            "lineNumber": 206
+          },
+          {
+            "text": "- New function: &#96;setDeviceKey(req, res, next)&#96;",
+            "lineNumber": 207
+          },
+          {
+            "text": "- Validate CurrentDeviceKey if device already has a key set",
+            "lineNumber": 208
+          },
+          {
+            "text": "- If CurrentDeviceKey matches or no key exists, set NewDeviceKey",
+            "lineNumber": 209
+          },
+          {
+            "text": "- Return success response or 403 Forbidden if CurrentDeviceKey doesn't match",
+            "lineNumber": 210
+          },
+          {
+            "text": "- Store in Redis: &#96;miad:$deviceid:key&#96;",
+            "lineNumber": 211
+          },
+          {
+            "lineNumber": 212
+          },
+          {
+            "text": "#### 4.2 setAllowedDeviceList Endpoint",
+            "lineNumber": 213
+          },
+          {
+            "lineNumber": 214
+          },
+          {
+            "text": "**File**: &#96;lib/routes/location/v1/location.js&#96;",
+            "lineNumber": 215
+          },
+          {
+            "lineNumber": 216
+          },
+          {
+            "text": "- New function: &#96;setAllowedDeviceList(req, res, next)&#96;",
+            "lineNumber": 217
+          },
+          {
+            "text": "- Validate DeviceKey first (must match stored key)",
+            "lineNumber": 218
+          },
+          {
+            "text": "- Replace entire allowed devices list (client maintains full list)",
+            "lineNumber": 219
+          },
+          {
+            "text": "- Store as Redis hash: &#96;miad:$deviceid:allowed&#96;",
+            "lineNumber": 220
+          },
+          {
+            "text": "- Set flag: &#96;miad:$deviceid:allowed:enabled&#96; = \"1\"",
+            "lineNumber": 221
+          },
+          {
+            "text": "- Return success or 403 Forbidden if DeviceKey doesn't match",
+            "lineNumber": 222
+          },
+          {
+            "lineNumber": 223
+          },
+          {
+            "text": "#### 4.3 Modify updateLocation Function",
+            "lineNumber": 224
+          },
+          {
+            "lineNumber": 225
+          },
+          {
+            "text": "**File**: &#96;lib/routes/location/v1/location.js&#96;",
+            "lineNumber": 226
+          },
+          {
+            "lineNumber": 227
+          },
+          {
+            "text": "- Before updating location, check if DeviceKey is set for the device",
+            "lineNumber": 228
+          },
+          {
+            "text": "- If DeviceKey is set, validate provided DeviceKey matches stored key",
+            "lineNumber": 229
+          },
+          {
+            "text": "- If keys don't match, return 403 Forbidden",
+            "lineNumber": 230
+          },
+          {
+            "text": "- If no DeviceKey is set, proceed normally (backward compatible)",
+            "lineNumber": 231
+          },
+          {
+            "text": "- DeviceKey parameter is optional in MiataruLocation array elements",
+            "lineNumber": 232
+          },
+          {
+            "lineNumber": 233
+          },
+          {
+            "text": "#### 4.4 Modify getVisitorHistory Function",
+            "lineNumber": 234
+          },
+          {
+            "lineNumber": 235
+          },
+          {
+            "text": "**File**: &#96;lib/routes/location/v1/location.js&#96;",
+            "lineNumber": 236
+          },
+          {
+            "lineNumber": 237
+          },
+          {
+            "text": "- Before returning visitor history, check if DeviceKey is set for the device",
+            "lineNumber": 238
+          },
+          {
+            "text": "- If DeviceKey is set, validate provided DeviceKey matches stored key",
+            "lineNumber": 239
+          },
+          {
+            "text": "- If keys don't match, return 403 Forbidden",
+            "lineNumber": 240
+          },
+          {
+            "text": "- If no DeviceKey is set, proceed normally (backward compatible)",
+            "lineNumber": 241
+          },
+          {
+            "lineNumber": 242
+          },
+          {
+            "text": "#### 4.5 Modify getLocation Function",
+            "lineNumber": 243
+          },
+          {
+            "lineNumber": 244
+          },
+          {
+            "text": "**File**: &#96;lib/routes/location/v1/location.js&#96;",
+            "lineNumber": 245
+          },
+          {
+            "lineNumber": 246
+          },
+          {
+            "text": "- For each requested DeviceID, check if allowed devices list is enabled",
+            "lineNumber": 247
+          },
+          {
+            "text": "- If enabled, check if RequestMiataruDeviceID has &#96;hasCurrentLocationAccess&#96; permission",
+            "lineNumber": 248
+          }
+        ]
+      },
+      "score": 0.3964829444885254
+    },
+    {
+      "codeBlock": {
+        "relativeWorkspacePath": "./.cursor/plans/miataru_server_2.0_api_1.1_security_implementation_0d55c5ea.plan.md",
+        "range": {
+          "startPosition": {
+            "line": 89
+          },
+          "endPosition": {
+            "line": 149
+          }
+        },
+        "contents": "New Redis keys will be introduced:\n\n- **DeviceKey storage**: &#96;miad:$deviceid:key&#96; - stores the DeviceKey (256 char unicode string)\n- **Allowed devices list**: &#96;miad:$deviceid:allowed&#96; - stores the allowed devices list as a hash\n- **Allowed devices flag**: &#96;miad:$deviceid:allowed:enabled&#96; - quick flag to check if allowed devices list exists\n\n### Key Components\n\n1. **New Endpoints**:\n\n   - &#96;/v1/setDeviceKey&#96; - Set/change device key\n   - &#96;/v1/setAllowedDeviceList&#96; - Manage allowed devices list\n\n2. **Modified Endpoints**:\n\n   - &#96;/v1/UpdateLocation&#96; - Add DeviceKey validation\n   - &#96;/v1/GetVisitorHistory&#96; - Add DeviceKey validation\n   - &#96;/v1/GetLocation&#96; - Add allowed devices check\n   - &#96;/v1/GetLocationHistory&#96; - Add allowed devices check\n   - &#96;/v1/GetLocationGeoJSON&#96; - Add DeviceKey check\n\n3. **New Models**:\n\n   - &#96;RequestSetDeviceKey&#96; - Parse setDeviceKey requests\n   - &#96;RequestSetAllowedDeviceList&#96; - Parse setAllowedDeviceList requests\n   - &#96;RequestLocation&#96; - Extend with optional DeviceKey field\n   - &#96;RequestVisitorHistory&#96; - Extend with optional DeviceKey field\n\n4. **New Error Types**:\n\n   - &#96;ForbiddenError&#96; (403) - For DeviceKey mismatches\n   - &#96;UnauthorizedError&#96; (401) - For GetLocationGeoJSON when DeviceKey is set\n\n## Implementation Details\n\n### Phase 1: Core Infrastructure\n\n#### 1.1 Error Handling\n\n**File**: &#96;lib/errors.js&#96;\n\n- Add &#96;ForbiddenError&#96; class (403 status code)\n- Add &#96;UnauthorizedError&#96; class (401 status code)\n- Export new error types\n\n#### 1.2 DeviceKey Storage Utilities\n\n**File**: &#96;lib/utils/deviceKey.js&#96; (new file)\n\n- &#96;getDeviceKey(deviceId, callback)&#96; - Retrieve device key from Redis\n- &#96;setDeviceKey(deviceId, deviceKey, callback)&#96; - Store device key in Redis\n- &#96;validateDeviceKey(deviceId, providedKey, callback)&#96; - Validate provided key against stored key\n- Redis key pattern: &#96;miad:$deviceid:key&#96;\n\n#### 1.3 Allowed Devices Storage Utilities\n\n**File**: &#96;lib/utils/allowedDevices.js&#96; (new file)\n\n- &#96;getAllowedDevices(deviceId, callback)&#96; - Retrieve allowed devices list from Redis\n- &#96;setAllowedDevices(deviceId, allowedDevices, callback)&#96; - Store/update allowed devices list",
+        "signatures": {},
+        "detailedLines": [
+          {
+            "text": "New Redis keys will be introduced:",
+            "lineNumber": 90
+          },
+          {
+            "lineNumber": 91
+          },
+          {
+            "text": "- **DeviceKey storage**: &#96;miad:$deviceid:key&#96; - stores the DeviceKey (256 char unicode string)",
+            "lineNumber": 92
+          },
+          {
+            "text": "- **Allowed devices list**: &#96;miad:$deviceid:allowed&#96; - stores the allowed devices list as a hash",
+            "lineNumber": 93
+          },
+          {
+            "text": "- **Allowed devices flag**: &#96;miad:$deviceid:allowed:enabled&#96; - quick flag to check if allowed devices list exists",
+            "lineNumber": 94
+          },
+          {
+            "lineNumber": 95
+          },
+          {
+            "text": "### Key Components",
+            "lineNumber": 96
+          },
+          {
+            "lineNumber": 97
+          },
+          {
+            "text": "1. **New Endpoints**:",
+            "lineNumber": 98
+          },
+          {
+            "lineNumber": 99
+          },
+          {
+            "text": "   - &#96;/v1/setDeviceKey&#96; - Set/change device key",
+            "lineNumber": 100
+          },
+          {
+            "text": "   - &#96;/v1/setAllowedDeviceList&#96; - Manage allowed devices list",
+            "lineNumber": 101
+          },
+          {
+            "lineNumber": 102
+          },
+          {
+            "text": "2. **Modified Endpoints**:",
+            "lineNumber": 103
+          },
+          {
+            "lineNumber": 104
+          },
+          {
+            "text": "   - &#96;/v1/UpdateLocation&#96; - Add DeviceKey validation",
+            "lineNumber": 105
+          },
+          {
+            "text": "   - &#96;/v1/GetVisitorHistory&#96; - Add DeviceKey validation",
+            "lineNumber": 106
+          },
+          {
+            "text": "   - &#96;/v1/GetLocation&#96; - Add allowed devices check",
+            "lineNumber": 107
+          },
+          {
+            "text": "   - &#96;/v1/GetLocationHistory&#96; - Add allowed devices check",
+            "lineNumber": 108
+          },
+          {
+            "text": "   - &#96;/v1/GetLocationGeoJSON&#96; - Add DeviceKey check",
+            "lineNumber": 109
+          },
+          {
+            "lineNumber": 110
+          },
+          {
+            "text": "3. **New Models**:",
+            "lineNumber": 111
+          },
+          {
+            "lineNumber": 112
+          },
+          {
+            "text": "   - &#96;RequestSetDeviceKey&#96; - Parse setDeviceKey requests",
+            "lineNumber": 113
+          },
+          {
+            "text": "   - &#96;RequestSetAllowedDeviceList&#96; - Parse setAllowedDeviceList requests",
+            "lineNumber": 114
+          },
+          {
+            "text": "   - &#96;RequestLocation&#96; - Extend with optional DeviceKey field",
+            "lineNumber": 115
+          },
+          {
+            "text": "   - &#96;RequestVisitorHistory&#96; - Extend with optional DeviceKey field",
+            "lineNumber": 116
+          },
+          {
+            "lineNumber": 117
+          },
+          {
+            "text": "4. **New Error Types**:",
+            "lineNumber": 118
+          },
+          {
+            "lineNumber": 119
+          },
+          {
+            "text": "   - &#96;ForbiddenError&#96; (403) - For DeviceKey mismatches",
+            "lineNumber": 120
+          },
+          {
+            "text": "   - &#96;UnauthorizedError&#96; (401) - For GetLocationGeoJSON when DeviceKey is set",
+            "lineNumber": 121
+          },
+          {
+            "lineNumber": 122
+          },
+          {
+            "text": "## Implementation Details",
+            "lineNumber": 123
+          },
+          {
+            "lineNumber": 124
+          },
+          {
+            "text": "### Phase 1: Core Infrastructure",
+            "lineNumber": 125
+          },
+          {
+            "lineNumber": 126
+          },
+          {
+            "text": "#### 1.1 Error Handling",
+            "lineNumber": 127
+          },
+          {
+            "lineNumber": 128
+          },
+          {
+            "text": "**File**: &#96;lib/errors.js&#96;",
+            "lineNumber": 129
+          },
+          {
+            "lineNumber": 130
+          },
+          {
+            "text": "- Add &#96;ForbiddenError&#96; class (403 status code)",
+            "lineNumber": 131
+          },
+          {
+            "text": "- Add &#96;UnauthorizedError&#96; class (401 status code)",
+            "lineNumber": 132
+          },
+          {
+            "text": "- Export new error types",
+            "lineNumber": 133
+          },
+          {
+            "lineNumber": 134
+          },
+          {
+            "text": "#### 1.2 DeviceKey Storage Utilities",
+            "lineNumber": 135
+          },
+          {
+            "lineNumber": 136
+          },
+          {
+            "text": "**File**: &#96;lib/utils/deviceKey.js&#96; (new file)",
+            "lineNumber": 137
+          },
+          {
+            "lineNumber": 138
+          },
+          {
+            "text": "- &#96;getDeviceKey(deviceId, callback)&#96; - Retrieve device key from Redis",
+            "lineNumber": 139
+          },
+          {
+            "text": "- &#96;setDeviceKey(deviceId, deviceKey, callback)&#96; - Store device key in Redis",
+            "lineNumber": 140
+          },
+          {
+            "text": "- &#96;validateDeviceKey(deviceId, providedKey, callback)&#96; - Validate provided key against stored key",
+            "lineNumber": 141
+          },
+          {
+            "text": "- Redis key pattern: &#96;miad:$deviceid:key&#96;",
+            "lineNumber": 142
+          },
+          {
+            "lineNumber": 143
+          },
+          {
+            "text": "#### 1.3 Allowed Devices Storage Utilities",
+            "lineNumber": 144
+          },
+          {
+            "lineNumber": 145
+          },
+          {
+            "text": "**File**: &#96;lib/utils/allowedDevices.js&#96; (new file)",
+            "lineNumber": 146
+          },
+          {
+            "lineNumber": 147
+          },
+          {
+            "text": "- &#96;getAllowedDevices(deviceId, callback)&#96; - Retrieve allowed devices list from Redis",
+            "lineNumber": 148
+          },
+          {
+            "text": "- &#96;setAllowedDevices(deviceId, allowedDevices, callback)&#96; - Store/update allowed devices list",
+            "lineNumber": 149
+          }
+        ]
+      },
+      "score": 0.38874509930610657
+    },
+    {
+      "codeBlock": {
+        "relativeWorkspacePath": "./lib/utils/allowedDevices.js",
+        "range": {
+          "startPosition": {
+            "line": 187,
+            "column": 1
+          },
+          "endPosition": {
+            "line": 245,
+            "column": 41
+          }
+        },
+        "contents": "/**\n * Check if requesting device has access to target device\n * @param {string} deviceId - The target device ID\n * @param {string} requestingDeviceId - The requesting device ID\n * @param {string} accessType - 'currentLocation' or 'history'\n * @param {function} callback - Callback function (error, hasAccess)\n */\nfunction checkAccess(deviceId, requestingDeviceId, accessType, callback) {\n    if (!deviceId) {\n        return callback(new errors.BadRequestError('Device ID is required'));\n    }\n\n    if (!requestingDeviceId || requestingDeviceId === '') {\n        return callback(new errors.BadRequestError('RequestMiataruDeviceID is required'));\n    }\n\n    if (accessType !== ACCESS_TYPE_CURRENT_LOCATION &amp;&amp; accessType !== ACCESS_TYPE_HISTORY) {\n        return callback(new errors.BadRequestError('Invalid access type. Must be \"currentLocation\" or \"history\"'));\n    }\n\n    // Check if allowed devices list is enabled\n    isAllowedDeviceEnabled(deviceId, function(error, isEnabled) {\n        if (error) {\n            return callback(error);\n        }\n\n        // If not enabled, return default behavior (backward compatible)\n        // Both currentLocation and history default to allow when no list is set\n        // This maintains backward compatibility - existing clients get data as before\n        // The allowed devices list is an opt-in privacy feature\n        if (!isEnabled) {\n            return callback(null, true);\n        }\n\n        // Check hash for specific access type\n        var hashKey = kb.build(deviceId, KEY_SUFFIX);\n        var fieldKey = requestingDeviceId + ':' + accessType;\n\n        db.hget(hashKey, fieldKey, function(error2, value) {\n            if (error2) {\n                return callback(error2);\n            }\n\n            // If field doesn't exist, device is not in allowed list\n            if (value === null || value === undefined) {\n                return callback(null, false);\n            }\n\n            // Check if value is true\n            var hasAccess = (value === 'true' || value === '1');\n            callback(null, hasAccess);\n        });\n    });\n}\n\nmodule.exports = {\n    getAllowedDevices: getAllowedDevices,",
+        "signatures": {},
+        "detailedLines": [
+          {
+            "text": "/**",
+            "lineNumber": 190
+          },
+          {
+            "text": " * Check if requesting device has access to target device",
+            "lineNumber": 191
+          },
+          {
+            "text": " * @param {string} deviceId - The target device ID",
+            "lineNumber": 192
+          },
+          {
+            "text": " * @param {string} requestingDeviceId - The requesting device ID",
+            "lineNumber": 193
+          },
+          {
+            "text": " * @param {string} accessType - 'currentLocation' or 'history'",
+            "lineNumber": 194
+          },
+          {
+            "text": " * @param {function} callback - Callback function (error, hasAccess)",
+            "lineNumber": 195
+          },
+          {
+            "text": " */",
+            "lineNumber": 196
+          },
+          {
+            "text": "function checkAccess(deviceId, requestingDeviceId, accessType, callback) {",
+            "lineNumber": 197,
+            "isSignature": true
+          },
+          {
+            "text": "    if (!deviceId) {",
+            "lineNumber": 198
+          },
+          {
+            "text": "        return callback(new errors.BadRequestError('Device ID is required'));",
+            "lineNumber": 199
+          },
+          {
+            "text": "    }",
+            "lineNumber": 200
+          },
+          {
+            "lineNumber": 201
+          },
+          {
+            "text": "    if (!requestingDeviceId || requestingDeviceId === '') {",
+            "lineNumber": 202
+          },
+          {
+            "text": "        return callback(new errors.BadRequestError('RequestMiataruDeviceID is required'));",
+            "lineNumber": 203
+          },
+          {
+            "text": "    }",
+            "lineNumber": 204
+          },
+          {
+            "lineNumber": 205
+          },
+          {
+            "text": "    if (accessType !== ACCESS_TYPE_CURRENT_LOCATION &amp;&amp; accessType !== ACCESS_TYPE_HISTORY) {",
+            "lineNumber": 206
+          },
+          {
+            "text": "        return callback(new errors.BadRequestError('Invalid access type. Must be \"currentLocation\" or \"history\"'));",
+            "lineNumber": 207
+          },
+          {
+            "text": "    }",
+            "lineNumber": 208
+          },
+          {
+            "lineNumber": 209
+          },
+          {
+            "text": "    // Check if allowed devices list is enabled",
+            "lineNumber": 210
+          },
+          {
+            "text": "    isAllowedDeviceEnabled(deviceId, function(error, isEnabled) {",
+            "lineNumber": 211
+          },
+          {
+            "text": "        if (error) {",
+            "lineNumber": 212
+          },
+          {
+            "text": "            return callback(error);",
+            "lineNumber": 213
+          },
+          {
+            "text": "        }",
+            "lineNumber": 214
+          },
+          {
+            "lineNumber": 215
+          },
+          {
+            "text": "        // If not enabled, return default behavior (backward compatible)",
+            "lineNumber": 216
+          },
+          {
+            "text": "        // Both currentLocation and history default to allow when no list is set",
+            "lineNumber": 217
+          },
+          {
+            "text": "        // This maintains backward compatibility - existing clients get data as before",
+            "lineNumber": 218
+          },
+          {
+            "text": "        // The allowed devices list is an opt-in privacy feature",
+            "lineNumber": 219
+          },
+          {
+            "text": "        if (!isEnabled) {",
+            "lineNumber": 220
+          },
+          {
+            "text": "            return callback(null, true);",
+            "lineNumber": 221
+          },
+          {
+            "text": "        }",
+            "lineNumber": 222
+          },
+          {
+            "lineNumber": 223
+          },
+          {
+            "text": "        // Check hash for specific access type",
+            "lineNumber": 224
+          },
+          {
+            "text": "        var hashKey = kb.build(deviceId, KEY_SUFFIX);",
+            "lineNumber": 225
+          },
+          {
+            "text": "        var fieldKey = requestingDeviceId + ':' + accessType;",
+            "lineNumber": 226
+          },
+          {
+            "lineNumber": 227
+          },
+          {
+            "text": "        db.hget(hashKey, fieldKey, function(error2, value) {",
+            "lineNumber": 228
+          },
+          {
+            "text": "            if (error2) {",
+            "lineNumber": 229
+          },
+          {
+            "text": "                return callback(error2);",
+            "lineNumber": 230
+          },
+          {
+            "text": "            }",
+            "lineNumber": 231
+          },
+          {
+            "lineNumber": 232
+          },
+          {
+            "text": "            // If field doesn't exist, device is not in allowed list",
+            "lineNumber": 233
+          },
+          {
+            "text": "            if (value === null || value === undefined) {",
+            "lineNumber": 234
+          },
+          {
+            "text": "                return callback(null, false);",
+            "lineNumber": 235
+          },
+          {
+            "text": "            }",
+            "lineNumber": 236
+          },
+          {
+            "lineNumber": 237
+          },
+          {
+            "text": "            // Check if value is true",
+            "lineNumber": 238
+          },
+          {
+            "text": "            var hasAccess = (value === 'true' || value === '1');",
+            "lineNumber": 239
+          },
+          {
+            "text": "            callback(null, hasAccess);",
+            "lineNumber": 240
+          },
+          {
+            "text": "        });",
+            "lineNumber": 241
+          },
+          {
+            "text": "    });",
+            "lineNumber": 242
+          },
+          {
+            "text": "}",
+            "lineNumber": 243,
+            "isSignature": true
+          },
+          {
+            "lineNumber": 244
+          },
+          {
+            "text": "module.exports = {",
+            "lineNumber": 245
+          },
+          {
+            "text": "    getAllowedDevices: getAllowedDevices,",
+            "lineNumber": 246
+          }
+        ]
+      },
+      "score": 0.3875449001789093
+    },
+    {
+      "codeBlock": {
+        "relativeWorkspacePath": "./tests/integration/allowedDevices.tests.js",
+        "range": {
+          "startPosition": {
+            "line": 9
+          },
+          "endPosition": {
+            "line": 296
+          }
+        },
+        "contents": ";\n        });\n    });\n\n    describe('setAllowedDeviceList endpoint', function() {\n        it('should set allowed devices list with valid DeviceKey', function(done) {\n            // Set device key first\n            deviceKeyUtils.setDeviceKey(TEST_DEVICE, TEST_DEVICE_KEY, function(error) {\n                if (error) return done(error);\n\n                var setAllowedRequest = {\n                    MiataruSetAllowedDeviceList: {\n                        DeviceID: TEST_DEVICE,\n                        DeviceKey: TEST_DEVICE_KEY,\n                        allowedDevices: [\n                            {\n                                DeviceID: TEST_REQUESTING_DEVICE,\n                                hasCurrentLocationAccess: true,\n                                hasHistoryAccess: false\n                            }\n                        ]\n                    }\n                };\n\n                request(app)\n                    .post('/v1/setAllowedDeviceList')\n                    .send(setAllowedRequest)\n                    .expect(200)\n                    .expect(function(res) {\n                        expect(res.body.MiataruResponse).to.equal('ACK');\n                    })\n                    .end(function(err) {\n                        if (err) return done(err);\n\n                        // Verify list was set\n                        allowedDevicesUtils.isAllowedDeviceEnabled(TEST_DEVICE, function(error2, isEnabled) {\n                            expect(error2).to.be.null;\n                            expect(isEnabled).to.be.true;\n                            done();\n                        });\n                    });\n            });\n        });\n\n        it('should return 403 when DeviceKey does not match',",
+        "signatures": {
+          "ranges": [
+            {
+              "startPosition": {
+                "line": 10,
+                "column": 1
+              },
+              "endPosition": {
+                "line": 10,
+                "column": 1
+              }
+            }
+          ]
+        },
+        "detailedLines": [
+          {
+            "text": ";",
+            "lineNumber": 38
+          },
+          {
+            "text": "        });",
+            "lineNumber": 39
+          },
+          {
+            "text": "    });",
+            "lineNumber": 40
+          },
+          {
+            "lineNumber": 41
+          },
+          {
+            "text": "    describe('setAllowedDeviceList endpoint', function() {",
+            "lineNumber": 42
+          },
+          {
+            "text": "        it('should set allowed devices list with valid DeviceKey', function(done) {",
+            "lineNumber": 43
+          },
+          {
+            "text": "            // Set device key first",
+            "lineNumber": 44
+          },
+          {
+            "text": "            deviceKeyUtils.setDeviceKey(TEST_DEVICE, TEST_DEVICE_KEY, function(error) {",
+            "lineNumber": 45
+          },
+          {
+            "text": "                if (error) return done(error);",
+            "lineNumber": 46
+          },
+          {
+            "lineNumber": 47
+          },
+          {
+            "text": "                var setAllowedRequest = {",
+            "lineNumber": 48
+          },
+          {
+            "text": "                    MiataruSetAllowedDeviceList: {",
+            "lineNumber": 49
+          },
+          {
+            "text": "                        DeviceID: TEST_DEVICE,",
+            "lineNumber": 50
+          },
+          {
+            "text": "                        DeviceKey: TEST_DEVICE_KEY,",
+            "lineNumber": 51
+          },
+          {
+            "text": "                        allowedDevices: [",
+            "lineNumber": 52
+          },
+          {
+            "text": "                            {",
+            "lineNumber": 53
+          },
+          {
+            "text": "                                DeviceID: TEST_REQUESTING_DEVICE,",
+            "lineNumber": 54
+          },
+          {
+            "text": "                                hasCurrentLocationAccess: true,",
+            "lineNumber": 55
+          },
+          {
+            "text": "                                hasHistoryAccess: false",
+            "lineNumber": 56
+          },
+          {
+            "text": "                            }",
+            "lineNumber": 57
+          },
+          {
+            "text": "                        ]",
+            "lineNumber": 58
+          },
+          {
+            "text": "                    }",
+            "lineNumber": 59
+          },
+          {
+            "text": "                };",
+            "lineNumber": 60
+          },
+          {
+            "lineNumber": 61
+          },
+          {
+            "text": "                request(app)",
+            "lineNumber": 62
+          },
+          {
+            "text": "                    .post('/v1/setAllowedDeviceList')",
+            "lineNumber": 63
+          },
+          {
+            "text": "                    .send(setAllowedRequest)",
+            "lineNumber": 64
+          },
+          {
+            "text": "                    .expect(200)",
+            "lineNumber": 65
+          },
+          {
+            "text": "                    .expect(function(res) {",
+            "lineNumber": 66
+          },
+          {
+            "text": "                        expect(res.body.MiataruResponse).to.equal('ACK');",
+            "lineNumber": 67
+          },
+          {
+            "text": "                    })",
+            "lineNumber": 68
+          },
+          {
+            "text": "                    .end(function(err) {",
+            "lineNumber": 69
+          },
+          {
+            "text": "                        if (err) return done(err);",
+            "lineNumber": 70
+          },
+          {
+            "lineNumber": 71
+          },
+          {
+            "text": "                        // Verify list was set",
+            "lineNumber": 72
+          },
+          {
+            "text": "                        allowedDevicesUtils.isAllowedDeviceEnabled(TEST_DEVICE, function(error2, isEnabled) {",
+            "lineNumber": 73
+          },
+          {
+            "text": "                            expect(error2).to.be.null;",
+            "lineNumber": 74
+          },
+          {
+            "text": "                            expect(isEnabled).to.be.true;",
+            "lineNumber": 75
+          },
+          {
+            "text": "                            done();",
+            "lineNumber": 76
+          },
+          {
+            "text": "                        });",
+            "lineNumber": 77
+          },
+          {
+            "text": "                    });",
+            "lineNumber": 78
+          },
+          {
+            "text": "            });",
+            "lineNumber": 79
+          },
+          {
+            "text": "        });",
+            "lineNumber": 80
+          },
+          {
+            "lineNumber": 81
+          },
+          {
+            "text": "        it('should return 403 when DeviceKey does not match',",
+            "lineNumber": 82
+          }
+        ]
+      },
+      "score": 0.38286274671554565
+    },
+    {
+      "codeBlock": {
+        "relativeWorkspacePath": "./README.md",
+        "range": {
+          "startPosition": {
+            "line": 63
+          },
+          "endPosition": {
+            "line": 118
+          }
+        },
+        "contents": "DeviceKey provides authentication for write operations and visitor history access. Once set, devices must provide the correct DeviceKey to:\n- Update location data\n- Access visitor history\n\nSee [API 1.1 Security Documentation](docs/API_1.1_SECURITY.md) for details.\n\n### Allowed Devices List\n\nThe allowed devices list provides granular access control, allowing you to specify which devices can access:\n- Current location (via GetLocation)\n- Location history (via GetLocationHistory)\n\nSee [API 1.1 Security Documentation](docs/API_1.1_SECURITY.md) for details.\n\n## Migration from API 1.0\n\n**IMPORTANT:** All clients must update their &#96;GetLocation&#96; and &#96;GetLocationHistory&#96; requests to include &#96;RequestMiataruDeviceID&#96; in the &#96;MiataruConfig&#96; object. Requests without this field will return 400 Bad Request. Other security features remain opt-in:\n\n### Required Update: RequestMiataruDeviceID\n\nAdd &#96;MiataruConfig&#96; with &#96;RequestMiataruDeviceID&#96; to all GetLocation and GetLocationHistory requests:\n\n&#96;&#96;&#96;json\n{\n  \"MiataruConfig\": {\n    \"RequestMiataruDeviceID\": \"your-client-identifier\"\n  },\n  \"MiataruGetLocation\": [...]\n}\n&#96;&#96;&#96;\n\nThe identifier can be:\n- A unique device ID\n- An application identifier  \n- A URL or domain name\n- Any string that identifies the requesting client\n\n### Other Changes\n\nSecurity features are opt-in:\n- Devices without DeviceKey set work exactly as before\n- Devices without allowed devices list work exactly as before\n- All existing endpoints maintain the same response format\n\n**Breaking Changes:** \n- **RequestMiataruDeviceID is mandatory** for GetLocation and GetLocationHistory - See [Migration Guide](docs/MIGRATION_REQUESTMIATARUDEVICEID.md)\n- **GetLocationGeoJSON returns 401 Unauthorized when DeviceKey is set**. See [Compatibility Assessment](docs/COMPATIBILITY_ASSESSMENT.md) for details.\n\nFor client migration guidance:\n- **Quick Migration**: [RequestMiataruDeviceID Migration Guide](docs/MIGRATION_REQUESTMIATARUDEVICEID.md)\n- **Full Guide**: [iOS Client Adoption Guide](docs/CLIENT_ADOPTION_API_1.1.md)\n\n## Run the Server\n\nCheck out the repo:  ",
+        "signatures": {},
+        "detailedLines": [
+          {
+            "text": "DeviceKey provides authentication for write operations and visitor history access. Once set, devices must provide the correct DeviceKey to:",
+            "lineNumber": 64
+          },
+          {
+            "text": "- Update location data",
+            "lineNumber": 65
+          },
+          {
+            "text": "- Access visitor history",
+            "lineNumber": 66
+          },
+          {
+            "lineNumber": 67
+          },
+          {
+            "text": "See [API 1.1 Security Documentation](docs/API_1.1_SECURITY.md) for details.",
+            "lineNumber": 68
+          },
+          {
+            "lineNumber": 69
+          },
+          {
+            "text": "### Allowed Devices List",
+            "lineNumber": 70
+          },
+          {
+            "lineNumber": 71
+          },
+          {
+            "text": "The allowed devices list provides granular access control, allowing you to specify which devices can access:",
+            "lineNumber": 72
+          },
+          {
+            "text": "- Current location (via GetLocation)",
+            "lineNumber": 73
+          },
+          {
+            "text": "- Location history (via GetLocationHistory)",
+            "lineNumber": 74
+          },
+          {
+            "lineNumber": 75
+          },
+          {
+            "text": "See [API 1.1 Security Documentation](docs/API_1.1_SECURITY.md) for details.",
+            "lineNumber": 76
+          },
+          {
+            "lineNumber": 77
+          },
+          {
+            "text": "## Migration from API 1.0",
+            "lineNumber": 78
+          },
+          {
+            "lineNumber": 79
+          },
+          {
+            "text": "**IMPORTANT:** All clients must update their &#96;GetLocation&#96; and &#96;GetLocationHistory&#96; requests to include &#96;RequestMiataruDeviceID&#96; in the &#96;MiataruConfig&#96; object. Requests without this field will return 400 Bad Request. Other security features remain opt-in:",
+            "lineNumber": 80
+          },
+          {
+            "lineNumber": 81
+          },
+          {
+            "text": "### Required Update: RequestMiataruDeviceID",
+            "lineNumber": 82
+          },
+          {
+            "lineNumber": 83
+          },
+          {
+            "text": "Add &#96;MiataruConfig&#96; with &#96;RequestMiataruDeviceID&#96; to all GetLocation and GetLocationHistory requests:",
+            "lineNumber": 84
+          },
+          {
+            "lineNumber": 85
+          },
+          {
+            "text": "&#96;&#96;&#96;json",
+            "lineNumber": 86
+          },
+          {
+            "text": "{",
+            "lineNumber": 87
+          },
+          {
+            "text": "  \"MiataruConfig\": {",
+            "lineNumber": 88
+          },
+          {
+            "text": "    \"RequestMiataruDeviceID\": \"your-client-identifier\"",
+            "lineNumber": 89
+          },
+          {
+            "text": "  },",
+            "lineNumber": 90
+          },
+          {
+            "text": "  \"MiataruGetLocation\": [...]",
+            "lineNumber": 91
+          },
+          {
+            "text": "}",
+            "lineNumber": 92
+          },
+          {
+            "text": "&#96;&#96;&#96;",
+            "lineNumber": 93
+          },
+          {
+            "lineNumber": 94
+          },
+          {
+            "text": "The identifier can be:",
+            "lineNumber": 95
+          },
+          {
+            "text": "- A unique device ID",
+            "lineNumber": 96
+          },
+          {
+            "text": "- An application identifier  ",
+            "lineNumber": 97
+          },
+          {
+            "text": "- A URL or domain name",
+            "lineNumber": 98
+          },
+          {
+            "text": "- Any string that identifies the requesting client",
+            "lineNumber": 99
+          },
+          {
+            "lineNumber": 100
+          },
+          {
+            "text": "### Other Changes",
+            "lineNumber": 101
+          },
+          {
+            "lineNumber": 102
+          },
+          {
+            "text": "Security features are opt-in:",
+            "lineNumber": 103
+          },
+          {
+            "text": "- Devices without DeviceKey set work exactly as before",
+            "lineNumber": 104
+          },
+          {
+            "text": "- Devices without allowed devices list work exactly as before",
+            "lineNumber": 105
+          },
+          {
+            "text": "- All existing endpoints maintain the same response format",
+            "lineNumber": 106
+          },
+          {
+            "lineNumber": 107
+          },
+          {
+            "text": "**Breaking Changes:** ",
+            "lineNumber": 108
+          },
+          {
+            "text": "- **RequestMiataruDeviceID is mandatory** for GetLocation and GetLocationHistory - See [Migration Guide](docs/MIGRATION_REQUESTMIATARUDEVICEID.md)",
+            "lineNumber": 109
+          },
+          {
+            "text": "- **GetLocationGeoJSON returns 401 Unauthorized when DeviceKey is set**. See [Compatibility Assessment](docs/COMPATIBILITY_ASSESSMENT.md) for details.",
+            "lineNumber": 110
+          },
+          {
+            "lineNumber": 111
+          },
+          {
+            "text": "For client migration guidance:",
+            "lineNumber": 112
+          },
+          {
+            "text": "- **Quick Migration**: [RequestMiataruDeviceID Migration Guide](docs/MIGRATION_REQUESTMIATARUDEVICEID.md)",
+            "lineNumber": 113
+          },
+          {
+            "text": "- **Full Guide**: [iOS Client Adoption Guide](docs/CLIENT_ADOPTION_API_1.1.md)",
+            "lineNumber": 114
+          },
+          {
+            "lineNumber": 115
+          },
+          {
+            "text": "## Run the Server",
+            "lineNumber": 116
+          },
+          {
+            "lineNumber": 117
+          },
+          {
+            "text": "Check out the repo:  ",
+            "lineNumber": 118
+          }
+        ]
+      },
+      "score": 0.3735578954219818
+    },
+    {
+      "codeBlock": {
+        "relativeWorkspacePath": "./.cursor/plans/miataru_server_2.0_api_1.1_security_implementation_0d55c5ea.plan.md",
+        "range": {
+          "startPosition": {
+            "line": 147
+          },
+          "endPosition": {
+            "line": 197
+          }
+        },
+        "contents": "- &#96;getAllowedDevices(deviceId, callback)&#96; - Retrieve allowed devices list from Redis\n- &#96;setAllowedDevices(deviceId, allowedDevices, callback)&#96; - Store/update allowed devices list\n- &#96;isAllowedDeviceEnabled(deviceId, callback)&#96; - Check if allowed devices list is enabled\n- &#96;checkAccess(deviceId, requestingDeviceId, accessType, callback)&#96; - Check if requesting device has access\n- Redis storage pattern:\n  - Hash: &#96;miad:$deviceid:allowed&#96; with fields &#96;$allowedDeviceId:currentLocation&#96; and &#96;$allowedDeviceId:history&#96;\n  - Flag: &#96;miad:$deviceid:allowed:enabled&#96; (set to \"1\" when list exists)\n\n### Phase 2: Request Models\n\n#### 2.1 Extend RequestLocation Model\n\n**File**: &#96;lib/models/RequestLocation.js&#96;\n\n- Add optional &#96;DeviceKey&#96; field (can be null/empty/undefined)\n- Add getter method &#96;deviceKey()&#96; that returns the DeviceKey or null\n- Ensure backward compatibility - DeviceKey is optional and doesn't break existing validation\n\n#### 2.2 Extend RequestVisitorHistory Model\n\n**File**: &#96;lib/models/RequestVisitorHistory.js&#96;\n\n- Add optional &#96;DeviceKey&#96; field (can be null/empty/undefined)\n- Add getter method &#96;deviceKey()&#96; that returns the DeviceKey or null\n- Ensure backward compatibility\n\n#### 2.3 Create RequestSetDeviceKey Model\n\n**File**: &#96;lib/models/RequestSetDeviceKey.js&#96; (new file)\n\n- Validate required fields: &#96;DeviceID&#96;, &#96;CurrentDeviceKey&#96; (optional), &#96;NewDeviceKey&#96;\n- Validate NewDeviceKey length (max 256 characters unicode)\n- Handle null/empty CurrentDeviceKey for first-time setup\n\n#### 2.4 Create RequestSetAllowedDeviceList Model\n\n**File**: &#96;lib/models/RequestSetAllowedDeviceList.js&#96; (new file)\n\n- Validate required fields: &#96;DeviceID&#96;, &#96;DeviceKey&#96;, &#96;allowedDevices&#96; (array, max 256 elements)\n- Validate allowedDevice structure: &#96;DeviceID&#96;, &#96;hasCurrentLocationAccess&#96;, &#96;hasHistoryAccess&#96;\n- Validate boolean fields for access control\n\n### Phase 3: Input Parsing\n\n#### 3.1 Extend Input Parser\n\n**File**: &#96;lib/routes/location/v1/inputParser.js&#96;\n\n- Add parsing for &#96;/v1/setDeviceKey&#96; endpoint\n- Add parsing for &#96;/v1/setAllowedDeviceList&#96; endpoint",
+        "signatures": {},
+        "detailedLines": [
+          {
+            "text": "- &#96;getAllowedDevices(deviceId, callback)&#96; - Retrieve allowed devices list from Redis",
+            "lineNumber": 148
+          },
+          {
+            "text": "- &#96;setAllowedDevices(deviceId, allowedDevices, callback)&#96; - Store/update allowed devices list",
+            "lineNumber": 149
+          },
+          {
+            "text": "- &#96;isAllowedDeviceEnabled(deviceId, callback)&#96; - Check if allowed devices list is enabled",
+            "lineNumber": 150
+          },
+          {
+            "text": "- &#96;checkAccess(deviceId, requestingDeviceId, accessType, callback)&#96; - Check if requesting device has access",
+            "lineNumber": 151
+          },
+          {
+            "text": "- Redis storage pattern:",
+            "lineNumber": 152
+          },
+          {
+            "text": "  - Hash: &#96;miad:$deviceid:allowed&#96; with fields &#96;$allowedDeviceId:currentLocation&#96; and &#96;$allowedDeviceId:history&#96;",
+            "lineNumber": 153
+          },
+          {
+            "text": "  - Flag: &#96;miad:$deviceid:allowed:enabled&#96; (set to \"1\" when list exists)",
+            "lineNumber": 154
+          },
+          {
+            "lineNumber": 155
+          },
+          {
+            "text": "### Phase 2: Request Models",
+            "lineNumber": 156
+          },
+          {
+            "lineNumber": 157
+          },
+          {
+            "text": "#### 2.1 Extend RequestLocation Model",
+            "lineNumber": 158
+          },
+          {
+            "lineNumber": 159
+          },
+          {
+            "text": "**File**: &#96;lib/models/RequestLocation.js&#96;",
+            "lineNumber": 160
+          },
+          {
+            "lineNumber": 161
+          },
+          {
+            "text": "- Add optional &#96;DeviceKey&#96; field (can be null/empty/undefined)",
+            "lineNumber": 162
+          },
+          {
+            "text": "- Add getter method &#96;deviceKey()&#96; that returns the DeviceKey or null",
+            "lineNumber": 163
+          },
+          {
+            "text": "- Ensure backward compatibility - DeviceKey is optional and doesn't break existing validation",
+            "lineNumber": 164
+          },
+          {
+            "lineNumber": 165
+          },
+          {
+            "text": "#### 2.2 Extend RequestVisitorHistory Model",
+            "lineNumber": 166
+          },
+          {
+            "lineNumber": 167
+          },
+          {
+            "text": "**File**: &#96;lib/models/RequestVisitorHistory.js&#96;",
+            "lineNumber": 168
+          },
+          {
+            "lineNumber": 169
+          },
+          {
+            "text": "- Add optional &#96;DeviceKey&#96; field (can be null/empty/undefined)",
+            "lineNumber": 170
+          },
+          {
+            "text": "- Add getter method &#96;deviceKey()&#96; that returns the DeviceKey or null",
+            "lineNumber": 171
+          },
+          {
+            "text": "- Ensure backward compatibility",
+            "lineNumber": 172
+          },
+          {
+            "lineNumber": 173
+          },
+          {
+            "text": "#### 2.3 Create RequestSetDeviceKey Model",
+            "lineNumber": 174
+          },
+          {
+            "lineNumber": 175
+          },
+          {
+            "text": "**File**: &#96;lib/models/RequestSetDeviceKey.js&#96; (new file)",
+            "lineNumber": 176
+          },
+          {
+            "lineNumber": 177
+          },
+          {
+            "text": "- Validate required fields: &#96;DeviceID&#96;, &#96;CurrentDeviceKey&#96; (optional), &#96;NewDeviceKey&#96;",
+            "lineNumber": 178
+          },
+          {
+            "text": "- Validate NewDeviceKey length (max 256 characters unicode)",
+            "lineNumber": 179
+          },
+          {
+            "text": "- Handle null/empty CurrentDeviceKey for first-time setup",
+            "lineNumber": 180
+          },
+          {
+            "lineNumber": 181
+          },
+          {
+            "text": "#### 2.4 Create RequestSetAllowedDeviceList Model",
+            "lineNumber": 182
+          },
+          {
+            "lineNumber": 183
+          },
+          {
+            "text": "**File**: &#96;lib/models/RequestSetAllowedDeviceList.js&#96; (new file)",
+            "lineNumber": 184
+          },
+          {
+            "lineNumber": 185
+          },
+          {
+            "text": "- Validate required fields: &#96;DeviceID&#96;, &#96;DeviceKey&#96;, &#96;allowedDevices&#96; (array, max 256 elements)",
+            "lineNumber": 186
+          },
+          {
+            "text": "- Validate allowedDevice structure: &#96;DeviceID&#96;, &#96;hasCurrentLocationAccess&#96;, &#96;hasHistoryAccess&#96;",
+            "lineNumber": 187
+          },
+          {
+            "text": "- Validate boolean fields for access control",
+            "lineNumber": 188
+          },
+          {
+            "lineNumber": 189
+          },
+          {
+            "text": "### Phase 3: Input Parsing",
+            "lineNumber": 190
+          },
+          {
+            "lineNumber": 191
+          },
+          {
+            "text": "#### 3.1 Extend Input Parser",
+            "lineNumber": 192
+          },
+          {
+            "lineNumber": 193
+          },
+          {
+            "text": "**File**: &#96;lib/routes/location/v1/inputParser.js&#96;",
+            "lineNumber": 194
+          },
+          {
+            "lineNumber": 195
+          },
+          {
+            "text": "- Add parsing for &#96;/v1/setDeviceKey&#96; endpoint",
+            "lineNumber": 196
+          },
+          {
+            "text": "- Add parsing for &#96;/v1/setAllowedDeviceList&#96; endpoint",
+            "lineNumber": 197
+          }
+        ]
+      },
+      "score": 0.37096625566482544
+    },
+    {
+      "codeBlock": {
+        "relativeWorkspacePath": "./lib/utils/allowedDevices.js",
+        "range": {
+          "startPosition": {
+            "line": 28,
+            "column": 1
+          },
+          "endPosition": {
+            "line": 99,
+            "column": 1
+          }
+        },
+        "contents": "/**\n * Get allowed devices list from Redis\n * @param {string} deviceId - The device ID\n * @param {function} callback - Callback function (error, allowedDevices)\n *                              allowedDevices is an array of objects with DeviceID, hasCurrentLocationAccess, hasHistoryAccess\n */\nfunction getAllowedDevices(deviceId, callback) {\n    if (!deviceId) {\n        return callback(new Error('Device ID is required'));\n    }\n\n    var hashKey = kb.build(deviceId, KEY_SUFFIX);\n    \n    // Check if enabled first\n    isAllowedDeviceEnabled(deviceId, function(error, isEnabled) {\n        if (error) {\n            return callback(error);\n        }\n\n        if (!isEnabled) {\n            return callback(null, []);\n        }\n\n        // Get all fields from hash\n        db.hgetall(hashKey, function(error, hashData) {\n            if (error) {\n                return callback(error);\n            }\n\n\n}",
+        "signatures": {},
+        "detailedLines": [
+          {
+            "text": "/**",
+            "lineNumber": 31
+          },
+          {
+            "text": " * Get allowed devices list from Redis",
+            "lineNumber": 32
+          },
+          {
+            "text": " * @param {string} deviceId - The device ID",
+            "lineNumber": 33
+          },
+          {
+            "text": " * @param {function} callback - Callback function (error, allowedDevices)",
+            "lineNumber": 34
+          },
+          {
+            "text": " *                              allowedDevices is an array of objects with DeviceID, hasCurrentLocationAccess, hasHistoryAccess",
+            "lineNumber": 35
+          },
+          {
+            "text": " */",
+            "lineNumber": 36
+          },
+          {
+            "text": "function getAllowedDevices(deviceId, callback) {",
+            "lineNumber": 37,
+            "isSignature": true
+          },
+          {
+            "text": "    if (!deviceId) {",
+            "lineNumber": 38
+          },
+          {
+            "text": "        return callback(new Error('Device ID is required'));",
+            "lineNumber": 39
+          },
+          {
+            "text": "    }",
+            "lineNumber": 40
+          },
+          {
+            "lineNumber": 41
+          },
+          {
+            "text": "    var hashKey = kb.build(deviceId, KEY_SUFFIX);",
+            "lineNumber": 42
+          },
+          {
+            "text": "    ",
+            "lineNumber": 43
+          },
+          {
+            "text": "    // Check if enabled first",
+            "lineNumber": 44
+          },
+          {
+            "text": "    isAllowedDeviceEnabled(deviceId, function(error, isEnabled) {",
+            "lineNumber": 45
+          },
+          {
+            "text": "        if (error) {",
+            "lineNumber": 46
+          },
+          {
+            "text": "            return callback(error);",
+            "lineNumber": 47
+          },
+          {
+            "text": "        }",
+            "lineNumber": 48
+          },
+          {
+            "lineNumber": 49
+          },
+          {
+            "text": "        if (!isEnabled) {",
+            "lineNumber": 50
+          },
+          {
+            "text": "            return callback(null, []);",
+            "lineNumber": 51
+          },
+          {
+            "text": "        }",
+            "lineNumber": 52
+          },
+          {
+            "lineNumber": 53
+          },
+          {
+            "text": "        // Get all fields from hash",
+            "lineNumber": 54
+          },
+          {
+            "text": "        db.hgetall(hashKey, function(error, hashData) {",
+            "lineNumber": 55
+          },
+          {
+            "text": "            if (error) {",
+            "lineNumber": 56
+          },
+          {
+            "text": "                return callback(error);",
+            "lineNumber": 57
+          },
+          {
+            "text": "            }",
+            "lineNumber": 58
+          },
+          {
+            "lineNumber": 98
+          },
+          {
+            "lineNumber": 99
+          },
+          {
+            "text": "}",
+            "lineNumber": 100,
+            "isSignature": true
+          }
+        ]
+      },
+      "score": 0.3694154918193817
+    },
+    {
+      "codeBlock": {
+        "relativeWorkspacePath": "./docs/swagger.yaml",
+        "range": {
+          "startPosition": {
+            "line": 519
+          },
+          "endPosition": {
+            "line": 580
+          }
+        },
+        "contents": "  properties:\n   MiataruResponse:\n    type: string\n    default: \"ACK\"\n   MiataruVerboseResponse:\n    type: string\n    default: \"Device key set successfully\"\n MiataruSetAllowedDeviceListRequest:\n  required:\n  - MiataruSetAllowedDeviceList\n  properties:\n   MiataruSetAllowedDeviceList:\n    type: object\n    required:\n    - DeviceID\n    - DeviceKey\n    - allowedDevices\n    properties:\n     DeviceID:\n      type: string\n      description: the device ID of the calling device\n      default: \"7b8e6e0ee5296db345162dc2ef652c1350761823\"\n     DeviceKey:\n      type: string\n      description: the device key matching for the specific DeviceID\n      maxLength: 256\n     allowedDevices:\n      type: array\n      description: array containing allowedDevice data structure elements (up to 256)\n      maxItems: 256\n      items:\n       $ref: '#/definitions/MiataruAllowedDevice'\n MiataruAllowedDevice:\n  type: object\n  required:\n  - DeviceID\n  - hasCurrentLocationAccess\n  - hasHistoryAccess\n  properties:\n   DeviceID:\n    type: string\n    description: the DeviceID of the device that is allowed access\n   hasCurrentLocationAccess:\n    type: boolean\n    description: true if this device has permission to access current location\n    default: false\n   hasHistoryAccess:\n    type: boolean\n    description: true if this device has permission to access location history\n    default: false\n MiataruSetAllowedDeviceListResponse:\n  required:\n  - MiataruResponse\n  - MiataruVerboseResponse\n  properties:\n   MiataruResponse:\n    type: string\n    default: \"ACK\"\n   MiataruVerboseResponse:\n    type: string\n    default: \"Allowed devices list updated successfully\"",
+        "signatures": {},
+        "detailedLines": [
+          {
+            "text": "  properties:",
+            "lineNumber": 520
+          },
+          {
+            "text": "   MiataruResponse:",
+            "lineNumber": 521
+          },
+          {
+            "text": "    type: string",
+            "lineNumber": 522
+          },
+          {
+            "text": "    default: \"ACK\"",
+            "lineNumber": 523
+          },
+          {
+            "text": "   MiataruVerboseResponse:",
+            "lineNumber": 524
+          },
+          {
+            "text": "    type: string",
+            "lineNumber": 525
+          },
+          {
+            "text": "    default: \"Device key set successfully\"",
+            "lineNumber": 526
+          },
+          {
+            "text": " MiataruSetAllowedDeviceListRequest:",
+            "lineNumber": 527
+          },
+          {
+            "text": "  required:",
+            "lineNumber": 528
+          },
+          {
+            "text": "  - MiataruSetAllowedDeviceList",
+            "lineNumber": 529
+          },
+          {
+            "text": "  properties:",
+            "lineNumber": 530
+          },
+          {
+            "text": "   MiataruSetAllowedDeviceList:",
+            "lineNumber": 531
+          },
+          {
+            "text": "    type: object",
+            "lineNumber": 532
+          },
+          {
+            "text": "    required:",
+            "lineNumber": 533
+          },
+          {
+            "text": "    - DeviceID",
+            "lineNumber": 534
+          },
+          {
+            "text": "    - DeviceKey",
+            "lineNumber": 535
+          },
+          {
+            "text": "    - allowedDevices",
+            "lineNumber": 536
+          },
+          {
+            "text": "    properties:",
+            "lineNumber": 537
+          },
+          {
+            "text": "     DeviceID:",
+            "lineNumber": 538
+          },
+          {
+            "text": "      type: string",
+            "lineNumber": 539
+          },
+          {
+            "text": "      description: the device ID of the calling device",
+            "lineNumber": 540
+          },
+          {
+            "text": "      default: \"7b8e6e0ee5296db345162dc2ef652c1350761823\"",
+            "lineNumber": 541
+          },
+          {
+            "text": "     DeviceKey:",
+            "lineNumber": 542
+          },
+          {
+            "text": "      type: string",
+            "lineNumber": 543
+          },
+          {
+            "text": "      description: the device key matching for the specific DeviceID",
+            "lineNumber": 544
+          },
+          {
+            "text": "      maxLength: 256",
+            "lineNumber": 545
+          },
+          {
+            "text": "     allowedDevices:",
+            "lineNumber": 546
+          },
+          {
+            "text": "      type: array",
+            "lineNumber": 547
+          },
+          {
+            "text": "      description: array containing allowedDevice data structure elements (up to 256)",
+            "lineNumber": 548
+          },
+          {
+            "text": "      maxItems: 256",
+            "lineNumber": 549
+          },
+          {
+            "text": "      items:",
+            "lineNumber": 550
+          },
+          {
+            "text": "       $ref: '#/definitions/MiataruAllowedDevice'",
+            "lineNumber": 551
+          },
+          {
+            "text": " MiataruAllowedDevice:",
+            "lineNumber": 552
+          },
+          {
+            "text": "  type: object",
+            "lineNumber": 553
+          },
+          {
+            "text": "  required:",
+            "lineNumber": 554
+          },
+          {
+            "text": "  - DeviceID",
+            "lineNumber": 555
+          },
+          {
+            "text": "  - hasCurrentLocationAccess",
+            "lineNumber": 556
+          },
+          {
+            "text": "  - hasHistoryAccess",
+            "lineNumber": 557
+          },
+          {
+            "text": "  properties:",
+            "lineNumber": 558
+          },
+          {
+            "text": "   DeviceID:",
+            "lineNumber": 559
+          },
+          {
+            "text": "    type: string",
+            "lineNumber": 560
+          },
+          {
+            "text": "    description: the DeviceID of the device that is allowed access",
+            "lineNumber": 561
+          },
+          {
+            "text": "   hasCurrentLocationAccess:",
+            "lineNumber": 562
+          },
+          {
+            "text": "    type: boolean",
+            "lineNumber": 563
+          },
+          {
+            "text": "    description: true if this device has permission to access current location",
+            "lineNumber": 564
+          },
+          {
+            "text": "    default: false",
+            "lineNumber": 565
+          },
+          {
+            "text": "   hasHistoryAccess:",
+            "lineNumber": 566
+          },
+          {
+            "text": "    type: boolean",
+            "lineNumber": 567
+          },
+          {
+            "text": "    description: true if this device has permission to access location history",
+            "lineNumber": 568
+          },
+          {
+            "text": "    default: false",
+            "lineNumber": 569
+          },
+          {
+            "text": " MiataruSetAllowedDeviceListResponse:",
+            "lineNumber": 570
+          },
+          {
+            "text": "  required:",
+            "lineNumber": 571
+          },
+          {
+            "text": "  - MiataruResponse",
+            "lineNumber": 572
+          },
+          {
+            "text": "  - MiataruVerboseResponse",
+            "lineNumber": 573
+          },
+          {
+            "text": "  properties:",
+            "lineNumber": 574
+          },
+          {
+            "text": "   MiataruResponse:",
+            "lineNumber": 575
+          },
+          {
+            "text": "    type: string",
+            "lineNumber": 576
+          },
+          {
+            "text": "    default: \"ACK\"",
+            "lineNumber": 577
+          },
+          {
+            "text": "   MiataruVerboseResponse:",
+            "lineNumber": 578
+          },
+          {
+            "text": "    type: string",
+            "lineNumber": 579
+          },
+          {
+            "text": "    default: \"Allowed devices list updated successfully\"",
+            "lineNumber": 580
+          }
+        ]
+      },
+      "score": 0.368390291929245
+    },
+    {
+      "codeBlock": {
+        "relativeWorkspacePath": "./lib/utils/allowedDevices.js",
+        "range": {
+          "startPosition": {
+            "line": 108
+          },
+          "endPosition": {
+            "line": 187,
+            "column": 1
+          }
+        },
+        "contents": "function setAllowedDevices(deviceId, allowedDevices, callback) {\n\n\n    // Delete existing hash first (to handle removals)\n    db.del(hashKey, function(error) {\n        if (error) {\n            return callback(error);\n        }\n\n        if (allowedDevices.length === 0) {\n            // If empty array, remove the enabled flag\n            db.del(flagKey, function(error2) {\n                if (error2) {\n                    return callback(error2);\n                }\n                callback(null);\n            });\n            return;\n        }\n\n        // Build hash data structure\n        var hashData = {};\n        allowedDevices.forEach(function(allowedDevice) {\n            if (!allowedDevice || !allowedDevice.DeviceID) {\n                return; // Skip invalid entries\n            }\n\n            var allowedDeviceId = allowedDevice.DeviceID;\n            var currentLocationKey = allowedDeviceId + ':' + ACCESS_TYPE_CURRENT_LOCATION;\n            var historyKey = allowedDeviceId + ':' + ACCESS_TYPE_HISTORY;\n\n            hashData[currentLocationKey] = (allowedDevice.hasCurrentLocationAccess === true) ? 'true' : 'false';\n            hashData[historyKey] = (allowedDevice.hasHistoryAccess === true) ? 'true' : 'false';\n        });\n\n        // Set hash fields sequentially\n        var hashFields = Object.keys(hashData);\n        \n        if (hashFields.length &gt; 0)\n\n}",
+        "signatures": {
+          "ranges": [
+            {
+              "startPosition": {
+                "line": 109,
+                "column": 1
+              },
+              "endPosition": {
+                "line": 110,
+                "column": 5
+              }
+            }
+          ]
+        },
+        "detailedLines": [
+          {
+            "text": "function setAllowedDevices(deviceId, allowedDevices, callback) {",
+            "lineNumber": 109,
+            "isSignature": true
+          },
+          {
+            "lineNumber": 124
+          },
+          {
+            "lineNumber": 125
+          },
+          {
+            "text": "    // Delete existing hash first (to handle removals)",
+            "lineNumber": 126
+          },
+          {
+            "text": "    db.del(hashKey, function(error) {",
+            "lineNumber": 127
+          },
+          {
+            "text": "        if (error) {",
+            "lineNumber": 128
+          },
+          {
+            "text": "            return callback(error);",
+            "lineNumber": 129
+          },
+          {
+            "text": "        }",
+            "lineNumber": 130
+          },
+          {
+            "lineNumber": 131
+          },
+          {
+            "text": "        if (allowedDevices.length === 0) {",
+            "lineNumber": 132
+          },
+          {
+            "text": "            // If empty array, remove the enabled flag",
+            "lineNumber": 133
+          },
+          {
+            "text": "            db.del(flagKey, function(error2) {",
+            "lineNumber": 134
+          },
+          {
+            "text": "                if (error2) {",
+            "lineNumber": 135
+          },
+          {
+            "text": "                    return callback(error2);",
+            "lineNumber": 136
+          },
+          {
+            "text": "                }",
+            "lineNumber": 137
+          },
+          {
+            "text": "                callback(null);",
+            "lineNumber": 138
+          },
+          {
+            "text": "            });",
+            "lineNumber": 139
+          },
+          {
+            "text": "            return;",
+            "lineNumber": 140
+          },
+          {
+            "text": "        }",
+            "lineNumber": 141
+          },
+          {
+            "lineNumber": 142
+          },
+          {
+            "text": "        // Build hash data structure",
+            "lineNumber": 143
+          },
+          {
+            "text": "        var hashData = {};",
+            "lineNumber": 144
+          },
+          {
+            "text": "        allowedDevices.forEach(function(allowedDevice) {",
+            "lineNumber": 145
+          },
+          {
+            "text": "            if (!allowedDevice || !allowedDevice.DeviceID) {",
+            "lineNumber": 146
+          },
+          {
+            "text": "                return; // Skip invalid entries",
+            "lineNumber": 147
+          },
+          {
+            "text": "            }",
+            "lineNumber": 148
+          },
+          {
+            "lineNumber": 149
+          },
+          {
+            "text": "            var allowedDeviceId = allowedDevice.DeviceID;",
+            "lineNumber": 150
+          },
+          {
+            "text": "            var currentLocationKey = allowedDeviceId + ':' + ACCESS_TYPE_CURRENT_LOCATION;",
+            "lineNumber": 151
+          },
+          {
+            "text": "            var historyKey = allowedDeviceId + ':' + ACCESS_TYPE_HISTORY;",
+            "lineNumber": 152
+          },
+          {
+            "lineNumber": 153
+          },
+          {
+            "text": "            hashData[currentLocationKey] = (allowedDevice.hasCurrentLocationAccess === true) ? 'true' : 'false';",
+            "lineNumber": 154
+          },
+          {
+            "text": "            hashData[historyKey] = (allowedDevice.hasHistoryAccess === true) ? 'true' : 'false';",
+            "lineNumber": 155
+          },
+          {
+            "text": "        });",
+            "lineNumber": 156
+          },
+          {
+            "lineNumber": 157
+          },
+          {
+            "text": "        // Set hash fields sequentially",
+            "lineNumber": 158
+          },
+          {
+            "text": "        var hashFields = Object.keys(hashData);",
+            "lineNumber": 159
+          },
+          {
+            "text": "        ",
+            "lineNumber": 160
+          },
+          {
+            "text": "        if (hashFields.length &gt; 0)",
+            "lineNumber": 161
+          },
+          {
+            "lineNumber": 187
+          },
+          {
+            "text": "}",
+            "lineNumber": 188,
+            "isSignature": true
+          }
+        ]
+      },
+      "score": 0.36568260192871094
+    },
+    {
+      "codeBlock": {
+        "relativeWorkspacePath": "./docs/WHATS_NEW_V2.md",
+        "range": {
+          "startPosition": {},
+          "endPosition": {
+            "line": 35
+          }
+        },
+        "contents": "# What's New in Version 2.0\n\n**miataru-server Version 2.0.0** - Security and Privacy Enhancements  \n**miataru API Version 1.1.0** - Device Authentication and Access Control\n\nVersion 2.0 introduces comprehensive security and privacy enhancements to the Miataru server, including DeviceKey authentication and fine-grained access control through allowed devices lists. Most features remain backward compatible with v1.0 clients, with new requirements for GetLocation/GetLocationHistory and the documented GetLocationGeoJSON behavior change.\n\n## Overview\n\nVersion 2.0 focuses on giving device owners complete control over who can access their location data. The implementation adds two major security features:\n\n1. **DeviceKey Authentication** - Secure device-level authentication using cryptographic keys\n2. **Allowed Devices Access Control** - Fine-grained permissions for location sharing\n\nThese features work together to provide enterprise-grade security while maintaining the simplicity and ease of use that Miataru is known for.\n\n## Key Highlights\n\n- ✅ **Broad Backward Compatibility** - Most existing v1.0 clients continue to work without modification\n- ✅ **Optional Security** - Security features are opt-in and don't affect existing deployments\n- ✅ **Privacy-First Design** - Default behavior prioritizes user privacy\n- ✅ **Simple Migration Path** - Easy adoption for clients that want enhanced security\n- ⚠️ **Breaking Changes** - RequestMiataruDeviceID is required for GetLocation/GetLocationHistory, plus the documented GetLocationGeoJSON behavior change\n\n## New Security Features\n\n### DeviceKey Authentication\n\nDeviceKey authentication provides secure, device-level authentication for location updates and sensitive operations. Each device can set a unique cryptographic key (up to 256 Unicode characters) that must be provided for protected operations.\n\n#### How It Works\n\n1. **First-Time Setup**: Device owners set an initial DeviceKey using the &#96;/v1/setDeviceKey&#96; endpoint\n2. **Key Validation**: When a DeviceKey is set, protected endpoints require the key to be provided\n3. **Key Management**: DeviceKeys can be changed by providing the current key along with the new key",
+        "signatures": {},
+        "detailedLines": [
+          {
+            "text": "# What's New in Version 2.0",
+            "lineNumber": 1
+          },
+          {
+            "lineNumber": 2
+          },
+          {
+            "text": "**miataru-server Version 2.0.0** - Security and Privacy Enhancements  ",
+            "lineNumber": 3
+          },
+          {
+            "text": "**miataru API Version 1.1.0** - Device Authentication and Access Control",
+            "lineNumber": 4
+          },
+          {
+            "lineNumber": 5
+          },
+          {
+            "text": "Version 2.0 introduces comprehensive security and privacy enhancements to the Miataru server, including DeviceKey authentication and fine-grained access control through allowed devices lists. Most features remain backward compatible with v1.0 clients, with new requirements for GetLocation/GetLocationHistory and the documented GetLocationGeoJSON behavior change.",
+            "lineNumber": 6
+          },
+          {
+            "lineNumber": 7
+          },
+          {
+            "text": "## Overview",
+            "lineNumber": 8
+          },
+          {
+            "lineNumber": 9
+          },
+          {
+            "text": "Version 2.0 focuses on giving device owners complete control over who can access their location data. The implementation adds two major security features:",
+            "lineNumber": 10
+          },
+          {
+            "lineNumber": 11
+          },
+          {
+            "text": "1. **DeviceKey Authentication** - Secure device-level authentication using cryptographic keys",
+            "lineNumber": 12
+          },
+          {
+            "text": "2. **Allowed Devices Access Control** - Fine-grained permissions for location sharing",
+            "lineNumber": 13
+          },
+          {
+            "lineNumber": 14
+          },
+          {
+            "text": "These features work together to provide enterprise-grade security while maintaining the simplicity and ease of use that Miataru is known for.",
+            "lineNumber": 15
+          },
+          {
+            "lineNumber": 16
+          },
+          {
+            "text": "## Key Highlights",
+            "lineNumber": 17
+          },
+          {
+            "lineNumber": 18
+          },
+          {
+            "text": "- ✅ **Broad Backward Compatibility** - Most existing v1.0 clients continue to work without modification",
+            "lineNumber": 19
+          },
+          {
+            "text": "- ✅ **Optional Security** - Security features are opt-in and don't affect existing deployments",
+            "lineNumber": 20
+          },
+          {
+            "text": "- ✅ **Privacy-First Design** - Default behavior prioritizes user privacy",
+            "lineNumber": 21
+          },
+          {
+            "text": "- ✅ **Simple Migration Path** - Easy adoption for clients that want enhanced security",
+            "lineNumber": 22
+          },
+          {
+            "text": "- ⚠️ **Breaking Changes** - RequestMiataruDeviceID is required for GetLocation/GetLocationHistory, plus the documented GetLocationGeoJSON behavior change",
+            "lineNumber": 23
+          },
+          {
+            "lineNumber": 24
+          },
+          {
+            "text": "## New Security Features",
+            "lineNumber": 25
+          },
+          {
+            "lineNumber": 26
+          },
+          {
+            "text": "### DeviceKey Authentication",
+            "lineNumber": 27
+          },
+          {
+            "lineNumber": 28
+          },
+          {
+            "text": "DeviceKey authentication provides secure, device-level authentication for location updates and sensitive operations. Each device can set a unique cryptographic key (up to 256 Unicode characters) that must be provided for protected operations.",
+            "lineNumber": 29
+          },
+          {
+            "lineNumber": 30
+          },
+          {
+            "text": "#### How It Works",
+            "lineNumber": 31
+          },
+          {
+            "lineNumber": 32
+          },
+          {
+            "text": "1. **First-Time Setup**: Device owners set an initial DeviceKey using the &#96;/v1/setDeviceKey&#96; endpoint",
+            "lineNumber": 33
+          },
+          {
+            "text": "2. **Key Validation**: When a DeviceKey is set, protected endpoints require the key to be provided",
+            "lineNumber": 34
+          },
+          {
+            "text": "3. **Key Management**: DeviceKeys can be changed by providing the current key along with the new key",
+            "lineNumber": 35
+          }
+        ]
+      },
+      "score": 0.3642463684082031
+    },
+    {
+      "codeBlock": {
+        "relativeWorkspacePath": "./lib/routes/location/v1/location.js",
+        "range": {
+          "startPosition": {
+            "line": 324,
+            "column": 1
+          },
+          "endPosition": {
+            "line": 433,
+            "column": 1
+          }
+        },
+        "contents": "/**\n * UpdateLocation\n * api endpoint that updates the currentLocation and a arbitrary number of history locations\n *\n * @param req\n * @param res\n * @param next\n */\nfunction updateLocation(req, res, next) {\n    var MIATARU = req.MIATARU;\n    var requestConfig = MIATARU.config;\n    var locations = MIATARU.locations;\n\n    var chain = seq();\n\n    // Validate DeviceKey for each location if DeviceKey is set for the device\n    locations.forEach(function(loc, idx) {\n        var deviceId = loc.device();\n        var providedDeviceKey = loc.deviceKey();\n\n        chain.seq(function() {\n            var done = this;\n            // Check if DeviceKey is set for this device\n            deviceKeyUtils.getDeviceKey(deviceId, function(error, storedKey) {\n                if (error) {\n                    return done(error);\n                }\n\n                // If DeviceKey is set for this device, validate provided key\n                if (storedKey !== null &amp;&amp; storedKey !== undefined) {\n                    // DeviceKey is required when it's set\n                    if (!providedDeviceKey || providedDeviceKey === null || providedDeviceKey === '') {\n                        return done(new errors.ForbiddenError('DeviceKey is required for this device'));\n                    }\n\n                    // Validate provided key matches stored key\n                    deviceKeyUtils.validateDeviceKey(deviceId, providedDeviceKey, function(error2, isValid) {\n                        if (error2) {\n                            return done(error2);\n                        }\n\n                        if (!isValid) {\n                            return done(new errors.ForbiddenError('DeviceKey does not match'));\n                        }\n\n                        done();\n                    });\n                } else {\n                    // No DeviceKey set, proceed normally (backward compatible)\n                    done();\n                }\n            });\n        });\n    });\n\n    if(requestConfig.enableLocationHistory())\n}",
+        "signatures": {},
+        "detailedLines": [
+          {
+            "text": "/**",
+            "lineNumber": 327
+          },
+          {
+            "text": " * UpdateLocation",
+            "lineNumber": 328
+          },
+          {
+            "text": " * api endpoint that updates the currentLocation and a arbitrary number of history locations",
+            "lineNumber": 329
+          },
+          {
+            "text": " *",
+            "lineNumber": 330
+          },
+          {
+            "text": " * @param req",
+            "lineNumber": 331
+          },
+          {
+            "text": " * @param res",
+            "lineNumber": 332
+          },
+          {
+            "text": " * @param next",
+            "lineNumber": 333
+          },
+          {
+            "text": " */",
+            "lineNumber": 334
+          },
+          {
+            "text": "function updateLocation(req, res, next) {",
+            "lineNumber": 335,
+            "isSignature": true
+          },
+          {
+            "text": "    var MIATARU = req.MIATARU;",
+            "lineNumber": 336
+          },
+          {
+            "text": "    var requestConfig = MIATARU.config;",
+            "lineNumber": 337
+          },
+          {
+            "text": "    var locations = MIATARU.locations;",
+            "lineNumber": 338
+          },
+          {
+            "lineNumber": 339
+          },
+          {
+            "text": "    var chain = seq();",
+            "lineNumber": 340
+          },
+          {
+            "lineNumber": 341
+          },
+          {
+            "text": "    // Validate DeviceKey for each location if DeviceKey is set for the device",
+            "lineNumber": 342
+          },
+          {
+            "text": "    locations.forEach(function(loc, idx) {",
+            "lineNumber": 343
+          },
+          {
+            "text": "        var deviceId = loc.device();",
+            "lineNumber": 344
+          },
+          {
+            "text": "        var providedDeviceKey = loc.deviceKey();",
+            "lineNumber": 345
+          },
+          {
+            "lineNumber": 346
+          },
+          {
+            "text": "        chain.seq(function() {",
+            "lineNumber": 347
+          },
+          {
+            "text": "            var done = this;",
+            "lineNumber": 348
+          },
+          {
+            "text": "            // Check if DeviceKey is set for this device",
+            "lineNumber": 349
+          },
+          {
+            "text": "            deviceKeyUtils.getDeviceKey(deviceId, function(error, storedKey) {",
+            "lineNumber": 350
+          },
+          {
+            "text": "                if (error) {",
+            "lineNumber": 351
+          },
+          {
+            "text": "                    return done(error);",
+            "lineNumber": 352
+          },
+          {
+            "text": "                }",
+            "lineNumber": 353
+          },
+          {
+            "lineNumber": 354
+          },
+          {
+            "text": "                // If DeviceKey is set for this device, validate provided key",
+            "lineNumber": 355
+          },
+          {
+            "text": "                if (storedKey !== null &amp;&amp; storedKey !== undefined) {",
+            "lineNumber": 356
+          },
+          {
+            "text": "                    // DeviceKey is required when it's set",
+            "lineNumber": 357
+          },
+          {
+            "text": "                    if (!providedDeviceKey || providedDeviceKey === null || providedDeviceKey === '') {",
+            "lineNumber": 358
+          },
+          {
+            "text": "                        return done(new errors.ForbiddenError('DeviceKey is required for this device'));",
+            "lineNumber": 359
+          },
+          {
+            "text": "                    }",
+            "lineNumber": 360
+          },
+          {
+            "lineNumber": 361
+          },
+          {
+            "text": "                    // Validate provided key matches stored key",
+            "lineNumber": 362
+          },
+          {
+            "text": "                    deviceKeyUtils.validateDeviceKey(deviceId, providedDeviceKey, function(error2, isValid) {",
+            "lineNumber": 363
+          },
+          {
+            "text": "                        if (error2) {",
+            "lineNumber": 364
+          },
+          {
+            "text": "                            return done(error2);",
+            "lineNumber": 365
+          },
+          {
+            "text": "                        }",
+            "lineNumber": 366
+          },
+          {
+            "lineNumber": 367
+          },
+          {
+            "text": "                        if (!isValid) {",
+            "lineNumber": 368
+          },
+          {
+            "text": "                            return done(new errors.ForbiddenError('DeviceKey does not match'));",
+            "lineNumber": 369
+          },
+          {
+            "text": "                        }",
+            "lineNumber": 370
+          },
+          {
+            "lineNumber": 371
+          },
+          {
+            "text": "                        done();",
+            "lineNumber": 372
+          },
+          {
+            "text": "                    });",
+            "lineNumber": 373
+          },
+          {
+            "text": "                } else {",
+            "lineNumber": 374
+          },
+          {
+            "text": "                    // No DeviceKey set, proceed normally (backward compatible)",
+            "lineNumber": 375
+          },
+          {
+            "text": "                    done();",
+            "lineNumber": 376
+          },
+          {
+            "text": "                }",
+            "lineNumber": 377
+          },
+          {
+            "text": "            });",
+            "lineNumber": 378
+          },
+          {
+            "text": "        });",
+            "lineNumber": 379
+          },
+          {
+            "text": "    });",
+            "lineNumber": 380
+          },
+          {
+            "lineNumber": 381
+          },
+          {
+            "text": "    if(requestConfig.enableLocationHistory())",
+            "lineNumber": 382
+          },
+          {
+            "text": "}",
+            "lineNumber": 434,
+            "isSignature": true
+          }
+        ]
+      },
+      "score": 0.36161696910858154
+    },
+    {
+      "codeBlock": {
+        "relativeWorkspacePath": "./tests/integration/allowedDevices.tests.js",
+        "range": {
+          "startPosition": {
+            "line": 9
+          },
+          "endPosition": {
+            "line": 296
+          }
+        },
+        "contents": "        it('should return 403 when DeviceKey does not match', function(done) {\n            // Set device key first\n            deviceKeyUtils.setDeviceKey(TEST_DEVICE, TEST_DEVICE_KEY, function(error) {\n                if (error) return done(error);\n\n                var setAllowedRequest = {\n                    MiataruSetAllowedDeviceList: {\n                        DeviceID: TEST_DEVICE,\n                        DeviceKey: 'wrong-key',\n                        allowedDevices: []\n                    }\n                };\n\n                request(app)\n                    .post('/v1/setAllowedDeviceList')\n                    .send(setAllowedRequest)\n                    .expect(403)\n                    .expect(function(res) {\n                        expect(res.body.error).to.include('DeviceKey does not match');\n                    })\n                    .end(done);\n            });\n        });\n    });\n\n    describe('GetLocation with allowed devices',",
+        "signatures": {
+          "ranges": [
+            {
+              "startPosition": {
+                "line": 10,
+                "column": 1
+              },
+              "endPosition": {
+                "line": 10,
+                "column": 1
+              }
+            },
+            {
+              "startPosition": {
+                "line": 42,
+                "column": 5
+              },
+              "endPosition": {
+                "line": 42,
+                "column": 5
+              }
+            }
+          ]
+        },
+        "detailedLines": [
+          {
+            "text": "        it('should return 403 when DeviceKey does not match', function(done) {",
+            "lineNumber": 82
+          },
+          {
+            "text": "            // Set device key first",
+            "lineNumber": 83
+          },
+          {
+            "text": "            deviceKeyUtils.setDeviceKey(TEST_DEVICE, TEST_DEVICE_KEY, function(error) {",
+            "lineNumber": 84
+          },
+          {
+            "text": "                if (error) return done(error);",
+            "lineNumber": 85
+          },
+          {
+            "lineNumber": 86
+          },
+          {
+            "text": "                var setAllowedRequest = {",
+            "lineNumber": 87
+          },
+          {
+            "text": "                    MiataruSetAllowedDeviceList: {",
+            "lineNumber": 88
+          },
+          {
+            "text": "                        DeviceID: TEST_DEVICE,",
+            "lineNumber": 89
+          },
+          {
+            "text": "                        DeviceKey: 'wrong-key',",
+            "lineNumber": 90
+          },
+          {
+            "text": "                        allowedDevices: []",
+            "lineNumber": 91
+          },
+          {
+            "text": "                    }",
+            "lineNumber": 92
+          },
+          {
+            "text": "                };",
+            "lineNumber": 93
+          },
+          {
+            "lineNumber": 94
+          },
+          {
+            "text": "                request(app)",
+            "lineNumber": 95
+          },
+          {
+            "text": "                    .post('/v1/setAllowedDeviceList')",
+            "lineNumber": 96
+          },
+          {
+            "text": "                    .send(setAllowedRequest)",
+            "lineNumber": 97
+          },
+          {
+            "text": "                    .expect(403)",
+            "lineNumber": 98
+          },
+          {
+            "text": "                    .expect(function(res) {",
+            "lineNumber": 99
+          },
+          {
+            "text": "                        expect(res.body.error).to.include('DeviceKey does not match');",
+            "lineNumber": 100
+          },
+          {
+            "text": "                    })",
+            "lineNumber": 101
+          },
+          {
+            "text": "                    .end(done);",
+            "lineNumber": 102
+          },
+          {
+            "text": "            });",
+            "lineNumber": 103
+          },
+          {
+            "text": "        });",
+            "lineNumber": 104
+          },
+          {
+            "text": "    });",
+            "lineNumber": 105
+          },
+          {
+            "lineNumber": 106
+          },
+          {
+            "text": "    describe('GetLocation with allowed devices',",
+            "lineNumber": 107
+          }
+        ]
+      },
+      "score": 0.3573848605155945
+    }
+  ]
+}
+```
+Status: **completed**
+
+
+</details>
+</tool-use>
+
+---
+
+<tool-use data-tool-type="read" data-tool-name="read_file_v2">
+<details><summary>Tool use: **read_file_v2** • Read file: /Users/bietiekay/code/miataru-server/lib/routes/location/v1/location.js</summary>
+
+</details>
+</tool-use>
+
+---
+
+<tool-use data-tool-type="unknown" data-tool-name="ripgrep_raw_search">
+<details>
+<summary>Tool use: **ripgrep_raw_search**</summary>
+
+
+Parameters:
+
+```json
+{
+  "pattern": "MiataruDeleteLocation",
+  "caseInsensitive": false
+}
+```
+Result:
+
+```json
+{
+  "success": {
+    "pattern": "MiataruDeleteLocation",
+    "outputMode": "content",
+    "workspaceResults": {
+      "/Users/bietiekay/code/miataru-server": {
+        "content": {
+          "matches": [
+            {
+              "file": "./README.md",
+              "matches": [
+                {
+                  "lineNumber": 152,
+                  "content": "  -d '{\"MiataruDeleteLocation\":{\"Device\":\"7b8e6e0ee5296db345162dc2ef652c1350761823\"}}'"
+                },
+                {
+                  "lineNumber": 168,
+                  "content": "  \"MiataruDeleteLocation\": {"
+                },
+                {
+                  "lineNumber": 192,
+                  "content": "  -d '{\"MiataruDeleteLocation\":{\"Device\":\"my-device-123\"}}'"
+                }
+              ]
+            },
+            {
+              "file": "./docs/PRD.md",
+              "matches": [
+                {
+                  "lineNumber": 77,
+                  "content": "- **Inputs / Triggers**: HTTP POST &#96;/v1/DeleteLocation&#96; or &#96;/DeleteLocation&#96; with &#96;MiataruDeleteLocation.Device&#96;. (Evidence: README.md L90-L124; lib/routes/location/index.js L17-L30; lib/routes/location/v1/inputParser.js L98-L100)"
+                }
+              ]
+            },
+            {
+              "file": "./.specstory/history/2026-01-25_18-23Z-deletelocation-method-update-and-documentation.md",
+              "matches": [
+                {
+                  "lineNumber": 552,
+                  "content": "        \"contents\": \"# DeleteLocation API Documentation\\n\\n## Overview\\n\\nThe DeleteLocation API endpoint allows you to permanently delete all location data associated with a specific device. This includes:\\n\\n- Current/last known location data\\n- Complete location history\\n- Visitor history data\\n\\n## Endpoints\\n\\n### Version 1 API\\n- **POST** &amp;#96;/v1/DeleteLocation&amp;#96;\\n\\n### Default API (Legacy)\\n- **POST** &amp;#96;/DeleteLocation&amp;#96;\\n\\n## Request Format\\n\\n### Request Body Structure\\n&amp;#96;&amp;#96;&amp;#96;json\\n{\\n  \\\"MiataruDeleteLocation\\\": {\\n    \\\"Device\\\": \\\"device-id-here\\\"\\n  }\\n}\\n&amp;#96;&amp;#96;&amp;#96;\\n\\n### Parameters\\n\\n| Parameter | Type | Required | Description |\\n|-----------|------|----------|-------------|\\n| &amp;#96;MiataruDeleteLocation&amp;#96; | Object | Yes | Container object for delete request |\\n| &amp;#96;Device&amp;#96; | String | Yes | Unique identifier of the device whose location data should be deleted |\\n\\n## Response Format\\n\\n### Success Response\\n&amp;#96;&amp;#96;&amp;#96;json\\n{\\n  \\\"Mi [... omitted end of long line]"
+                },
+                {
+                  "lineNumber": 640,
+                  "content": "            \"text\": \"  \\\"MiataruDeleteLocation\\\": {\","
+                },
+                {
+                  "lineNumber": 678,
+                  "content": "            \"text\": \"| &amp;#96;MiataruDeleteLocation&amp;#96; | Object | Yes | Container object for delete request |\","
+                },
+                {
+                  "lineNumber": 818,
+                  "content": "            \"text\": \"  -d '{\\\"MiataruDeleteLocation\\\":{\\\"Device\\\":\\\"my-device-123\\\"}}'\","
+                },
+                {
+                  "lineNumber": 841,
+                  "content": "            \"text\": \"  -d '{\\\"MiataruDeleteLocation\\\":{\\\"Device\\\":\\\"my-device-123\\\"}}'\","
+                },
+                {
+                  "lineNumber": 886,
+                  "content": "        \"contents\": \"### JavaScript Example\\n&amp;#96;&amp;#96;&amp;#96;javascript\\nconst deleteLocationData = async (deviceId) =&amp;gt; {\\n  const response = await fetch('http://localhost:8080/v1/DeleteLocation', {\\n    method: 'POST',\\n    headers: {\\n      'Content-Type': 'application/json'\\n    },\\n    body: JSON.stringify({\\n      MiataruDeleteLocation: {\\n        Device: deviceId\\n      }\\n    })\\n  });\\n  \\n  const result = await response.json();\\n  console.log(&amp;#96;Deleted ${result.MiataruDeletedCount} data entries for device ${deviceId}&amp;#96;);\\n  return result;\\n};\\n&amp;#96;&amp;#96;&amp;#96;\\n\\n## What Gets Deleted\\n\\nThe DeleteLocation operation removes the following Redis keys for the specified device:\\n\\n1. **Last Known Location**: &amp;#96;miad:{device-id}:last&amp;#96;\\n   - Contains the most recent location data\\n   - May have TTL (time-to-live) if location history is disabled\\n\\n2. **Location History**: &amp;#96;miad:{device-id}:hist&amp;#96;\\n   - Contains the complete location history as a Redis list\\n   - O [... omitted end of long line]"
+                },
+                {
+                  "lineNumber": 926,
+                  "content": "            \"text\": \"      MiataruDeleteLocation: {\","
+                },
+                {
+                  "lineNumber": 2603,
+                  "content": "        \"contents\": \"#!/bin/bash\\n\\n# DeleteLocation API Test Script\\n# This script demonstrates the DeleteLocation API functionality\\n\\nSERVER_URL=\\\"http://localhost:8080\\\"\\nDEVICE_ID=\\\"test-delete-device-$(date +%s)\\\"\\n\\necho \\\"=== DeleteLocation API Test ===\\\"\\necho \\\"Server: $SERVER_URL\\\"\\necho \\\"Test Device ID: $DEVICE_ID\\\"\\necho \\\"\\\"\\n\\n# Step 1: Add some location data\\necho \\\"Step 1: Adding location data...\\\"\\ncurl -s -H 'Content-Type: application/json' -X POST \\\"$SERVER_URL/v1/UpdateLocation\\\" \\\\\\n  -d \\\"{\\n    \\\\\\\"MiataruConfig\\\\\\\": {\\n      \\\\\\\"EnableLocationHistory\\\\\\\": \\\\\\\"True\\\\\\\",\\n      \\\\\\\"LocationDataRetentionTime\\\\\\\": \\\\\\\"15\\\\\\\"\\n    },\\n    \\\\\\\"MiataruLocation\\\\\\\": [{\\n      \\\\\\\"Device\\\\\\\": \\\\\\\"$DEVICE_ID\\\\\\\",\\n      \\\\\\\"Timestamp\\\\\\\": \\\\\\\"$(date +%s)000\\\\\\\",\\n      \\\\\\\"Longitude\\\\\\\": \\\\\\\"10.837502\\\\\\\",\\n      \\\\\\\"Latitude\\\\\\\": \\\\\\\"49.828925\\\\\\\",\\n      \\\\\\\"HorizontalAccuracy\\\\\\\": \\\\\\\"50.00\\\\\\\"\\n    }]\\n  }\\\" | jq '.'\\n\\necho \\\"\\\"\\n\\n# Step 2: Verify location data ex [... omitted end of long line]"
+                },
+                {
+                  "lineNumber": 2787,
+                  "content": "            \"text\": \"    \\\\\\\"MiataruDeleteLocation\\\\\\\": {\","
+                },
+                {
+                  "lineNumber": 2871,
+                  "content": "            \"text\": \"    \\\\\\\"MiataruDeleteLocation\\\\\\\": {\","
+                },
+                {
+                  "lineNumber": 3182,
+                  "content": "        \"contents\": \"getLocationRequest = {\\n\\n                    };\\n\\n                    request(app)\\n                        .post('/v1/GetLocation')\\n                        .send(getLocationRequest)\\n                        .expect(200)\\n                        .end(function(err, res) {\\n                            if (err) return done(err);\\n                            expect(res.body.MiataruLocation[0]).to.have.property('Device', deviceId);\\n\\n                            // Step 3: Delete location data\\n                            var deleteRequest = {\\n                                \\\"MiataruDeleteLocation\\\": {\\n                                    \\\"Device\\\": deviceId\\n                                }\\n                            };\\n\\n                            request(app)\\n                                .post('/v1/DeleteLocation')\\n                                .send(deleteRequest)\\n                                .expect(200)\\n                                .expec [... omitted end of long line]"
+                },
+                {
+                  "lineNumber": 3282,
+                  "content": "            \"text\": \"                                \\\"MiataruDeleteLocation\\\": {\","
+                },
+                {
+                  "lineNumber": 3416,
+                  "content": "        \"contents\": \"var expect = require('chai').expect;\\nvar request = require('supertest');\\n\\nvar app = require('../../server');\\nvar calls = require('../testFiles/calls');\\n\\ndescribe('DeleteLocation', function() {\\n    var TEST_DEVICE = 'test-delete-device';\\n\\n    beforeEach(function(done) {\\n        // Clean up any existing data for test device\\n        var deleteRequest = {\\n            \\\"MiataruDeleteLocation\\\": {\\n                \\\"Device\\\": TEST_DEVICE\\n            }\\n        };\\n\\n        request(app)\\n            .post('/v1/DeleteLocation')\\n            .send(deleteRequest)\\n            .end(function() {\\n                done();\\n            });\\n    });\\n\\n    describe('Basic DeleteLocation functionality', function() {\\n        it('should return ACK when deleting location data for existing device', function(done) {\\n            // First, add some location data\\n            var updateData = calls.locationUpdateCall({\\n                locations: [calls.location({device: TE [... omitted end of long line]"
+                },
+                {
+                  "lineNumber": 3465,
+                  "content": "            \"text\": \"            \\\"MiataruDeleteLocation\\\": {\","
+                },
+                {
+                  "lineNumber": 5646,
+                  "content": "                  \"content\": \"  -d '{\\\"MiataruDeleteLocation\\\":{\\\"Device\\\":\\\"7b8e6e0ee5296db345162dc2ef652c1350761823\\\"}}'\""
+                },
+                {
+                  "lineNumber": 5658,
+                  "content": "                  \"content\": \"  \\\"MiataruDeleteLocation\\\": {\""
+                },
+                {
+                  "lineNumber": 5666,
+                  "content": "                  \"content\": \"  -d '{\\\"MiataruDeleteLocation\\\":{\\\"Device\\\":\\\"my-device-123\\\"}}'\""
+                },
+                {
+                  "lineNumber": 5756,
+                  "content": "                  \"content\": \"            \\\"text\\\": \\\"  -d '{\\\\\\\"MiataruDeleteLocation\\\\\\\":{\\\\\\\"Device\\\\\\\":\\\\\\\"7b8e6e0ee5296db345162dc2ef652c1350761823\\\\\\\"}}'\\\",\""
+                },
+                {
+                  "lineNumber": 5768,
+                  "content": "                  \"content\": \"        \\\"contents\\\": \\\"# DeleteLocation API Documentation\\\\n\\\\n## Overview\\\\n\\\\nThe DeleteLocation API endpoint allows you to permanently delete all location data associated with a specific device. This includes:\\\\n\\\\n- Current/last known location data\\\\n- Complete location history\\\\n- Visitor history data\\\\n\\\\n## Endpoints\\\\n\\\\n### Version 1 API\\\\n- **POST** &amp;amp;#96;/v1/DeleteLocation&amp;amp;#96;\\\\n\\\\n### Default API (Legacy)\\\\n- **POST** &amp;amp;#96;/DeleteLocation&amp;amp;#96;\\\\n\\\\n## Request Format\\\\n\\\\n### Request Body Structure\\\\n&amp;amp;#96;&amp;amp;#96;&amp;amp;#96;json\\\\n{\\\\n  \\\\\\\"MiataruDeleteLocation\\\\\\\": {\\\\n    \\\\\\\"Device\\\\\\\": \\\\\\\"device-id-here\\\\\\\"\\\\n  }\\\\n}\\\\n&amp;amp;#96;&amp;amp;#96;&amp;amp;#96;\\\\n\\\\n### Parameters\\\\n\\\\n| Parameter | Type | Required | Description |\\\\n|-----------|------|----------|-------------|\\\\n| &amp;amp;#96;MiataruDeleteLocation&amp;amp;#96; | Object | Yes | Container object for delete request |\\\\n| &amp;amp;#96;Device&amp;amp;#96; | String | Yes | Unique identif [... omitted end of long line]"
+                },
+                {
+                  "lineNumber": 5788,
+                  "content": "                  \"content\": \"            \\\"text\\\": \\\"  \\\\\\\"MiataruDeleteLocation\\\\\\\": {\\\",\""
+                },
+                {
+                  "lineNumber": 5792,
+                  "content": "                  \"content\": \"            \\\"text\\\": \\\"| &amp;amp;#96;MiataruDeleteLocation&amp;amp;#96; | Object | Yes | Container object for delete request |\\\",\""
+                },
+                {
+                  "lineNumber": 5800,
+                  "content": "                  \"content\": \"            \\\"text\\\": \\\"  -d '{\\\\\\\"MiataruDeleteLocation\\\\\\\":{\\\\\\\"Device\\\\\\\":\\\\\\\"my-device-123\\\\\\\"}}'\\\",\""
+                },
+                {
+                  "lineNumber": 5808,
+                  "content": "                  \"content\": \"            \\\"text\\\": \\\"  -d '{\\\\\\\"MiataruDeleteLocation\\\\\\\":{\\\\\\\"Device\\\\\\\":\\\\\\\"my-device-123\\\\\\\"}}'\\\",\""
+                },
+                {
+                  "lineNumber": 5840,
+                  "content": "                  \"content\": \"        \\\"contents\\\": \\\"function parseGetVisitorHistory(req) {\\\\n    req.MIATARU.request = new RequestVisitorHistory(req.body['MiataruGetVisitorHistory'] || {});\\\\n}\\\\n\\\\nfunction parseDeleteLocation(req) {\\\\n    req.MIATARU.request = new RequestDevice(req.body['MiataruDeleteLocation'] || {})\\\\n}\\\",\""
+                },
+                {
+                  "lineNumber": 5848,
+                  "content": "                  \"content\": \"            \\\"text\\\": \\\"    req.MIATARU.request = new RequestDevice(req.body['MiataruDeleteLocation'] || {})\\\",\""
+                },
+                {
+                  "lineNumber": 5912,
+                  "content": "                  \"content\": \"            \\\"text\\\": \\\"  -d '{\\\\\\\"MiataruDeleteLocation\\\\\\\":{\\\\\\\"Device\\\\\\\":\\\\\\\"7b8e6e0ee5296db345162dc2ef652c1350761823\\\\\\\"}}'\\\",\""
+                },
+                {
+                  "lineNumber": 5988,
+                  "content": "                  \"content\": \"            \\\"text\\\": \\\"  -d '{\\\\\\\"MiataruDeleteLocation\\\\\\\":{\\\\\\\"Device\\\\\\\":\\\\\\\"7b8e6e0ee5296db345162dc2ef652c1350761823\\\\\\\"}}'\\\",\""
+                },
+                {
+                  "lineNumber": 6000,
+                  "content": "                  \"content\": \"        \\\"contents\\\": \\\"&amp;amp;#96;&amp;amp;#96;&amp;amp;#96;\\\\n\\\\n**Get location in GeoJSON format:**\\\\n&amp;amp;#96;&amp;amp;#96;&amp;amp;#96;bash\\\\ncurl -H 'Content-Type: application/json' -X POST 'http://localhost:8090/v1/GetLocationGeoJSON' \\\\\\\\\\\\n  -d '{\\\\\\\"MiataruGetLocation\\\\\\\":[{\\\\\\\"Device\\\\\\\":\\\\\\\"7b8e6e0ee5296db345162dc2ef652c1350761823\\\\\\\"}]}'\\\\n&amp;amp;#96;&amp;amp;#96;&amp;amp;#96;\\\\n\\\\n## DeleteLocation API\\\\n\\\\nThe DeleteLocation API allows you to permanently delete all location data associated with a specific device.\\\\n\\\\n### Request Format\\\\n&amp;amp;#96;&amp;amp;#96;&amp;amp;#96;json\\\\n{\\\\n  \\\\\\\"MiataruDeleteLocation\\\\\\\": {\\\\n    \\\\\\\"Device\\\\\\\": \\\\\\\"device-id-here\\\\\\\"\\\\n  }\\\\n}\\\\n&amp;amp;#96;&amp;amp;#96;&amp;amp;#96;\\\\n\\\\n### Response Format\\\\n&amp;amp;#96;&amp;amp;#96;&amp;amp;#96;json\\\\n{\\\\n  \\\\\\\"MiataruResponse\\\\\\\": \\\\\\\"ACK\\\\\\\",\\\\n  \\\\\\\"MiataruVerboseResponse\\\\\\\": \\\\\\\"Location data deleted for device: device-id-here\\\\\\\",\\\\n  \\\\\\\"MiataruDeletedCount\\\\\\\": 3\\\\n}\\\\n&amp;amp;#96;&amp;amp;#96;&amp;amp;#96;\\\\n\\\\n### Wha [... omitted end of long line]"
+                },
+                {
+                  "lineNumber": 6012,
+                  "content": "                  \"content\": \"            \\\"text\\\": \\\"  \\\\\\\"MiataruDeleteLocation\\\\\\\": {\\\",\""
+                },
+                {
+                  "lineNumber": 6020,
+                  "content": "                  \"content\": \"            \\\"text\\\": \\\"  -d '{\\\\\\\"MiataruDeleteLocation\\\\\\\":{\\\\\\\"Device\\\\\\\":\\\\\\\"my-device-123\\\\\\\"}}'\\\",\""
+                },
+                {
+                  "lineNumber": 6024,
+                  "content": "                  \"content\": \"        \\\"contents\\\": \\\"# DeleteLocation API Documentation\\\\n\\\\n## Overview\\\\n\\\\nThe DeleteLocation API endpoint allows you to permanently delete all location data associated with a specific device. This includes:\\\\n\\\\n- Current/last known location data\\\\n- Complete location history\\\\n- Visitor history data\\\\n\\\\n## Endpoints\\\\n\\\\n### Version 1 API\\\\n- **POST** &amp;amp;#96;/v1/DeleteLocation&amp;amp;#96;\\\\n\\\\n### Default API (Legacy)\\\\n- **POST** &amp;amp;#96;/DeleteLocation&amp;amp;#96;\\\\n\\\\n## Request Format\\\\n\\\\n### Request Body Structure\\\\n&amp;amp;#96;&amp;amp;#96;&amp;amp;#96;json\\\\n{\\\\n  \\\\\\\"MiataruDeleteLocation\\\\\\\": {\\\\n    \\\\\\\"Device\\\\\\\": \\\\\\\"device-id-here\\\\\\\"\\\\n  }\\\\n}\\\\n&amp;amp;#96;&amp;amp;#96;&amp;amp;#96;\\\\n\\\\n### Parameters\\\\n\\\\n| Parameter | Type | Required | Description |\\\\n|-----------|------|----------|-------------|\\\\n| &amp;amp;#96;MiataruDeleteLocation&amp;amp;#96; | Object | Yes | Container object for delete request |\\\\n| &amp;amp;#96;Device&amp;amp;#96; | String | Yes | Unique identif [... omitted end of long line]"
+                },
+                {
+                  "lineNumber": 6044,
+                  "content": "                  \"content\": \"            \\\"text\\\": \\\"  \\\\\\\"MiataruDeleteLocation\\\\\\\": {\\\",\""
+                },
+                {
+                  "lineNumber": 6048,
+                  "content": "                  \"content\": \"            \\\"text\\\": \\\"| &amp;amp;#96;MiataruDeleteLocation&amp;amp;#96; | Object | Yes | Container object for delete request |\\\",\""
+                },
+                {
+                  "lineNumber": 6056,
+                  "content": "                  \"content\": \"            \\\"text\\\": \\\"  -d '{\\\\\\\"MiataruDeleteLocation\\\\\\\":{\\\\\\\"Device\\\\\\\":\\\\\\\"my-device-123\\\\\\\"}}'\\\",\""
+                },
+                {
+                  "lineNumber": 6064,
+                  "content": "                  \"content\": \"            \\\"text\\\": \\\"  -d '{\\\\\\\"MiataruDeleteLocation\\\\\\\":{\\\\\\\"Device\\\\\\\":\\\\\\\"my-device-123\\\\\\\"}}'\\\",\""
+                },
+                {
+                  "lineNumber": 6172,
+                  "content": "                  \"content\": \"      ✔ should handle missing MiataruDeleteLocation object\""
+                },
+                {
+                  "lineNumber": 6300,
+                  "content": "                  \"content\": \"      ✔ should handle missing MiataruDeleteLocation object\""
+                },
+                {
+                  "lineNumber": 6413,
+                  "content": "                  \"content\": \"        \\\"MiataruDeleteLocation\\\": {\""
+                },
+                {
+                  "lineNumber": 6430,
+                  "content": "                  \"content\": \"                \\\"MiataruDeleteLocation\\\": {\""
+                },
+                {
+                  "lineNumber": 6438,
+                  "content": "                  \"content\": \"                \\\"MiataruDeleteLocation\\\": {\""
+                },
+                {
+                  "lineNumber": 6446,
+                  "content": "                  \"content\": \"                \\\"MiataruDeleteLocation\\\": {\""
+                },
+                {
+                  "lineNumber": 6463,
+                  "content": "                  \"content\": \"            \\\"MiataruDeleteLocation\\\": {\""
+                },
+                {
+                  "lineNumber": 6475,
+                  "content": "                  \"content\": \"                        \\\"MiataruDeleteLocation\\\": {\""
+                },
+                {
+                  "lineNumber": 6483,
+                  "content": "                  \"content\": \"                \\\"MiataruDeleteLocation\\\": {\""
+                },
+                {
+                  "lineNumber": 6491,
+                  "content": "                  \"content\": \"                                \\\"MiataruDeleteLocation\\\": {\""
+                },
+                {
+                  "lineNumber": 6499,
+                  "content": "                  \"content\": \"                \\\"MiataruDeleteLocation\\\": {\""
+                },
+                {
+                  "lineNumber": 6507,
+                  "content": "                  \"content\": \"                \\\"MiataruDeleteLocation\\\": {\""
+                },
+                {
+                  "lineNumber": 6515,
+                  "content": "                  \"content\": \"                \\\"MiataruDeleteLocation\\\": {\""
+                },
+                {
+                  "lineNumber": 6523,
+                  "content": "                  \"content\": \"                \\\"MiataruDeleteLocation\\\": {}\""
+                },
+                {
+                  "lineNumber": 6531,
+                  "content": "                  \"content\": \"        it('should handle missing MiataruDeleteLocation object', function(done) {\""
+                },
+                {
+                  "lineNumber": 6543,
+                  "content": "                  \"content\": \"                                \\\"MiataruDeleteLocation\\\": {\""
+                },
+                {
+                  "lineNumber": 6593,
+                  "content": "                  \"content\": \"    req.MIATARU.request = new RequestDevice(req.body['MiataruDeleteLocation'] || {});\""
+                },
+                {
+                  "lineNumber": 6698,
+                  "content": "                  \"content\": \"- **Inputs / Triggers**: HTTP POST &amp;#96;/v1/DeleteLocation&amp;#96; or &amp;#96;/DeleteLocation&amp;#96; with &amp;#96;MiataruDeleteLocation.Device&amp;#96;. (Evidence: README.md L90-L124; lib/routes/location/index.js L17-L30; lib/routes/location/v1/inputParser.js L98-L100)\""
+                },
+                {
+                  "lineNumber": 6823,
+                  "content": "                  \"content\": \"+            \\\"text\\\": \\\"  -d '{\\\\\\\"MiataruDeleteLocation\\\\\\\":{\\\\\\\"Device\\\\\\\":\\\\\\\"7b8e6e0ee5296db345162dc2ef652c1350761823\\\\\\\"}}'\\\",\""
+                },
+                {
+                  "lineNumber": 6827,
+                  "content": "                  \"content\": \"+        \\\"contents\\\": \\\"&amp;amp;amp;#96;&amp;amp;amp;#96;&amp;amp;amp;#96;\\\\n\\\\n**Get location in GeoJSON format:**\\\\n&amp;amp;amp;#96;&amp;amp;amp;#96;&amp;amp;amp;#96;bash\\\\ncurl -H 'Content-Type: application/json' -X POST 'http://localhost:8090/v1/GetLocationGeoJSON' \\\\\\\\\\\\n  -d '{\\\\\\\"MiataruGetLocation\\\\\\\":[{\\\\\\\"Device\\\\\\\":\\\\\\\"7b8e6e0ee5296db345162dc2ef652c1350761823\\\\\\\"}]}'\\\\n&amp;amp;amp;#96;&amp;amp;amp;#96;&amp;amp;amp;#96;\\\\n\\\\n## DeleteLocation API\\\\n\\\\nThe DeleteLocation API allows you to permanently delete all location data associated with a specific device.\\\\n\\\\n### Request Format\\\\n&amp;amp;amp;#96;&amp;amp;amp;#96;&amp;amp;amp;#96;json\\\\n{\\\\n  \\\\\\\"MiataruDeleteLocation\\\\\\\": {\\\\n    \\\\\\\"Device\\\\\\\": \\\\\\\"device-id-here\\\\\\\"\\\\n  }\\\\n}\\\\n&amp;amp;amp;#96;&amp;amp;amp;#96;&amp;amp;amp;#96;\\\\n\\\\n### Response Format\\\\n&amp;amp;amp;#96;&amp;amp;amp;#96;&amp;amp;amp;#96;json\\\\n{\\\\n  \\\\\\\"MiataruResponse\\\\\\\": \\\\\\\"ACK\\\\\\\",\\\\n  \\\\\\\"MiataruVerboseResponse\\\\\\\": \\\\\\\"Location data deleted for device: device-id-here\\\\\\\",\\\\n  \\\\\\\" [... omitted end of long line]"
+                },
+                {
+                  "lineNumber": 6839,
+                  "content": "                  \"content\": \"+            \\\"text\\\": \\\"  \\\\\\\"MiataruDeleteLocation\\\\\\\": {\\\",\""
+                },
+                {
+                  "lineNumber": 6847,
+                  "content": "                  \"content\": \"+            \\\"text\\\": \\\"  -d '{\\\\\\\"MiataruDeleteLocation\\\\\\\":{\\\\\\\"Device\\\\\\\":\\\\\\\"my-device-123\\\\\\\"}}'\\\",\""
+                },
+                {
+                  "lineNumber": 6923,
+                  "content": "                  \"content\": \"      ✔ should handle missing MiataruDeleteLocation object\""
+                },
+                {
+                  "lineNumber": 6936,
+                  "content": "                  \"content\": \"        \\\"contents\\\": \\\"### JavaScript Example\\\\n&amp;amp;#96;&amp;amp;#96;&amp;amp;#96;javascript\\\\nconst deleteLocationData = async (deviceId) =&amp;amp;gt; {\\\\n  const response = await fetch('http://localhost:8080/v1/DeleteLocation', {\\\\n    method: 'POST',\\\\n    headers: {\\\\n      'Content-Type': 'application/json'\\\\n    },\\\\n    body: JSON.stringify({\\\\n      MiataruDeleteLocation: {\\\\n        Device: deviceId\\\\n      }\\\\n    })\\\\n  });\\\\n  \\\\n  const result = await response.json();\\\\n  console.log(&amp;amp;#96;Deleted ${result.MiataruDeletedCount} data entries for device ${deviceId}&amp;amp;#96;);\\\\n  return result;\\\\n};\\\\n&amp;amp;#96;&amp;amp;#96;&amp;amp;#96;\\\\n\\\\n## What Gets Deleted\\\\n\\\\nThe DeleteLocation operation removes the following Redis keys for the specified device:\\\\n\\\\n1. **Last Known Location**: &amp;amp;#96;miad:{device-id}:last&amp;amp;#96;\\\\n   - Contains the most recent location data\\\\n   - May have TTL (time-to-live) if location history is disabled\\\\n\\\\n2. **Location Histo [... omitted end of long line]"
+                },
+                {
+                  "lineNumber": 6948,
+                  "content": "                  \"content\": \"            \\\"text\\\": \\\"      MiataruDeleteLocation: {\\\",\""
+                },
+                {
+                  "lineNumber": 6972,
+                  "content": "                  \"content\": \"                  \\\"content\\\": \\\"        \\\\\\\"contents\\\\\\\": \\\\\\\"### JavaScript Example\\\\\\\\n&amp;amp;amp;#96;&amp;amp;amp;#96;&amp;amp;amp;#96;javascript\\\\\\\\nconst deleteLocationData = async (deviceId) =&amp;amp;amp;gt; {\\\\\\\\n  const response = await fetch('http://localhost:8080/v1/DeleteLocation', {\\\\\\\\n    method: 'POST',\\\\\\\\n    headers: {\\\\\\\\n      'Content-Type': 'application/json'\\\\\\\\n    },\\\\\\\\n    body: JSON.stringify({\\\\\\\\n      MiataruDeleteLocation: {\\\\\\\\n        Device: deviceId\\\\\\\\n      }\\\\\\\\n    })\\\\\\\\n  });\\\\\\\\n  \\\\\\\\n  const result = await response.json();\\\\\\\\n  console.log(&amp;amp;amp;#96;Deleted ${result.MiataruDeletedCount} data entries for device ${deviceId}&amp;amp;amp;#96;);\\\\\\\\n  return result;\\\\\\\\n};\\\\\\\\n&amp;amp;amp;#96;&amp;amp;amp;#96;&amp;amp;amp;#96;\\\\\\\\n\\\\\\\\n## What Gets Deleted\\\\\\\\n\\\\\\\\nThe DeleteLocation operation removes the following Redis keys for the specified device:\\\\\\\\n\\\\\\\\n1. **Last Known Location**: &amp;amp;amp;#96;miad:{device-id}:last&amp;amp;amp;#96;\\\\\\\\n [... omitted end of long line]"
+                },
+                {
+                  "lineNumber": 7044,
+                  "content": "                  \"content\": \"        \\\"contents\\\": \\\"### JavaScript Example\\\\n&amp;amp;#96;&amp;amp;#96;&amp;amp;#96;javascript\\\\nconst deleteLocationData = async (deviceId) =&amp;amp;gt; {\\\\n  const response = await fetch('http://localhost:8080/v1/DeleteLocation', {\\\\n    method: 'POST',\\\\n    headers: {\\\\n      'Content-Type': 'application/json'\\\\n    },\\\\n    body: JSON.stringify({\\\\n      MiataruDeleteLocation: {\\\\n        Device: deviceId\\\\n      }\\\\n    })\\\\n  });\\\\n  \\\\n  const result = await response.json();\\\\n  console.log(&amp;amp;#96;Deleted ${result.MiataruDeletedCount} data entries for device ${deviceId}&amp;amp;#96;);\\\\n  return result;\\\\n};\\\\n&amp;amp;#96;&amp;amp;#96;&amp;amp;#96;\\\\n\\\\n## What Gets Deleted\\\\n\\\\nThe DeleteLocation operation removes the following Redis keys for the specified device:\\\\n\\\\n1. **Last Known Location**: &amp;amp;#96;miad:{device-id}:last&amp;amp;#96;\\\\n   - Contains the most recent location data\\\\n   - May have TTL (time-to-live) if location history is disabled\\\\n\\\\n2. **Location Histo [... omitted end of long line]"
+                },
+                {
+                  "lineNumber": 7056,
+                  "content": "                  \"content\": \"            \\\"text\\\": \\\"      MiataruDeleteLocation: {\\\",\""
+                },
+                {
+                  "lineNumber": 7104,
+                  "content": "                  \"content\": \"            \\\"text\\\": \\\"  -d '{\\\\\\\"MiataruDeleteLocation\\\\\\\":{\\\\\\\"Device\\\\\\\":\\\\\\\"7b8e6e0ee5296db345162dc2ef652c1350761823\\\\\\\"}}'\\\",\""
+                },
+                {
+                  "lineNumber": 7165,
+                  "content": "                  \"content\": \"        \\\"contents\\\": \\\"### JavaScript Example\\\\n&amp;amp;#96;&amp;amp;#96;&amp;amp;#96;javascript\\\\nconst deleteLocationData = async (deviceId) =&amp;amp;gt; {\\\\n  const response = await fetch('http://localhost:8080/v1/DeleteLocation', {\\\\n    method: 'POST',\\\\n    headers: {\\\\n      'Content-Type': 'application/json'\\\\n    },\\\\n    body: JSON.stringify({\\\\n      MiataruDeleteLocation: {\\\\n        Device: deviceId\\\\n      }\\\\n    })\\\\n  });\\\\n  \\\\n  const result = await response.json();\\\\n  console.log(&amp;amp;#96;Deleted ${result.MiataruDeletedCount} data entries for device ${deviceId}&amp;amp;#96;);\\\\n  return result;\\\\n};\\\\n&amp;amp;#96;&amp;amp;#96;&amp;amp;#96;\\\\n\\\\n## What Gets Deleted\\\\n\\\\nThe DeleteLocation operation removes the following Redis keys for the specified device:\\\\n\\\\n1. **Last Known Location**: &amp;amp;#96;miad:{device-id}:last&amp;amp;#96;\\\\n   - Contains the most recent location data\\\\n   - May have TTL (time-to-live) if location history is disabled\\\\n\\\\n2. **Location Histo [... omitted end of long line]"
+                },
+                {
+                  "lineNumber": 7177,
+                  "content": "                  \"content\": \"            \\\"text\\\": \\\"      MiataruDeleteLocation: {\\\",\""
+                },
+                {
+                  "lineNumber": 7201,
+                  "content": "                  \"content\": \"            \\\"text\\\": \\\"  -d '{\\\\\\\"MiataruDeleteLocation\\\\\\\":{\\\\\\\"Device\\\\\\\":\\\\\\\"7b8e6e0ee5296db345162dc2ef652c1350761823\\\\\\\"}}'\\\",\""
+                },
+                {
+                  "lineNumber": 7225,
+                  "content": "                  \"content\": \"                  \\\"content\\\": \\\"        \\\\\\\"contents\\\\\\\": \\\\\\\"function parseGetVisitorHistory(req) {\\\\\\\\n    req.MIATARU.request = new RequestVisitorHistory(req.body['MiataruGetVisitorHistory'] || {});\\\\\\\\n}\\\\\\\\n\\\\\\\\nfunction parseDeleteLocation(req) {\\\\\\\\n    req.MIATARU.request = new RequestDevice(req.body['MiataruDeleteLocation'] || {})\\\\\\\\n}\\\\\\\",\\\"\""
+                },
+                {
+                  "lineNumber": 7249,
+                  "content": "                  \"content\": \"                  \\\"content\\\": \\\"        \\\\\\\"contents\\\\\\\": \\\\\\\"function parseGetVisitorHistory(req) {\\\\\\\\n    req.MIATARU.request = new RequestVisitorHistory(req.body['MiataruGetVisitorHistory'] || {});\\\\\\\\n}\\\\\\\\n\\\\\\\\nfunction parseDeleteLocation(req) {\\\\\\\\n    req.MIATARU.request = new RequestDevice(req.body['MiataruDeleteLocation'] || {})\\\\\\\\n}\\\\\\\",\\\"\""
+                },
+                {
+                  "lineNumber": 7273,
+                  "content": "                  \"content\": \"            \\\"text\\\": \\\"  -d '{\\\\\\\"MiataruDeleteLocation\\\\\\\":{\\\\\\\"Device\\\\\\\":\\\\\\\"7b8e6e0ee5296db345162dc2ef652c1350761823\\\\\\\"}}'\\\",\""
+                },
+                {
+                  "lineNumber": 7277,
+                  "content": "                  \"content\": \"        \\\"contents\\\": \\\"&amp;amp;#96;&amp;amp;#96;&amp;amp;#96;\\\\n\\\\n**Get location in GeoJSON format:**\\\\n&amp;amp;#96;&amp;amp;#96;&amp;amp;#96;bash\\\\ncurl -H 'Content-Type: application/json' -X POST 'http://localhost:8090/v1/GetLocationGeoJSON' \\\\\\\\\\\\n  -d '{\\\\\\\"MiataruGetLocation\\\\\\\":[{\\\\\\\"Device\\\\\\\":\\\\\\\"7b8e6e0ee5296db345162dc2ef652c1350761823\\\\\\\"}]}'\\\\n&amp;amp;#96;&amp;amp;#96;&amp;amp;#96;\\\\n\\\\n## DeleteLocation API\\\\n\\\\nThe DeleteLocation API allows you to permanently delete all location data associated with a specific device.\\\\n\\\\n### Request Format\\\\n&amp;amp;#96;&amp;amp;#96;&amp;amp;#96;json\\\\n{\\\\n  \\\\\\\"MiataruDeleteLocation\\\\\\\": {\\\\n    \\\\\\\"Device\\\\\\\": \\\\\\\"device-id-here\\\\\\\"\\\\n  }\\\\n}\\\\n&amp;amp;#96;&amp;amp;#96;&amp;amp;#96;\\\\n\\\\n### Response Format\\\\n&amp;amp;#96;&amp;amp;#96;&amp;amp;#96;json\\\\n{\\\\n  \\\\\\\"MiataruResponse\\\\\\\": \\\\\\\"ACK\\\\\\\",\\\\n  \\\\\\\"MiataruVerboseResponse\\\\\\\": \\\\\\\"Location data deleted for device: device-id-here\\\\\\\",\\\\n  \\\\\\\"MiataruDeletedCount\\\\\\\": 3\\\\n}\\\\n&amp;amp;#96;&amp;amp;#96;&amp;amp;#96;\\\\n\\\\n### Wha [... omitted end of long line]"
+                },
+                {
+                  "lineNumber": 7289,
+                  "content": "                  \"content\": \"            \\\"text\\\": \\\"  \\\\\\\"MiataruDeleteLocation\\\\\\\": {\\\",\""
+                },
+                {
+                  "lineNumber": 7297,
+                  "content": "                  \"content\": \"            \\\"text\\\": \\\"  -d '{\\\\\\\"MiataruDeleteLocation\\\\\\\":{\\\\\\\"Device\\\\\\\":\\\\\\\"my-device-123\\\\\\\"}}'\\\",\""
+                },
+                {
+                  "lineNumber": 7365,
+                  "content": "                  \"content\": \"      ✔ should handle missing MiataruDeleteLocation object\""
+                },
+                {
+                  "lineNumber": 7385,
+                  "content": "                  \"content\": \"      ✔ should handle missing MiataruDeleteLocation object\""
+                },
+                {
+                  "lineNumber": 7494,
+                  "content": "                  \"content\": \"            \\\"text\\\": \\\"  -d '{\\\\\\\"MiataruDeleteLocation\\\\\\\":{\\\\\\\"Device\\\\\\\":\\\\\\\"7b8e6e0ee5296db345162dc2ef652c1350761823\\\\\\\"}}'\\\",\""
+                },
+                {
+                  "lineNumber": 7498,
+                  "content": "                  \"content\": \"        \\\"contents\\\": \\\"function parseGetVisitorHistory(req) {\\\\n    req.MIATARU.request = new RequestVisitorHistory(req.body['MiataruGetVisitorHistory'] || {});\\\\n}\\\\n\\\\nfunction parseDeleteLocation(req) {\\\\n    req.MIATARU.request = new RequestDevice(req.body['MiataruDeleteLocation'] || {})\\\\n}\\\",\""
+                },
+                {
+                  "lineNumber": 7506,
+                  "content": "                  \"content\": \"            \\\"text\\\": \\\"    req.MIATARU.request = new RequestDevice(req.body['MiataruDeleteLocation'] || {})\\\",\""
+                },
+                {
+                  "lineNumber": 7558,
+                  "content": "                  \"content\": \"        \\\"contents\\\": \\\"&amp;amp;#96;&amp;amp;#96;&amp;amp;#96;\\\\n\\\\n**Get location in GeoJSON format:**\\\\n&amp;amp;#96;&amp;amp;#96;&amp;amp;#96;bash\\\\ncurl -H 'Content-Type: application/json' -X POST 'http://localhost:8090/v1/GetLocationGeoJSON' \\\\\\\\\\\\n  -d '{\\\\\\\"MiataruGetLocation\\\\\\\":[{\\\\\\\"Device\\\\\\\":\\\\\\\"7b8e6e0ee5296db345162dc2ef652c1350761823\\\\\\\"}]}'\\\\n&amp;amp;#96;&amp;amp;#96;&amp;amp;#96;\\\\n\\\\n## DeleteLocation API\\\\n\\\\nThe DeleteLocation API allows you to permanently delete all location data associated with a specific device.\\\\n\\\\n### Request Format\\\\n&amp;amp;#96;&amp;amp;#96;&amp;amp;#96;json\\\\n{\\\\n  \\\\\\\"MiataruDeleteLocation\\\\\\\": {\\\\n    \\\\\\\"Device\\\\\\\": \\\\\\\"device-id-here\\\\\\\"\\\\n  }\\\\n}\\\\n&amp;amp;#96;&amp;amp;#96;&amp;amp;#96;\\\\n\\\\n### Response Format\\\\n&amp;amp;#96;&amp;amp;#96;&amp;amp;#96;json\\\\n{\\\\n  \\\\\\\"MiataruResponse\\\\\\\": \\\\\\\"ACK\\\\\\\",\\\\n  \\\\\\\"MiataruVerboseResponse\\\\\\\": \\\\\\\"Location data deleted for device: device-id-here\\\\\\\",\\\\n  \\\\\\\"MiataruDeletedCount\\\\\\\": 3\\\\n}\\\\n&amp;amp;#96;&amp;amp;#96;&amp;amp;#96;\\\\n\\\\n### Wha [... omitted end of long line]"
+                },
+                {
+                  "lineNumber": 7570,
+                  "content": "                  \"content\": \"            \\\"text\\\": \\\"  \\\\\\\"MiataruDeleteLocation\\\\\\\": {\\\",\""
+                },
+                {
+                  "lineNumber": 7578,
+                  "content": "                  \"content\": \"            \\\"text\\\": \\\"  -d '{\\\\\\\"MiataruDeleteLocation\\\\\\\":{\\\\\\\"Device\\\\\\\":\\\\\\\"my-device-123\\\\\\\"}}'\\\",\""
+                },
+                {
+                  "lineNumber": 7618,
+                  "content": "                  \"content\": \"        \\\"contents\\\": \\\"&amp;amp;#96;&amp;amp;#96;&amp;amp;#96;\\\\n\\\\n**Get location in GeoJSON format:**\\\\n&amp;amp;#96;&amp;amp;#96;&amp;amp;#96;bash\\\\ncurl -H 'Content-Type: application/json' -X POST 'http://localhost:8090/v1/GetLocationGeoJSON' \\\\\\\\\\\\n  -d '{\\\\\\\"MiataruGetLocation\\\\\\\":[{\\\\\\\"Device\\\\\\\":\\\\\\\"7b8e6e0ee5296db345162dc2ef652c1350761823\\\\\\\"}]}'\\\\n&amp;amp;#96;&amp;amp;#96;&amp;amp;#96;\\\\n\\\\n## DeleteLocation API\\\\n\\\\nThe DeleteLocation API allows you to permanently delete all location data associated with a specific device.\\\\n\\\\n### Request Format\\\\n&amp;amp;#96;&amp;amp;#96;&amp;amp;#96;json\\\\n{\\\\n  \\\\\\\"MiataruDeleteLocation\\\\\\\": {\\\\n    \\\\\\\"Device\\\\\\\": \\\\\\\"device-id-here\\\\\\\"\\\\n  }\\\\n}\\\\n&amp;amp;#96;&amp;amp;#96;&amp;amp;#96;\\\\n\\\\n### Response Format\\\\n&amp;amp;#96;&amp;amp;#96;&amp;amp;#96;json\\\\n{\\\\n  \\\\\\\"MiataruResponse\\\\\\\": \\\\\\\"ACK\\\\\\\",\\\\n  \\\\\\\"MiataruVerboseResponse\\\\\\\": \\\\\\\"Location data deleted for device: device-id-here\\\\\\\",\\\\n  \\\\\\\"MiataruDeletedCount\\\\\\\": 3\\\\n}\\\\n&amp;amp;#96;&amp;amp;#96;&amp;amp;#96;\\\\n\\\\n### Wha [... omitted end of long line]"
+                },
+                {
+                  "lineNumber": 7630,
+                  "content": "                  \"content\": \"            \\\"text\\\": \\\"  \\\\\\\"MiataruDeleteLocation\\\\\\\": {\\\",\""
+                },
+                {
+                  "lineNumber": 7638,
+                  "content": "                  \"content\": \"            \\\"text\\\": \\\"  -d '{\\\\\\\"MiataruDeleteLocation\\\\\\\":{\\\\\\\"Device\\\\\\\":\\\\\\\"my-device-123\\\\\\\"}}'\\\",\""
+                },
+                {
+                  "lineNumber": 7742,
+                  "content": "                  \"content\": \"        \\\"contents\\\": \\\"function parseGetVisitorHistory(req) {\\\\n    req.MIATARU.request = new RequestVisitorHistory(req.body['MiataruGetVisitorHistory'] || {});\\\\n}\\\\n\\\\nfunction parseDeleteLocation(req) {\\\\n    req.MIATARU.request = new RequestDevice(req.body['MiataruDeleteLocation'] || {})\\\\n}\\\",\""
+                },
+                {
+                  "lineNumber": 7750,
+                  "content": "                  \"content\": \"            \\\"text\\\": \\\"    req.MIATARU.request = new RequestDevice(req.body['MiataruDeleteLocation'] || {})\\\",\""
+                },
+                {
+                  "lineNumber": 7778,
+                  "content": "                  \"content\": \"      ✔ should handle missing MiataruDeleteLocation object\""
+                },
+                {
+                  "lineNumber": 7823,
+                  "content": "                  \"content\": \"      ✔ should handle missing MiataruDeleteLocation object\""
+                },
+                {
+                  "lineNumber": 7848,
+                  "content": "                  \"content\": \"      ✔ should handle missing MiataruDeleteLocation object\""
+                },
+                {
+                  "lineNumber": 7868,
+                  "content": "                  \"content\": \"      ✔ should handle missing MiataruDeleteLocation object\""
+                },
+                {
+                  "lineNumber": 7888,
+                  "content": "                  \"content\": \"      ✔ should handle missing MiataruDeleteLocation object\""
+                },
+                {
+                  "lineNumber": 7967,
+                  "content": "                  \"content\": \"  \\\"MiataruDeleteLocation\\\": {\""
+                },
+                {
+                  "lineNumber": 7971,
+                  "content": "                  \"content\": \"| &amp;#96;MiataruDeleteLocation&amp;#96; | Object | Yes | Container object for delete request |\""
+                },
+                {
+                  "lineNumber": 7979,
+                  "content": "                  \"content\": \"  -d '{\\\"MiataruDeleteLocation\\\":{\\\"Device\\\":\\\"my-device-123\\\"}}'\""
+                },
+                {
+                  "lineNumber": 7987,
+                  "content": "                  \"content\": \"  -d '{\\\"MiataruDeleteLocation\\\":{\\\"Device\\\":\\\"my-device-123\\\"}}'\""
+                },
+                {
+                  "lineNumber": 7999,
+                  "content": "                  \"content\": \"      MiataruDeleteLocation: {\""
+                },
+                {
+                  "lineNumber": 8048,
+                  "content": "                  \"content\": \"    \\\\\\\"MiataruDeleteLocation\\\\\\\": {\""
+                },
+                {
+                  "lineNumber": 8056,
+                  "content": "                  \"content\": \"    \\\\\\\"MiataruDeleteLocation\\\\\\\": {\""
+                },
+                {
+                  "lineNumber": 12921,
+                  "content": "        \"contents\": \"# DeleteLocation API Documentation\\n\\n## Overview\\n\\nThe DeleteLocation API endpoint allows you to permanently delete all location data associated with a specific device. This includes:\\n\\n- Current/last known location data\\n- Complete location history\\n- Visitor history data\\n\\n## Endpoints\\n\\n### Version 1 API\\n- **POST** &amp;#96;/v1/DeleteLocation&amp;#96;\\n\\n### Default API (Legacy)\\n- **POST** &amp;#96;/DeleteLocation&amp;#96;\\n\\n## Request Format\\n\\n### Request Body Structure\\n&amp;#96;&amp;#96;&amp;#96;json\\n{\\n  \\\"MiataruDeleteLocation\\\": {\\n    \\\"Device\\\": \\\"device-id-here\\\"\\n  }\\n}\\n&amp;#96;&amp;#96;&amp;#96;\\n\\n### Parameters\\n\\n| Parameter | Type | Required | Description |\\n|-----------|------|----------|-------------|\\n| &amp;#96;MiataruDeleteLocation&amp;#96; | Object | Yes | Container object for delete request |\\n| &amp;#96;Device&amp;#96; | String | Yes | Unique identifier of the device whose location data should be deleted |\\n\\n## Response Format\\n\\n### Success Response\\n&amp;#96;&amp;#96;&amp;#96;json\\n{\\n  \\\"Mi [... omitted end of long line]"
+                },
+                {
+                  "lineNumber": 13009,
+                  "content": "            \"text\": \"  \\\"MiataruDeleteLocation\\\": {\","
+                },
+                {
+                  "lineNumber": 13047,
+                  "content": "            \"text\": \"| &amp;#96;MiataruDeleteLocation&amp;#96; | Object | Yes | Container object for delete request |\","
+                },
+                {
+                  "lineNumber": 13187,
+                  "content": "            \"text\": \"  -d '{\\\"MiataruDeleteLocation\\\":{\\\"Device\\\":\\\"my-device-123\\\"}}'\","
+                },
+                {
+                  "lineNumber": 13210,
+                  "content": "            \"text\": \"  -d '{\\\"MiataruDeleteLocation\\\":{\\\"Device\\\":\\\"my-device-123\\\"}}'\","
+                }
+              ]
+            },
+            {
+              "file": "./.specstory/history/2026-01-25_12-50Z-miataru-api-v1-1-security-and-access-control.md",
+              "matches": [
+                {
+                  "lineNumber": 2677,
+                  "content": "        \"contents\": \"- **POST** &amp;#96;/v1/GetLocationHistory&amp;#96; - Retrieve location history\\n- **POST** &amp;#96;/v1/GetVisitorHistory&amp;#96; - Retrieve visitor history\\n- **POST** &amp;#96;/v1/DeleteLocation&amp;#96; - Delete all location data for a device\\n\\n### Legacy API (Backward Compatibility)\\n- **POST** &amp;#96;/UpdateLocation&amp;#96; - Store location data\\n- **POST** &amp;#96;/GetLocation&amp;#96; - Retrieve current location\\n- **POST** &amp;#96;/GetLocationGeoJSON&amp;#96; - Get location in GeoJSON format\\n- **GET** &amp;#96;/GetLocationGeoJSON/:id?&amp;#96; - Get location in GeoJSON format via GET\\n- **POST** &amp;#96;/GetLocationHistory&amp;#96; - Retrieve location history\\n- **POST** &amp;#96;/GetVisitorHistory&amp;#96; - Retrieve visitor history\\n- **POST** &amp;#96;/DeleteLocation&amp;#96; - Delete all location data for a device\\n\\n## Run the Server\\n\\nCheck out the repo:  \\n&amp;#96;git clone git@github.com:miataru/miataru-server.git&amp;#96;\\n\\nInstall dependencies:  \\n&amp;#96;npm install&amp;#96;\\n\\nRun the tests:  \\n&amp;#96;npm run test:all&amp;#96; (or  [... omitted end of long line]"
+                },
+                {
+                  "lineNumber": 2865,
+                  "content": "            \"text\": \"  -d '{\\\"MiataruDeleteLocation\\\":{\\\"Device\\\":\\\"7b8e6e0ee5296db345162dc2ef652c1350761823\\\"}}'\","
+                },
+                {
+                  "lineNumber": 3274,
+                  "content": "        \"contents\": \"# DeleteLocation API Documentation\\n\\n## Overview\\n\\nThe DeleteLocation API endpoint allows you to permanently delete all location data associated with a specific device. This includes:\\n\\n- Current/last known location data\\n- Complete location history\\n- Visitor history data\\n\\n## Endpoints\\n\\n### Version 1 API\\n- **POST** &amp;#96;/v1/DeleteLocation&amp;#96;\\n\\n### Default API (Legacy)\\n- **POST** &amp;#96;/DeleteLocation&amp;#96;\\n\\n## Request Format\\n\\n### Request Body Structure\\n&amp;#96;&amp;#96;&amp;#96;json\\n{\\n  \\\"MiataruDeleteLocation\\\": {\\n    \\\"Device\\\": \\\"device-id-here\\\"\\n  }\\n}\\n&amp;#96;&amp;#96;&amp;#96;\\n\\n### Parameters\\n\\n| Parameter | Type | Required | Description |\\n|-----------|------|----------|-------------|\\n| &amp;#96;MiataruDeleteLocation&amp;#96; | Object | Yes | Container object for delete request |\\n| &amp;#96;Device&amp;#96; | String | Yes | Unique identifier of the device whose location data should be deleted |\\n\\n## Response Format\\n\\n### Success Response\\n&amp;#96;&amp;#96;&amp;#96;json\\n{\\n  \\\"Mi [... omitted end of long line]"
+                },
+                {
+                  "lineNumber": 3362,
+                  "content": "            \"text\": \"  \\\"MiataruDeleteLocation\\\": {\","
+                },
+                {
+                  "lineNumber": 3400,
+                  "content": "            \"text\": \"| &amp;#96;MiataruDeleteLocation&amp;#96; | Object | Yes | Container object for delete request |\","
+                },
+                {
+                  "lineNumber": 3540,
+                  "content": "            \"text\": \"  -d '{\\\"MiataruDeleteLocation\\\":{\\\"Device\\\":\\\"my-device-123\\\"}}'\","
+                },
+                {
+                  "lineNumber": 3563,
+                  "content": "            \"text\": \"  -d '{\\\"MiataruDeleteLocation\\\":{\\\"Device\\\":\\\"my-device-123\\\"}}'\","
+                },
+                {
+                  "lineNumber": 4836,
+                  "content": "        \"contents\": \"function parseGetVisitorHistory(req) {\\n    req.MIATARU.request = new RequestVisitorHistory(req.body['MiataruGetVisitorHistory'] || {});\\n}\\n\\nfunction parseDeleteLocation(req) {\\n    req.MIATARU.request = new RequestDevice(req.body['MiataruDeleteLocation'] || {})\\n}\","
+                },
+                {
+                  "lineNumber": 4862,
+                  "content": "            \"text\": \"    req.MIATARU.request = new RequestDevice(req.body['MiataruDeleteLocation'] || {})\","
+                },
+                {
+                  "lineNumber": 7312,
+                  "content": "        \"contents\": \"- **POST** &amp;#96;/v1/GetLocationHistory&amp;#96; - Retrieve location history\\n- **POST** &amp;#96;/v1/GetVisitorHistory&amp;#96; - Retrieve visitor history\\n- **POST** &amp;#96;/v1/DeleteLocation&amp;#96; - Delete all location data for a device\\n\\n### Legacy API (Backward Compatibility)\\n- **POST** &amp;#96;/UpdateLocation&amp;#96; - Store location data\\n- **POST** &amp;#96;/GetLocation&amp;#96; - Retrieve current location\\n- **POST** &amp;#96;/GetLocationGeoJSON&amp;#96; - Get location in GeoJSON format\\n- **GET** &amp;#96;/GetLocationGeoJSON/:id?&amp;#96; - Get location in GeoJSON format via GET\\n- **POST** &amp;#96;/GetLocationHistory&amp;#96; - Retrieve location history\\n- **POST** &amp;#96;/GetVisitorHistory&amp;#96; - Retrieve visitor history\\n- **POST** &amp;#96;/DeleteLocation&amp;#96; - Delete all location data for a device\\n\\n## Run the Server\\n\\nCheck out the repo:  \\n&amp;#96;git clone git@github.com:miataru/miataru-server.git&amp;#96;\\n\\nInstall dependencies:  \\n&amp;#96;npm install&amp;#96;\\n\\nRun the tests:  \\n&amp;#96;npm run test:all&amp;#96; (or  [... omitted end of long line]"
+                },
+                {
+                  "lineNumber": 7500,
+                  "content": "            \"text\": \"  -d '{\\\"MiataruDeleteLocation\\\":{\\\"Device\\\":\\\"7b8e6e0ee5296db345162dc2ef652c1350761823\\\"}}'\","
+                },
+                {
+                  "lineNumber": 9875,
+                  "content": "        \"contents\": \"- **POST** &amp;#96;/v1/GetLocationHistory&amp;#96; - Retrieve location history\\n- **POST** &amp;#96;/v1/GetVisitorHistory&amp;#96; - Retrieve visitor history\\n- **POST** &amp;#96;/v1/DeleteLocation&amp;#96; - Delete all location data for a device\\n\\n### Legacy API (Backward Compatibility)\\n- **POST** &amp;#96;/UpdateLocation&amp;#96; - Store location data\\n- **POST** &amp;#96;/GetLocation&amp;#96; - Retrieve current location\\n- **POST** &amp;#96;/GetLocationGeoJSON&amp;#96; - Get location in GeoJSON format\\n- **GET** &amp;#96;/GetLocationGeoJSON/:id?&amp;#96; - Get location in GeoJSON format via GET\\n- **POST** &amp;#96;/GetLocationHistory&amp;#96; - Retrieve location history\\n- **POST** &amp;#96;/GetVisitorHistory&amp;#96; - Retrieve visitor history\\n- **POST** &amp;#96;/DeleteLocation&amp;#96; - Delete all location data for a device\\n\\n## Run the Server\\n\\nCheck out the repo:  \\n&amp;#96;git clone git@github.com:miataru/miataru-server.git&amp;#96;\\n\\nInstall dependencies:  \\n&amp;#96;npm install&amp;#96;\\n\\nRun the tests:  \\n&amp;#96;npm run test:all&amp;#96; (or  [... omitted end of long line]"
+                },
+                {
+                  "lineNumber": 10063,
+                  "content": "            \"text\": \"  -d '{\\\"MiataruDeleteLocation\\\":{\\\"Device\\\":\\\"7b8e6e0ee5296db345162dc2ef652c1350761823\\\"}}'\","
+                },
+                {
+                  "lineNumber": 11249,
+                  "content": "        \"contents\": \"&amp;#96;&amp;#96;&amp;#96;\\n\\n**Get location in GeoJSON format:**\\n&amp;#96;&amp;#96;&amp;#96;bash\\ncurl -H 'Content-Type: application/json' -X POST 'http://localhost:8090/v1/GetLocationGeoJSON' \\\\\\n  -d '{\\\"MiataruGetLocation\\\":[{\\\"Device\\\":\\\"7b8e6e0ee5296db345162dc2ef652c1350761823\\\"}]}'\\n&amp;#96;&amp;#96;&amp;#96;\\n\\n## DeleteLocation API\\n\\nThe DeleteLocation API allows you to permanently delete all location data associated with a specific device.\\n\\n### Request Format\\n&amp;#96;&amp;#96;&amp;#96;json\\n{\\n  \\\"MiataruDeleteLocation\\\": {\\n    \\\"Device\\\": \\\"device-id-here\\\"\\n  }\\n}\\n&amp;#96;&amp;#96;&amp;#96;\\n\\n### Response Format\\n&amp;#96;&amp;#96;&amp;#96;json\\n{\\n  \\\"MiataruResponse\\\": \\\"ACK\\\",\\n  \\\"MiataruVerboseResponse\\\": \\\"Location data deleted for device: device-id-here\\\",\\n  \\\"MiataruDeletedCount\\\": 3\\n}\\n&amp;#96;&amp;#96;&amp;#96;\\n\\n### What Gets Deleted\\n- **Last Known Location**: Current location data\\n- **Location History**: Complete location history (if enabled)\\n- **Visitor History**: Visitor tracking data\\n\\n### Example Usa [... omitted end of long line]"
+                },
+                {
+                  "lineNumber": 11309,
+                  "content": "            \"text\": \"  \\\"MiataruDeleteLocation\\\": {\","
+                },
+                {
+                  "lineNumber": 11402,
+                  "content": "            \"text\": \"  -d '{\\\"MiataruDeleteLocation\\\":{\\\"Device\\\":\\\"my-device-123\\\"}}'\","
+                },
+                {
+                  "lineNumber": 12114,
+                  "content": "        \"contents\": \"# DeleteLocation API Documentation\\n\\n## Overview\\n\\nThe DeleteLocation API endpoint allows you to permanently delete all location data associated with a specific device. This includes:\\n\\n- Current/last known location data\\n- Complete location history\\n- Visitor history data\\n\\n## Endpoints\\n\\n### Version 1 API\\n- **POST** &amp;#96;/v1/DeleteLocation&amp;#96;\\n\\n### Default API (Legacy)\\n- **POST** &amp;#96;/DeleteLocation&amp;#96;\\n\\n## Request Format\\n\\n### Request Body Structure\\n&amp;#96;&amp;#96;&amp;#96;json\\n{\\n  \\\"MiataruDeleteLocation\\\": {\\n    \\\"Device\\\": \\\"device-id-here\\\"\\n  }\\n}\\n&amp;#96;&amp;#96;&amp;#96;\\n\\n### Parameters\\n\\n| Parameter | Type | Required | Description |\\n|-----------|------|----------|-------------|\\n| &amp;#96;MiataruDeleteLocation&amp;#96; | Object | Yes | Container object for delete request |\\n| &amp;#96;Device&amp;#96; | String | Yes | Unique identifier of the device whose location data should be deleted |\\n\\n## Response Format\\n\\n### Success Response\\n&amp;#96;&amp;#96;&amp;#96;json\\n{\\n  \\\"Mi [... omitted end of long line]"
+                },
+                {
+                  "lineNumber": 12202,
+                  "content": "            \"text\": \"  \\\"MiataruDeleteLocation\\\": {\","
+                },
+                {
+                  "lineNumber": 12240,
+                  "content": "            \"text\": \"| &amp;#96;MiataruDeleteLocation&amp;#96; | Object | Yes | Container object for delete request |\","
+                },
+                {
+                  "lineNumber": 12380,
+                  "content": "            \"text\": \"  -d '{\\\"MiataruDeleteLocation\\\":{\\\"Device\\\":\\\"my-device-123\\\"}}'\","
+                },
+                {
+                  "lineNumber": 12403,
+                  "content": "            \"text\": \"  -d '{\\\"MiataruDeleteLocation\\\":{\\\"Device\\\":\\\"my-device-123\\\"}}'\","
+                },
+                {
+                  "lineNumber": 28813,
+                  "content": "      ✔ should handle missing MiataruDeleteLocation object"
+                },
+                {
+                  "lineNumber": 37836,
+                  "content": "      ✔ should handle missing MiataruDeleteLocation object"
+                }
+              ]
+            },
+            {
+              "file": "./tests/testFiles/calls.js",
+              "matches": [
+                {
+                  "lineNumber": 80,
+                  "content": "        \"MiataruDeleteLocation\": {"
+                }
+              ]
+            },
+            {
+              "file": "./tests/integration/unknownDevice.tests.js",
+              "matches": [
+                {
+                  "lineNumber": 227,
+                  "content": "                \"MiataruDeleteLocation\": {"
+                },
+                {
+                  "lineNumber": 246,
+                  "content": "                \"MiataruDeleteLocation\": {"
+                },
+                {
+                  "lineNumber": 319,
+                  "content": "                \"MiataruDeleteLocation\": {"
+                }
+              ]
+            },
+            {
+              "file": "./tests/integration/deleteLocation.tests.js",
+              "matches": [
+                {
+                  "lineNumber": 13,
+                  "content": "            \"MiataruDeleteLocation\": {"
+                },
+                {
+                  "lineNumber": 42,
+                  "content": "                        \"MiataruDeleteLocation\": {"
+                },
+                {
+                  "lineNumber": 63,
+                  "content": "                \"MiataruDeleteLocation\": {"
+                },
+                {
+                  "lineNumber": 116,
+                  "content": "                                \"MiataruDeleteLocation\": {"
+                },
+                {
+                  "lineNumber": 147,
+                  "content": "                \"MiataruDeleteLocation\": {"
+                },
+                {
+                  "lineNumber": 164,
+                  "content": "                \"MiataruDeleteLocation\": {"
+                },
+                {
+                  "lineNumber": 181,
+                  "content": "                \"MiataruDeleteLocation\": {"
+                },
+                {
+                  "lineNumber": 197,
+                  "content": "                \"MiataruDeleteLocation\": {}"
+                },
+                {
+                  "lineNumber": 207,
+                  "content": "        it('should handle missing MiataruDeleteLocation object', function(done) {"
+                },
+                {
+                  "lineNumber": 264,
+                  "content": "                                \"MiataruDeleteLocation\": {"
+                }
+              ]
+            },
+            {
+              "file": "./lib/routes/location/v1/inputParser.js",
+              "matches": [
+                {
+                  "lineNumber": 109,
+                  "content": "    req.MIATARU.request = new RequestDevice(req.body['MiataruDeleteLocation'] || {});"
+                }
+              ]
+            },
+            {
+              "file": "./.specstory/history/2026-01-22_17-05Z-repository-changes-description-and-commit.md",
+              "matches": [
+                {
+                  "lineNumber": 1179,
+                  "content": "+        \"contents\": \"- **POST** &amp;amp;#96;/v1/GetLocationHistory&amp;amp;#96; - Retrieve location history\\n- **POST** &amp;amp;#96;/v1/GetVisitorHistory&amp;amp;#96; - Retrieve visitor history\\n- **POST** &amp;amp;#96;/v1/DeleteLocation&amp;amp;#96; - Delete all location data for a device\\n\\n### Legacy API (Backward Compatibility)\\n- **POST** &amp;amp;#96;/UpdateLocation&amp;amp;#96; - Store location data\\n- **POST** &amp;amp;#96;/GetLocation&amp;amp;#96; - Retrieve current location\\n- **POST** &amp;amp;#96;/GetLocationGeoJSON&amp;amp;#96; - Get location in GeoJSON format\\n- **GET** &amp;amp;#96;/GetLocationGeoJSON/:id?&amp;amp;#96; - Get location in GeoJSON format via GET\\n- **POST** &amp;amp;#96;/GetLocationHistory&amp;amp;#96; - Retrieve location history\\n- **POST** &amp;amp;#96;/GetVisitorHistory&amp;amp;#96; - Retrieve visitor history\\n- **POST** &amp;amp;#96;/DeleteLocation&amp;amp;#96; - Delete all location data for a device\\n\\n## Run the Server\\n\\nCheck out the repo:  \\n&amp;amp;#96;git clone git@github.com:miataru/miataru-server.git&amp;amp;#96;\\n\\nInstall de [... omitted end of long line]"
+                },
+                {
+                  "lineNumber": 1367,
+                  "content": "+            \"text\": \"  -d '{\\\"MiataruDeleteLocation\\\":{\\\"Device\\\":\\\"7b8e6e0ee5296db345162dc2ef652c1350761823\\\"}}'\","
+                },
+                {
+                  "lineNumber": 2848,
+                  "content": "+        \"contents\": \"&amp;amp;#96;&amp;amp;#96;&amp;amp;#96;\\n\\n**Get location in GeoJSON format:**\\n&amp;amp;#96;&amp;amp;#96;&amp;amp;#96;bash\\ncurl -H 'Content-Type: application/json' -X POST 'http://localhost:8090/v1/GetLocationGeoJSON' \\\\\\n  -d '{\\\"MiataruGetLocation\\\":[{\\\"Device\\\":\\\"7b8e6e0ee5296db345162dc2ef652c1350761823\\\"}]}'\\n&amp;amp;#96;&amp;amp;#96;&amp;amp;#96;\\n\\n## DeleteLocation API\\n\\nThe DeleteLocation API allows you to permanently delete all location data associated with a specific device.\\n\\n### Request Format\\n&amp;amp;#96;&amp;amp;#96;&amp;amp;#96;json\\n{\\n  \\\"MiataruDeleteLocation\\\": {\\n    \\\"Device\\\": \\\"device-id-here\\\"\\n  }\\n}\\n&amp;amp;#96;&amp;amp;#96;&amp;amp;#96;\\n\\n### Response Format\\n&amp;amp;#96;&amp;amp;#96;&amp;amp;#96;json\\n{\\n  \\\"MiataruResponse\\\": \\\"ACK\\\",\\n  \\\"MiataruVerboseResponse\\\": \\\"Location data deleted for device: device-id-here\\\",\\n  \\\"MiataruDeletedCount\\\": 3\\n}\\n&amp;amp;#96;&amp;amp;#96;&amp;amp;#96;\\n\\n### What Gets Deleted\\n- **Last Known Location**: Current location data\\n- **Location History**: Complete location  [... omitted end of long line]"
+                },
+                {
+                  "lineNumber": 2908,
+                  "content": "+            \"text\": \"  \\\"MiataruDeleteLocation\\\": {\","
+                },
+                {
+                  "lineNumber": 3001,
+                  "content": "+            \"text\": \"  -d '{\\\"MiataruDeleteLocation\\\":{\\\"Device\\\":\\\"my-device-123\\\"}}'\","
+                },
+                {
+                  "lineNumber": 15411,
+                  "content": "      ✔ should handle missing MiataruDeleteLocation object"
+                }
+              ]
+            },
+            {
+              "file": "./.specstory/history/2026-01-23_18-02Z-device-history-storage-and-removal-in-redis.md",
+              "matches": [
+                {
+                  "lineNumber": 2545,
+                  "content": "        \"contents\": \"### JavaScript Example\\n&amp;#96;&amp;#96;&amp;#96;javascript\\nconst deleteLocationData = async (deviceId) =&amp;gt; {\\n  const response = await fetch('http://localhost:8080/v1/DeleteLocation', {\\n    method: 'POST',\\n    headers: {\\n      'Content-Type': 'application/json'\\n    },\\n    body: JSON.stringify({\\n      MiataruDeleteLocation: {\\n        Device: deviceId\\n      }\\n    })\\n  });\\n  \\n  const result = await response.json();\\n  console.log(&amp;#96;Deleted ${result.MiataruDeletedCount} data entries for device ${deviceId}&amp;#96;);\\n  return result;\\n};\\n&amp;#96;&amp;#96;&amp;#96;\\n\\n## What Gets Deleted\\n\\nThe DeleteLocation operation removes the following Redis keys for the specified device:\\n\\n1. **Last Known Location**: &amp;#96;miad:{device-id}:last&amp;#96;\\n   - Contains the most recent location data\\n   - May have TTL (time-to-live) if location history is disabled\\n\\n2. **Location History**: &amp;#96;miad:{device-id}:hist&amp;#96;\\n   - Contains the complete location history as a Redis list\\n   - O [... omitted end of long line]"
+                },
+                {
+                  "lineNumber": 2585,
+                  "content": "            \"text\": \"      MiataruDeleteLocation: {\","
+                },
+                {
+                  "lineNumber": 5140,
+                  "content": "                  \"content\": \"        \\\"contents\\\": \\\"### JavaScript Example\\\\n&amp;amp;#96;&amp;amp;#96;&amp;amp;#96;javascript\\\\nconst deleteLocationData = async (deviceId) =&amp;amp;gt; {\\\\n  const response = await fetch('http://localhost:8080/v1/DeleteLocation', {\\\\n    method: 'POST',\\\\n    headers: {\\\\n      'Content-Type': 'application/json'\\\\n    },\\\\n    body: JSON.stringify({\\\\n      MiataruDeleteLocation: {\\\\n        Device: deviceId\\\\n      }\\\\n    })\\\\n  });\\\\n  \\\\n  const result = await response.json();\\\\n  console.log(&amp;amp;#96;Deleted ${result.MiataruDeletedCount} data entries for device ${deviceId}&amp;amp;#96;);\\\\n  return result;\\\\n};\\\\n&amp;amp;#96;&amp;amp;#96;&amp;amp;#96;\\\\n\\\\n## What Gets Deleted\\\\n\\\\nThe DeleteLocation operation removes the following Redis keys for the specified device:\\\\n\\\\n1. **Last Known Location**: &amp;amp;#96;miad:{device-id}:last&amp;amp;#96;\\\\n   - Contains the most recent location data\\\\n   - May have TTL (time-to-live) if location history is disabled\\\\n\\\\n2. **Location Histo [... omitted end of long line]"
+                },
+                {
+                  "lineNumber": 9507,
+                  "content": "        \"contents\": \"### JavaScript Example\\n&amp;#96;&amp;#96;&amp;#96;javascript\\nconst deleteLocationData = async (deviceId) =&amp;gt; {\\n  const response = await fetch('http://localhost:8080/v1/DeleteLocation', {\\n    method: 'POST',\\n    headers: {\\n      'Content-Type': 'application/json'\\n    },\\n    body: JSON.stringify({\\n      MiataruDeleteLocation: {\\n        Device: deviceId\\n      }\\n    })\\n  });\\n  \\n  const result = await response.json();\\n  console.log(&amp;#96;Deleted ${result.MiataruDeletedCount} data entries for device ${deviceId}&amp;#96;);\\n  return result;\\n};\\n&amp;#96;&amp;#96;&amp;#96;\\n\\n## What Gets Deleted\\n\\nThe DeleteLocation operation removes the following Redis keys for the specified device:\\n\\n1. **Last Known Location**: &amp;#96;miad:{device-id}:last&amp;#96;\\n   - Contains the most recent location data\\n   - May have TTL (time-to-live) if location history is disabled\\n\\n2. **Location History**: &amp;#96;miad:{device-id}:hist&amp;#96;\\n   - Contains the complete location history as a Redis list\\n   - O [... omitted end of long line]"
+                },
+                {
+                  "lineNumber": 9547,
+                  "content": "            \"text\": \"      MiataruDeleteLocation: {\","
+                },
+                {
+                  "lineNumber": 11268,
+                  "content": "        \"contents\": \"- **POST** &amp;#96;/v1/GetLocationHistory&amp;#96; - Retrieve location history\\n- **POST** &amp;#96;/v1/GetVisitorHistory&amp;#96; - Retrieve visitor history\\n- **POST** &amp;#96;/v1/DeleteLocation&amp;#96; - Delete all location data for a device\\n\\n### Legacy API (Backward Compatibility)\\n- **POST** &amp;#96;/UpdateLocation&amp;#96; - Store location data\\n- **POST** &amp;#96;/GetLocation&amp;#96; - Retrieve current location\\n- **POST** &amp;#96;/GetLocationGeoJSON&amp;#96; - Get location in GeoJSON format\\n- **GET** &amp;#96;/GetLocationGeoJSON/:id?&amp;#96; - Get location in GeoJSON format via GET\\n- **POST** &amp;#96;/GetLocationHistory&amp;#96; - Retrieve location history\\n- **POST** &amp;#96;/GetVisitorHistory&amp;#96; - Retrieve visitor history\\n- **POST** &amp;#96;/DeleteLocation&amp;#96; - Delete all location data for a device\\n\\n## Run the Server\\n\\nCheck out the repo:  \\n&amp;#96;git clone git@github.com:miataru/miataru-server.git&amp;#96;\\n\\nInstall dependencies:  \\n&amp;#96;npm install&amp;#96;\\n\\nRun the tests:  \\n&amp;#96;npm run test:all&amp;#96; (or  [... omitted end of long line]"
+                },
+                {
+                  "lineNumber": 11456,
+                  "content": "            \"text\": \"  -d '{\\\"MiataruDeleteLocation\\\":{\\\"Device\\\":\\\"7b8e6e0ee5296db345162dc2ef652c1350761823\\\"}}'\","
+                }
+              ]
+            },
+            {
+              "file": "./.specstory/history/2026-01-22_13-59Z-visitor-history-recording-configuration.md",
+              "matches": [
+                {
+                  "lineNumber": 2647,
+                  "content": "        \"contents\": \"### JavaScript Example\\n&amp;#96;&amp;#96;&amp;#96;javascript\\nconst deleteLocationData = async (deviceId) =&amp;gt; {\\n  const response = await fetch('http://localhost:8080/v1/DeleteLocation', {\\n    method: 'POST',\\n    headers: {\\n      'Content-Type': 'application/json'\\n    },\\n    body: JSON.stringify({\\n      MiataruDeleteLocation: {\\n        Device: deviceId\\n      }\\n    })\\n  });\\n  \\n  const result = await response.json();\\n  console.log(&amp;#96;Deleted ${result.MiataruDeletedCount} data entries for device ${deviceId}&amp;#96;);\\n  return result;\\n};\\n&amp;#96;&amp;#96;&amp;#96;\\n\\n## What Gets Deleted\\n\\nThe DeleteLocation operation removes the following Redis keys for the specified device:\\n\\n1. **Last Known Location**: &amp;#96;miad:{device-id}:last&amp;#96;\\n   - Contains the most recent location data\\n   - May have TTL (time-to-live) if location history is disabled\\n\\n2. **Location History**: &amp;#96;miad:{device-id}:hist&amp;#96;\\n   - Contains the complete location history as a Redis list\\n   - O [... omitted end of long line]"
+                },
+                {
+                  "lineNumber": 2687,
+                  "content": "            \"text\": \"      MiataruDeleteLocation: {\","
+                },
+                {
+                  "lineNumber": 4327,
+                  "content": "        \"contents\": \"- **POST** &amp;#96;/v1/GetLocationHistory&amp;#96; - Retrieve location history\\n- **POST** &amp;#96;/v1/GetVisitorHistory&amp;#96; - Retrieve visitor history\\n- **POST** &amp;#96;/v1/DeleteLocation&amp;#96; - Delete all location data for a device\\n\\n### Legacy API (Backward Compatibility)\\n- **POST** &amp;#96;/UpdateLocation&amp;#96; - Store location data\\n- **POST** &amp;#96;/GetLocation&amp;#96; - Retrieve current location\\n- **POST** &amp;#96;/GetLocationGeoJSON&amp;#96; - Get location in GeoJSON format\\n- **GET** &amp;#96;/GetLocationGeoJSON/:id?&amp;#96; - Get location in GeoJSON format via GET\\n- **POST** &amp;#96;/GetLocationHistory&amp;#96; - Retrieve location history\\n- **POST** &amp;#96;/GetVisitorHistory&amp;#96; - Retrieve visitor history\\n- **POST** &amp;#96;/DeleteLocation&amp;#96; - Delete all location data for a device\\n\\n## Run the Server\\n\\nCheck out the repo:  \\n&amp;#96;git clone git@github.com:miataru/miataru-server.git&amp;#96;\\n\\nInstall dependencies:  \\n&amp;#96;npm install&amp;#96;\\n\\nRun the tests:  \\n&amp;#96;npm run test:all&amp;#96; (or  [... omitted end of long line]"
+                },
+                {
+                  "lineNumber": 4515,
+                  "content": "            \"text\": \"  -d '{\\\"MiataruDeleteLocation\\\":{\\\"Device\\\":\\\"7b8e6e0ee5296db345162dc2ef652c1350761823\\\"}}'\","
+                },
+                {
+                  "lineNumber": 4784,
+                  "content": "                  \"content\": \"        \\\"contents\\\": \\\"function parseGetVisitorHistory(req) {\\\\n    req.MIATARU.request = new RequestVisitorHistory(req.body['MiataruGetVisitorHistory'] || {});\\\\n}\\\\n\\\\nfunction parseDeleteLocation(req) {\\\\n    req.MIATARU.request = new RequestDevice(req.body['MiataruDeleteLocation'] || {})\\\\n}\\\",\""
+                },
+                {
+                  "lineNumber": 4984,
+                  "content": "                  \"content\": \"        \\\"contents\\\": \\\"function parseGetVisitorHistory(req) {\\\\n    req.MIATARU.request = new RequestVisitorHistory(req.body['MiataruGetVisitorHistory'] || {});\\\\n}\\\\n\\\\nfunction parseDeleteLocation(req) {\\\\n    req.MIATARU.request = new RequestDevice(req.body['MiataruDeleteLocation'] || {})\\\\n}\\\",\""
+                },
+                {
+                  "lineNumber": 10219,
+                  "content": "        \"contents\": \"- **POST** &amp;#96;/v1/GetLocationHistory&amp;#96; - Retrieve location history\\n- **POST** &amp;#96;/v1/GetVisitorHistory&amp;#96; - Retrieve visitor history\\n- **POST** &amp;#96;/v1/DeleteLocation&amp;#96; - Delete all location data for a device\\n\\n### Legacy API (Backward Compatibility)\\n- **POST** &amp;#96;/UpdateLocation&amp;#96; - Store location data\\n- **POST** &amp;#96;/GetLocation&amp;#96; - Retrieve current location\\n- **POST** &amp;#96;/GetLocationGeoJSON&amp;#96; - Get location in GeoJSON format\\n- **GET** &amp;#96;/GetLocationGeoJSON/:id?&amp;#96; - Get location in GeoJSON format via GET\\n- **POST** &amp;#96;/GetLocationHistory&amp;#96; - Retrieve location history\\n- **POST** &amp;#96;/GetVisitorHistory&amp;#96; - Retrieve visitor history\\n- **POST** &amp;#96;/DeleteLocation&amp;#96; - Delete all location data for a device\\n\\n## Run the Server\\n\\nCheck out the repo:  \\n&amp;#96;git clone git@github.com:miataru/miataru-server.git&amp;#96;\\n\\nInstall dependencies:  \\n&amp;#96;npm install&amp;#96;\\n\\nRun the tests:  \\n&amp;#96;npm run test:all&amp;#96; (or  [... omitted end of long line]"
+                },
+                {
+                  "lineNumber": 10407,
+                  "content": "            \"text\": \"  -d '{\\\"MiataruDeleteLocation\\\":{\\\"Device\\\":\\\"7b8e6e0ee5296db345162dc2ef652c1350761823\\\"}}'\","
+                },
+                {
+                  "lineNumber": 11888,
+                  "content": "        \"contents\": \"&amp;#96;&amp;#96;&amp;#96;\\n\\n**Get location in GeoJSON format:**\\n&amp;#96;&amp;#96;&amp;#96;bash\\ncurl -H 'Content-Type: application/json' -X POST 'http://localhost:8090/v1/GetLocationGeoJSON' \\\\\\n  -d '{\\\"MiataruGetLocation\\\":[{\\\"Device\\\":\\\"7b8e6e0ee5296db345162dc2ef652c1350761823\\\"}]}'\\n&amp;#96;&amp;#96;&amp;#96;\\n\\n## DeleteLocation API\\n\\nThe DeleteLocation API allows you to permanently delete all location data associated with a specific device.\\n\\n### Request Format\\n&amp;#96;&amp;#96;&amp;#96;json\\n{\\n  \\\"MiataruDeleteLocation\\\": {\\n    \\\"Device\\\": \\\"device-id-here\\\"\\n  }\\n}\\n&amp;#96;&amp;#96;&amp;#96;\\n\\n### Response Format\\n&amp;#96;&amp;#96;&amp;#96;json\\n{\\n  \\\"MiataruResponse\\\": \\\"ACK\\\",\\n  \\\"MiataruVerboseResponse\\\": \\\"Location data deleted for device: device-id-here\\\",\\n  \\\"MiataruDeletedCount\\\": 3\\n}\\n&amp;#96;&amp;#96;&amp;#96;\\n\\n### What Gets Deleted\\n- **Last Known Location**: Current location data\\n- **Location History**: Complete location history (if enabled)\\n- **Visitor History**: Visitor tracking data\\n\\n### Example Usa [... omitted end of long line]"
+                },
+                {
+                  "lineNumber": 11948,
+                  "content": "            \"text\": \"  \\\"MiataruDeleteLocation\\\": {\","
+                },
+                {
+                  "lineNumber": 12041,
+                  "content": "            \"text\": \"  -d '{\\\"MiataruDeleteLocation\\\":{\\\"Device\\\":\\\"my-device-123\\\"}}'\","
+                },
+                {
+                  "lineNumber": 19645,
+                  "content": "      ✔ should handle missing MiataruDeleteLocation object"
+                },
+                {
+                  "lineNumber": 20581,
+                  "content": "      ✔ should handle missing MiataruDeleteLocation object"
+                }
+              ]
+            },
+            {
+              "file": "./.specstory/history/2026-01-19_20-26Z-miataru-getlocationhistory-json-error.md",
+              "matches": [
+                {
+                  "lineNumber": 4799,
+                  "content": "        \"contents\": \"- **POST** &amp;#96;/v1/GetLocationHistory&amp;#96; - Retrieve location history\\n- **POST** &amp;#96;/v1/GetVisitorHistory&amp;#96; - Retrieve visitor history\\n- **POST** &amp;#96;/v1/DeleteLocation&amp;#96; - Delete all location data for a device\\n\\n### Legacy API (Backward Compatibility)\\n- **POST** &amp;#96;/UpdateLocation&amp;#96; - Store location data\\n- **POST** &amp;#96;/GetLocation&amp;#96; - Retrieve current location\\n- **POST** &amp;#96;/GetLocationGeoJSON&amp;#96; - Get location in GeoJSON format\\n- **GET** &amp;#96;/GetLocationGeoJSON/:id?&amp;#96; - Get location in GeoJSON format via GET\\n- **POST** &amp;#96;/GetLocationHistory&amp;#96; - Retrieve location history\\n- **POST** &amp;#96;/GetVisitorHistory&amp;#96; - Retrieve visitor history\\n- **POST** &amp;#96;/DeleteLocation&amp;#96; - Delete all location data for a device\\n\\n## Run the Server\\n\\nCheck out the repo:  \\n&amp;#96;git clone git@github.com:miataru/miataru-server.git&amp;#96;\\n\\nInstall dependencies:  \\n&amp;#96;npm install&amp;#96;\\n\\nRun the tests:  \\n&amp;#96;npm run test:all&amp;#96; (or  [... omitted end of long line]"
+                },
+                {
+                  "lineNumber": 4987,
+                  "content": "            \"text\": \"  -d '{\\\"MiataruDeleteLocation\\\":{\\\"Device\\\":\\\"7b8e6e0ee5296db345162dc2ef652c1350761823\\\"}}'\","
+                },
+                {
+                  "lineNumber": 6730,
+                  "content": "        \"contents\": \"function parseGetVisitorHistory(req) {\\n    req.MIATARU.request = new RequestVisitorHistory(req.body['MiataruGetVisitorHistory'] || {});\\n}\\n\\nfunction parseDeleteLocation(req) {\\n    req.MIATARU.request = new RequestDevice(req.body['MiataruDeleteLocation'] || {})\\n}\","
+                },
+                {
+                  "lineNumber": 6756,
+                  "content": "            \"text\": \"    req.MIATARU.request = new RequestDevice(req.body['MiataruDeleteLocation'] || {})\","
+                },
+                {
+                  "lineNumber": 9695,
+                  "content": "        \"contents\": \"&amp;#96;&amp;#96;&amp;#96;\\n\\n**Get location in GeoJSON format:**\\n&amp;#96;&amp;#96;&amp;#96;bash\\ncurl -H 'Content-Type: application/json' -X POST 'http://localhost:8090/v1/GetLocationGeoJSON' \\\\\\n  -d '{\\\"MiataruGetLocation\\\":[{\\\"Device\\\":\\\"7b8e6e0ee5296db345162dc2ef652c1350761823\\\"}]}'\\n&amp;#96;&amp;#96;&amp;#96;\\n\\n## DeleteLocation API\\n\\nThe DeleteLocation API allows you to permanently delete all location data associated with a specific device.\\n\\n### Request Format\\n&amp;#96;&amp;#96;&amp;#96;json\\n{\\n  \\\"MiataruDeleteLocation\\\": {\\n    \\\"Device\\\": \\\"device-id-here\\\"\\n  }\\n}\\n&amp;#96;&amp;#96;&amp;#96;\\n\\n### Response Format\\n&amp;#96;&amp;#96;&amp;#96;json\\n{\\n  \\\"MiataruResponse\\\": \\\"ACK\\\",\\n  \\\"MiataruVerboseResponse\\\": \\\"Location data deleted for device: device-id-here\\\",\\n  \\\"MiataruDeletedCount\\\": 3\\n}\\n&amp;#96;&amp;#96;&amp;#96;\\n\\n### What Gets Deleted\\n- **Last Known Location**: Current location data\\n- **Location History**: Complete location history (if enabled)\\n- **Visitor History**: Visitor tracking data\\n\\n### Example Usa [... omitted end of long line]"
+                },
+                {
+                  "lineNumber": 9755,
+                  "content": "            \"text\": \"  \\\"MiataruDeleteLocation\\\": {\","
+                },
+                {
+                  "lineNumber": 9848,
+                  "content": "            \"text\": \"  -d '{\\\"MiataruDeleteLocation\\\":{\\\"Device\\\":\\\"my-device-123\\\"}}'\","
+                },
+                {
+                  "lineNumber": 14319,
+                  "content": "        \"contents\": \"&amp;#96;&amp;#96;&amp;#96;\\n\\n**Get location in GeoJSON format:**\\n&amp;#96;&amp;#96;&amp;#96;bash\\ncurl -H 'Content-Type: application/json' -X POST 'http://localhost:8090/v1/GetLocationGeoJSON' \\\\\\n  -d '{\\\"MiataruGetLocation\\\":[{\\\"Device\\\":\\\"7b8e6e0ee5296db345162dc2ef652c1350761823\\\"}]}'\\n&amp;#96;&amp;#96;&amp;#96;\\n\\n## DeleteLocation API\\n\\nThe DeleteLocation API allows you to permanently delete all location data associated with a specific device.\\n\\n### Request Format\\n&amp;#96;&amp;#96;&amp;#96;json\\n{\\n  \\\"MiataruDeleteLocation\\\": {\\n    \\\"Device\\\": \\\"device-id-here\\\"\\n  }\\n}\\n&amp;#96;&amp;#96;&amp;#96;\\n\\n### Response Format\\n&amp;#96;&amp;#96;&amp;#96;json\\n{\\n  \\\"MiataruResponse\\\": \\\"ACK\\\",\\n  \\\"MiataruVerboseResponse\\\": \\\"Location data deleted for device: device-id-here\\\",\\n  \\\"MiataruDeletedCount\\\": 3\\n}\\n&amp;#96;&amp;#96;&amp;#96;\\n\\n### What Gets Deleted\\n- **Last Known Location**: Current location data\\n- **Location History**: Complete location history (if enabled)\\n- **Visitor History**: Visitor tracking data\\n\\n### Example Usa [... omitted end of long line]"
+                },
+                {
+                  "lineNumber": 14379,
+                  "content": "            \"text\": \"  \\\"MiataruDeleteLocation\\\": {\","
+                },
+                {
+                  "lineNumber": 14472,
+                  "content": "            \"text\": \"  -d '{\\\"MiataruDeleteLocation\\\":{\\\"Device\\\":\\\"my-device-123\\\"}}'\","
+                },
+                {
+                  "lineNumber": 21723,
+                  "content": "        \"contents\": \"function parseGetVisitorHistory(req) {\\n    req.MIATARU.request = new RequestVisitorHistory(req.body['MiataruGetVisitorHistory'] || {});\\n}\\n\\nfunction parseDeleteLocation(req) {\\n    req.MIATARU.request = new RequestDevice(req.body['MiataruDeleteLocation'] || {})\\n}\","
+                },
+                {
+                  "lineNumber": 21749,
+                  "content": "            \"text\": \"    req.MIATARU.request = new RequestDevice(req.body['MiataruDeleteLocation'] || {})\","
+                },
+                {
+                  "lineNumber": 22680,
+                  "content": "      ✔ should handle missing MiataruDeleteLocation object"
+                }
+              ]
+            },
+            {
+              "file": "./.specstory/history/2026-01-19_20-04Z-npm-warnings-in-docker-build.md",
+              "matches": [
+                {
+                  "lineNumber": 916,
+                  "content": "      ✔ should handle missing MiataruDeleteLocation object"
+                }
+              ]
+            },
+            {
+              "file": "./.specstory/history/2026-01-19_19-52Z-visitor-history-self-request-exclusion.md",
+              "matches": [
+                {
+                  "lineNumber": 1535,
+                  "content": "      ✔ should handle missing MiataruDeleteLocation object"
+                },
+                {
+                  "lineNumber": 2434,
+                  "content": "      ✔ should handle missing MiataruDeleteLocation object"
+                },
+                {
+                  "lineNumber": 3116,
+                  "content": "      ✔ should handle missing MiataruDeleteLocation object"
+                }
+              ]
+            },
+            {
+              "file": "./docs/DELETE_LOCATION_API.md",
+              "matches": [
+                {
+                  "lineNumber": 24,
+                  "content": "  \"MiataruDeleteLocation\": {"
+                },
+                {
+                  "lineNumber": 34,
+                  "content": "| &#96;MiataruDeleteLocation&#96; | Object | Yes | Container object for delete request |"
+                },
+                {
+                  "lineNumber": 71,
+                  "content": "  -d '{\"MiataruDeleteLocation\":{\"Device\":\"my-device-123\"}}'"
+                },
+                {
+                  "lineNumber": 77,
+                  "content": "  -d '{\"MiataruDeleteLocation\":{\"Device\":\"my-device-123\"}}'"
+                },
+                {
+                  "lineNumber": 89,
+                  "content": "      MiataruDeleteLocation: {"
+                }
+              ]
+            },
+            {
+              "file": "./dev/Triggers/DeleteLocation.sh",
+              "matches": [
+                {
+                  "lineNumber": 48,
+                  "content": "    \\\"MiataruDeleteLocation\\\": {"
+                },
+                {
+                  "lineNumber": 70,
+                  "content": "    \\\"MiataruDeleteLocation\\\": {"
+                }
+              ]
+            }
+          ],
+          "totalLines": 195,
+          "totalMatchedLines": 195
+        }
+      }
+    }
+  }
+}
+```
+Status: **completed**
+
+
+</details>
+</tool-use>
+
+---
+
+
+Checking swagger.yaml for DeleteLocation and scanning for other endpoints that might need DeviceKey protection:
+
+
+---
+
+<tool-use data-tool-type="read" data-tool-name="read_file_v2">
+<details><summary>Tool use: **read_file_v2** • Read file: /Users/bietiekay/code/miataru-server/docs/swagger.yaml</summary>
+
+</details>
+</tool-use>
+
+---
+
+<tool-use data-tool-type="unknown" data-tool-name="semantic_search_full">
+<details>
+<summary>Tool use: **semantic_search_full**</summary>
+
+
+Parameters:
+
+```json
+{
+  "query": "write operations modify data endpoints that change server state",
+  "topK": 10,
+  "explanation": ""
+}
+```
+Result:
+
+```json
+{
+  "codeResults": [
+    {
+      "codeBlock": {
+        "relativeWorkspacePath": "./lib/routes/location/v1/location.js",
+        "range": {
+          "startPosition": {
+            "line": 324,
+            "column": 1
+          },
+          "endPosition": {
+            "line": 433,
+            "column": 1
+          }
+        },
+        "contents": "/**\n * UpdateLocation\n * api endpoint that updates the currentLocation and a arbitrary number of history locations\n *\n * @param req\n * @param res\n * @param next\n */\nfunction updateLocation(req, res, next) {\n    var MIATARU = req.MIATARU;\n    var requestConfig = MIATARU.config;\n    var locations = MIATARU.locations;\n\n    var chain = seq();\n\n    // Validate DeviceKey for each location if DeviceKey is set for the device\n    locations.forEach(function(loc, idx) {\n        var deviceId = loc.device();\n        var providedDeviceKey = loc.deviceKey();\n\n        chain.seq(function() {\n            var done = this;\n            // Check if DeviceKey is set for this device\n            deviceKeyUtils.getDeviceKey(deviceId, function(error, storedKey) {\n                if (error) {\n                    return done(error);\n                }\n\n                // If DeviceKey is set for this device, validate provided key\n                if (storedKey !== null &amp;&amp; storedKey !== undefined) {\n                    // DeviceKey is required when it's set\n                    if (!providedDeviceKey || providedDeviceKey === null || providedDeviceKey === '') {\n                        return done(new errors.ForbiddenError('DeviceKey is required for this device'));\n                    }\n\n                    // Validate provided key matches stored key\n                    deviceKeyUtils.validateDeviceKey(deviceId, providedDeviceKey, function(error2, isValid) {\n                        if (error2) {\n                            return done(error2);\n                        }\n\n                        if (!isValid) {\n                            return done(new errors.ForbiddenError('DeviceKey does not match'));\n                        }\n\n                        done();\n                    });\n                } else {\n                    // No DeviceKey set, proceed normally (backward compatible)\n                    done();\n                }\n            });\n        });\n    });\n\n    if(requestConfig.enableLocationHistory())\n}",
+        "signatures": {},
+        "detailedLines": [
+          {
+            "text": "/**",
+            "lineNumber": 327
+          },
+          {
+            "text": " * UpdateLocation",
+            "lineNumber": 328
+          },
+          {
+            "text": " * api endpoint that updates the currentLocation and a arbitrary number of history locations",
+            "lineNumber": 329
+          },
+          {
+            "text": " *",
+            "lineNumber": 330
+          },
+          {
+            "text": " * @param req",
+            "lineNumber": 331
+          },
+          {
+            "text": " * @param res",
+            "lineNumber": 332
+          },
+          {
+            "text": " * @param next",
+            "lineNumber": 333
+          },
+          {
+            "text": " */",
+            "lineNumber": 334
+          },
+          {
+            "text": "function updateLocation(req, res, next) {",
+            "lineNumber": 335,
+            "isSignature": true
+          },
+          {
+            "text": "    var MIATARU = req.MIATARU;",
+            "lineNumber": 336
+          },
+          {
+            "text": "    var requestConfig = MIATARU.config;",
+            "lineNumber": 337
+          },
+          {
+            "text": "    var locations = MIATARU.locations;",
+            "lineNumber": 338
+          },
+          {
+            "lineNumber": 339
+          },
+          {
+            "text": "    var chain = seq();",
+            "lineNumber": 340
+          },
+          {
+            "lineNumber": 341
+          },
+          {
+            "text": "    // Validate DeviceKey for each location if DeviceKey is set for the device",
+            "lineNumber": 342
+          },
+          {
+            "text": "    locations.forEach(function(loc, idx) {",
+            "lineNumber": 343
+          },
+          {
+            "text": "        var deviceId = loc.device();",
+            "lineNumber": 344
+          },
+          {
+            "text": "        var providedDeviceKey = loc.deviceKey();",
+            "lineNumber": 345
+          },
+          {
+            "lineNumber": 346
+          },
+          {
+            "text": "        chain.seq(function() {",
+            "lineNumber": 347
+          },
+          {
+            "text": "            var done = this;",
+            "lineNumber": 348
+          },
+          {
+            "text": "            // Check if DeviceKey is set for this device",
+            "lineNumber": 349
+          },
+          {
+            "text": "            deviceKeyUtils.getDeviceKey(deviceId, function(error, storedKey) {",
+            "lineNumber": 350
+          },
+          {
+            "text": "                if (error) {",
+            "lineNumber": 351
+          },
+          {
+            "text": "                    return done(error);",
+            "lineNumber": 352
+          },
+          {
+            "text": "                }",
+            "lineNumber": 353
+          },
+          {
+            "lineNumber": 354
+          },
+          {
+            "text": "                // If DeviceKey is set for this device, validate provided key",
+            "lineNumber": 355
+          },
+          {
+            "text": "                if (storedKey !== null &amp;&amp; storedKey !== undefined) {",
+            "lineNumber": 356
+          },
+          {
+            "text": "                    // DeviceKey is required when it's set",
+            "lineNumber": 357
+          },
+          {
+            "text": "                    if (!providedDeviceKey || providedDeviceKey === null || providedDeviceKey === '') {",
+            "lineNumber": 358
+          },
+          {
+            "text": "                        return done(new errors.ForbiddenError('DeviceKey is required for this device'));",
+            "lineNumber": 359
+          },
+          {
+            "text": "                    }",
+            "lineNumber": 360
+          },
+          {
+            "lineNumber": 361
+          },
+          {
+            "text": "                    // Validate provided key matches stored key",
+            "lineNumber": 362
+          },
+          {
+            "text": "                    deviceKeyUtils.validateDeviceKey(deviceId, providedDeviceKey, function(error2, isValid) {",
+            "lineNumber": 363
+          },
+          {
+            "text": "                        if (error2) {",
+            "lineNumber": 364
+          },
+          {
+            "text": "                            return done(error2);",
+            "lineNumber": 365
+          },
+          {
+            "text": "                        }",
+            "lineNumber": 366
+          },
+          {
+            "lineNumber": 367
+          },
+          {
+            "text": "                        if (!isValid) {",
+            "lineNumber": 368
+          },
+          {
+            "text": "                            return done(new errors.ForbiddenError('DeviceKey does not match'));",
+            "lineNumber": 369
+          },
+          {
+            "text": "                        }",
+            "lineNumber": 370
+          },
+          {
+            "lineNumber": 371
+          },
+          {
+            "text": "                        done();",
+            "lineNumber": 372
+          },
+          {
+            "text": "                    });",
+            "lineNumber": 373
+          },
+          {
+            "text": "                } else {",
+            "lineNumber": 374
+          },
+          {
+            "text": "                    // No DeviceKey set, proceed normally (backward compatible)",
+            "lineNumber": 375
+          },
+          {
+            "text": "                    done();",
+            "lineNumber": 376
+          },
+          {
+            "text": "                }",
+            "lineNumber": 377
+          },
+          {
+            "text": "            });",
+            "lineNumber": 378
+          },
+          {
+            "text": "        });",
+            "lineNumber": 379
+          },
+          {
+            "text": "    });",
+            "lineNumber": 380
+          },
+          {
+            "lineNumber": 381
+          },
+          {
+            "text": "    if(requestConfig.enableLocationHistory())",
+            "lineNumber": 382
+          },
+          {
+            "text": "}",
+            "lineNumber": 434,
+            "isSignature": true
+          }
+        ]
+      },
+      "score": 0.27856239676475525
+    },
+    {
+      "codeBlock": {
+        "relativeWorkspacePath": "./README.md",
+        "range": {
+          "startPosition": {
+            "line": 26
+          },
+          "endPosition": {
+            "line": 67
+          }
+        },
+        "contents": "If you do not have the option of hosting the Miataru server yourself we're offering a free service that allows you to connect the Miataru client applications with your own services.\n\nBy default Miataru does only store the last known location. And it only does that for a pre-defined amount of time. Nothing is written to any disk, everything is in-memory only and only available for a pre-defined time-window.\n\nWith it's simple API it allows you to use Miataru to your own needs and practices.\n\n## API Endpoints\n\nThe Miataru server provides both versioned (v1) and legacy API endpoints for maximum compatibility:\n\n### Version 1 API (Recommended)\n- **POST** &#96;/v1/UpdateLocation&#96; - Store location data\n- **POST** &#96;/v1/GetLocation&#96; - Retrieve current location\n- **POST** &#96;/v1/GetLocationGeoJSON&#96; - Get location in GeoJSON format\n- **GET** &#96;/v1/GetLocationGeoJSON/:id?&#96; - Get location in GeoJSON format via GET\n- **POST** &#96;/v1/GetLocationHistory&#96; - Retrieve location history\n- **POST** &#96;/v1/GetVisitorHistory&#96; - Retrieve visitor history\n- **POST** &#96;/v1/DeleteLocation&#96; - Delete all location data for a device\n- **POST** &#96;/v1/setDeviceKey&#96; - Set or change device key (API 1.1)\n- **POST** &#96;/v1/setAllowedDeviceList&#96; - Manage allowed devices list (API 1.1)\n\n### Legacy API (Backward Compatibility)\n- **POST** &#96;/UpdateLocation&#96; - Store location data\n- **POST** &#96;/GetLocation&#96; - Retrieve current location\n- **POST** &#96;/GetLocationGeoJSON&#96; - Get location in GeoJSON format\n- **GET** &#96;/GetLocationGeoJSON/:id?&#96; - Get location in GeoJSON format via GET\n- **POST** &#96;/GetLocationHistory&#96; - Retrieve location history\n- **POST** &#96;/GetVisitorHistory&#96; - Retrieve visitor history\n- **POST** &#96;/DeleteLocation&#96; - Delete all location data for a device\n- **POST** &#96;/setDeviceKey&#96; - Set or change device key (API 1.1)\n- **POST** &#96;/setAllowedDeviceList&#96; - Manage allowed devices list (API 1.1)\n\n## Security Features (API 1.1)\n\n### DeviceKey Authentication\n\nDeviceKey provides authentication for write operations and visitor history access. Once set, devices must provide the correct DeviceKey to:\n- Update location data\n- Access visitor history",
+        "signatures": {},
+        "detailedLines": [
+          {
+            "text": "If you do not have the option of hosting the Miataru server yourself we're offering a free service that allows you to connect the Miataru client applications with your own services.",
+            "lineNumber": 28
+          },
+          {
+            "lineNumber": 29
+          },
+          {
+            "text": "By default Miataru does only store the last known location. And it only does that for a pre-defined amount of time. Nothing is written to any disk, everything is in-memory only and only available for a pre-defined time-window.",
+            "lineNumber": 30
+          },
+          {
+            "lineNumber": 31
+          },
+          {
+            "text": "With it's simple API it allows you to use Miataru to your own needs and practices.",
+            "lineNumber": 32
+          },
+          {
+            "lineNumber": 33
+          },
+          {
+            "text": "## API Endpoints",
+            "lineNumber": 34
+          },
+          {
+            "lineNumber": 35
+          },
+          {
+            "text": "The Miataru server provides both versioned (v1) and legacy API endpoints for maximum compatibility:",
+            "lineNumber": 36
+          },
+          {
+            "lineNumber": 37
+          },
+          {
+            "text": "### Version 1 API (Recommended)",
+            "lineNumber": 38
+          },
+          {
+            "text": "- **POST** &#96;/v1/UpdateLocation&#96; - Store location data",
+            "lineNumber": 39
+          },
+          {
+            "text": "- **POST** &#96;/v1/GetLocation&#96; - Retrieve current location",
+            "lineNumber": 40
+          },
+          {
+            "text": "- **POST** &#96;/v1/GetLocationGeoJSON&#96; - Get location in GeoJSON format",
+            "lineNumber": 41
+          },
+          {
+            "text": "- **GET** &#96;/v1/GetLocationGeoJSON/:id?&#96; - Get location in GeoJSON format via GET",
+            "lineNumber": 42
+          },
+          {
+            "text": "- **POST** &#96;/v1/GetLocationHistory&#96; - Retrieve location history",
+            "lineNumber": 43
+          },
+          {
+            "text": "- **POST** &#96;/v1/GetVisitorHistory&#96; - Retrieve visitor history",
+            "lineNumber": 44
+          },
+          {
+            "text": "- **POST** &#96;/v1/DeleteLocation&#96; - Delete all location data for a device",
+            "lineNumber": 45
+          },
+          {
+            "text": "- **POST** &#96;/v1/setDeviceKey&#96; - Set or change device key (API 1.1)",
+            "lineNumber": 46
+          },
+          {
+            "text": "- **POST** &#96;/v1/setAllowedDeviceList&#96; - Manage allowed devices list (API 1.1)",
+            "lineNumber": 47
+          },
+          {
+            "lineNumber": 48
+          },
+          {
+            "text": "### Legacy API (Backward Compatibility)",
+            "lineNumber": 49
+          },
+          {
+            "text": "- **POST** &#96;/UpdateLocation&#96; - Store location data",
+            "lineNumber": 50
+          },
+          {
+            "text": "- **POST** &#96;/GetLocation&#96; - Retrieve current location",
+            "lineNumber": 51
+          },
+          {
+            "text": "- **POST** &#96;/GetLocationGeoJSON&#96; - Get location in GeoJSON format",
+            "lineNumber": 52
+          },
+          {
+            "text": "- **GET** &#96;/GetLocationGeoJSON/:id?&#96; - Get location in GeoJSON format via GET",
+            "lineNumber": 53
+          },
+          {
+            "text": "- **POST** &#96;/GetLocationHistory&#96; - Retrieve location history",
+            "lineNumber": 54
+          },
+          {
+            "text": "- **POST** &#96;/GetVisitorHistory&#96; - Retrieve visitor history",
+            "lineNumber": 55
+          },
+          {
+            "text": "- **POST** &#96;/DeleteLocation&#96; - Delete all location data for a device",
+            "lineNumber": 56
+          },
+          {
+            "text": "- **POST** &#96;/setDeviceKey&#96; - Set or change device key (API 1.1)",
+            "lineNumber": 57
+          },
+          {
+            "text": "- **POST** &#96;/setAllowedDeviceList&#96; - Manage allowed devices list (API 1.1)",
+            "lineNumber": 58
+          },
+          {
+            "lineNumber": 59
+          },
+          {
+            "text": "## Security Features (API 1.1)",
+            "lineNumber": 60
+          },
+          {
+            "lineNumber": 61
+          },
+          {
+            "text": "### DeviceKey Authentication",
+            "lineNumber": 62
+          },
+          {
+            "lineNumber": 63
+          },
+          {
+            "text": "DeviceKey provides authentication for write operations and visitor history access. Once set, devices must provide the correct DeviceKey to:",
+            "lineNumber": 64
+          },
+          {
+            "text": "- Update location data",
+            "lineNumber": 65
+          },
+          {
+            "text": "- Access visitor history",
+            "lineNumber": 66
+          }
+        ]
+      },
+      "score": 0.2411946952342987
+    },
+    {
+      "codeBlock": {
+        "relativeWorkspacePath": "./docs/TECHNICAL_SPECIFICATION.md",
+        "range": {
+          "startPosition": {},
+          "endPosition": {
+            "line": 16
+          }
+        },
+        "contents": "# TECHNICAL SPECIFICATION\n\n## 1. Architectural Overview\n\n### Logical architecture\n- **HTTP API layer (Express)**: An Express app provides the HTTP interface, JSON parsing, error handling, and static responses for &#96;/&#96; and &#96;/robots.txt&#96;. (Evidence: server.js; lib/routes/homepage.js; tests/integration/smoke.tests.js; tests/integration/robots.tests.js)\n- **Middleware layer**: CORS and HTTP rate limiting are applied as app-level middleware before routes. (Evidence: lib/middlewares/index.js; lib/middlewares/rateLimiter.js; tests/integration/cors.tests.js; tests/integration/httpRateLimiter.tests.js)\n- **Route layer**: Location endpoints are exposed under both &#96;/v1/*&#96; and legacy paths, plus a GET GeoJSON variant. (Evidence: lib/routes/location/index.js; README.md)\n- **Request parsing &amp; validation**: Incoming payloads are converted into typed request objects (device, location, history, visitor history, and config). Invalid inputs throw &#96;BadRequestError&#96; and return 400. (Evidence: lib/routes/location/v1/inputParser.js; lib/models/RequestLocation.js; lib/models/RequestDevice.js; lib/models/RequestLocationHistory.js; tests/integration/updateLocation.tests.js)\n- **Storage access layer**: Redis (real or fakeredis) stores last-known location, history list, and visitor list. A global concurrency limiter protects Redis calls. (Evidence: lib/db.js; config/default.js; tests/unit/redisRateLimiter.tests.js)\n- **Response models**: Response objects format API output for location, history, GeoJSON, visitor history, update ACKs, and delete ACKs. (Evidence: lib/models/ResponseLocation*.js; lib/models/ResponseUpdateLocation.js; lib/models/ResponseDeleteLocation.js; tests/unit/responseLocationGeoJSON.tests.js)\n\n### Runtime/deployment model\n- **Node.js server**: The application runs as a Node.js process using Express and starts listening only when &#96;server.js&#96; is executed directly. (Evidence: server.js)\n- **Config layering**: &#96;config/default.js&#96; is always loaded, with environment, user, external config, and CLI overrides merged in that order. (Evidence: lib/utils/configurationLoader.js; README.md)\n- **Port binding**: Defaults are &#96;0.0.0.0:8090&#96; and can be overridden via config. (Evidence: config/default.js)",
+        "signatures": {},
+        "detailedLines": [
+          {
+            "text": "# TECHNICAL SPECIFICATION",
+            "lineNumber": 1
+          },
+          {
+            "lineNumber": 2
+          },
+          {
+            "text": "## 1. Architectural Overview",
+            "lineNumber": 3
+          },
+          {
+            "lineNumber": 4
+          },
+          {
+            "text": "### Logical architecture",
+            "lineNumber": 5
+          },
+          {
+            "text": "- **HTTP API layer (Express)**: An Express app provides the HTTP interface, JSON parsing, error handling, and static responses for &#96;/&#96; and &#96;/robots.txt&#96;. (Evidence: server.js; lib/routes/homepage.js; tests/integration/smoke.tests.js; tests/integration/robots.tests.js)",
+            "lineNumber": 6
+          },
+          {
+            "text": "- **Middleware layer**: CORS and HTTP rate limiting are applied as app-level middleware before routes. (Evidence: lib/middlewares/index.js; lib/middlewares/rateLimiter.js; tests/integration/cors.tests.js; tests/integration/httpRateLimiter.tests.js)",
+            "lineNumber": 7
+          },
+          {
+            "text": "- **Route layer**: Location endpoints are exposed under both &#96;/v1/*&#96; and legacy paths, plus a GET GeoJSON variant. (Evidence: lib/routes/location/index.js; README.md)",
+            "lineNumber": 8
+          },
+          {
+            "text": "- **Request parsing &amp; validation**: Incoming payloads are converted into typed request objects (device, location, history, visitor history, and config). Invalid inputs throw &#96;BadRequestError&#96; and return 400. (Evidence: lib/routes/location/v1/inputParser.js; lib/models/RequestLocation.js; lib/models/RequestDevice.js; lib/models/RequestLocationHistory.js; tests/integration/updateLocation.tests.js)",
+            "lineNumber": 9
+          },
+          {
+            "text": "- **Storage access layer**: Redis (real or fakeredis) stores last-known location, history list, and visitor list. A global concurrency limiter protects Redis calls. (Evidence: lib/db.js; config/default.js; tests/unit/redisRateLimiter.tests.js)",
+            "lineNumber": 10
+          },
+          {
+            "text": "- **Response models**: Response objects format API output for location, history, GeoJSON, visitor history, update ACKs, and delete ACKs. (Evidence: lib/models/ResponseLocation*.js; lib/models/ResponseUpdateLocation.js; lib/models/ResponseDeleteLocation.js; tests/unit/responseLocationGeoJSON.tests.js)",
+            "lineNumber": 11
+          },
+          {
+            "lineNumber": 12
+          },
+          {
+            "text": "### Runtime/deployment model",
+            "lineNumber": 13
+          },
+          {
+            "text": "- **Node.js server**: The application runs as a Node.js process using Express and starts listening only when &#96;server.js&#96; is executed directly. (Evidence: server.js)",
+            "lineNumber": 14
+          },
+          {
+            "text": "- **Config layering**: &#96;config/default.js&#96; is always loaded, with environment, user, external config, and CLI overrides merged in that order. (Evidence: lib/utils/configurationLoader.js; README.md)",
+            "lineNumber": 15
+          },
+          {
+            "text": "- **Port binding**: Defaults are &#96;0.0.0.0:8090&#96; and can be overridden via config. (Evidence: config/default.js)",
+            "lineNumber": 16
+          }
+        ]
+      },
+      "score": 0.22325193881988525
+    },
+    {
+      "codeBlock": {
+        "relativeWorkspacePath": "./lib/routes/location/v1/location.js",
+        "range": {
+          "startPosition": {
+            "line": 799,
+            "column": 1
+          },
+          "endPosition": {
+            "line": 877,
+            "column": 1
+          }
+        },
+        "contents": "/**\n * SetDeviceKey\n * Sets or changes the device key for a device\n * @param req\n * @param res\n * @param next\n */\nfunction setDeviceKey(req, res, next) {\n    var request = req.MIATARU.request;\n    var deviceId = request.deviceId();\n    var currentDeviceKey = request.currentDeviceKey();\n    var newDeviceKey = request.newDeviceKey();\n\n    seq()\n        .seq(function() {\n            var done = this;\n            // Check if device already has a key set\n            deviceKeyUtils.getDeviceKey(deviceId, function(error, storedKey) {\n                if (error) {\n                    return done(error);\n                }\n\n                done.vars = done.vars || {};\n                done.vars.storedKey = storedKey;\n                done();\n            });\n        })\n        .seq(function() {\n            var done = this;\n            var storedKey = (done.vars || {}).storedKey;\n\n            // If a key exists, validate CurrentDeviceKey\n            if (storedKey !== null &amp;&amp; storedKey !== undefined) {\n                // Key exists, so CurrentDeviceKey must be provided and match\n                if (!currentDeviceKey || currentDeviceKey === null || currentDeviceKey === '') {\n                    return done(new errors.ForbiddenError('CurrentDeviceKey is required to change existing key'));\n                }\n\n                // Validate CurrentDeviceKey matches stored key\n                deviceKeyUtils.validateDeviceKey(deviceId, currentDeviceKey, function(error, isValid) {\n                    if (error) {\n                        return done(error);\n                    }\n\n                    if (!isValid) {\n                        return done(new errors.ForbiddenError('CurrentDeviceKey does not match'));\n                    }\n\n                    done();\n                });\n            } else {\n                // No key exists, so CurrentDeviceKey should be null/empty (first-time setup)\n                // This is allowed, proceed\n                done();\n            }\n        })\n        .seq(function() {\n            var done = this;\n            // Set the new key\n            deviceKeyUtils.setDeviceKey\n\n\n\n\n}",
+        "signatures": {},
+        "detailedLines": [
+          {
+            "text": "/**",
+            "lineNumber": 802
+          },
+          {
+            "text": " * SetDeviceKey",
+            "lineNumber": 803
+          },
+          {
+            "text": " * Sets or changes the device key for a device",
+            "lineNumber": 804
+          },
+          {
+            "text": " * @param req",
+            "lineNumber": 805
+          },
+          {
+            "text": " * @param res",
+            "lineNumber": 806
+          },
+          {
+            "text": " * @param next",
+            "lineNumber": 807
+          },
+          {
+            "text": " */",
+            "lineNumber": 808
+          },
+          {
+            "text": "function setDeviceKey(req, res, next) {",
+            "lineNumber": 809,
+            "isSignature": true
+          },
+          {
+            "text": "    var request = req.MIATARU.request;",
+            "lineNumber": 810
+          },
+          {
+            "text": "    var deviceId = request.deviceId();",
+            "lineNumber": 811
+          },
+          {
+            "text": "    var currentDeviceKey = request.currentDeviceKey();",
+            "lineNumber": 812
+          },
+          {
+            "text": "    var newDeviceKey = request.newDeviceKey();",
+            "lineNumber": 813
+          },
+          {
+            "lineNumber": 814
+          },
+          {
+            "text": "    seq()",
+            "lineNumber": 815
+          },
+          {
+            "text": "        .seq(function() {",
+            "lineNumber": 816
+          },
+          {
+            "text": "            var done = this;",
+            "lineNumber": 817
+          },
+          {
+            "text": "            // Check if device already has a key set",
+            "lineNumber": 818
+          },
+          {
+            "text": "            deviceKeyUtils.getDeviceKey(deviceId, function(error, storedKey) {",
+            "lineNumber": 819
+          },
+          {
+            "text": "                if (error) {",
+            "lineNumber": 820
+          },
+          {
+            "text": "                    return done(error);",
+            "lineNumber": 821
+          },
+          {
+            "text": "                }",
+            "lineNumber": 822
+          },
+          {
+            "lineNumber": 823
+          },
+          {
+            "text": "                done.vars = done.vars || {};",
+            "lineNumber": 824
+          },
+          {
+            "text": "                done.vars.storedKey = storedKey;",
+            "lineNumber": 825
+          },
+          {
+            "text": "                done();",
+            "lineNumber": 826
+          },
+          {
+            "text": "            });",
+            "lineNumber": 827
+          },
+          {
+            "text": "        })",
+            "lineNumber": 828
+          },
+          {
+            "text": "        .seq(function() {",
+            "lineNumber": 829
+          },
+          {
+            "text": "            var done = this;",
+            "lineNumber": 830
+          },
+          {
+            "text": "            var storedKey = (done.vars || {}).storedKey;",
+            "lineNumber": 831
+          },
+          {
+            "lineNumber": 832
+          },
+          {
+            "text": "            // If a key exists, validate CurrentDeviceKey",
+            "lineNumber": 833
+          },
+          {
+            "text": "            if (storedKey !== null &amp;&amp; storedKey !== undefined) {",
+            "lineNumber": 834
+          },
+          {
+            "text": "                // Key exists, so CurrentDeviceKey must be provided and match",
+            "lineNumber": 835
+          },
+          {
+            "text": "                if (!currentDeviceKey || currentDeviceKey === null || currentDeviceKey === '') {",
+            "lineNumber": 836
+          },
+          {
+            "text": "                    return done(new errors.ForbiddenError('CurrentDeviceKey is required to change existing key'));",
+            "lineNumber": 837
+          },
+          {
+            "text": "                }",
+            "lineNumber": 838
+          },
+          {
+            "lineNumber": 839
+          },
+          {
+            "text": "                // Validate CurrentDeviceKey matches stored key",
+            "lineNumber": 840
+          },
+          {
+            "text": "                deviceKeyUtils.validateDeviceKey(deviceId, currentDeviceKey, function(error, isValid) {",
+            "lineNumber": 841
+          },
+          {
+            "text": "                    if (error) {",
+            "lineNumber": 842
+          },
+          {
+            "text": "                        return done(error);",
+            "lineNumber": 843
+          },
+          {
+            "text": "                    }",
+            "lineNumber": 844
+          },
+          {
+            "lineNumber": 845
+          },
+          {
+            "text": "                    if (!isValid) {",
+            "lineNumber": 846
+          },
+          {
+            "text": "                        return done(new errors.ForbiddenError('CurrentDeviceKey does not match'));",
+            "lineNumber": 847
+          },
+          {
+            "text": "                    }",
+            "lineNumber": 848
+          },
+          {
+            "lineNumber": 849
+          },
+          {
+            "text": "                    done();",
+            "lineNumber": 850
+          },
+          {
+            "text": "                });",
+            "lineNumber": 851
+          },
+          {
+            "text": "            } else {",
+            "lineNumber": 852
+          },
+          {
+            "text": "                // No key exists, so CurrentDeviceKey should be null/empty (first-time setup)",
+            "lineNumber": 853
+          },
+          {
+            "text": "                // This is allowed, proceed",
+            "lineNumber": 854
+          },
+          {
+            "text": "                done();",
+            "lineNumber": 855
+          },
+          {
+            "text": "            }",
+            "lineNumber": 856
+          },
+          {
+            "text": "        })",
+            "lineNumber": 857
+          },
+          {
+            "text": "        .seq(function() {",
+            "lineNumber": 858
+          },
+          {
+            "text": "            var done = this;",
+            "lineNumber": 859
+          },
+          {
+            "text": "            // Set the new key",
+            "lineNumber": 860
+          },
+          {
+            "text": "            deviceKeyUtils.setDeviceKey",
+            "lineNumber": 861
+          },
+          {
+            "lineNumber": 867
+          },
+          {
+            "lineNumber": 868
+          },
+          {
+            "lineNumber": 871
+          },
+          {
+            "lineNumber": 877
+          },
+          {
+            "text": "}",
+            "lineNumber": 878,
+            "isSignature": true
+          }
+        ]
+      },
+      "score": 0.220750093460083
+    },
+    {
+      "codeBlock": {
+        "relativeWorkspacePath": "./lib/routes/location/v1/location.js",
+        "range": {
+          "startPosition": {
+            "line": 808
+          },
+          "endPosition": {
+            "line": 885,
+            "column": 3
+          }
+        },
+        "contents": "function setDeviceKey(req, res, next) {\n\n {\n            var done = this;\n            // Set the new key\n            deviceKeyUtils.setDeviceKey(deviceId, newDeviceKey, function(error) {\n                if (error) {\n                    return done(error);\n                }\n\n                done();\n            });\n        })\n        .seq(function() {\n            res.send((new models.ResponseSetDeviceKey()).data());\n        })\n        .catch(function(error) {\n            if (error instanceof errors.ForbiddenError) {\n                return next(error);\n            }\n            next(new errors.InternalServerError(error));\n        });\n}\n\n/**\n * SetAllowedDeviceList\n * Sets or updates the allowed devices list for a device\n * @param req\n * @param res\n * @param next\n */",
+        "signatures": {
+          "ranges": [
+            {
+              "startPosition": {
+                "line": 809,
+                "column": 1
+              },
+              "endPosition": {
+                "line": 810,
+                "column": 5
+              }
+            },
+            {
+              "startPosition": {
+                "line": 815,
+                "column": 5
+              },
+              "endPosition": {
+                "line": 815,
+                "column": 5
+              }
+            },
+            {
+              "startPosition": {
+                "line": 815,
+                "column": 5
+              },
+              "endPosition": {
+                "line": 815,
+                "column": 5
+              }
+            },
+            {
+              "startPosition": {
+                "line": 815,
+                "column": 5
+              },
+              "endPosition": {
+                "line": 815,
+                "column": 5
+              }
+            }
+          ]
+        },
+        "detailedLines": [
+          {
+            "text": "function setDeviceKey(req, res, next) {",
+            "lineNumber": 809,
+            "isSignature": true
+          },
+          {
+            "lineNumber": 815
+          },
+          {
+            "text": " {",
+            "lineNumber": 858
+          },
+          {
+            "text": "            var done = this;",
+            "lineNumber": 859
+          },
+          {
+            "text": "            // Set the new key",
+            "lineNumber": 860
+          },
+          {
+            "text": "            deviceKeyUtils.setDeviceKey(deviceId, newDeviceKey, function(error) {",
+            "lineNumber": 861
+          },
+          {
+            "text": "                if (error) {",
+            "lineNumber": 862
+          },
+          {
+            "text": "                    return done(error);",
+            "lineNumber": 863
+          },
+          {
+            "text": "                }",
+            "lineNumber": 864
+          },
+          {
+            "lineNumber": 865
+          },
+          {
+            "text": "                done();",
+            "lineNumber": 866
+          },
+          {
+            "text": "            });",
+            "lineNumber": 867
+          },
+          {
+            "text": "        })",
+            "lineNumber": 868
+          },
+          {
+            "text": "        .seq(function() {",
+            "lineNumber": 869
+          },
+          {
+            "text": "            res.send((new models.ResponseSetDeviceKey()).data());",
+            "lineNumber": 870
+          },
+          {
+            "text": "        })",
+            "lineNumber": 871
+          },
+          {
+            "text": "        .catch(function(error) {",
+            "lineNumber": 872
+          },
+          {
+            "text": "            if (error instanceof errors.ForbiddenError) {",
+            "lineNumber": 873
+          },
+          {
+            "text": "                return next(error);",
+            "lineNumber": 874
+          },
+          {
+            "text": "            }",
+            "lineNumber": 875
+          },
+          {
+            "text": "            next(new errors.InternalServerError(error));",
+            "lineNumber": 876
+          },
+          {
+            "text": "        });",
+            "lineNumber": 877
+          },
+          {
+            "text": "}",
+            "lineNumber": 878,
+            "isSignature": true
+          },
+          {
+            "lineNumber": 879
+          },
+          {
+            "text": "/**",
+            "lineNumber": 880
+          },
+          {
+            "text": " * SetAllowedDeviceList",
+            "lineNumber": 881
+          },
+          {
+            "text": " * Sets or updates the allowed devices list for a device",
+            "lineNumber": 882
+          },
+          {
+            "text": " * @param req",
+            "lineNumber": 883
+          },
+          {
+            "text": " * @param res",
+            "lineNumber": 884
+          },
+          {
+            "text": " * @param next",
+            "lineNumber": 885
+          },
+          {
+            "text": " */",
+            "lineNumber": 886
+          }
+        ]
+      },
+      "score": 0.21940839290618896
+    },
+    {
+      "codeBlock": {
+        "relativeWorkspacePath": "./lib/utils/allowedDevices.js",
+        "range": {
+          "startPosition": {
+            "line": 108
+          },
+          "endPosition": {
+            "line": 195,
+            "column": 3
+          }
+        },
+        "contents": "function setAllowedDevices(deviceId, allowedDevices, callback) {\n\n\n        \n        if (hashFields.length &gt; 0) {\n            var chain = seq();\n            \n            // Set each field-value pair\n            hashFields.forEach(function(field) {\n                chain.seq(function() {\n                    db.hset(hashKey, field, hashData[field], this);\n                });\n            });\n            \n            // Set enabled flag after all fields are set\n            chain.seq(function() {\n                db.set(flagKey, '1', this);\n            });\n            \n            chain.catch(function(error) {\n                callback(error);\n            });\n            \n            chain.seq(function() {\n                callback(null);\n            });\n        } else {\n            // No valid devices, remove flag\n            db.del(flagKey, callback);\n        }\n    });\n}\n\n/**\n * Check if requesting device has access to target device\n * @param {string} deviceId - The target device ID\n * @param {string} requestingDeviceId - The requesting device ID\n * @param {string} accessType - 'currentLocation' or 'history'\n * @param {function} callback - Callback function (error, hasAccess)\n */",
+        "signatures": {
+          "ranges": [
+            {
+              "startPosition": {
+                "line": 109,
+                "column": 1
+              },
+              "endPosition": {
+                "line": 110,
+                "column": 5
+              }
+            },
+            {
+              "startPosition": {
+                "line": 127,
+                "column": 5
+              },
+              "endPosition": {
+                "line": 127,
+                "column": 5
+              }
+            }
+          ]
+        },
+        "detailedLines": [
+          {
+            "text": "function setAllowedDevices(deviceId, allowedDevices, callback) {",
+            "lineNumber": 109,
+            "isSignature": true
+          },
+          {
+            "lineNumber": 127
+          },
+          {
+            "lineNumber": 159
+          },
+          {
+            "text": "        ",
+            "lineNumber": 160
+          },
+          {
+            "text": "        if (hashFields.length &gt; 0) {",
+            "lineNumber": 161
+          },
+          {
+            "text": "            var chain = seq();",
+            "lineNumber": 162
+          },
+          {
+            "text": "            ",
+            "lineNumber": 163
+          },
+          {
+            "text": "            // Set each field-value pair",
+            "lineNumber": 164
+          },
+          {
+            "text": "            hashFields.forEach(function(field) {",
+            "lineNumber": 165
+          },
+          {
+            "text": "                chain.seq(function() {",
+            "lineNumber": 166
+          },
+          {
+            "text": "                    db.hset(hashKey, field, hashData[field], this);",
+            "lineNumber": 167
+          },
+          {
+            "text": "                });",
+            "lineNumber": 168
+          },
+          {
+            "text": "            });",
+            "lineNumber": 169
+          },
+          {
+            "text": "            ",
+            "lineNumber": 170
+          },
+          {
+            "text": "            // Set enabled flag after all fields are set",
+            "lineNumber": 171
+          },
+          {
+            "text": "            chain.seq(function() {",
+            "lineNumber": 172
+          },
+          {
+            "text": "                db.set(flagKey, '1', this);",
+            "lineNumber": 173
+          },
+          {
+            "text": "            });",
+            "lineNumber": 174
+          },
+          {
+            "text": "            ",
+            "lineNumber": 175
+          },
+          {
+            "text": "            chain.catch(function(error) {",
+            "lineNumber": 176
+          },
+          {
+            "text": "                callback(error);",
+            "lineNumber": 177
+          },
+          {
+            "text": "            });",
+            "lineNumber": 178
+          },
+          {
+            "text": "            ",
+            "lineNumber": 179
+          },
+          {
+            "text": "            chain.seq(function() {",
+            "lineNumber": 180
+          },
+          {
+            "text": "                callback(null);",
+            "lineNumber": 181
+          },
+          {
+            "text": "            });",
+            "lineNumber": 182
+          },
+          {
+            "text": "        } else {",
+            "lineNumber": 183
+          },
+          {
+            "text": "            // No valid devices, remove flag",
+            "lineNumber": 184
+          },
+          {
+            "text": "            db.del(flagKey, callback);",
+            "lineNumber": 185
+          },
+          {
+            "text": "        }",
+            "lineNumber": 186
+          },
+          {
+            "text": "    });",
+            "lineNumber": 187
+          },
+          {
+            "text": "}",
+            "lineNumber": 188,
+            "isSignature": true
+          },
+          {
+            "lineNumber": 189
+          },
+          {
+            "text": "/**",
+            "lineNumber": 190
+          },
+          {
+            "text": " * Check if requesting device has access to target device",
+            "lineNumber": 191
+          },
+          {
+            "text": " * @param {string} deviceId - The target device ID",
+            "lineNumber": 192
+          },
+          {
+            "text": " * @param {string} requestingDeviceId - The requesting device ID",
+            "lineNumber": 193
+          },
+          {
+            "text": " * @param {string} accessType - 'currentLocation' or 'history'",
+            "lineNumber": 194
+          },
+          {
+            "text": " * @param {function} callback - Callback function (error, hasAccess)",
+            "lineNumber": 195
+          },
+          {
+            "text": " */",
+            "lineNumber": 196
+          }
+        ]
+      },
+      "score": 0.21836256980895996
+    },
+    {
+      "codeBlock": {
+        "relativeWorkspacePath": "./docs/PRD.md",
+        "range": {
+          "startPosition": {
+            "line": 16
+          },
+          "endPosition": {
+            "line": 36
+          }
+        },
+        "contents": "- **Operations/QA**: rely on tests and observability for stability under load. (Evidence: README.md L434-L480; tests/integration/httpRateLimiter.tests.js L10-L110; tests/unit/redisRateLimiter.tests.js L9-L123)\n\n## 3. Functional Requirements\n\n### FR-001: Update location data (current + optional history)\n- **Priority**: Must\n- **Description**: The server shall accept UpdateLocation requests and store the last known location, optionally storing history when enabled.\n- **Inputs / Triggers**: HTTP POST &#96;/v1/UpdateLocation&#96; or &#96;/UpdateLocation&#96; with &#96;MiataruLocation&#96; array and optional &#96;MiataruConfig&#96; containing &#96;EnableLocationHistory&#96; and &#96;LocationDataRetentionTime&#96;. (Evidence: README.md L27-L43, L64-L70; lib/routes/location/index.js L9-L23; lib/routes/location/v1/inputParser.js L48-L62)\n- **Outputs / Effects**: Writes to Redis last location key; when history enabled, appends to history list and trims to configured max; when disabled, deletes history and sets TTL on last location. (Evidence: lib/routes/location/v1/location.js L290-L335; config/default.js L31-L33)\n- **Acceptance Criteria**:\n  - When &#96;EnableLocationHistory&#96; is true, history list grows and is trimmed to &#96;maximumNumberOfHistoryItems&#96;. (Evidence: lib/routes/location/v1/location.js L297-L311; config/default.js L31-L33)\n  - When &#96;EnableLocationHistory&#96; is false, only last known location is stored with TTL derived from &#96;LocationDataRetentionTime&#96;. (Evidence: lib/routes/location/v1/location.js L320-L335; lib/models/RequestConfig.js L6-L34)\n  - Returns &#96;MiataruResponse: ACK&#96; on success. (Evidence: lib/models/ResponseUpdateLocation.js L5-L9; tests/integration/newFields.tests.js L9-L29)\n- **Evidence pointers**: README.md L64-L70; lib/routes/location/v1/location.js L290-L343; tests/integration/newFields.tests.js L9-L73.\n\n### FR-002: Get current location data\n- **Priority**: Must\n- **Description**: The server shall return the last known location for each requested device.\n- **Inputs / Triggers**: HTTP POST &#96;/v1/GetLocation&#96; or &#96;/GetLocation&#96; with &#96;MiataruGetLocation&#96; array; required &#96;MiataruConfig.RequestMiataruDeviceID&#96; for visitor tracking and access control. (Evidence: README.md L27-L43, L72-L76; lib/routes/location/index.js L10-L23; lib/routes/location/v1/inputParser.js L64-L75)\n- **Outputs / Effects**: Returns &#96;MiataruLocation&#96; array with entries or null if missing; may record visitor history per config. (Evidence: lib/routes/location/v1/location.js L354-L398; lib/models/ResponseLocation.js L9-L13)",
+        "signatures": {},
+        "detailedLines": [
+          {
+            "text": "- **Operations/QA**: rely on tests and observability for stability under load. (Evidence: README.md L434-L480; tests/integration/httpRateLimiter.tests.js L10-L110; tests/unit/redisRateLimiter.tests.js L9-L123)",
+            "lineNumber": 17
+          },
+          {
+            "lineNumber": 18
+          },
+          {
+            "text": "## 3. Functional Requirements",
+            "lineNumber": 19
+          },
+          {
+            "lineNumber": 20
+          },
+          {
+            "text": "### FR-001: Update location data (current + optional history)",
+            "lineNumber": 21
+          },
+          {
+            "text": "- **Priority**: Must",
+            "lineNumber": 22
+          },
+          {
+            "text": "- **Description**: The server shall accept UpdateLocation requests and store the last known location, optionally storing history when enabled.",
+            "lineNumber": 23
+          },
+          {
+            "text": "- **Inputs / Triggers**: HTTP POST &#96;/v1/UpdateLocation&#96; or &#96;/UpdateLocation&#96; with &#96;MiataruLocation&#96; array and optional &#96;MiataruConfig&#96; containing &#96;EnableLocationHistory&#96; and &#96;LocationDataRetentionTime&#96;. (Evidence: README.md L27-L43, L64-L70; lib/routes/location/index.js L9-L23; lib/routes/location/v1/inputParser.js L48-L62)",
+            "lineNumber": 24
+          },
+          {
+            "text": "- **Outputs / Effects**: Writes to Redis last location key; when history enabled, appends to history list and trims to configured max; when disabled, deletes history and sets TTL on last location. (Evidence: lib/routes/location/v1/location.js L290-L335; config/default.js L31-L33)",
+            "lineNumber": 25
+          },
+          {
+            "text": "- **Acceptance Criteria**:",
+            "lineNumber": 26
+          },
+          {
+            "text": "  - When &#96;EnableLocationHistory&#96; is true, history list grows and is trimmed to &#96;maximumNumberOfHistoryItems&#96;. (Evidence: lib/routes/location/v1/location.js L297-L311; config/default.js L31-L33)",
+            "lineNumber": 27
+          },
+          {
+            "text": "  - When &#96;EnableLocationHistory&#96; is false, only last known location is stored with TTL derived from &#96;LocationDataRetentionTime&#96;. (Evidence: lib/routes/location/v1/location.js L320-L335; lib/models/RequestConfig.js L6-L34)",
+            "lineNumber": 28
+          },
+          {
+            "text": "  - Returns &#96;MiataruResponse: ACK&#96; on success. (Evidence: lib/models/ResponseUpdateLocation.js L5-L9; tests/integration/newFields.tests.js L9-L29)",
+            "lineNumber": 29
+          },
+          {
+            "text": "- **Evidence pointers**: README.md L64-L70; lib/routes/location/v1/location.js L290-L343; tests/integration/newFields.tests.js L9-L73.",
+            "lineNumber": 30
+          },
+          {
+            "lineNumber": 31
+          },
+          {
+            "text": "### FR-002: Get current location data",
+            "lineNumber": 32
+          },
+          {
+            "text": "- **Priority**: Must",
+            "lineNumber": 33
+          },
+          {
+            "text": "- **Description**: The server shall return the last known location for each requested device.",
+            "lineNumber": 34
+          },
+          {
+            "text": "- **Inputs / Triggers**: HTTP POST &#96;/v1/GetLocation&#96; or &#96;/GetLocation&#96; with &#96;MiataruGetLocation&#96; array; required &#96;MiataruConfig.RequestMiataruDeviceID&#96; for visitor tracking and access control. (Evidence: README.md L27-L43, L72-L76; lib/routes/location/index.js L10-L23; lib/routes/location/v1/inputParser.js L64-L75)",
+            "lineNumber": 35
+          },
+          {
+            "text": "- **Outputs / Effects**: Returns &#96;MiataruLocation&#96; array with entries or null if missing; may record visitor history per config. (Evidence: lib/routes/location/v1/location.js L354-L398; lib/models/ResponseLocation.js L9-L13)",
+            "lineNumber": 36
+          }
+        ]
+      },
+      "score": 0.2143627405166626
+    },
+    {
+      "codeBlock": {
+        "relativeWorkspacePath": "./lib/routes/location/index.js",
+        "range": {
+          "startPosition": {},
+          "endPosition": {
+            "line": 44,
+            "column": 5
+          }
+        },
+        "contents": "var v1 = require('./v1');\nvar errors = require('../../errors');\n\nmodule.exports.install = function(app) {\n\n    ///////////////////////////////////////////\n    ///// API Version 1 ///////////////////////\n    ///////////////////////////////////////////\n    app.post('/v1/UpdateLocation', v1.inputParser, v1.updateLocation);\n    app.post('/v1/GetLocation', v1.inputParser, v1.getLocation);\n    app.post('/v1/GetLocationGeoJSON', v1.inputParser, v1.getLocationGeoJSON);\n    app.get('/v1/GetLocationGeoJSON/:id?',  function(req, res){\n        v1.getLocationGeoJSONGET(req.params.id, res,null);\n    });\n    app.post('/v1/GetLocationHistory', v1.inputParser, v1.getLocationHistory);\n    app.post('/v1/GetVisitorHistory', v1.inputParser, v1.getVisitorHistory);\n    app.post('/v1/DeleteLocation', v1.inputParser, v1.deleteLocation);\n    app.post('/v1/setDeviceKey', v1.inputParser, v1.setDeviceKey);\n    app.post('/v1/setAllowedDeviceList', v1.inputParser, v1.setAllowedDeviceList);\n\n    ///////////////////////////////////////////\n    ///// API current /////////////////////////\n    ///////////////////////////////////////////\n    app.post('/UpdateLocation', v1.inputParser, v1.updateLocation);\n    app.post('/GetLocation', v1.inputParser, v1.getLocation);\n    app.post('/GetLocationGeoJSON', v1.inputParser, v1.getLocationGeoJSON);\n    app.get('/GetLocationGeoJSON/:id?',  function(req, res){\n        v1.getLocationGeoJSONGET(req.params.id, res,null);\n    });\n    app.post('/GetLocationHistory', v1.inputParser, v1.getLocationHistory);\n    app.post('/GetVisitorHistory', v1.inputParser, v1.getVisitorHistory);\n    app.post('/DeleteLocation', v1.inputParser, v1.deleteLocation);\n    app.post('/setDeviceKey', v1.inputParser, v1.setDeviceKey);\n    app.post('/setAllowedDeviceList', v1.inputParser, v1.setAllowedDeviceList);\n\n    ///////////////////////////////////////////\n    ///// non-Post /////////////////////////\n    ///////////////////////////////////////////\n    function handleUnsupportedMethod(req, res, next) {\n        if\n    }",
+        "signatures": {},
+        "detailedLines": [
+          {
+            "text": "var v1 = require('./v1');",
+            "lineNumber": 1
+          },
+          {
+            "text": "var errors = require('../../errors');",
+            "lineNumber": 2
+          },
+          {
+            "lineNumber": 3
+          },
+          {
+            "text": "module.exports.install = function(app) {",
+            "lineNumber": 4
+          },
+          {
+            "lineNumber": 5
+          },
+          {
+            "text": "    ///////////////////////////////////////////",
+            "lineNumber": 6
+          },
+          {
+            "text": "    ///// API Version 1 ///////////////////////",
+            "lineNumber": 7
+          },
+          {
+            "text": "    ///////////////////////////////////////////",
+            "lineNumber": 8
+          },
+          {
+            "text": "    app.post('/v1/UpdateLocation', v1.inputParser, v1.updateLocation);",
+            "lineNumber": 9
+          },
+          {
+            "text": "    app.post('/v1/GetLocation', v1.inputParser, v1.getLocation);",
+            "lineNumber": 10
+          },
+          {
+            "text": "    app.post('/v1/GetLocationGeoJSON', v1.inputParser, v1.getLocationGeoJSON);",
+            "lineNumber": 11
+          },
+          {
+            "text": "    app.get('/v1/GetLocationGeoJSON/:id?',  function(req, res){",
+            "lineNumber": 12
+          },
+          {
+            "text": "        v1.getLocationGeoJSONGET(req.params.id, res,null);",
+            "lineNumber": 13
+          },
+          {
+            "text": "    });",
+            "lineNumber": 14
+          },
+          {
+            "text": "    app.post('/v1/GetLocationHistory', v1.inputParser, v1.getLocationHistory);",
+            "lineNumber": 15
+          },
+          {
+            "text": "    app.post('/v1/GetVisitorHistory', v1.inputParser, v1.getVisitorHistory);",
+            "lineNumber": 16
+          },
+          {
+            "text": "    app.post('/v1/DeleteLocation', v1.inputParser, v1.deleteLocation);",
+            "lineNumber": 17
+          },
+          {
+            "text": "    app.post('/v1/setDeviceKey', v1.inputParser, v1.setDeviceKey);",
+            "lineNumber": 18
+          },
+          {
+            "text": "    app.post('/v1/setAllowedDeviceList', v1.inputParser, v1.setAllowedDeviceList);",
+            "lineNumber": 19
+          },
+          {
+            "lineNumber": 20
+          },
+          {
+            "text": "    ///////////////////////////////////////////",
+            "lineNumber": 21
+          },
+          {
+            "text": "    ///// API current /////////////////////////",
+            "lineNumber": 22
+          },
+          {
+            "text": "    ///////////////////////////////////////////",
+            "lineNumber": 23
+          },
+          {
+            "text": "    app.post('/UpdateLocation', v1.inputParser, v1.updateLocation);",
+            "lineNumber": 24
+          },
+          {
+            "text": "    app.post('/GetLocation', v1.inputParser, v1.getLocation);",
+            "lineNumber": 25
+          },
+          {
+            "text": "    app.post('/GetLocationGeoJSON', v1.inputParser, v1.getLocationGeoJSON);",
+            "lineNumber": 26
+          },
+          {
+            "text": "    app.get('/GetLocationGeoJSON/:id?',  function(req, res){",
+            "lineNumber": 27
+          },
+          {
+            "text": "        v1.getLocationGeoJSONGET(req.params.id, res,null);",
+            "lineNumber": 28
+          },
+          {
+            "text": "    });",
+            "lineNumber": 29
+          },
+          {
+            "text": "    app.post('/GetLocationHistory', v1.inputParser, v1.getLocationHistory);",
+            "lineNumber": 30
+          },
+          {
+            "text": "    app.post('/GetVisitorHistory', v1.inputParser, v1.getVisitorHistory);",
+            "lineNumber": 31
+          },
+          {
+            "text": "    app.post('/DeleteLocation', v1.inputParser, v1.deleteLocation);",
+            "lineNumber": 32
+          },
+          {
+            "text": "    app.post('/setDeviceKey', v1.inputParser, v1.setDeviceKey);",
+            "lineNumber": 33
+          },
+          {
+            "text": "    app.post('/setAllowedDeviceList', v1.inputParser, v1.setAllowedDeviceList);",
+            "lineNumber": 34
+          },
+          {
+            "lineNumber": 35
+          },
+          {
+            "text": "    ///////////////////////////////////////////",
+            "lineNumber": 36
+          },
+          {
+            "text": "    ///// non-Post /////////////////////////",
+            "lineNumber": 37
+          },
+          {
+            "text": "    ///////////////////////////////////////////",
+            "lineNumber": 38
+          },
+          {
+            "text": "    function handleUnsupportedMethod(req, res, next) {",
+            "lineNumber": 39
+          },
+          {
+            "text": "        if",
+            "lineNumber": 40
+          },
+          {
+            "text": "    }",
+            "lineNumber": 45
+          }
+        ]
+      },
+      "score": 0.21327966451644897
+    },
+    {
+      "codeBlock": {
+        "relativeWorkspacePath": "./.cursor/plans/miataru_server_2.0_api_1.1_security_implementation_0d55c5ea.plan.md",
+        "range": {
+          "startPosition": {
+            "line": 194
+          },
+          "endPosition": {
+            "line": 248
+          }
+        },
+        "contents": "- Add parsing for &#96;/v1/setDeviceKey&#96; endpoint\n- Add parsing for &#96;/v1/setAllowedDeviceList&#96; endpoint\n- Extend &#96;parseUpdateLocation&#96; to extract DeviceKey from MiataruLocation array elements\n- Extend &#96;parseGetVisitorHistory&#96; to extract DeviceKey from request body\n\n### Phase 4: Endpoint Implementations\n\n#### 4.1 setDeviceKey Endpoint\n\n**File**: &#96;lib/routes/location/v1/location.js&#96;\n\n- New function: &#96;setDeviceKey(req, res, next)&#96;\n- Validate CurrentDeviceKey if device already has a key set\n- If CurrentDeviceKey matches or no key exists, set NewDeviceKey\n- Return success response or 403 Forbidden if CurrentDeviceKey doesn't match\n- Store in Redis: &#96;miad:$deviceid:key&#96;\n\n#### 4.2 setAllowedDeviceList Endpoint\n\n**File**: &#96;lib/routes/location/v1/location.js&#96;\n\n- New function: &#96;setAllowedDeviceList(req, res, next)&#96;\n- Validate DeviceKey first (must match stored key)\n- Replace entire allowed devices list (client maintains full list)\n- Store as Redis hash: &#96;miad:$deviceid:allowed&#96;\n- Set flag: &#96;miad:$deviceid:allowed:enabled&#96; = \"1\"\n- Return success or 403 Forbidden if DeviceKey doesn't match\n\n#### 4.3 Modify updateLocation Function\n\n**File**: &#96;lib/routes/location/v1/location.js&#96;\n\n- Before updating location, check if DeviceKey is set for the device\n- If DeviceKey is set, validate provided DeviceKey matches stored key\n- If keys don't match, return 403 Forbidden\n- If no DeviceKey is set, proceed normally (backward compatible)\n- DeviceKey parameter is optional in MiataruLocation array elements\n\n#### 4.4 Modify getVisitorHistory Function\n\n**File**: &#96;lib/routes/location/v1/location.js&#96;\n\n- Before returning visitor history, check if DeviceKey is set for the device\n- If DeviceKey is set, validate provided DeviceKey matches stored key\n- If keys don't match, return 403 Forbidden\n- If no DeviceKey is set, proceed normally (backward compatible)\n\n#### 4.5 Modify getLocation Function\n\n**File**: &#96;lib/routes/location/v1/location.js&#96;\n\n- For each requested DeviceID, check if allowed devices list is enabled\n- If enabled, check if RequestMiataruDeviceID has &#96;hasCurrentLocationAccess&#96; permission",
+        "signatures": {},
+        "detailedLines": [
+          {
+            "text": "- Add parsing for &#96;/v1/setDeviceKey&#96; endpoint",
+            "lineNumber": 196
+          },
+          {
+            "text": "- Add parsing for &#96;/v1/setAllowedDeviceList&#96; endpoint",
+            "lineNumber": 197
+          },
+          {
+            "text": "- Extend &#96;parseUpdateLocation&#96; to extract DeviceKey from MiataruLocation array elements",
+            "lineNumber": 198
+          },
+          {
+            "text": "- Extend &#96;parseGetVisitorHistory&#96; to extract DeviceKey from request body",
+            "lineNumber": 199
+          },
+          {
+            "lineNumber": 200
+          },
+          {
+            "text": "### Phase 4: Endpoint Implementations",
+            "lineNumber": 201
+          },
+          {
+            "lineNumber": 202
+          },
+          {
+            "text": "#### 4.1 setDeviceKey Endpoint",
+            "lineNumber": 203
+          },
+          {
+            "lineNumber": 204
+          },
+          {
+            "text": "**File**: &#96;lib/routes/location/v1/location.js&#96;",
+            "lineNumber": 205
+          },
+          {
+            "lineNumber": 206
+          },
+          {
+            "text": "- New function: &#96;setDeviceKey(req, res, next)&#96;",
+            "lineNumber": 207
+          },
+          {
+            "text": "- Validate CurrentDeviceKey if device already has a key set",
+            "lineNumber": 208
+          },
+          {
+            "text": "- If CurrentDeviceKey matches or no key exists, set NewDeviceKey",
+            "lineNumber": 209
+          },
+          {
+            "text": "- Return success response or 403 Forbidden if CurrentDeviceKey doesn't match",
+            "lineNumber": 210
+          },
+          {
+            "text": "- Store in Redis: &#96;miad:$deviceid:key&#96;",
+            "lineNumber": 211
+          },
+          {
+            "lineNumber": 212
+          },
+          {
+            "text": "#### 4.2 setAllowedDeviceList Endpoint",
+            "lineNumber": 213
+          },
+          {
+            "lineNumber": 214
+          },
+          {
+            "text": "**File**: &#96;lib/routes/location/v1/location.js&#96;",
+            "lineNumber": 215
+          },
+          {
+            "lineNumber": 216
+          },
+          {
+            "text": "- New function: &#96;setAllowedDeviceList(req, res, next)&#96;",
+            "lineNumber": 217
+          },
+          {
+            "text": "- Validate DeviceKey first (must match stored key)",
+            "lineNumber": 218
+          },
+          {
+            "text": "- Replace entire allowed devices list (client maintains full list)",
+            "lineNumber": 219
+          },
+          {
+            "text": "- Store as Redis hash: &#96;miad:$deviceid:allowed&#96;",
+            "lineNumber": 220
+          },
+          {
+            "text": "- Set flag: &#96;miad:$deviceid:allowed:enabled&#96; = \"1\"",
+            "lineNumber": 221
+          },
+          {
+            "text": "- Return success or 403 Forbidden if DeviceKey doesn't match",
+            "lineNumber": 222
+          },
+          {
+            "lineNumber": 223
+          },
+          {
+            "text": "#### 4.3 Modify updateLocation Function",
+            "lineNumber": 224
+          },
+          {
+            "lineNumber": 225
+          },
+          {
+            "text": "**File**: &#96;lib/routes/location/v1/location.js&#96;",
+            "lineNumber": 226
+          },
+          {
+            "lineNumber": 227
+          },
+          {
+            "text": "- Before updating location, check if DeviceKey is set for the device",
+            "lineNumber": 228
+          },
+          {
+            "text": "- If DeviceKey is set, validate provided DeviceKey matches stored key",
+            "lineNumber": 229
+          },
+          {
+            "text": "- If keys don't match, return 403 Forbidden",
+            "lineNumber": 230
+          },
+          {
+            "text": "- If no DeviceKey is set, proceed normally (backward compatible)",
+            "lineNumber": 231
+          },
+          {
+            "text": "- DeviceKey parameter is optional in MiataruLocation array elements",
+            "lineNumber": 232
+          },
+          {
+            "lineNumber": 233
+          },
+          {
+            "text": "#### 4.4 Modify getVisitorHistory Function",
+            "lineNumber": 234
+          },
+          {
+            "lineNumber": 235
+          },
+          {
+            "text": "**File**: &#96;lib/routes/location/v1/location.js&#96;",
+            "lineNumber": 236
+          },
+          {
+            "lineNumber": 237
+          },
+          {
+            "text": "- Before returning visitor history, check if DeviceKey is set for the device",
+            "lineNumber": 238
+          },
+          {
+            "text": "- If DeviceKey is set, validate provided DeviceKey matches stored key",
+            "lineNumber": 239
+          },
+          {
+            "text": "- If keys don't match, return 403 Forbidden",
+            "lineNumber": 240
+          },
+          {
+            "text": "- If no DeviceKey is set, proceed normally (backward compatible)",
+            "lineNumber": 241
+          },
+          {
+            "lineNumber": 242
+          },
+          {
+            "text": "#### 4.5 Modify getLocation Function",
+            "lineNumber": 243
+          },
+          {
+            "lineNumber": 244
+          },
+          {
+            "text": "**File**: &#96;lib/routes/location/v1/location.js&#96;",
+            "lineNumber": 245
+          },
+          {
+            "lineNumber": 246
+          },
+          {
+            "text": "- For each requested DeviceID, check if allowed devices list is enabled",
+            "lineNumber": 247
+          },
+          {
+            "text": "- If enabled, check if RequestMiataruDeviceID has &#96;hasCurrentLocationAccess&#96; permission",
+            "lineNumber": 248
+          }
+        ]
+      },
+      "score": 0.2100583016872406
+    },
+    {
+      "codeBlock": {
+        "relativeWorkspacePath": "./lib/routes/location/v1/location.js",
+        "range": {
+          "startPosition": {
+            "line": 334
+          },
+          "endPosition": {
+            "line": 433,
+            "column": 1
+          }
+        },
+        "contents": "function updateLocation(req, res, next) {\n\n\n    if(requestConfig.enableLocationHistory()) {\n        locations.forEach(function(loc, idx) {\n            var value = JSON.stringify(loc.data());\n            var historyKey = kb.build(loc.device(), KEY_HISTORY);\n            var lastKey = kb.build(loc.device(), KEY_LAST);\n\n            chain\n                // we do want to store location history, so check if we got, so lpush and trim\n                .seq(function() {\n                    db.lpush(historyKey, value, this);\n                })\n                // take care that the location history does not grow beyond the set range of maximumNumberOfHistoryItems\n                .seq(function() {\n                    db.ltrim(historyKey, 0, configuration.maximumNumberOfHistoryItems-1, this);\n                });\n\n            if(idx === locations.length - 1) {\n                // finally also update the last known location...\n                chain.seq(function() {\n                    db.set(lastKey, value, this);\n                });\n            }\n        });\n    } else {\n        //we're only interested in the last item as we're not saving a history\n        var loc = locations[locations.length-1];\n\n        var timeToKeep = requestConfig.locationDataRetentionTime() * 60;\n        var value = JSON.stringify(loc.data());\n\n        chain\n            // we do not want to save a location history, this means if there's one we delete it...\n            .par(function() {\n                db.del(kb.build(loc.device(), KEY_HISTORY), this);\n            })\n            // update the last known location\n            .par(function() {\n                db.setex(kb.build(loc.device(), KEY_LAST), timeToKeep, value, this);\n            });\n    }\n\n    chain\n        .seq\n\n\n}",
+        "signatures": {
+          "ranges": [
+            {
+              "startPosition": {
+                "line": 335,
+                "column": 1
+              },
+              "endPosition": {
+                "line": 336,
+                "column": 5
+              }
+            }
+          ]
+        },
+        "detailedLines": [
+          {
+            "text": "function updateLocation(req, res, next) {",
+            "lineNumber": 335,
+            "isSignature": true
+          },
+          {
+            "lineNumber": 380
+          },
+          {
+            "lineNumber": 381
+          },
+          {
+            "text": "    if(requestConfig.enableLocationHistory()) {",
+            "lineNumber": 382
+          },
+          {
+            "text": "        locations.forEach(function(loc, idx) {",
+            "lineNumber": 383
+          },
+          {
+            "text": "            var value = JSON.stringify(loc.data());",
+            "lineNumber": 384
+          },
+          {
+            "text": "            var historyKey = kb.build(loc.device(), KEY_HISTORY);",
+            "lineNumber": 385
+          },
+          {
+            "text": "            var lastKey = kb.build(loc.device(), KEY_LAST);",
+            "lineNumber": 386
+          },
+          {
+            "lineNumber": 387
+          },
+          {
+            "text": "            chain",
+            "lineNumber": 388
+          },
+          {
+            "text": "                // we do want to store location history, so check if we got, so lpush and trim",
+            "lineNumber": 389
+          },
+          {
+            "text": "                .seq(function() {",
+            "lineNumber": 390
+          },
+          {
+            "text": "                    db.lpush(historyKey, value, this);",
+            "lineNumber": 391
+          },
+          {
+            "text": "                })",
+            "lineNumber": 392
+          },
+          {
+            "text": "                // take care that the location history does not grow beyond the set range of maximumNumberOfHistoryItems",
+            "lineNumber": 393
+          },
+          {
+            "text": "                .seq(function() {",
+            "lineNumber": 394
+          },
+          {
+            "text": "                    db.ltrim(historyKey, 0, configuration.maximumNumberOfHistoryItems-1, this);",
+            "lineNumber": 395
+          },
+          {
+            "text": "                });",
+            "lineNumber": 396
+          },
+          {
+            "lineNumber": 397
+          },
+          {
+            "text": "            if(idx === locations.length - 1) {",
+            "lineNumber": 398
+          },
+          {
+            "text": "                // finally also update the last known location...",
+            "lineNumber": 399
+          },
+          {
+            "text": "                chain.seq(function() {",
+            "lineNumber": 400
+          },
+          {
+            "text": "                    db.set(lastKey, value, this);",
+            "lineNumber": 401
+          },
+          {
+            "text": "                });",
+            "lineNumber": 402
+          },
+          {
+            "text": "            }",
+            "lineNumber": 403
+          },
+          {
+            "text": "        });",
+            "lineNumber": 404
+          },
+          {
+            "text": "    } else {",
+            "lineNumber": 405
+          },
+          {
+            "text": "        //we're only interested in the last item as we're not saving a history",
+            "lineNumber": 406
+          },
+          {
+            "text": "        var loc = locations[locations.length-1];",
+            "lineNumber": 407
+          },
+          {
+            "lineNumber": 408
+          },
+          {
+            "text": "        var timeToKeep = requestConfig.locationDataRetentionTime() * 60;",
+            "lineNumber": 409
+          },
+          {
+            "text": "        var value = JSON.stringify(loc.data());",
+            "lineNumber": 410
+          },
+          {
+            "lineNumber": 411
+          },
+          {
+            "text": "        chain",
+            "lineNumber": 412
+          },
+          {
+            "text": "            // we do not want to save a location history, this means if there's one we delete it...",
+            "lineNumber": 413
+          },
+          {
+            "text": "            .par(function() {",
+            "lineNumber": 414
+          },
+          {
+            "text": "                db.del(kb.build(loc.device(), KEY_HISTORY), this);",
+            "lineNumber": 415
+          },
+          {
+            "text": "            })",
+            "lineNumber": 416
+          },
+          {
+            "text": "            // update the last known location",
+            "lineNumber": 417
+          },
+          {
+            "text": "            .par(function() {",
+            "lineNumber": 418
+          },
+          {
+            "text": "                db.setex(kb.build(loc.device(), KEY_LAST), timeToKeep, value, this);",
+            "lineNumber": 419
+          },
+          {
+            "text": "            });",
+            "lineNumber": 420
+          },
+          {
+            "text": "    }",
+            "lineNumber": 421
+          },
+          {
+            "lineNumber": 422
+          },
+          {
+            "text": "    chain",
+            "lineNumber": 423
+          },
+          {
+            "text": "        .seq",
+            "lineNumber": 424
+          },
+          {
+            "lineNumber": 427
+          },
+          {
+            "lineNumber": 433
+          },
+          {
+            "text": "}",
+            "lineNumber": 434,
+            "isSignature": true
+          }
+        ]
+      },
+      "score": 0.20289810001850128
+    },
+    {
+      "codeBlock": {
+        "relativeWorkspacePath": "./lib/routes/location/v1/location.js",
+        "range": {
+          "startPosition": {
+            "line": 877,
+            "column": 1
+          },
+          "endPosition": {
+            "line": 932,
+            "column": 35
+          }
+        },
+        "contents": "/**\n * SetAllowedDeviceList\n * Sets or updates the allowed devices list for a device\n * @param req\n * @param res\n * @param next\n */\nfunction setAllowedDeviceList(req, res, next) {\n    var request = req.MIATARU.request;\n    var deviceId = request.deviceId();\n    var deviceKey = request.deviceKey();\n    var allowedDevices = request.allowedDevices();\n\n    seq()\n        .seq(function() {\n            var done = this;\n            // Validate DeviceKey first\n            deviceKeyUtils.validateDeviceKey(deviceId, deviceKey, function(error, isValid) {\n                if (error) {\n                    return done(error);\n                }\n\n                if (!isValid) {\n                    return done(new errors.ForbiddenError('DeviceKey does not match'));\n                }\n\n                done();\n            });\n        })\n        .seq(function() {\n            var done = this;\n            // Set the allowed devices list\n            allowedDevicesUtils.setAllowedDevices(deviceId, allowedDevices, function(error) {\n                if (error) {\n                    return done(error);\n                }\n\n                done();\n            });\n        })\n        .seq(function() {\n            res.send((new models.ResponseSetAllowedDeviceList()).data());\n        })\n        .catch(function(error) {\n            if (error instanceof errors.ForbiddenError) {\n                return next(error);\n            }\n            next(new errors.InternalServerError(error));\n        });\n}\n\n\nmodule.exports = {\n    updateLocation: updateLocation,",
+        "signatures": {},
+        "detailedLines": [
+          {
+            "text": "/**",
+            "lineNumber": 880
+          },
+          {
+            "text": " * SetAllowedDeviceList",
+            "lineNumber": 881
+          },
+          {
+            "text": " * Sets or updates the allowed devices list for a device",
+            "lineNumber": 882
+          },
+          {
+            "text": " * @param req",
+            "lineNumber": 883
+          },
+          {
+            "text": " * @param res",
+            "lineNumber": 884
+          },
+          {
+            "text": " * @param next",
+            "lineNumber": 885
+          },
+          {
+            "text": " */",
+            "lineNumber": 886
+          },
+          {
+            "text": "function setAllowedDeviceList(req, res, next) {",
+            "lineNumber": 887,
+            "isSignature": true
+          },
+          {
+            "text": "    var request = req.MIATARU.request;",
+            "lineNumber": 888
+          },
+          {
+            "text": "    var deviceId = request.deviceId();",
+            "lineNumber": 889
+          },
+          {
+            "text": "    var deviceKey = request.deviceKey();",
+            "lineNumber": 890
+          },
+          {
+            "text": "    var allowedDevices = request.allowedDevices();",
+            "lineNumber": 891
+          },
+          {
+            "lineNumber": 892
+          },
+          {
+            "text": "    seq()",
+            "lineNumber": 893
+          },
+          {
+            "text": "        .seq(function() {",
+            "lineNumber": 894
+          },
+          {
+            "text": "            var done = this;",
+            "lineNumber": 895
+          },
+          {
+            "text": "            // Validate DeviceKey first",
+            "lineNumber": 896
+          },
+          {
+            "text": "            deviceKeyUtils.validateDeviceKey(deviceId, deviceKey, function(error, isValid) {",
+            "lineNumber": 897
+          },
+          {
+            "text": "                if (error) {",
+            "lineNumber": 898
+          },
+          {
+            "text": "                    return done(error);",
+            "lineNumber": 899
+          },
+          {
+            "text": "                }",
+            "lineNumber": 900
+          },
+          {
+            "lineNumber": 901
+          },
+          {
+            "text": "                if (!isValid) {",
+            "lineNumber": 902
+          },
+          {
+            "text": "                    return done(new errors.ForbiddenError('DeviceKey does not match'));",
+            "lineNumber": 903
+          },
+          {
+            "text": "                }",
+            "lineNumber": 904
+          },
+          {
+            "lineNumber": 905
+          },
+          {
+            "text": "                done();",
+            "lineNumber": 906
+          },
+          {
+            "text": "            });",
+            "lineNumber": 907
+          },
+          {
+            "text": "        })",
+            "lineNumber": 908
+          },
+          {
+            "text": "        .seq(function() {",
+            "lineNumber": 909
+          },
+          {
+            "text": "            var done = this;",
+            "lineNumber": 910
+          },
+          {
+            "text": "            // Set the allowed devices list",
+            "lineNumber": 911
+          },
+          {
+            "text": "            allowedDevicesUtils.setAllowedDevices(deviceId, allowedDevices, function(error) {",
+            "lineNumber": 912
+          },
+          {
+            "text": "                if (error) {",
+            "lineNumber": 913
+          },
+          {
+            "text": "                    return done(error);",
+            "lineNumber": 914
+          },
+          {
+            "text": "                }",
+            "lineNumber": 915
+          },
+          {
+            "lineNumber": 916
+          },
+          {
+            "text": "                done();",
+            "lineNumber": 917
+          },
+          {
+            "text": "            });",
+            "lineNumber": 918
+          },
+          {
+            "text": "        })",
+            "lineNumber": 919
+          },
+          {
+            "text": "        .seq(function() {",
+            "lineNumber": 920
+          },
+          {
+            "text": "            res.send((new models.ResponseSetAllowedDeviceList()).data());",
+            "lineNumber": 921
+          },
+          {
+            "text": "        })",
+            "lineNumber": 922
+          },
+          {
+            "text": "        .catch(function(error) {",
+            "lineNumber": 923
+          },
+          {
+            "text": "            if (error instanceof errors.ForbiddenError) {",
+            "lineNumber": 924
+          },
+          {
+            "text": "                return next(error);",
+            "lineNumber": 925
+          },
+          {
+            "text": "            }",
+            "lineNumber": 926
+          },
+          {
+            "text": "            next(new errors.InternalServerError(error));",
+            "lineNumber": 927
+          },
+          {
+            "text": "        });",
+            "lineNumber": 928
+          },
+          {
+            "text": "}",
+            "lineNumber": 929,
+            "isSignature": true
+          },
+          {
+            "lineNumber": 930
+          },
+          {
+            "lineNumber": 931
+          },
+          {
+            "text": "module.exports = {",
+            "lineNumber": 932
+          },
+          {
+            "text": "    updateLocation: updateLocation,",
+            "lineNumber": 933
+          }
+        ]
+      },
+      "score": 0.200981006026268
+    },
+    {
+      "codeBlock": {
+        "relativeWorkspacePath": "./lib/routes/location/v1/location.js",
+        "range": {
+          "startPosition": {
+            "line": 334
+          },
+          "endPosition": {
+            "line": 442,
+            "column": 3
+          }
+        },
+        "contents": "function updateLocation(req, res, next) {\n\n;\n            });\n    }\n\n    chain\n        .seq(function() {\n            var eyes = ['x', '!', '^', '°'];\n            res.send((new models.ResponseUpdateLocation(eyes[parseInt(Math.random() * eyes.length, 10)])).data());\n        })\n        .catch(function(error) {\n            if (error instanceof errors.ForbiddenError) {\n                return next(error);\n            }\n            next(error);\n        });\n}\n\n/**\n * GetLocation\n * This is used to get the current location of a device.\n *\n * @param req\n * @param res\n * @param next\n */",
+        "signatures": {
+          "ranges": [
+            {
+              "startPosition": {
+                "line": 335,
+                "column": 1
+              },
+              "endPosition": {
+                "line": 336,
+                "column": 5
+              }
+            }
+          ]
+        },
+        "detailedLines": [
+          {
+            "text": "function updateLocation(req, res, next) {",
+            "lineNumber": 335,
+            "isSignature": true
+          },
+          {
+            "lineNumber": 412
+          },
+          {
+            "text": ";",
+            "lineNumber": 419
+          },
+          {
+            "text": "            });",
+            "lineNumber": 420
+          },
+          {
+            "text": "    }",
+            "lineNumber": 421
+          },
+          {
+            "lineNumber": 422
+          },
+          {
+            "text": "    chain",
+            "lineNumber": 423
+          },
+          {
+            "text": "        .seq(function() {",
+            "lineNumber": 424
+          },
+          {
+            "text": "            var eyes = ['x', '!', '^', '°'];",
+            "lineNumber": 425
+          },
+          {
+            "text": "            res.send((new models.ResponseUpdateLocation(eyes[parseInt(Math.random() * eyes.length, 10)])).data());",
+            "lineNumber": 426
+          },
+          {
+            "text": "        })",
+            "lineNumber": 427
+          },
+          {
+            "text": "        .catch(function(error) {",
+            "lineNumber": 428
+          },
+          {
+            "text": "            if (error instanceof errors.ForbiddenError) {",
+            "lineNumber": 429
+          },
+          {
+            "text": "                return next(error);",
+            "lineNumber": 430
+          },
+          {
+            "text": "            }",
+            "lineNumber": 431
+          },
+          {
+            "text": "            next(error);",
+            "lineNumber": 432
+          },
+          {
+            "text": "        });",
+            "lineNumber": 433
+          },
+          {
+            "text": "}",
+            "lineNumber": 434,
+            "isSignature": true
+          },
+          {
+            "lineNumber": 435
+          },
+          {
+            "text": "/**",
+            "lineNumber": 436
+          },
+          {
+            "text": " * GetLocation",
+            "lineNumber": 437
+          },
+          {
+            "text": " * This is used to get the current location of a device.",
+            "lineNumber": 438
+          },
+          {
+            "text": " *",
+            "lineNumber": 439
+          },
+          {
+            "text": " * @param req",
+            "lineNumber": 440
+          },
+          {
+            "text": " * @param res",
+            "lineNumber": 441
+          },
+          {
+            "text": " * @param next",
+            "lineNumber": 442
+          },
+          {
+            "text": " */",
+            "lineNumber": 443
+          }
+        ]
+      },
+      "score": 0.19647930562496185
+    },
+    {
+      "codeBlock": {
+        "relativeWorkspacePath": "./.cursor/plans/miataru_server_2.0_api_1.1_security_implementation_0d55c5ea.plan.md",
+        "range": {
+          "startPosition": {
+            "line": 89
+          },
+          "endPosition": {
+            "line": 149
+          }
+        },
+        "contents": "New Redis keys will be introduced:\n\n- **DeviceKey storage**: &#96;miad:$deviceid:key&#96; - stores the DeviceKey (256 char unicode string)\n- **Allowed devices list**: &#96;miad:$deviceid:allowed&#96; - stores the allowed devices list as a hash\n- **Allowed devices flag**: &#96;miad:$deviceid:allowed:enabled&#96; - quick flag to check if allowed devices list exists\n\n### Key Components\n\n1. **New Endpoints**:\n\n   - &#96;/v1/setDeviceKey&#96; - Set/change device key\n   - &#96;/v1/setAllowedDeviceList&#96; - Manage allowed devices list\n\n2. **Modified Endpoints**:\n\n   - &#96;/v1/UpdateLocation&#96; - Add DeviceKey validation\n   - &#96;/v1/GetVisitorHistory&#96; - Add DeviceKey validation\n   - &#96;/v1/GetLocation&#96; - Add allowed devices check\n   - &#96;/v1/GetLocationHistory&#96; - Add allowed devices check\n   - &#96;/v1/GetLocationGeoJSON&#96; - Add DeviceKey check\n\n3. **New Models**:\n\n   - &#96;RequestSetDeviceKey&#96; - Parse setDeviceKey requests\n   - &#96;RequestSetAllowedDeviceList&#96; - Parse setAllowedDeviceList requests\n   - &#96;RequestLocation&#96; - Extend with optional DeviceKey field\n   - &#96;RequestVisitorHistory&#96; - Extend with optional DeviceKey field\n\n4. **New Error Types**:\n\n   - &#96;ForbiddenError&#96; (403) - For DeviceKey mismatches\n   - &#96;UnauthorizedError&#96; (401) - For GetLocationGeoJSON when DeviceKey is set\n\n## Implementation Details\n\n### Phase 1: Core Infrastructure\n\n#### 1.1 Error Handling\n\n**File**: &#96;lib/errors.js&#96;\n\n- Add &#96;ForbiddenError&#96; class (403 status code)\n- Add &#96;UnauthorizedError&#96; class (401 status code)\n- Export new error types\n\n#### 1.2 DeviceKey Storage Utilities\n\n**File**: &#96;lib/utils/deviceKey.js&#96; (new file)\n\n- &#96;getDeviceKey(deviceId, callback)&#96; - Retrieve device key from Redis\n- &#96;setDeviceKey(deviceId, deviceKey, callback)&#96; - Store device key in Redis\n- &#96;validateDeviceKey(deviceId, providedKey, callback)&#96; - Validate provided key against stored key\n- Redis key pattern: &#96;miad:$deviceid:key&#96;\n\n#### 1.3 Allowed Devices Storage Utilities\n\n**File**: &#96;lib/utils/allowedDevices.js&#96; (new file)\n\n- &#96;getAllowedDevices(deviceId, callback)&#96; - Retrieve allowed devices list from Redis\n- &#96;setAllowedDevices(deviceId, allowedDevices, callback)&#96; - Store/update allowed devices list",
+        "signatures": {},
+        "detailedLines": [
+          {
+            "text": "New Redis keys will be introduced:",
+            "lineNumber": 90
+          },
+          {
+            "lineNumber": 91
+          },
+          {
+            "text": "- **DeviceKey storage**: &#96;miad:$deviceid:key&#96; - stores the DeviceKey (256 char unicode string)",
+            "lineNumber": 92
+          },
+          {
+            "text": "- **Allowed devices list**: &#96;miad:$deviceid:allowed&#96; - stores the allowed devices list as a hash",
+            "lineNumber": 93
+          },
+          {
+            "text": "- **Allowed devices flag**: &#96;miad:$deviceid:allowed:enabled&#96; - quick flag to check if allowed devices list exists",
+            "lineNumber": 94
+          },
+          {
+            "lineNumber": 95
+          },
+          {
+            "text": "### Key Components",
+            "lineNumber": 96
+          },
+          {
+            "lineNumber": 97
+          },
+          {
+            "text": "1. **New Endpoints**:",
+            "lineNumber": 98
+          },
+          {
+            "lineNumber": 99
+          },
+          {
+            "text": "   - &#96;/v1/setDeviceKey&#96; - Set/change device key",
+            "lineNumber": 100
+          },
+          {
+            "text": "   - &#96;/v1/setAllowedDeviceList&#96; - Manage allowed devices list",
+            "lineNumber": 101
+          },
+          {
+            "lineNumber": 102
+          },
+          {
+            "text": "2. **Modified Endpoints**:",
+            "lineNumber": 103
+          },
+          {
+            "lineNumber": 104
+          },
+          {
+            "text": "   - &#96;/v1/UpdateLocation&#96; - Add DeviceKey validation",
+            "lineNumber": 105
+          },
+          {
+            "text": "   - &#96;/v1/GetVisitorHistory&#96; - Add DeviceKey validation",
+            "lineNumber": 106
+          },
+          {
+            "text": "   - &#96;/v1/GetLocation&#96; - Add allowed devices check",
+            "lineNumber": 107
+          },
+          {
+            "text": "   - &#96;/v1/GetLocationHistory&#96; - Add allowed devices check",
+            "lineNumber": 108
+          },
+          {
+            "text": "   - &#96;/v1/GetLocationGeoJSON&#96; - Add DeviceKey check",
+            "lineNumber": 109
+          },
+          {
+            "lineNumber": 110
+          },
+          {
+            "text": "3. **New Models**:",
+            "lineNumber": 111
+          },
+          {
+            "lineNumber": 112
+          },
+          {
+            "text": "   - &#96;RequestSetDeviceKey&#96; - Parse setDeviceKey requests",
+            "lineNumber": 113
+          },
+          {
+            "text": "   - &#96;RequestSetAllowedDeviceList&#96; - Parse setAllowedDeviceList requests",
+            "lineNumber": 114
+          },
+          {
+            "text": "   - &#96;RequestLocation&#96; - Extend with optional DeviceKey field",
+            "lineNumber": 115
+          },
+          {
+            "text": "   - &#96;RequestVisitorHistory&#96; - Extend with optional DeviceKey field",
+            "lineNumber": 116
+          },
+          {
+            "lineNumber": 117
+          },
+          {
+            "text": "4. **New Error Types**:",
+            "lineNumber": 118
+          },
+          {
+            "lineNumber": 119
+          },
+          {
+            "text": "   - &#96;ForbiddenError&#96; (403) - For DeviceKey mismatches",
+            "lineNumber": 120
+          },
+          {
+            "text": "   - &#96;UnauthorizedError&#96; (401) - For GetLocationGeoJSON when DeviceKey is set",
+            "lineNumber": 121
+          },
+          {
+            "lineNumber": 122
+          },
+          {
+            "text": "## Implementation Details",
+            "lineNumber": 123
+          },
+          {
+            "lineNumber": 124
+          },
+          {
+            "text": "### Phase 1: Core Infrastructure",
+            "lineNumber": 125
+          },
+          {
+            "lineNumber": 126
+          },
+          {
+            "text": "#### 1.1 Error Handling",
+            "lineNumber": 127
+          },
+          {
+            "lineNumber": 128
+          },
+          {
+            "text": "**File**: &#96;lib/errors.js&#96;",
+            "lineNumber": 129
+          },
+          {
+            "lineNumber": 130
+          },
+          {
+            "text": "- Add &#96;ForbiddenError&#96; class (403 status code)",
+            "lineNumber": 131
+          },
+          {
+            "text": "- Add &#96;UnauthorizedError&#96; class (401 status code)",
+            "lineNumber": 132
+          },
+          {
+            "text": "- Export new error types",
+            "lineNumber": 133
+          },
+          {
+            "lineNumber": 134
+          },
+          {
+            "text": "#### 1.2 DeviceKey Storage Utilities",
+            "lineNumber": 135
+          },
+          {
+            "lineNumber": 136
+          },
+          {
+            "text": "**File**: &#96;lib/utils/deviceKey.js&#96; (new file)",
+            "lineNumber": 137
+          },
+          {
+            "lineNumber": 138
+          },
+          {
+            "text": "- &#96;getDeviceKey(deviceId, callback)&#96; - Retrieve device key from Redis",
+            "lineNumber": 139
+          },
+          {
+            "text": "- &#96;setDeviceKey(deviceId, deviceKey, callback)&#96; - Store device key in Redis",
+            "lineNumber": 140
+          },
+          {
+            "text": "- &#96;validateDeviceKey(deviceId, providedKey, callback)&#96; - Validate provided key against stored key",
+            "lineNumber": 141
+          },
+          {
+            "text": "- Redis key pattern: &#96;miad:$deviceid:key&#96;",
+            "lineNumber": 142
+          },
+          {
+            "lineNumber": 143
+          },
+          {
+            "text": "#### 1.3 Allowed Devices Storage Utilities",
+            "lineNumber": 144
+          },
+          {
+            "lineNumber": 145
+          },
+          {
+            "text": "**File**: &#96;lib/utils/allowedDevices.js&#96; (new file)",
+            "lineNumber": 146
+          },
+          {
+            "lineNumber": 147
+          },
+          {
+            "text": "- &#96;getAllowedDevices(deviceId, callback)&#96; - Retrieve allowed devices list from Redis",
+            "lineNumber": 148
+          },
+          {
+            "text": "- &#96;setAllowedDevices(deviceId, allowedDevices, callback)&#96; - Store/update allowed devices list",
+            "lineNumber": 149
+          }
+        ]
+      },
+      "score": 0.19624580442905426
+    },
+    {
+      "codeBlock": {
+        "relativeWorkspacePath": "./docs/DECISION_LOG.md",
+        "range": {
+          "startPosition": {},
+          "endPosition": {
+            "line": 13
+          }
+        },
+        "contents": "# DECISION LOG (ADR-STYLE)\n\n## 1. Decision Summary Index\n- **ADR-001**: Self-hosted Miataru server prioritizing user control and privacy — **Accepted**. Evidence: README.md; docs/INTENT_AND_PROBLEM_RECONSTRUCTION.md.\n- **ADR-002**: Support both v1 and legacy endpoints for backward compatibility — **Accepted**. Evidence: README.md; lib/routes/location/index.js; tests/integration/backwardCompatibility.tests.js.\n- **ADR-003**: Store last location and optional history in Redis using namespaced keys and capped lists — **Accepted**. Evidence: lib/routes/location/v1/location.js; config/default.js; lib/utils/keyBuilder.js; tests/integration/api.tests.js.\n- **ADR-004**: Provide configurable retention: history on/off with TTL for last-known location — **Accepted**. Evidence: lib/routes/location/v1/location.js; lib/models/RequestConfig.js; tests/integration/updateLocation.tests.js.\n- **ADR-005**: Introduce visitor history with self-request exclusion — **Accepted**. Evidence: .specstory/history/2026-01-19_19-52Z-visitor-history-self-request-exclusion.md; lib/models/RequestConfigGetLocation.js; tests/integration/visitorHistoryFiltering.tests.js.\n- **ADR-006**: Add recordDetailedVisitorHistory toggle (OFF default, ON preserves prior behavior) — **Accepted**. Evidence: .specstory/history/2026-01-22_13-59Z-visitor-history-recording-configuration.md; config/default.js; tests/integration/recordDetailedVisitorHistory.tests.js.\n- **ADR-007**: Add DeleteLocation endpoint to remove last/history/visitor data — **Accepted**. Evidence: README.md; docs/DELETE_LOCATION_API.md; tests/integration/deleteLocation.tests.js.\n- **ADR-008**: Offer GeoJSON response endpoint, returning empty object when coordinates missing — **Accepted**. Evidence: README.md; lib/models/ResponseLocationGeoJSON.js; tests/unit/responseLocationGeoJSON.tests.js.\n- **ADR-009**: Enforce CORS by allowed origins; allow no-origin requests — **Accepted**. Evidence: README.md; lib/middlewares/index.js; tests/integration/cors.tests.js.\n- **ADR-010**: Add HTTP and Redis concurrency rate limiting with queueing — **Accepted**. Evidence: README.md; lib/middlewares/rateLimiter.js; lib/db.js; tests/integration/httpRateLimiter.tests.js; tests/unit/redisRateLimiter.tests.js.",
+        "signatures": {},
+        "detailedLines": [
+          {
+            "text": "# DECISION LOG (ADR-STYLE)",
+            "lineNumber": 1
+          },
+          {
+            "lineNumber": 2
+          },
+          {
+            "text": "## 1. Decision Summary Index",
+            "lineNumber": 3
+          },
+          {
+            "text": "- **ADR-001**: Self-hosted Miataru server prioritizing user control and privacy — **Accepted**. Evidence: README.md; docs/INTENT_AND_PROBLEM_RECONSTRUCTION.md.",
+            "lineNumber": 4
+          },
+          {
+            "text": "- **ADR-002**: Support both v1 and legacy endpoints for backward compatibility — **Accepted**. Evidence: README.md; lib/routes/location/index.js; tests/integration/backwardCompatibility.tests.js.",
+            "lineNumber": 5
+          },
+          {
+            "text": "- **ADR-003**: Store last location and optional history in Redis using namespaced keys and capped lists — **Accepted**. Evidence: lib/routes/location/v1/location.js; config/default.js; lib/utils/keyBuilder.js; tests/integration/api.tests.js.",
+            "lineNumber": 6
+          },
+          {
+            "text": "- **ADR-004**: Provide configurable retention: history on/off with TTL for last-known location — **Accepted**. Evidence: lib/routes/location/v1/location.js; lib/models/RequestConfig.js; tests/integration/updateLocation.tests.js.",
+            "lineNumber": 7
+          },
+          {
+            "text": "- **ADR-005**: Introduce visitor history with self-request exclusion — **Accepted**. Evidence: .specstory/history/2026-01-19_19-52Z-visitor-history-self-request-exclusion.md; lib/models/RequestConfigGetLocation.js; tests/integration/visitorHistoryFiltering.tests.js.",
+            "lineNumber": 8
+          },
+          {
+            "text": "- **ADR-006**: Add recordDetailedVisitorHistory toggle (OFF default, ON preserves prior behavior) — **Accepted**. Evidence: .specstory/history/2026-01-22_13-59Z-visitor-history-recording-configuration.md; config/default.js; tests/integration/recordDetailedVisitorHistory.tests.js.",
+            "lineNumber": 9
+          },
+          {
+            "text": "- **ADR-007**: Add DeleteLocation endpoint to remove last/history/visitor data — **Accepted**. Evidence: README.md; docs/DELETE_LOCATION_API.md; tests/integration/deleteLocation.tests.js.",
+            "lineNumber": 10
+          },
+          {
+            "text": "- **ADR-008**: Offer GeoJSON response endpoint, returning empty object when coordinates missing — **Accepted**. Evidence: README.md; lib/models/ResponseLocationGeoJSON.js; tests/unit/responseLocationGeoJSON.tests.js.",
+            "lineNumber": 11
+          },
+          {
+            "text": "- **ADR-009**: Enforce CORS by allowed origins; allow no-origin requests — **Accepted**. Evidence: README.md; lib/middlewares/index.js; tests/integration/cors.tests.js.",
+            "lineNumber": 12
+          },
+          {
+            "text": "- **ADR-010**: Add HTTP and Redis concurrency rate limiting with queueing — **Accepted**. Evidence: README.md; lib/middlewares/rateLimiter.js; lib/db.js; tests/integration/httpRateLimiter.tests.js; tests/unit/redisRateLimiter.tests.js.",
+            "lineNumber": 13
+          }
+        ]
+      },
+      "score": 0.19253146648406982
+    },
+    {
+      "codeBlock": {
+        "relativeWorkspacePath": "./lib/routes/location/v1/inputParser.js",
+        "range": {
+          "startPosition": {
+            "column": 61
+          },
+          "endPosition": {
+            "line": 71,
+            "column": 1
+          }
+        },
+        "contents": "var RequestConfigGetLocation = require('../../../models/RequestConfigGetLocation');\nvar RequestLocation = require('../../../models/RequestLocation');\nvar RequestDevice = require('../../../models/RequestDevice');\nvar RequestLocationHistory = require('../../../models/RequestLocationHistory');\nvar RequestVisitorHistory = require('../../../models/RequestVisitorHistory');\nvar RequestSetDeviceKey = require('../../../models/RequestSetDeviceKey');\nvar RequestSetAllowedDeviceList = require('../../../models/RequestSetAllowedDeviceList');\n\nmodule.exports = function(req, res, next) {\n    req.MIATARU = req.MIATARU || {};\n\n    var nextError;\n\n    try {\n        switch(req.path) {\n            case '/UpdateLocation':\n            case '/v1/UpdateLocation':\n                parseUpdateLocation(req);\n                break;\n            case '/GetLocation':\n            case '/v1/GetLocation':\n                parseGetLocations(req);\n                break;\n            case '/GetLocationGeoJSON':\n            case '/v1/GetLocationGeoJSON':\n                parseGetLocationsGeoJSON(req);\n                break;\n            case '/GetLocationHistory':\n            case '/v1/GetLocationHistory':\n                parseGetLocationHistory(req);\n                break;\n            case '/v1/GetVisitorHistory':\n            case '/GetVisitorHistory':\n                parseGetVisitorHistory(req);\n                break;\n            case '/DeleteLocation':\n            case '/v1/DeleteLocation':\n                parseDeleteLocation(req);\n                break;\n            case '/setDeviceKey':\n            case '/v1/setDeviceKey':\n                parseSetDeviceKey(req);\n                break;\n            case '/setAllowedDeviceList':\n            case '/v1/setAllowedDeviceList':\n                parseSetAllowedDeviceList(req);\n                break;\n        }\n    }\n    catch(error) {\n        nextError = error;\n    }\n\n    next(nextError);\n};\n\nfunction parseUpdateLocation(req) {\n    var locations = req.body['MiataruLocation'];\n}",
+        "signatures": {},
+        "detailedLines": [
+          {
+            "text": "var RequestConfigGetLocation = require('../../../models/RequestConfigGetLocation');",
+            "lineNumber": 2
+          },
+          {
+            "text": "var RequestLocation = require('../../../models/RequestLocation');",
+            "lineNumber": 3
+          },
+          {
+            "text": "var RequestDevice = require('../../../models/RequestDevice');",
+            "lineNumber": 4
+          },
+          {
+            "text": "var RequestLocationHistory = require('../../../models/RequestLocationHistory');",
+            "lineNumber": 5
+          },
+          {
+            "text": "var RequestVisitorHistory = require('../../../models/RequestVisitorHistory');",
+            "lineNumber": 6
+          },
+          {
+            "text": "var RequestSetDeviceKey = require('../../../models/RequestSetDeviceKey');",
+            "lineNumber": 7
+          },
+          {
+            "text": "var RequestSetAllowedDeviceList = require('../../../models/RequestSetAllowedDeviceList');",
+            "lineNumber": 8
+          },
+          {
+            "lineNumber": 9
+          },
+          {
+            "text": "module.exports = function(req, res, next) {",
+            "lineNumber": 10
+          },
+          {
+            "text": "    req.MIATARU = req.MIATARU || {};",
+            "lineNumber": 11
+          },
+          {
+            "lineNumber": 12
+          },
+          {
+            "text": "    var nextError;",
+            "lineNumber": 13
+          },
+          {
+            "lineNumber": 14
+          },
+          {
+            "text": "    try {",
+            "lineNumber": 15
+          },
+          {
+            "text": "        switch(req.path) {",
+            "lineNumber": 16
+          },
+          {
+            "text": "            case '/UpdateLocation':",
+            "lineNumber": 17
+          },
+          {
+            "text": "            case '/v1/UpdateLocation':",
+            "lineNumber": 18
+          },
+          {
+            "text": "                parseUpdateLocation(req);",
+            "lineNumber": 19
+          },
+          {
+            "text": "                break;",
+            "lineNumber": 20
+          },
+          {
+            "text": "            case '/GetLocation':",
+            "lineNumber": 21
+          },
+          {
+            "text": "            case '/v1/GetLocation':",
+            "lineNumber": 22
+          },
+          {
+            "text": "                parseGetLocations(req);",
+            "lineNumber": 23
+          },
+          {
+            "text": "                break;",
+            "lineNumber": 24
+          },
+          {
+            "text": "            case '/GetLocationGeoJSON':",
+            "lineNumber": 25
+          },
+          {
+            "text": "            case '/v1/GetLocationGeoJSON':",
+            "lineNumber": 26
+          },
+          {
+            "text": "                parseGetLocationsGeoJSON(req);",
+            "lineNumber": 27
+          },
+          {
+            "text": "                break;",
+            "lineNumber": 28
+          },
+          {
+            "text": "            case '/GetLocationHistory':",
+            "lineNumber": 29
+          },
+          {
+            "text": "            case '/v1/GetLocationHistory':",
+            "lineNumber": 30
+          },
+          {
+            "text": "                parseGetLocationHistory(req);",
+            "lineNumber": 31
+          },
+          {
+            "text": "                break;",
+            "lineNumber": 32
+          },
+          {
+            "text": "            case '/v1/GetVisitorHistory':",
+            "lineNumber": 33
+          },
+          {
+            "text": "            case '/GetVisitorHistory':",
+            "lineNumber": 34
+          },
+          {
+            "text": "                parseGetVisitorHistory(req);",
+            "lineNumber": 35
+          },
+          {
+            "text": "                break;",
+            "lineNumber": 36
+          },
+          {
+            "text": "            case '/DeleteLocation':",
+            "lineNumber": 37
+          },
+          {
+            "text": "            case '/v1/DeleteLocation':",
+            "lineNumber": 38
+          },
+          {
+            "text": "                parseDeleteLocation(req);",
+            "lineNumber": 39
+          },
+          {
+            "text": "                break;",
+            "lineNumber": 40
+          },
+          {
+            "text": "            case '/setDeviceKey':",
+            "lineNumber": 41
+          },
+          {
+            "text": "            case '/v1/setDeviceKey':",
+            "lineNumber": 42
+          },
+          {
+            "text": "                parseSetDeviceKey(req);",
+            "lineNumber": 43
+          },
+          {
+            "text": "                break;",
+            "lineNumber": 44
+          },
+          {
+            "text": "            case '/setAllowedDeviceList':",
+            "lineNumber": 45
+          },
+          {
+            "text": "            case '/v1/setAllowedDeviceList':",
+            "lineNumber": 46
+          },
+          {
+            "text": "                parseSetAllowedDeviceList(req);",
+            "lineNumber": 47
+          },
+          {
+            "text": "                break;",
+            "lineNumber": 48
+          },
+          {
+            "text": "        }",
+            "lineNumber": 49
+          },
+          {
+            "text": "    }",
+            "lineNumber": 50
+          },
+          {
+            "text": "    catch(error) {",
+            "lineNumber": 51
+          },
+          {
+            "text": "        nextError = error;",
+            "lineNumber": 52
+          },
+          {
+            "text": "    }",
+            "lineNumber": 53
+          },
+          {
+            "lineNumber": 54
+          },
+          {
+            "text": "    next(nextError);",
+            "lineNumber": 55
+          },
+          {
+            "text": "};",
+            "lineNumber": 56
+          },
+          {
+            "lineNumber": 57
+          },
+          {
+            "text": "function parseUpdateLocation(req) {",
+            "lineNumber": 58,
+            "isSignature": true
+          },
+          {
+            "text": "    var locations = req.body['MiataruLocation'];",
+            "lineNumber": 59
+          },
+          {
+            "text": "}",
+            "lineNumber": 72,
+            "isSignature": true
+          }
+        ]
+      },
+      "score": 0.19110439717769623
+    },
+    {
+      "codeBlock": {
+        "relativeWorkspacePath": "./docs/WHATS_NEW_V2.md",
+        "range": {
+          "startPosition": {
+            "line": 72
+          },
+          "endPosition": {
+            "line": 149,
+            "column": 4
+          }
+        },
+        "contents": "- **Flexible Sharing**: Easy to grant or revoke access to specific devices\n\n## New API Endpoints\n\n### POST &#96;/v1/setDeviceKey&#96;\n\nSet or change the DeviceKey for a device. This is the first step in enabling DeviceKey authentication.\n\n#### Request Format\n\n&#96;&#96;&#96;json\n{\n  \"MiataruSetDeviceKey\": {\n    \"DeviceID\": \"device-id-here\",\n    \"CurrentDeviceKey\": \"optional-current-key\",\n    \"NewDeviceKey\": \"your-new-256-char-max-key\"\n  }\n}\n&#96;&#96;&#96;\n\n#### Request Parameters\n\n- **DeviceID** (required): The device identifier\n- **CurrentDeviceKey** (optional): Required only when changing an existing key. Omit for first-time setup\n- **NewDeviceKey** (required): The new DeviceKey (max 256 Unicode characters)\n\n#### Response Format\n\n**Success (200 OK):**\n&#96;&#96;&#96;json\n{\n  \"MiataruResponse\": \"ACK\",\n  \"MiataruVerboseResponse\": \"DeviceKey set successfully for device: device-id-here\"\n}\n&#96;&#96;&#96;\n\n**Error (403 Forbidden):**\n&#96;&#96;&#96;json\n{\n  \"error\": \"CurrentDeviceKey does not match stored key\"\n}\n&#96;&#96;&#96;\n\n#### Example Usage\n\n**First-Time Setup:**\n&#96;&#96;&#96;bash\ncurl -H 'Content-Type: application/json' -X POST 'http://localhost:8090/v1/setDeviceKey' \\\n  -d '{\n    \"MiataruSetDeviceKey\": {\n      \"DeviceID\": \"my-device-123\",\n      \"NewDeviceKey\": \"my-secure-key-12345\"\n    }\n  }'\n&#96;&#96;&#96;\n\n**Change Existing Key:**\n&#96;&#96;&#96;bash\ncurl -H 'Content-Type: application/json' -X POST 'http://localhost:8090/v1/setDeviceKey' \\\n  -d '{\n    \"MiataruSetDeviceKey\": {\n      \"DeviceID\": \"my-device-123\",\n      \"CurrentDeviceKey\": \"my-secure-key-12345\",\n      \"NewDeviceKey\": \"my-new-secure-key-67890\"\n    }\n  }'\n&#96;&#96;&#96;\n\n### POST &#96;/v1/setAllowedDeviceList&#96;\n\nConfigure the allowed devices list for fine-grained access control. Requires DeviceKey authentication.\n\n#### Request Format\n\n&#96;&#96;&#96;json\n{\n  \"MiataruSetAllowedDeviceList\": {\n    ",
+        "signatures": {},
+        "detailedLines": [
+          {
+            "text": "- **Flexible Sharing**: Easy to grant or revoke access to specific devices",
+            "lineNumber": 73
+          },
+          {
+            "lineNumber": 74
+          },
+          {
+            "text": "## New API Endpoints",
+            "lineNumber": 75
+          },
+          {
+            "lineNumber": 76
+          },
+          {
+            "text": "### POST &#96;/v1/setDeviceKey&#96;",
+            "lineNumber": 77
+          },
+          {
+            "lineNumber": 78
+          },
+          {
+            "text": "Set or change the DeviceKey for a device. This is the first step in enabling DeviceKey authentication.",
+            "lineNumber": 79
+          },
+          {
+            "lineNumber": 80
+          },
+          {
+            "text": "#### Request Format",
+            "lineNumber": 81
+          },
+          {
+            "lineNumber": 82
+          },
+          {
+            "text": "&#96;&#96;&#96;json",
+            "lineNumber": 83
+          },
+          {
+            "text": "{",
+            "lineNumber": 84
+          },
+          {
+            "text": "  \"MiataruSetDeviceKey\": {",
+            "lineNumber": 85
+          },
+          {
+            "text": "    \"DeviceID\": \"device-id-here\",",
+            "lineNumber": 86
+          },
+          {
+            "text": "    \"CurrentDeviceKey\": \"optional-current-key\",",
+            "lineNumber": 87
+          },
+          {
+            "text": "    \"NewDeviceKey\": \"your-new-256-char-max-key\"",
+            "lineNumber": 88
+          },
+          {
+            "text": "  }",
+            "lineNumber": 89
+          },
+          {
+            "text": "}",
+            "lineNumber": 90
+          },
+          {
+            "text": "&#96;&#96;&#96;",
+            "lineNumber": 91
+          },
+          {
+            "lineNumber": 92
+          },
+          {
+            "text": "#### Request Parameters",
+            "lineNumber": 93
+          },
+          {
+            "lineNumber": 94
+          },
+          {
+            "text": "- **DeviceID** (required): The device identifier",
+            "lineNumber": 95
+          },
+          {
+            "text": "- **CurrentDeviceKey** (optional): Required only when changing an existing key. Omit for first-time setup",
+            "lineNumber": 96
+          },
+          {
+            "text": "- **NewDeviceKey** (required): The new DeviceKey (max 256 Unicode characters)",
+            "lineNumber": 97
+          },
+          {
+            "lineNumber": 98
+          },
+          {
+            "text": "#### Response Format",
+            "lineNumber": 99
+          },
+          {
+            "lineNumber": 100
+          },
+          {
+            "text": "**Success (200 OK):**",
+            "lineNumber": 101
+          },
+          {
+            "text": "&#96;&#96;&#96;json",
+            "lineNumber": 102
+          },
+          {
+            "text": "{",
+            "lineNumber": 103
+          },
+          {
+            "text": "  \"MiataruResponse\": \"ACK\",",
+            "lineNumber": 104
+          },
+          {
+            "text": "  \"MiataruVerboseResponse\": \"DeviceKey set successfully for device: device-id-here\"",
+            "lineNumber": 105
+          },
+          {
+            "text": "}",
+            "lineNumber": 106
+          },
+          {
+            "text": "&#96;&#96;&#96;",
+            "lineNumber": 107
+          },
+          {
+            "lineNumber": 108
+          },
+          {
+            "text": "**Error (403 Forbidden):**",
+            "lineNumber": 109
+          },
+          {
+            "text": "&#96;&#96;&#96;json",
+            "lineNumber": 110
+          },
+          {
+            "text": "{",
+            "lineNumber": 111
+          },
+          {
+            "text": "  \"error\": \"CurrentDeviceKey does not match stored key\"",
+            "lineNumber": 112
+          },
+          {
+            "text": "}",
+            "lineNumber": 113
+          },
+          {
+            "text": "&#96;&#96;&#96;",
+            "lineNumber": 114
+          },
+          {
+            "lineNumber": 115
+          },
+          {
+            "text": "#### Example Usage",
+            "lineNumber": 116
+          },
+          {
+            "lineNumber": 117
+          },
+          {
+            "text": "**First-Time Setup:**",
+            "lineNumber": 118
+          },
+          {
+            "text": "&#96;&#96;&#96;bash",
+            "lineNumber": 119
+          },
+          {
+            "text": "curl -H 'Content-Type: application/json' -X POST 'http://localhost:8090/v1/setDeviceKey' \\",
+            "lineNumber": 120
+          },
+          {
+            "text": "  -d '{",
+            "lineNumber": 121
+          },
+          {
+            "text": "    \"MiataruSetDeviceKey\": {",
+            "lineNumber": 122
+          },
+          {
+            "text": "      \"DeviceID\": \"my-device-123\",",
+            "lineNumber": 123
+          },
+          {
+            "text": "      \"NewDeviceKey\": \"my-secure-key-12345\"",
+            "lineNumber": 124
+          },
+          {
+            "text": "    }",
+            "lineNumber": 125
+          },
+          {
+            "text": "  }'",
+            "lineNumber": 126
+          },
+          {
+            "text": "&#96;&#96;&#96;",
+            "lineNumber": 127
+          },
+          {
+            "lineNumber": 128
+          },
+          {
+            "text": "**Change Existing Key:**",
+            "lineNumber": 129
+          },
+          {
+            "text": "&#96;&#96;&#96;bash",
+            "lineNumber": 130
+          },
+          {
+            "text": "curl -H 'Content-Type: application/json' -X POST 'http://localhost:8090/v1/setDeviceKey' \\",
+            "lineNumber": 131
+          },
+          {
+            "text": "  -d '{",
+            "lineNumber": 132
+          },
+          {
+            "text": "    \"MiataruSetDeviceKey\": {",
+            "lineNumber": 133
+          },
+          {
+            "text": "      \"DeviceID\": \"my-device-123\",",
+            "lineNumber": 134
+          },
+          {
+            "text": "      \"CurrentDeviceKey\": \"my-secure-key-12345\",",
+            "lineNumber": 135
+          },
+          {
+            "text": "      \"NewDeviceKey\": \"my-new-secure-key-67890\"",
+            "lineNumber": 136
+          },
+          {
+            "text": "    }",
+            "lineNumber": 137
+          },
+          {
+            "text": "  }'",
+            "lineNumber": 138
+          },
+          {
+            "text": "&#96;&#96;&#96;",
+            "lineNumber": 139
+          },
+          {
+            "lineNumber": 140
+          },
+          {
+            "text": "### POST &#96;/v1/setAllowedDeviceList&#96;",
+            "lineNumber": 141
+          },
+          {
+            "lineNumber": 142
+          },
+          {
+            "text": "Configure the allowed devices list for fine-grained access control. Requires DeviceKey authentication.",
+            "lineNumber": 143
+          },
+          {
+            "lineNumber": 144
+          },
+          {
+            "text": "#### Request Format",
+            "lineNumber": 145
+          },
+          {
+            "lineNumber": 146
+          },
+          {
+            "text": "&#96;&#96;&#96;json",
+            "lineNumber": 147
+          },
+          {
+            "text": "{",
+            "lineNumber": 148
+          },
+          {
+            "text": "  \"MiataruSetAllowedDeviceList\": {",
+            "lineNumber": 149
+          },
+          {
+            "text": "    ",
+            "lineNumber": 150
+          }
+        ]
+      },
+      "score": 0.1877617985010147
+    },
+    {
+      "codeBlock": {
+        "relativeWorkspacePath": "./docs/COMPATIBILITY_ASSESSMENT.md",
+        "range": {
+          "startPosition": {
+            "line": 133
+          },
+          "endPosition": {
+            "line": 198
+          }
+        },
+        "contents": "| DeviceKey set, missing | N/A | 403 Forbidden | ⚠️ Requires update |\n| DeviceKey set, wrong | N/A | 403 Forbidden | ⚠️ Requires update |\n\n### GetLocationGeoJSON\n\n| Scenario | API 1.0 Client | API 1.1 Client | Result |\n|----------|----------------|----------------|--------|\n| No DeviceKey set | Works | Works | ✅ Compatible |\n| DeviceKey set | Works | 401 Unauthorized | ❌ **BREAKING** |\n\n## Endpoint Status\n\n### Unchanged Endpoints\n\nThese endpoints work exactly as in API 1.0:\n\n- ✅ &#96;/v1/UpdateLocation&#96; - Same behavior (DeviceKey optional)\n- ✅ &#96;/v1/GetVisitorHistory&#96; - Same behavior (DeviceKey optional)\n- ✅ &#96;/v1/DeleteLocation&#96; - Unchanged\n\n### New Endpoints\n\nThese endpoints are new in API 1.1:\n\n- 🆕 &#96;/v1/setDeviceKey&#96; - Set or change device key\n- 🆕 &#96;/v1/setAllowedDeviceList&#96; - Manage allowed devices list\n\n### Modified Endpoints\n\nThese endpoints have modified behavior:\n\n- ⚠️ &#96;/v1/GetLocation&#96; - Requires &#96;RequestMiataruDeviceID&#96; in &#96;MiataruConfig&#96;\n- ⚠️ &#96;/v1/GetLocationHistory&#96; - Requires &#96;RequestMiataruDeviceID&#96; in &#96;MiataruConfig&#96;\n- ⚠️ &#96;/v1/GetLocationGeoJSON&#96; - Returns 401 when DeviceKey is set\n\n## Response Format Compatibility\n\nAll response formats remain unchanged:\n\n- **UpdateLocation Response**: Same ACK format\n- **GetLocation Response**: Same MiataruLocation array format\n- **GetLocationHistory Response**: Same format with MiataruServerConfig\n- **GetVisitorHistory Response**: Same format with MiataruVisitors\n- **Error Responses**: Same format (new 401/403 codes added)\n\n## Error Code Compatibility\n\n### Existing Error Codes (Unchanged)\n\n- **400 Bad Request** - Invalid input\n- **404 Not Found** - Endpoint not found\n- **405 Method Not Supported** - Wrong HTTP method\n- **500 Internal Server Error** - Server error\n\n### New Error Codes (API 1.1)\n\n- **401 Unauthorized** - GetLocationGeoJSON called when DeviceKey is set\n- **403 Forbidden** - DeviceKey mismatch or access denied\n\n**Note:** New error codes only apply when security features are enabled. Existing clients not using security features will never encounter these codes.\n\n## Data Format Compatibility\n\n### Request Formats",
+        "signatures": {},
+        "detailedLines": [
+          {
+            "text": "| DeviceKey set, missing | N/A | 403 Forbidden | ⚠️ Requires update |",
+            "lineNumber": 134
+          },
+          {
+            "text": "| DeviceKey set, wrong | N/A | 403 Forbidden | ⚠️ Requires update |",
+            "lineNumber": 135
+          },
+          {
+            "lineNumber": 136
+          },
+          {
+            "text": "### GetLocationGeoJSON",
+            "lineNumber": 137
+          },
+          {
+            "lineNumber": 138
+          },
+          {
+            "text": "| Scenario | API 1.0 Client | API 1.1 Client | Result |",
+            "lineNumber": 139
+          },
+          {
+            "text": "|----------|----------------|----------------|--------|",
+            "lineNumber": 140
+          },
+          {
+            "text": "| No DeviceKey set | Works | Works | ✅ Compatible |",
+            "lineNumber": 141
+          },
+          {
+            "text": "| DeviceKey set | Works | 401 Unauthorized | ❌ **BREAKING** |",
+            "lineNumber": 142
+          },
+          {
+            "lineNumber": 143
+          },
+          {
+            "text": "## Endpoint Status",
+            "lineNumber": 144
+          },
+          {
+            "lineNumber": 145
+          },
+          {
+            "text": "### Unchanged Endpoints",
+            "lineNumber": 146
+          },
+          {
+            "lineNumber": 147
+          },
+          {
+            "text": "These endpoints work exactly as in API 1.0:",
+            "lineNumber": 148
+          },
+          {
+            "lineNumber": 149
+          },
+          {
+            "text": "- ✅ &#96;/v1/UpdateLocation&#96; - Same behavior (DeviceKey optional)",
+            "lineNumber": 150
+          },
+          {
+            "text": "- ✅ &#96;/v1/GetVisitorHistory&#96; - Same behavior (DeviceKey optional)",
+            "lineNumber": 151
+          },
+          {
+            "text": "- ✅ &#96;/v1/DeleteLocation&#96; - Unchanged",
+            "lineNumber": 152
+          },
+          {
+            "lineNumber": 153
+          },
+          {
+            "text": "### New Endpoints",
+            "lineNumber": 154
+          },
+          {
+            "lineNumber": 155
+          },
+          {
+            "text": "These endpoints are new in API 1.1:",
+            "lineNumber": 156
+          },
+          {
+            "lineNumber": 157
+          },
+          {
+            "text": "- 🆕 &#96;/v1/setDeviceKey&#96; - Set or change device key",
+            "lineNumber": 158
+          },
+          {
+            "text": "- 🆕 &#96;/v1/setAllowedDeviceList&#96; - Manage allowed devices list",
+            "lineNumber": 159
+          },
+          {
+            "lineNumber": 160
+          },
+          {
+            "text": "### Modified Endpoints",
+            "lineNumber": 161
+          },
+          {
+            "lineNumber": 162
+          },
+          {
+            "text": "These endpoints have modified behavior:",
+            "lineNumber": 163
+          },
+          {
+            "lineNumber": 164
+          },
+          {
+            "text": "- ⚠️ &#96;/v1/GetLocation&#96; - Requires &#96;RequestMiataruDeviceID&#96; in &#96;MiataruConfig&#96;",
+            "lineNumber": 165
+          },
+          {
+            "text": "- ⚠️ &#96;/v1/GetLocationHistory&#96; - Requires &#96;RequestMiataruDeviceID&#96; in &#96;MiataruConfig&#96;",
+            "lineNumber": 166
+          },
+          {
+            "text": "- ⚠️ &#96;/v1/GetLocationGeoJSON&#96; - Returns 401 when DeviceKey is set",
+            "lineNumber": 167
+          },
+          {
+            "lineNumber": 168
+          },
+          {
+            "text": "## Response Format Compatibility",
+            "lineNumber": 169
+          },
+          {
+            "lineNumber": 170
+          },
+          {
+            "text": "All response formats remain unchanged:",
+            "lineNumber": 171
+          },
+          {
+            "lineNumber": 172
+          },
+          {
+            "text": "- **UpdateLocation Response**: Same ACK format",
+            "lineNumber": 173
+          },
+          {
+            "text": "- **GetLocation Response**: Same MiataruLocation array format",
+            "lineNumber": 174
+          },
+          {
+            "text": "- **GetLocationHistory Response**: Same format with MiataruServerConfig",
+            "lineNumber": 175
+          },
+          {
+            "text": "- **GetVisitorHistory Response**: Same format with MiataruVisitors",
+            "lineNumber": 176
+          },
+          {
+            "text": "- **Error Responses**: Same format (new 401/403 codes added)",
+            "lineNumber": 177
+          },
+          {
+            "lineNumber": 178
+          },
+          {
+            "text": "## Error Code Compatibility",
+            "lineNumber": 179
+          },
+          {
+            "lineNumber": 180
+          },
+          {
+            "text": "### Existing Error Codes (Unchanged)",
+            "lineNumber": 181
+          },
+          {
+            "lineNumber": 182
+          },
+          {
+            "text": "- **400 Bad Request** - Invalid input",
+            "lineNumber": 183
+          },
+          {
+            "text": "- **404 Not Found** - Endpoint not found",
+            "lineNumber": 184
+          },
+          {
+            "text": "- **405 Method Not Supported** - Wrong HTTP method",
+            "lineNumber": 185
+          },
+          {
+            "text": "- **500 Internal Server Error** - Server error",
+            "lineNumber": 186
+          },
+          {
+            "lineNumber": 187
+          },
+          {
+            "text": "### New Error Codes (API 1.1)",
+            "lineNumber": 188
+          },
+          {
+            "lineNumber": 189
+          },
+          {
+            "text": "- **401 Unauthorized** - GetLocationGeoJSON called when DeviceKey is set",
+            "lineNumber": 190
+          },
+          {
+            "text": "- **403 Forbidden** - DeviceKey mismatch or access denied",
+            "lineNumber": 191
+          },
+          {
+            "lineNumber": 192
+          },
+          {
+            "text": "**Note:** New error codes only apply when security features are enabled. Existing clients not using security features will never encounter these codes.",
+            "lineNumber": 193
+          },
+          {
+            "lineNumber": 194
+          },
+          {
+            "text": "## Data Format Compatibility",
+            "lineNumber": 195
+          },
+          {
+            "lineNumber": 196
+          },
+          {
+            "text": "### Request Formats",
+            "lineNumber": 197
+          }
+        ]
+      },
+      "score": 0.18567639589309692
+    },
+    {
+      "codeBlock": {
+        "relativeWorkspacePath": "./docs/WHATS_NEW_V2.md",
+        "range": {
+          "startPosition": {
+            "line": 218
+          },
+          "endPosition": {
+            "line": 293
+          }
+        },
+        "contents": "- **Empty List**: To disable access control, send an empty array &#96;[]&#96;\n\n## Modified API Endpoints\n\n### POST &#96;/v1/UpdateLocation&#96;\n\n**New Behavior**: When a DeviceKey is set for a device, the request must include the DeviceKey in each &#96;MiataruLocation&#96; element.\n\n#### Request Format (with DeviceKey)\n\n&#96;&#96;&#96;json\n{\n  \"MiataruConfig\": {\n    \"EnableLocationHistory\": \"True\",\n    \"LocationDataRetentionTime\": \"15\"\n  },\n  \"MiataruLocation\": [\n    {\n      \"Device\": \"device-id-here\",\n      \"DeviceKey\": \"your-device-key\",\n      \"Timestamp\": \"1376735651302\",\n      \"Longitude\": \"10.837502\",\n      \"Latitude\": \"49.828925\",\n      \"HorizontalAccuracy\": \"50.00\"\n    }\n  ]\n}\n&#96;&#96;&#96;\n\n#### Behavior\n\n- **DeviceKey Set**: If a DeviceKey exists for the device, it must be provided and validated\n- **DeviceKey Not Set**: If no DeviceKey exists, the endpoint works as before (backward compatible)\n- **Invalid DeviceKey**: Returns 403 Forbidden if provided key doesn't match stored key\n\n#### Error Response (403 Forbidden)\n\n&#96;&#96;&#96;json\n{\n  \"error\": \"DeviceKey validation failed for device: device-id-here\"\n}\n&#96;&#96;&#96;\n\n### POST &#96;/v1/GetLocation&#96;\n\n**New Behavior**: When an allowed devices list is enabled for a device, only devices with &#96;hasCurrentLocationAccess&#96; permission can retrieve the location.\n\n#### Request Format\n\n&#96;&#96;&#96;json\n{\n  \"MiataruGetLocation\": [\n    {\n      \"Device\": \"target-device-id\"\n    }\n  ],\n  \"MiataruConfig\": {\n    \"RequestMiataruDeviceID\": \"requesting-device-id\"\n  }\n}\n&#96;&#96;&#96;\n\n#### Behavior\n\n- **Allowed Devices Enabled**: Only devices in the allowed list with &#96;hasCurrentLocationAccess: true&#96; can access location\n- **Not in List**: Devices not in the allowed list receive no location data (as if device doesn't exist)\n- **Allowed Devices Not Enabled**: Works as before once &#96;RequestMiataruDeviceID&#96; is provided (backward compatible)\n\n#### Privacy Protection\n\nWhen allowed devices list is enabled:\n- Devices not in the list cannot see that the target device exists\n- No error message is returned - location is simply omitted\n- This prevents information leakage about device existence",
+        "signatures": {},
+        "detailedLines": [
+          {
+            "text": "- **Empty List**: To disable access control, send an empty array &#96;[]&#96;",
+            "lineNumber": 219
+          },
+          {
+            "lineNumber": 220
+          },
+          {
+            "text": "## Modified API Endpoints",
+            "lineNumber": 221
+          },
+          {
+            "lineNumber": 222
+          },
+          {
+            "text": "### POST &#96;/v1/UpdateLocation&#96;",
+            "lineNumber": 223
+          },
+          {
+            "lineNumber": 224
+          },
+          {
+            "text": "**New Behavior**: When a DeviceKey is set for a device, the request must include the DeviceKey in each &#96;MiataruLocation&#96; element.",
+            "lineNumber": 225
+          },
+          {
+            "lineNumber": 226
+          },
+          {
+            "text": "#### Request Format (with DeviceKey)",
+            "lineNumber": 227
+          },
+          {
+            "lineNumber": 228
+          },
+          {
+            "text": "&#96;&#96;&#96;json",
+            "lineNumber": 229
+          },
+          {
+            "text": "{",
+            "lineNumber": 230
+          },
+          {
+            "text": "  \"MiataruConfig\": {",
+            "lineNumber": 231
+          },
+          {
+            "text": "    \"EnableLocationHistory\": \"True\",",
+            "lineNumber": 232
+          },
+          {
+            "text": "    \"LocationDataRetentionTime\": \"15\"",
+            "lineNumber": 233
+          },
+          {
+            "text": "  },",
+            "lineNumber": 234
+          },
+          {
+            "text": "  \"MiataruLocation\": [",
+            "lineNumber": 235
+          },
+          {
+            "text": "    {",
+            "lineNumber": 236
+          },
+          {
+            "text": "      \"Device\": \"device-id-here\",",
+            "lineNumber": 237
+          },
+          {
+            "text": "      \"DeviceKey\": \"your-device-key\",",
+            "lineNumber": 238
+          },
+          {
+            "text": "      \"Timestamp\": \"1376735651302\",",
+            "lineNumber": 239
+          },
+          {
+            "text": "      \"Longitude\": \"10.837502\",",
+            "lineNumber": 240
+          },
+          {
+            "text": "      \"Latitude\": \"49.828925\",",
+            "lineNumber": 241
+          },
+          {
+            "text": "      \"HorizontalAccuracy\": \"50.00\"",
+            "lineNumber": 242
+          },
+          {
+            "text": "    }",
+            "lineNumber": 243
+          },
+          {
+            "text": "  ]",
+            "lineNumber": 244
+          },
+          {
+            "text": "}",
+            "lineNumber": 245
+          },
+          {
+            "text": "&#96;&#96;&#96;",
+            "lineNumber": 246
+          },
+          {
+            "lineNumber": 247
+          },
+          {
+            "text": "#### Behavior",
+            "lineNumber": 248
+          },
+          {
+            "lineNumber": 249
+          },
+          {
+            "text": "- **DeviceKey Set**: If a DeviceKey exists for the device, it must be provided and validated",
+            "lineNumber": 250
+          },
+          {
+            "text": "- **DeviceKey Not Set**: If no DeviceKey exists, the endpoint works as before (backward compatible)",
+            "lineNumber": 251
+          },
+          {
+            "text": "- **Invalid DeviceKey**: Returns 403 Forbidden if provided key doesn't match stored key",
+            "lineNumber": 252
+          },
+          {
+            "lineNumber": 253
+          },
+          {
+            "text": "#### Error Response (403 Forbidden)",
+            "lineNumber": 254
+          },
+          {
+            "lineNumber": 255
+          },
+          {
+            "text": "&#96;&#96;&#96;json",
+            "lineNumber": 256
+          },
+          {
+            "text": "{",
+            "lineNumber": 257
+          },
+          {
+            "text": "  \"error\": \"DeviceKey validation failed for device: device-id-here\"",
+            "lineNumber": 258
+          },
+          {
+            "text": "}",
+            "lineNumber": 259
+          },
+          {
+            "text": "&#96;&#96;&#96;",
+            "lineNumber": 260
+          },
+          {
+            "lineNumber": 261
+          },
+          {
+            "text": "### POST &#96;/v1/GetLocation&#96;",
+            "lineNumber": 262
+          },
+          {
+            "lineNumber": 263
+          },
+          {
+            "text": "**New Behavior**: When an allowed devices list is enabled for a device, only devices with &#96;hasCurrentLocationAccess&#96; permission can retrieve the location.",
+            "lineNumber": 264
+          },
+          {
+            "lineNumber": 265
+          },
+          {
+            "text": "#### Request Format",
+            "lineNumber": 266
+          },
+          {
+            "lineNumber": 267
+          },
+          {
+            "text": "&#96;&#96;&#96;json",
+            "lineNumber": 268
+          },
+          {
+            "text": "{",
+            "lineNumber": 269
+          },
+          {
+            "text": "  \"MiataruGetLocation\": [",
+            "lineNumber": 270
+          },
+          {
+            "text": "    {",
+            "lineNumber": 271
+          },
+          {
+            "text": "      \"Device\": \"target-device-id\"",
+            "lineNumber": 272
+          },
+          {
+            "text": "    }",
+            "lineNumber": 273
+          },
+          {
+            "text": "  ],",
+            "lineNumber": 274
+          },
+          {
+            "text": "  \"MiataruConfig\": {",
+            "lineNumber": 275
+          },
+          {
+            "text": "    \"RequestMiataruDeviceID\": \"requesting-device-id\"",
+            "lineNumber": 276
+          },
+          {
+            "text": "  }",
+            "lineNumber": 277
+          },
+          {
+            "text": "}",
+            "lineNumber": 278
+          },
+          {
+            "text": "&#96;&#96;&#96;",
+            "lineNumber": 279
+          },
+          {
+            "lineNumber": 280
+          },
+          {
+            "text": "#### Behavior",
+            "lineNumber": 281
+          },
+          {
+            "lineNumber": 282
+          },
+          {
+            "text": "- **Allowed Devices Enabled**: Only devices in the allowed list with &#96;hasCurrentLocationAccess: true&#96; can access location",
+            "lineNumber": 283
+          },
+          {
+            "text": "- **Not in List**: Devices not in the allowed list receive no location data (as if device doesn't exist)",
+            "lineNumber": 284
+          },
+          {
+            "text": "- **Allowed Devices Not Enabled**: Works as before once &#96;RequestMiataruDeviceID&#96; is provided (backward compatible)",
+            "lineNumber": 285
+          },
+          {
+            "lineNumber": 286
+          },
+          {
+            "text": "#### Privacy Protection",
+            "lineNumber": 287
+          },
+          {
+            "lineNumber": 288
+          },
+          {
+            "text": "When allowed devices list is enabled:",
+            "lineNumber": 289
+          },
+          {
+            "text": "- Devices not in the list cannot see that the target device exists",
+            "lineNumber": 290
+          },
+          {
+            "text": "- No error message is returned - location is simply omitted",
+            "lineNumber": 291
+          },
+          {
+            "text": "- This prevents information leakage about device existence",
+            "lineNumber": 292
+          }
+        ]
+      },
+      "score": 0.18508540093898773
+    },
+    {
+      "codeBlock": {
+        "relativeWorkspacePath": "./lib/utils/allowedDevices.js",
+        "range": {
+          "startPosition": {
+            "line": 108
+          },
+          "endPosition": {
+            "line": 187,
+            "column": 1
+          }
+        },
+        "contents": "function setAllowedDevices(deviceId, allowedDevices, callback) {\n\n\n    // Delete existing hash first (to handle removals)\n    db.del(hashKey, function(error) {\n        if (error) {\n            return callback(error);\n        }\n\n        if (allowedDevices.length === 0) {\n            // If empty array, remove the enabled flag\n            db.del(flagKey, function(error2) {\n                if (error2) {\n                    return callback(error2);\n                }\n                callback(null);\n            });\n            return;\n        }\n\n        // Build hash data structure\n        var hashData = {};\n        allowedDevices.forEach(function(allowedDevice) {\n            if (!allowedDevice || !allowedDevice.DeviceID) {\n                return; // Skip invalid entries\n            }\n\n            var allowedDeviceId = allowedDevice.DeviceID;\n            var currentLocationKey = allowedDeviceId + ':' + ACCESS_TYPE_CURRENT_LOCATION;\n            var historyKey = allowedDeviceId + ':' + ACCESS_TYPE_HISTORY;\n\n            hashData[currentLocationKey] = (allowedDevice.hasCurrentLocationAccess === true) ? 'true' : 'false';\n            hashData[historyKey] = (allowedDevice.hasHistoryAccess === true) ? 'true' : 'false';\n        });\n\n        // Set hash fields sequentially\n        var hashFields = Object.keys(hashData);\n        \n        if (hashFields.length &gt; 0)\n\n}",
+        "signatures": {
+          "ranges": [
+            {
+              "startPosition": {
+                "line": 109,
+                "column": 1
+              },
+              "endPosition": {
+                "line": 110,
+                "column": 5
+              }
+            }
+          ]
+        },
+        "detailedLines": [
+          {
+            "text": "function setAllowedDevices(deviceId, allowedDevices, callback) {",
+            "lineNumber": 109,
+            "isSignature": true
+          },
+          {
+            "lineNumber": 124
+          },
+          {
+            "lineNumber": 125
+          },
+          {
+            "text": "    // Delete existing hash first (to handle removals)",
+            "lineNumber": 126
+          },
+          {
+            "text": "    db.del(hashKey, function(error) {",
+            "lineNumber": 127
+          },
+          {
+            "text": "        if (error) {",
+            "lineNumber": 128
+          },
+          {
+            "text": "            return callback(error);",
+            "lineNumber": 129
+          },
+          {
+            "text": "        }",
+            "lineNumber": 130
+          },
+          {
+            "lineNumber": 131
+          },
+          {
+            "text": "        if (allowedDevices.length === 0) {",
+            "lineNumber": 132
+          },
+          {
+            "text": "            // If empty array, remove the enabled flag",
+            "lineNumber": 133
+          },
+          {
+            "text": "            db.del(flagKey, function(error2) {",
+            "lineNumber": 134
+          },
+          {
+            "text": "                if (error2) {",
+            "lineNumber": 135
+          },
+          {
+            "text": "                    return callback(error2);",
+            "lineNumber": 136
+          },
+          {
+            "text": "                }",
+            "lineNumber": 137
+          },
+          {
+            "text": "                callback(null);",
+            "lineNumber": 138
+          },
+          {
+            "text": "            });",
+            "lineNumber": 139
+          },
+          {
+            "text": "            return;",
+            "lineNumber": 140
+          },
+          {
+            "text": "        }",
+            "lineNumber": 141
+          },
+          {
+            "lineNumber": 142
+          },
+          {
+            "text": "        // Build hash data structure",
+            "lineNumber": 143
+          },
+          {
+            "text": "        var hashData = {};",
+            "lineNumber": 144
+          },
+          {
+            "text": "        allowedDevices.forEach(function(allowedDevice) {",
+            "lineNumber": 145
+          },
+          {
+            "text": "            if (!allowedDevice || !allowedDevice.DeviceID) {",
+            "lineNumber": 146
+          },
+          {
+            "text": "                return; // Skip invalid entries",
+            "lineNumber": 147
+          },
+          {
+            "text": "            }",
+            "lineNumber": 148
+          },
+          {
+            "lineNumber": 149
+          },
+          {
+            "text": "            var allowedDeviceId = allowedDevice.DeviceID;",
+            "lineNumber": 150
+          },
+          {
+            "text": "            var currentLocationKey = allowedDeviceId + ':' + ACCESS_TYPE_CURRENT_LOCATION;",
+            "lineNumber": 151
+          },
+          {
+            "text": "            var historyKey = allowedDeviceId + ':' + ACCESS_TYPE_HISTORY;",
+            "lineNumber": 152
+          },
+          {
+            "lineNumber": 153
+          },
+          {
+            "text": "            hashData[currentLocationKey] = (allowedDevice.hasCurrentLocationAccess === true) ? 'true' : 'false';",
+            "lineNumber": 154
+          },
+          {
+            "text": "            hashData[historyKey] = (allowedDevice.hasHistoryAccess === true) ? 'true' : 'false';",
+            "lineNumber": 155
+          },
+          {
+            "text": "        });",
+            "lineNumber": 156
+          },
+          {
+            "lineNumber": 157
+          },
+          {
+            "text": "        // Set hash fields sequentially",
+            "lineNumber": 158
+          },
+          {
+            "text": "        var hashFields = Object.keys(hashData);",
+            "lineNumber": 159
+          },
+          {
+            "text": "        ",
+            "lineNumber": 160
+          },
+          {
+            "text": "        if (hashFields.length &gt; 0)",
+            "lineNumber": 161
+          },
+          {
+            "lineNumber": 187
+          },
+          {
+            "text": "}",
+            "lineNumber": 188,
+            "isSignature": true
+          }
+        ]
+      },
+      "score": 0.18345755338668823
+    },
+    {
+      "codeBlock": {
+        "relativeWorkspacePath": "./.cursor/plans/miataru_server_2.0_api_1.1_security_implementation_0d55c5ea.plan.md",
+        "range": {
+          "startPosition": {},
+          "endPosition": {
+            "line": 42
+          }
+        },
+        "contents": "---\nname: Miataru Server 2.0 API 1.1 Security Implementation\noverview: Implement security and privacy enhancements for miataru-server v2.0 and API v1.1, including DeviceKey authentication and allowed devices access control, while maintaining full backward compatibility with existing v1.0 clients.\ntodos:\n  - id: phase1-errors\n    content: \"Phase 1.1: Add ForbiddenError and UnauthorizedError to lib/errors.js\"\n    status: completed\n  - id: phase1-devicekey-utils\n    content: \"Phase 1.2: Create lib/utils/deviceKey.js with storage and validation utilities\"\n    status: completed\n  - id: phase1-allowed-devices-utils\n    content: \"Phase 1.3: Create lib/utils/allowedDevices.js with storage and access check utilities\"\n    status: completed\n  - id: phase2-request-location\n    content: \"Phase 2.1: Extend RequestLocation model with optional DeviceKey field\"\n    status: completed\n  - id: phase2-request-visitor-history\n    content: \"Phase 2.2: Extend RequestVisitorHistory model with optional DeviceKey field\"\n    status: completed\n  - id: phase2-request-set-device-key\n    content: \"Phase 2.3: Create RequestSetDeviceKey model with validation\"\n    status: completed\n  - id: phase2-request-set-allowed-devices\n    content: \"Phase 2.4: Create RequestSetAllowedDeviceList model with validation\"\n    status: completed\n  - id: phase3-input-parser\n    content: \"Phase 3: Extend inputParser.js to handle new endpoints and DeviceKey fields\"\n    status: completed\n  - id: phase4-set-device-key\n    content: \"Phase 4.1: Implement setDeviceKey endpoint in location.js\"\n    status: completed\n  - id: phase4-set-allowed-devices\n    content: \"Phase 4.2: Implement setAllowedDeviceList endpoint in location.js\"\n    status: completed\n  - id: phase4-update-location\n    content: \"Phase 4.3: Modify updateLocation to validate DeviceKey\"\n    status: completed\n  - id: phase4-get-visitor-history\n    content: \"Phase 4.4: Modify getVisitorHistory to validate DeviceKey\"\n    status: completed\n  - id: phase4-get-location\n    content: \"Phase 4.5: Modify getLocation to check allowed devices list\"",
+        "signatures": {},
+        "detailedLines": [
+          {
+            "text": "---",
+            "lineNumber": 1
+          },
+          {
+            "text": "name: Miataru Server 2.0 API 1.1 Security Implementation",
+            "lineNumber": 2
+          },
+          {
+            "text": "overview: Implement security and privacy enhancements for miataru-server v2.0 and API v1.1, including DeviceKey authentication and allowed devices access control, while maintaining full backward compatibility with existing v1.0 clients.",
+            "lineNumber": 3
+          },
+          {
+            "text": "todos:",
+            "lineNumber": 4
+          },
+          {
+            "text": "  - id: phase1-errors",
+            "lineNumber": 5
+          },
+          {
+            "text": "    content: \"Phase 1.1: Add ForbiddenError and UnauthorizedError to lib/errors.js\"",
+            "lineNumber": 6
+          },
+          {
+            "text": "    status: completed",
+            "lineNumber": 7
+          },
+          {
+            "text": "  - id: phase1-devicekey-utils",
+            "lineNumber": 8
+          },
+          {
+            "text": "    content: \"Phase 1.2: Create lib/utils/deviceKey.js with storage and validation utilities\"",
+            "lineNumber": 9
+          },
+          {
+            "text": "    status: completed",
+            "lineNumber": 10
+          },
+          {
+            "text": "  - id: phase1-allowed-devices-utils",
+            "lineNumber": 11
+          },
+          {
+            "text": "    content: \"Phase 1.3: Create lib/utils/allowedDevices.js with storage and access check utilities\"",
+            "lineNumber": 12
+          },
+          {
+            "text": "    status: completed",
+            "lineNumber": 13
+          },
+          {
+            "text": "  - id: phase2-request-location",
+            "lineNumber": 14
+          },
+          {
+            "text": "    content: \"Phase 2.1: Extend RequestLocation model with optional DeviceKey field\"",
+            "lineNumber": 15
+          },
+          {
+            "text": "    status: completed",
+            "lineNumber": 16
+          },
+          {
+            "text": "  - id: phase2-request-visitor-history",
+            "lineNumber": 17
+          },
+          {
+            "text": "    content: \"Phase 2.2: Extend RequestVisitorHistory model with optional DeviceKey field\"",
+            "lineNumber": 18
+          },
+          {
+            "text": "    status: completed",
+            "lineNumber": 19
+          },
+          {
+            "text": "  - id: phase2-request-set-device-key",
+            "lineNumber": 20
+          },
+          {
+            "text": "    content: \"Phase 2.3: Create RequestSetDeviceKey model with validation\"",
+            "lineNumber": 21
+          },
+          {
+            "text": "    status: completed",
+            "lineNumber": 22
+          },
+          {
+            "text": "  - id: phase2-request-set-allowed-devices",
+            "lineNumber": 23
+          },
+          {
+            "text": "    content: \"Phase 2.4: Create RequestSetAllowedDeviceList model with validation\"",
+            "lineNumber": 24
+          },
+          {
+            "text": "    status: completed",
+            "lineNumber": 25
+          },
+          {
+            "text": "  - id: phase3-input-parser",
+            "lineNumber": 26
+          },
+          {
+            "text": "    content: \"Phase 3: Extend inputParser.js to handle new endpoints and DeviceKey fields\"",
+            "lineNumber": 27
+          },
+          {
+            "text": "    status: completed",
+            "lineNumber": 28
+          },
+          {
+            "text": "  - id: phase4-set-device-key",
+            "lineNumber": 29
+          },
+          {
+            "text": "    content: \"Phase 4.1: Implement setDeviceKey endpoint in location.js\"",
+            "lineNumber": 30
+          },
+          {
+            "text": "    status: completed",
+            "lineNumber": 31
+          },
+          {
+            "text": "  - id: phase4-set-allowed-devices",
+            "lineNumber": 32
+          },
+          {
+            "text": "    content: \"Phase 4.2: Implement setAllowedDeviceList endpoint in location.js\"",
+            "lineNumber": 33
+          },
+          {
+            "text": "    status: completed",
+            "lineNumber": 34
+          },
+          {
+            "text": "  - id: phase4-update-location",
+            "lineNumber": 35
+          },
+          {
+            "text": "    content: \"Phase 4.3: Modify updateLocation to validate DeviceKey\"",
+            "lineNumber": 36
+          },
+          {
+            "text": "    status: completed",
+            "lineNumber": 37
+          },
+          {
+            "text": "  - id: phase4-get-visitor-history",
+            "lineNumber": 38
+          },
+          {
+            "text": "    content: \"Phase 4.4: Modify getVisitorHistory to validate DeviceKey\"",
+            "lineNumber": 39
+          },
+          {
+            "text": "    status: completed",
+            "lineNumber": 40
+          },
+          {
+            "text": "  - id: phase4-get-location",
+            "lineNumber": 41
+          },
+          {
+            "text": "    content: \"Phase 4.5: Modify getLocation to check allowed devices list\"",
+            "lineNumber": 42
+          }
+        ]
+      },
+      "score": 0.1820971965789795
+    },
+    {
+      "codeBlock": {
+        "relativeWorkspacePath": "./README.md",
+        "range": {
+          "startPosition": {
+            "line": 113
+          },
+          "endPosition": {
+            "line": 178
+          }
+        },
+        "contents": "- **Full Guide**: [iOS Client Adoption Guide](docs/CLIENT_ADOPTION_API_1.1.md)\n\n## Run the Server\n\nCheck out the repo:  \n&#96;git clone git@github.com:miataru/miataru-server.git&#96;\n\nInstall dependencies:  \n&#96;npm install&#96;\n\nRun the tests:  \n&#96;npm run test:all&#96; (or &#96;make run-all-tests&#96;)\n\nConfiguration:\nAdjust the configuration in &#96;./config/&#96; or add your own\n\nStart Server:\n&#96;node server.js&#96;\n\nThe server will, in the default configuration, listen on localhost port 8090. To do some test requests on the commandline, do this:\n\n### Basic Examples\n\n**Set a location:**\n&#96;&#96;&#96;bash\ncurl -H 'Content-Type: application/json' -X POST 'http://localhost:8090/v1/UpdateLocation' \\\n  -d '{\"MiataruConfig\":{\"EnableLocationHistory\":\"True\",\"LocationDataRetentionTime\":\"15\"},\"MiataruLocation\":[{\"Device\":\"7b8e6e0ee5296db345162dc2ef652c1350761823\",\"Timestamp\":\"1376735651302\",\"Longitude\":\"10.837502\",\"Latitude\":\"49.828925\",\"HorizontalAccuracy\":\"50.00\"}]}'\n&#96;&#96;&#96;\n\n**Retrieve a location:**\n&#96;&#96;&#96;bash\ncurl -H 'Content-Type: application/json' -X POST 'http://localhost:8090/v1/GetLocation' \\\n  -d '{\"MiataruGetLocation\":[{\"Device\":\"7b8e6e0ee5296db345162dc2ef652c1350761823\"}],\"MiataruConfig\":{\"RequestMiataruDeviceID\":\"requesting-device-id\"}}'\n&#96;&#96;&#96;\n\n**Delete all location data for a device:**\n&#96;&#96;&#96;bash\ncurl -H 'Content-Type: application/json' -X POST 'http://localhost:8090/v1/DeleteLocation' \\\n  -d '{\"MiataruDeleteLocation\":{\"Device\":\"7b8e6e0ee5296db345162dc2ef652c1350761823\"}}'\n&#96;&#96;&#96;\n\n**Get location in GeoJSON format:**\n&#96;&#96;&#96;bash\ncurl -H 'Content-Type: application/json' -X POST 'http://localhost:8090/v1/GetLocationGeoJSON' \\\n  -d '{\"MiataruGetLocation\":[{\"Device\":\"7b8e6e0ee5296db345162dc2ef652c1350761823\"}]}'\n&#96;&#96;&#96;\n\n## DeleteLocation API\n\nThe DeleteLocation API allows you to permanently delete all location data associated with a specific device.\n\n### Request Format\n&#96;&#96;&#96;json\n{\n  \"MiataruDeleteLocation\": {\n    \"Device\": \"device-id-here\"\n  }\n}\n&#96;&#96;&#96;\n\n### Response Format\n&#96;&#96;&#96;json\n{\n  \"MiataruResponse\": \"ACK\",\n  \"MiataruVerboseResponse\": \"Location data deleted for device: device-id-here\",",
+        "signatures": {},
+        "detailedLines": [
+          {
+            "text": "- **Full Guide**: [iOS Client Adoption Guide](docs/CLIENT_ADOPTION_API_1.1.md)",
+            "lineNumber": 114
+          },
+          {
+            "lineNumber": 115
+          },
+          {
+            "text": "## Run the Server",
+            "lineNumber": 116
+          },
+          {
+            "lineNumber": 117
+          },
+          {
+            "text": "Check out the repo:  ",
+            "lineNumber": 118
+          },
+          {
+            "text": "&#96;git clone git@github.com:miataru/miataru-server.git&#96;",
+            "lineNumber": 119
+          },
+          {
+            "lineNumber": 120
+          },
+          {
+            "text": "Install dependencies:  ",
+            "lineNumber": 121
+          },
+          {
+            "text": "&#96;npm install&#96;",
+            "lineNumber": 122
+          },
+          {
+            "lineNumber": 123
+          },
+          {
+            "text": "Run the tests:  ",
+            "lineNumber": 124
+          },
+          {
+            "text": "&#96;npm run test:all&#96; (or &#96;make run-all-tests&#96;)",
+            "lineNumber": 125
+          },
+          {
+            "lineNumber": 126
+          },
+          {
+            "text": "Configuration:",
+            "lineNumber": 127
+          },
+          {
+            "text": "Adjust the configuration in &#96;./config/&#96; or add your own",
+            "lineNumber": 128
+          },
+          {
+            "lineNumber": 129
+          },
+          {
+            "text": "Start Server:",
+            "lineNumber": 130
+          },
+          {
+            "text": "&#96;node server.js&#96;",
+            "lineNumber": 131
+          },
+          {
+            "lineNumber": 132
+          },
+          {
+            "text": "The server will, in the default configuration, listen on localhost port 8090. To do some test requests on the commandline, do this:",
+            "lineNumber": 133
+          },
+          {
+            "lineNumber": 134
+          },
+          {
+            "text": "### Basic Examples",
+            "lineNumber": 135
+          },
+          {
+            "lineNumber": 136
+          },
+          {
+            "text": "**Set a location:**",
+            "lineNumber": 137
+          },
+          {
+            "text": "&#96;&#96;&#96;bash",
+            "lineNumber": 138
+          },
+          {
+            "text": "curl -H 'Content-Type: application/json' -X POST 'http://localhost:8090/v1/UpdateLocation' \\",
+            "lineNumber": 139
+          },
+          {
+            "text": "  -d '{\"MiataruConfig\":{\"EnableLocationHistory\":\"True\",\"LocationDataRetentionTime\":\"15\"},\"MiataruLocation\":[{\"Device\":\"7b8e6e0ee5296db345162dc2ef652c1350761823\",\"Timestamp\":\"1376735651302\",\"Longitude\":\"10.837502\",\"Latitude\":\"49.828925\",\"HorizontalAccuracy\":\"50.00\"}]}'",
+            "lineNumber": 140
+          },
+          {
+            "text": "&#96;&#96;&#96;",
+            "lineNumber": 141
+          },
+          {
+            "lineNumber": 142
+          },
+          {
+            "text": "**Retrieve a location:**",
+            "lineNumber": 143
+          },
+          {
+            "text": "&#96;&#96;&#96;bash",
+            "lineNumber": 144
+          },
+          {
+            "text": "curl -H 'Content-Type: application/json' -X POST 'http://localhost:8090/v1/GetLocation' \\",
+            "lineNumber": 145
+          },
+          {
+            "text": "  -d '{\"MiataruGetLocation\":[{\"Device\":\"7b8e6e0ee5296db345162dc2ef652c1350761823\"}],\"MiataruConfig\":{\"RequestMiataruDeviceID\":\"requesting-device-id\"}}'",
+            "lineNumber": 146
+          },
+          {
+            "text": "&#96;&#96;&#96;",
+            "lineNumber": 147
+          },
+          {
+            "lineNumber": 148
+          },
+          {
+            "text": "**Delete all location data for a device:**",
+            "lineNumber": 149
+          },
+          {
+            "text": "&#96;&#96;&#96;bash",
+            "lineNumber": 150
+          },
+          {
+            "text": "curl -H 'Content-Type: application/json' -X POST 'http://localhost:8090/v1/DeleteLocation' \\",
+            "lineNumber": 151
+          },
+          {
+            "text": "  -d '{\"MiataruDeleteLocation\":{\"Device\":\"7b8e6e0ee5296db345162dc2ef652c1350761823\"}}'",
+            "lineNumber": 152
+          },
+          {
+            "text": "&#96;&#96;&#96;",
+            "lineNumber": 153
+          },
+          {
+            "lineNumber": 154
+          },
+          {
+            "text": "**Get location in GeoJSON format:**",
+            "lineNumber": 155
+          },
+          {
+            "text": "&#96;&#96;&#96;bash",
+            "lineNumber": 156
+          },
+          {
+            "text": "curl -H 'Content-Type: application/json' -X POST 'http://localhost:8090/v1/GetLocationGeoJSON' \\",
+            "lineNumber": 157
+          },
+          {
+            "text": "  -d '{\"MiataruGetLocation\":[{\"Device\":\"7b8e6e0ee5296db345162dc2ef652c1350761823\"}]}'",
+            "lineNumber": 158
+          },
+          {
+            "text": "&#96;&#96;&#96;",
+            "lineNumber": 159
+          },
+          {
+            "lineNumber": 160
+          },
+          {
+            "text": "## DeleteLocation API",
+            "lineNumber": 161
+          },
+          {
+            "lineNumber": 162
+          },
+          {
+            "text": "The DeleteLocation API allows you to permanently delete all location data associated with a specific device.",
+            "lineNumber": 163
+          },
+          {
+            "lineNumber": 164
+          },
+          {
+            "text": "### Request Format",
+            "lineNumber": 165
+          },
+          {
+            "text": "&#96;&#96;&#96;json",
+            "lineNumber": 166
+          },
+          {
+            "text": "{",
+            "lineNumber": 167
+          },
+          {
+            "text": "  \"MiataruDeleteLocation\": {",
+            "lineNumber": 168
+          },
+          {
+            "text": "    \"Device\": \"device-id-here\"",
+            "lineNumber": 169
+          },
+          {
+            "text": "  }",
+            "lineNumber": 170
+          },
+          {
+            "text": "}",
+            "lineNumber": 171
+          },
+          {
+            "text": "&#96;&#96;&#96;",
+            "lineNumber": 172
+          },
+          {
+            "lineNumber": 173
+          },
+          {
+            "text": "### Response Format",
+            "lineNumber": 174
+          },
+          {
+            "text": "&#96;&#96;&#96;json",
+            "lineNumber": 175
+          },
+          {
+            "text": "{",
+            "lineNumber": 176
+          },
+          {
+            "text": "  \"MiataruResponse\": \"ACK\",",
+            "lineNumber": 177
+          },
+          {
+            "text": "  \"MiataruVerboseResponse\": \"Location data deleted for device: device-id-here\",",
+            "lineNumber": 178
+          }
+        ]
+      },
+      "score": 0.18203866481781006
+    },
+    {
+      "codeBlock": {
+        "relativeWorkspacePath": "./lib/routes/location/v1/location.js",
+        "range": {
+          "startPosition": {},
+          "endPosition": {
+            "line": 37,
+            "column": 3
+          }
+        },
+        "contents": "/*\n\tUpdateLocation POST\n\n\tBy doing a HTTP Post on the /UpdateLocation method of this server you should\n\tbe able to trigger this method here.\n\n\tcurl -H \"Content-Type: application/json\" -X POST http://localhost:3000/UpdateLocation -d '{\"JSON\": \"HERE\"}'\n\n\tcurl -H \"Content-Type: application/json\" -X POST http://localhost:3000/UpdateLocation -d '{\"MiataruConfig\":{\"EnableLocationHistory\":\"Fa\":\"15\"},\"MiataruLocation\":[{\"Device\":\"7b8e6e0ee5296db345162dc2ef652c1350761823\",\"Timestamp\":\"1376735651302\",\"Longitude\":\"10.837502\",\"Latitude\":\"49.828925\",\"HorizontalAccuracy\":\"50.00\"}]}'\n\n\tTo store information Redis is used. The naming conventions are as follows:\n\n\tLast Known Location (expiring key-value): miad:$deviceid:last\n\tLocation History (non expiring list): miad:$deviceid:hist\n */\n\nvar seq = require('seq');\n\nvar configuration = require('../../../configuration');\nvar db = require('../../../db');\nvar kb = require('../../../utils/keyBuilder');\nvar models = require('../../../models');\nvar errors = require('../../../errors');\nvar logger = require('../../../logger');\nvar deviceKeyUtils = require('../../../utils/deviceKey');\nvar allowedDevicesUtils = require('../../../utils/allowedDevices');\n\nvar KEY_HISTORY = 'hist';\nvar KEY_LAST = 'last';\nvar KEY_VISIT = 'visit';\n\n/**\n * Record visitor history entry\n * Handles both detailed (every access) and non-detailed (update existing) modes\n * Executes the operation asynchronously (fire-and-forget)\n * @param {string} visitKey - Redis key for visitor history\n * @param {string} visitValue - JSON stringified visitor object\n */",
+        "signatures": {},
+        "detailedLines": [
+          {
+            "text": "/*",
+            "lineNumber": 1
+          },
+          {
+            "text": "\tUpdateLocation POST",
+            "lineNumber": 2
+          },
+          {
+            "lineNumber": 3
+          },
+          {
+            "text": "\tBy doing a HTTP Post on the /UpdateLocation method of this server you should",
+            "lineNumber": 4
+          },
+          {
+            "text": "\tbe able to trigger this method here.",
+            "lineNumber": 5
+          },
+          {
+            "lineNumber": 6
+          },
+          {
+            "text": "\tcurl -H \"Content-Type: application/json\" -X POST http://localhost:3000/UpdateLocation -d '{\"JSON\": \"HERE\"}'",
+            "lineNumber": 7
+          },
+          {
+            "lineNumber": 8
+          },
+          {
+            "text": "\tcurl -H \"Content-Type: application/json\" -X POST http://localhost:3000/UpdateLocation -d '{\"MiataruConfig\":{\"EnableLocationHistory\":\"Fa\":\"15\"},\"MiataruLocation\":[{\"Device\":\"7b8e6e0ee5296db345162dc2ef652c1350761823\",\"Timestamp\":\"1376735651302\",\"Longitude\":\"10.837502\",\"Latitude\":\"49.828925\",\"HorizontalAccuracy\":\"50.00\"}]}'",
+            "lineNumber": 9
+          },
+          {
+            "lineNumber": 10
+          },
+          {
+            "text": "\tTo store information Redis is used. The naming conventions are as follows:",
+            "lineNumber": 11
+          },
+          {
+            "lineNumber": 12
+          },
+          {
+            "text": "\tLast Known Location (expiring key-value): miad:$deviceid:last",
+            "lineNumber": 13
+          },
+          {
+            "text": "\tLocation History (non expiring list): miad:$deviceid:hist",
+            "lineNumber": 14
+          },
+          {
+            "text": " */",
+            "lineNumber": 15
+          },
+          {
+            "lineNumber": 16
+          },
+          {
+            "text": "var seq = require('seq');",
+            "lineNumber": 17
+          },
+          {
+            "lineNumber": 18
+          },
+          {
+            "text": "var configuration = require('../../../configuration');",
+            "lineNumber": 19
+          },
+          {
+            "text": "var db = require('../../../db');",
+            "lineNumber": 20
+          },
+          {
+            "text": "var kb = require('../../../utils/keyBuilder');",
+            "lineNumber": 21
+          },
+          {
+            "text": "var models = require('../../../models');",
+            "lineNumber": 22
+          },
+          {
+            "text": "var errors = require('../../../errors');",
+            "lineNumber": 23
+          },
+          {
+            "text": "var logger = require('../../../logger');",
+            "lineNumber": 24
+          },
+          {
+            "text": "var deviceKeyUtils = require('../../../utils/deviceKey');",
+            "lineNumber": 25
+          },
+          {
+            "text": "var allowedDevicesUtils = require('../../../utils/allowedDevices');",
+            "lineNumber": 26
+          },
+          {
+            "lineNumber": 27
+          },
+          {
+            "text": "var KEY_HISTORY = 'hist';",
+            "lineNumber": 28
+          },
+          {
+            "text": "var KEY_LAST = 'last';",
+            "lineNumber": 29
+          },
+          {
+            "text": "var KEY_VISIT = 'visit';",
+            "lineNumber": 30
+          },
+          {
+            "lineNumber": 31
+          },
+          {
+            "text": "/**",
+            "lineNumber": 32
+          },
+          {
+            "text": " * Record visitor history entry",
+            "lineNumber": 33
+          },
+          {
+            "text": " * Handles both detailed (every access) and non-detailed (update existing) modes",
+            "lineNumber": 34
+          },
+          {
+            "text": " * Executes the operation asynchronously (fire-and-forget)",
+            "lineNumber": 35
+          },
+          {
+            "text": " * @param {string} visitKey - Redis key for visitor history",
+            "lineNumber": 36
+          },
+          {
+            "text": " * @param {string} visitValue - JSON stringified visitor object",
+            "lineNumber": 37
+          },
+          {
+            "text": " */",
+            "lineNumber": 38
+          }
+        ]
+      },
+      "score": 0.179385244846344
+    },
+    {
+      "codeBlock": {
+        "relativeWorkspacePath": "./docs/RELEASE_NOTES_V2.md",
+        "range": {
+          "startPosition": {},
+          "endPosition": {
+            "line": 43
+          }
+        },
+        "contents": "# Release Notes - Version 2.0.0\n\n**miataru-server 2.0.0** | **miataru API 1.1.0**\n\n## 🎉 Major Release: Security &amp; Privacy Enhancements\n\nVersion 2.0 introduces enterprise-grade security features while maintaining **broad backward compatibility** with existing v1.0 clients. Security features remain opt-in, but GetLocation/GetLocationHistory now require &#96;RequestMiataruDeviceID&#96;.\n\n## ✨ New Features\n\n### DeviceKey Authentication\n- Secure device-level authentication using cryptographic keys (up to 256 Unicode characters)\n- Protects location updates, visitor history, and access control configuration\n- New endpoint: &#96;POST /v1/setDeviceKey&#96; for key management\n\n### Allowed Devices Access Control\n- Fine-grained permissions for location sharing\n- Separate controls for current location and history access\n- Privacy-first design: location hidden from unauthorized devices\n- New endpoint: &#96;POST /v1/setAllowedDeviceList&#96; for access management\n\n## 🔄 Enhanced Endpoints\n\n- **UpdateLocation**: Optional DeviceKey validation when enabled\n- **GetLocation**: Requires &#96;RequestMiataruDeviceID&#96; and supports access control via allowed devices list\n- **GetLocationHistory**: Requires &#96;RequestMiataruDeviceID&#96; and enforces granular permissions\n- **GetVisitorHistory**: DeviceKey authentication support\n\n## ⚠️ Breaking Changes\n\n- **GetLocation / GetLocationHistory**: &#96;MiataruConfig.RequestMiataruDeviceID&#96; is now mandatory\n  - *Migration*: Include a non-empty &#96;RequestMiataruDeviceID&#96; in all GetLocation/GetLocationHistory requests\n\n- **GetLocationGeoJSON**: Returns &#96;401 Unauthorized&#96; when DeviceKey is set for requested devices\n  - *Migration*: Use &#96;GetLocation&#96; and format as GeoJSON client-side, or disable DeviceKey if GeoJSON access is required\n\n## 🔒 Security Improvements\n\n- DeviceKey authentication prevents unauthorized location updates\n- Fine-grained access control limits who can view location data\n- Privacy-first defaults protect user data\n- Constant-time key comparison prevents timing attacks",
+        "signatures": {},
+        "detailedLines": [
+          {
+            "text": "# Release Notes - Version 2.0.0",
+            "lineNumber": 1
+          },
+          {
+            "lineNumber": 2
+          },
+          {
+            "text": "**miataru-server 2.0.0** | **miataru API 1.1.0**",
+            "lineNumber": 3
+          },
+          {
+            "lineNumber": 4
+          },
+          {
+            "text": "## 🎉 Major Release: Security &amp; Privacy Enhancements",
+            "lineNumber": 5
+          },
+          {
+            "lineNumber": 6
+          },
+          {
+            "text": "Version 2.0 introduces enterprise-grade security features while maintaining **broad backward compatibility** with existing v1.0 clients. Security features remain opt-in, but GetLocation/GetLocationHistory now require &#96;RequestMiataruDeviceID&#96;.",
+            "lineNumber": 7
+          },
+          {
+            "lineNumber": 8
+          },
+          {
+            "text": "## ✨ New Features",
+            "lineNumber": 9
+          },
+          {
+            "lineNumber": 10
+          },
+          {
+            "text": "### DeviceKey Authentication",
+            "lineNumber": 11
+          },
+          {
+            "text": "- Secure device-level authentication using cryptographic keys (up to 256 Unicode characters)",
+            "lineNumber": 12
+          },
+          {
+            "text": "- Protects location updates, visitor history, and access control configuration",
+            "lineNumber": 13
+          },
+          {
+            "text": "- New endpoint: &#96;POST /v1/setDeviceKey&#96; for key management",
+            "lineNumber": 14
+          },
+          {
+            "lineNumber": 15
+          },
+          {
+            "text": "### Allowed Devices Access Control",
+            "lineNumber": 16
+          },
+          {
+            "text": "- Fine-grained permissions for location sharing",
+            "lineNumber": 17
+          },
+          {
+            "text": "- Separate controls for current location and history access",
+            "lineNumber": 18
+          },
+          {
+            "text": "- Privacy-first design: location hidden from unauthorized devices",
+            "lineNumber": 19
+          },
+          {
+            "text": "- New endpoint: &#96;POST /v1/setAllowedDeviceList&#96; for access management",
+            "lineNumber": 20
+          },
+          {
+            "lineNumber": 21
+          },
+          {
+            "text": "## 🔄 Enhanced Endpoints",
+            "lineNumber": 22
+          },
+          {
+            "lineNumber": 23
+          },
+          {
+            "text": "- **UpdateLocation**: Optional DeviceKey validation when enabled",
+            "lineNumber": 24
+          },
+          {
+            "text": "- **GetLocation**: Requires &#96;RequestMiataruDeviceID&#96; and supports access control via allowed devices list",
+            "lineNumber": 25
+          },
+          {
+            "text": "- **GetLocationHistory**: Requires &#96;RequestMiataruDeviceID&#96; and enforces granular permissions",
+            "lineNumber": 26
+          },
+          {
+            "text": "- **GetVisitorHistory**: DeviceKey authentication support",
+            "lineNumber": 27
+          },
+          {
+            "lineNumber": 28
+          },
+          {
+            "text": "## ⚠️ Breaking Changes",
+            "lineNumber": 29
+          },
+          {
+            "lineNumber": 30
+          },
+          {
+            "text": "- **GetLocation / GetLocationHistory**: &#96;MiataruConfig.RequestMiataruDeviceID&#96; is now mandatory",
+            "lineNumber": 31
+          },
+          {
+            "text": "  - *Migration*: Include a non-empty &#96;RequestMiataruDeviceID&#96; in all GetLocation/GetLocationHistory requests",
+            "lineNumber": 32
+          },
+          {
+            "lineNumber": 33
+          },
+          {
+            "text": "- **GetLocationGeoJSON**: Returns &#96;401 Unauthorized&#96; when DeviceKey is set for requested devices",
+            "lineNumber": 34
+          },
+          {
+            "text": "  - *Migration*: Use &#96;GetLocation&#96; and format as GeoJSON client-side, or disable DeviceKey if GeoJSON access is required",
+            "lineNumber": 35
+          },
+          {
+            "lineNumber": 36
+          },
+          {
+            "text": "## 🔒 Security Improvements",
+            "lineNumber": 37
+          },
+          {
+            "lineNumber": 38
+          },
+          {
+            "text": "- DeviceKey authentication prevents unauthorized location updates",
+            "lineNumber": 39
+          },
+          {
+            "text": "- Fine-grained access control limits who can view location data",
+            "lineNumber": 40
+          },
+          {
+            "text": "- Privacy-first defaults protect user data",
+            "lineNumber": 41
+          },
+          {
+            "text": "- Constant-time key comparison prevents timing attacks",
+            "lineNumber": 42
+          }
+        ]
+      },
+      "score": 0.178690105676651
+    },
+    {
+      "codeBlock": {
+        "relativeWorkspacePath": "./docs/swagger.yaml",
+        "range": {
+          "startPosition": {
+            "line": 30
+          },
+          "endPosition": {
+            "line": 77
+          }
+        },
+        "contents": "paths:\n /UpdateLocation:\n  post:\n   tags:\n   - updateLocation\n   description: |\n     This method is used to update the location of a device. The device does not need to be known already to the Miataru server but it rather creates a unique identifier for itself in the client application. This unique identifier, or device ID is then used to address this particular device.\n     \n     API 1.1: If a DeviceKey has been set for a device (via /setDeviceKey), the DeviceKey parameter must be provided in each MiataruLocation element and must match the stored key. If the keys do not match, a 403 Forbidden error is returned.\n   operationId: updateLocation\n   produces:\n   - application/json\n   parameters:\n   - name: body\n     in: body\n     description: the body of this UpdateLocation POST request contains the JSON formatted parameters.\n     required: true\n     schema:\n      $ref: '#/definitions/MiataruUpdateLocationRequest'\n   responses:\n    200:\n     description: successful request\n     schema:\n      $ref: '#/definitions/ACK'\n    403:\n     description: Forbidden - DeviceKey mismatch or missing when required\n     schema:\n      $ref: '#/definitions/Error'\n /GetLocation:\n  post:\n   tags:\n   - getLocation\n   description: |\n     To retrieve a specific devices latest known location the /GetLocation method is used.\n     \n     API 1.1 BREAKING CHANGE: RequestMiataruDeviceID is now mandatory. Requests without RequestMiataruDeviceID will return 400 Bad Request.\n     \n     RequestMiataruDeviceID should be the ID of the device the request is sent from (or an identifier like an URL). This is used for access control and visitor history tracking.\n     \n     API 1.1: If an allowed devices list has been set for a device (via /setAllowedDeviceList), only devices with hasCurrentLocationAccess permission will receive location data. Devices without permission will receive the location as if the device doesn't exist.\n   operationId: getLocation\n   produces:\n   - application/json\n   parameters:\n   - name: body\n     in: body\n     description: the complex JSON formatted datastructure to get the location of one or more devices.",
+        "signatures": {},
+        "detailedLines": [
+          {
+            "text": "paths:",
+            "lineNumber": 31
+          },
+          {
+            "text": " /UpdateLocation:",
+            "lineNumber": 32
+          },
+          {
+            "text": "  post:",
+            "lineNumber": 33
+          },
+          {
+            "text": "   tags:",
+            "lineNumber": 34
+          },
+          {
+            "text": "   - updateLocation",
+            "lineNumber": 35
+          },
+          {
+            "text": "   description: |",
+            "lineNumber": 36
+          },
+          {
+            "text": "     This method is used to update the location of a device. The device does not need to be known already to the Miataru server but it rather creates a unique identifier for itself in the client application. This unique identifier, or device ID is then used to address this particular device.",
+            "lineNumber": 37
+          },
+          {
+            "text": "     ",
+            "lineNumber": 38
+          },
+          {
+            "text": "     API 1.1: If a DeviceKey has been set for a device (via /setDeviceKey), the DeviceKey parameter must be provided in each MiataruLocation element and must match the stored key. If the keys do not match, a 403 Forbidden error is returned.",
+            "lineNumber": 39
+          },
+          {
+            "text": "   operationId: updateLocation",
+            "lineNumber": 40
+          },
+          {
+            "text": "   produces:",
+            "lineNumber": 41
+          },
+          {
+            "text": "   - application/json",
+            "lineNumber": 42
+          },
+          {
+            "text": "   parameters:",
+            "lineNumber": 43
+          },
+          {
+            "text": "   - name: body",
+            "lineNumber": 44
+          },
+          {
+            "text": "     in: body",
+            "lineNumber": 45
+          },
+          {
+            "text": "     description: the body of this UpdateLocation POST request contains the JSON formatted parameters.",
+            "lineNumber": 46
+          },
+          {
+            "text": "     required: true",
+            "lineNumber": 47
+          },
+          {
+            "text": "     schema:",
+            "lineNumber": 48
+          },
+          {
+            "text": "      $ref: '#/definitions/MiataruUpdateLocationRequest'",
+            "lineNumber": 49
+          },
+          {
+            "text": "   responses:",
+            "lineNumber": 50
+          },
+          {
+            "text": "    200:",
+            "lineNumber": 51
+          },
+          {
+            "text": "     description: successful request",
+            "lineNumber": 52
+          },
+          {
+            "text": "     schema:",
+            "lineNumber": 53
+          },
+          {
+            "text": "      $ref: '#/definitions/ACK'",
+            "lineNumber": 54
+          },
+          {
+            "text": "    403:",
+            "lineNumber": 55
+          },
+          {
+            "text": "     description: Forbidden - DeviceKey mismatch or missing when required",
+            "lineNumber": 56
+          },
+          {
+            "text": "     schema:",
+            "lineNumber": 57
+          },
+          {
+            "text": "      $ref: '#/definitions/Error'",
+            "lineNumber": 58
+          },
+          {
+            "text": " /GetLocation:",
+            "lineNumber": 59
+          },
+          {
+            "text": "  post:",
+            "lineNumber": 60
+          },
+          {
+            "text": "   tags:",
+            "lineNumber": 61
+          },
+          {
+            "text": "   - getLocation",
+            "lineNumber": 62
+          },
+          {
+            "text": "   description: |",
+            "lineNumber": 63
+          },
+          {
+            "text": "     To retrieve a specific devices latest known location the /GetLocation method is used.",
+            "lineNumber": 64
+          },
+          {
+            "text": "     ",
+            "lineNumber": 65
+          },
+          {
+            "text": "     API 1.1 BREAKING CHANGE: RequestMiataruDeviceID is now mandatory. Requests without RequestMiataruDeviceID will return 400 Bad Request.",
+            "lineNumber": 66
+          },
+          {
+            "text": "     ",
+            "lineNumber": 67
+          },
+          {
+            "text": "     RequestMiataruDeviceID should be the ID of the device the request is sent from (or an identifier like an URL). This is used for access control and visitor history tracking.",
+            "lineNumber": 68
+          },
+          {
+            "text": "     ",
+            "lineNumber": 69
+          },
+          {
+            "text": "     API 1.1: If an allowed devices list has been set for a device (via /setAllowedDeviceList), only devices with hasCurrentLocationAccess permission will receive location data. Devices without permission will receive the location as if the device doesn't exist.",
+            "lineNumber": 70
+          },
+          {
+            "text": "   operationId: getLocation",
+            "lineNumber": 71
+          },
+          {
+            "text": "   produces:",
+            "lineNumber": 72
+          },
+          {
+            "text": "   - application/json",
+            "lineNumber": 73
+          },
+          {
+            "text": "   parameters:",
+            "lineNumber": 74
+          },
+          {
+            "text": "   - name: body",
+            "lineNumber": 75
+          },
+          {
+            "text": "     in: body",
+            "lineNumber": 76
+          },
+          {
+            "text": "     description: the complex JSON formatted datastructure to get the location of one or more devices.",
+            "lineNumber": 77
+          }
+        ]
+      },
+      "score": 0.17778530716896057
+    },
+    {
+      "codeBlock": {
+        "relativeWorkspacePath": "./docs/TECHNICAL_SPECIFICATION.md",
+        "range": {
+          "startPosition": {
+            "line": 191
+          },
+          "endPosition": {
+            "line": 211
+          }
+        },
+        "contents": "- **Primary path**:\n  - **Detailed ON**: Each access &#96;LPUSH&#96;es a new entry and &#96;LTRIM&#96;s to the maximum count. (Evidence: lib/routes/location/v1/location.js; tests/integration/recordDetailedVisitorHistory.tests.js)\n  - **Detailed OFF**: Existing entries are deduplicated by DeviceID, updated, sorted by timestamp (newest first), and capped by unique device count. (Evidence: lib/routes/location/v1/location.js; tests/integration/recordDetailedVisitorHistory.tests.js)\n- **Alternate paths**: Unknown visitor IDs are dropped when configured to disallow empty IDs. (Evidence: lib/models/RequestConfigGetLocation.js; config/default.js)\n- **Error paths**: Malformed visitor history entries are skipped and logged. (Evidence: lib/routes/location/v1/location.js)\n- **Retry/recovery**: Visitor logging is asynchronous (fire-and-forget); errors are logged but do not fail the main response. (Evidence: lib/routes/location/v1/location.js)\n\n### 4.7 DeleteLocation\n- **Primary path**:\n  1. Parse device ID. (Evidence: lib/routes/location/v1/inputParser.js; lib/models/RequestDevice.js)\n  2. Delete &#96;last&#96;, &#96;hist&#96;, and &#96;visit&#96; keys in parallel. (Evidence: lib/routes/location/v1/location.js)\n  3. Return &#96;ACK&#96; with count of deleted keys. (Evidence: lib/models/ResponseDeleteLocation.js; docs/DELETE_LOCATION_API.md)\n- **Alternate paths**: Legacy &#96;/DeleteLocation&#96; behaves like &#96;/v1/DeleteLocation&#96;. (Evidence: lib/routes/location/index.js; tests/integration/deleteLocation.tests.js)\n- **Error paths**: Missing device yields 400; non-existent device returns ACK with &#96;MiataruDeletedCount: 0&#96;. (Evidence: tests/integration/deleteLocation.tests.js)\n- **Retry/recovery**: Safe to retry; deletions are idempotent. (Evidence: lib/routes/location/v1/location.js)\n\n### 4.8 Error handling and logging\n- **Primary path**: Errors are logged with severity based on status; 404/405 are info, others warn/error. (Evidence: server.js; tests/unit/serverErrorHandling.tests.js)\n- **Alternate paths**: JSON parse failures include raw body previews and content-length mismatch warnings. (Evidence: server.js; .specstory/history/2026-01-19_20-26Z-miataru-getlocationhistory-json-error.md)\n- **Error paths**: Response payload is &#96;{ error: &lt;message&gt; }&#96;. (Evidence: server.js)",
+        "signatures": {},
+        "detailedLines": [
+          {
+            "text": "- **Primary path**:",
+            "lineNumber": 192
+          },
+          {
+            "text": "  - **Detailed ON**: Each access &#96;LPUSH&#96;es a new entry and &#96;LTRIM&#96;s to the maximum count. (Evidence: lib/routes/location/v1/location.js; tests/integration/recordDetailedVisitorHistory.tests.js)",
+            "lineNumber": 193
+          },
+          {
+            "text": "  - **Detailed OFF**: Existing entries are deduplicated by DeviceID, updated, sorted by timestamp (newest first), and capped by unique device count. (Evidence: lib/routes/location/v1/location.js; tests/integration/recordDetailedVisitorHistory.tests.js)",
+            "lineNumber": 194
+          },
+          {
+            "text": "- **Alternate paths**: Unknown visitor IDs are dropped when configured to disallow empty IDs. (Evidence: lib/models/RequestConfigGetLocation.js; config/default.js)",
+            "lineNumber": 195
+          },
+          {
+            "text": "- **Error paths**: Malformed visitor history entries are skipped and logged. (Evidence: lib/routes/location/v1/location.js)",
+            "lineNumber": 196
+          },
+          {
+            "text": "- **Retry/recovery**: Visitor logging is asynchronous (fire-and-forget); errors are logged but do not fail the main response. (Evidence: lib/routes/location/v1/location.js)",
+            "lineNumber": 197
+          },
+          {
+            "lineNumber": 198
+          },
+          {
+            "text": "### 4.7 DeleteLocation",
+            "lineNumber": 199
+          },
+          {
+            "text": "- **Primary path**:",
+            "lineNumber": 200
+          },
+          {
+            "text": "  1. Parse device ID. (Evidence: lib/routes/location/v1/inputParser.js; lib/models/RequestDevice.js)",
+            "lineNumber": 201
+          },
+          {
+            "text": "  2. Delete &#96;last&#96;, &#96;hist&#96;, and &#96;visit&#96; keys in parallel. (Evidence: lib/routes/location/v1/location.js)",
+            "lineNumber": 202
+          },
+          {
+            "text": "  3. Return &#96;ACK&#96; with count of deleted keys. (Evidence: lib/models/ResponseDeleteLocation.js; docs/DELETE_LOCATION_API.md)",
+            "lineNumber": 203
+          },
+          {
+            "text": "- **Alternate paths**: Legacy &#96;/DeleteLocation&#96; behaves like &#96;/v1/DeleteLocation&#96;. (Evidence: lib/routes/location/index.js; tests/integration/deleteLocation.tests.js)",
+            "lineNumber": 204
+          },
+          {
+            "text": "- **Error paths**: Missing device yields 400; non-existent device returns ACK with &#96;MiataruDeletedCount: 0&#96;. (Evidence: tests/integration/deleteLocation.tests.js)",
+            "lineNumber": 205
+          },
+          {
+            "text": "- **Retry/recovery**: Safe to retry; deletions are idempotent. (Evidence: lib/routes/location/v1/location.js)",
+            "lineNumber": 206
+          },
+          {
+            "lineNumber": 207
+          },
+          {
+            "text": "### 4.8 Error handling and logging",
+            "lineNumber": 208
+          },
+          {
+            "text": "- **Primary path**: Errors are logged with severity based on status; 404/405 are info, others warn/error. (Evidence: server.js; tests/unit/serverErrorHandling.tests.js)",
+            "lineNumber": 209
+          },
+          {
+            "text": "- **Alternate paths**: JSON parse failures include raw body previews and content-length mismatch warnings. (Evidence: server.js; .specstory/history/2026-01-19_20-26Z-miataru-getlocationhistory-json-error.md)",
+            "lineNumber": 210
+          },
+          {
+            "text": "- **Error paths**: Response payload is &#96;{ error: &lt;message&gt; }&#96;. (Evidence: server.js)",
+            "lineNumber": 211
+          }
+        ]
+      },
+      "score": 0.1766497939825058
+    }
+  ]
+}
+```
+Status: **completed**
+
+
+</details>
+</tool-use>
+
+---
+
+<tool-use data-tool-type="read" data-tool-name="read_file_v2">
+<details><summary>Tool use: **read_file_v2** • Read file: /Users/bietiekay/code/miataru-server/README.md</summary>
+
+</details>
+</tool-use>
+
+---
+
+
+Creating the plan:
+
+
+---
+
+<tool-use data-tool-type="unknown" data-tool-name="create_plan">
+<details>
+<summary>Tool use: **create_plan**</summary>
+
+
+Parameters:
+
+```json
+{
+  "plan": "# Add DeviceKey Authentication to DeleteLocation\n\n## Problem Analysis\n\nDeleteLocation is a write operation that permanently deletes all location data (current location, history, and visitor history) but currently lacks DeviceKey authentication. This is a security gap since:\n\n1. **DeleteLocation modifies server state** - It deletes data, making it a write operation\n2. **Other write operations are protected** - UpdateLocation, SetAllowedDeviceList, and GetVisitorHistory all require DeviceKey when set\n3. **DeleteLocation is missing from swagger.yaml** - The endpoint is not documented in the API specification\n4. **Documentation is incomplete** - All docs state \"No Authentication\" for DeleteLocation\n\n## Current State\n\n- **Implementation**: &#96;lib/routes/location/v1/location.js&#96; - &#96;deleteLocation()&#96; function (lines 756-800) has no DeviceKey validation\n- **Request Model**: &#96;lib/models/RequestDevice.js&#96; - Only has &#96;device()&#96; method, no &#96;deviceKey()&#96; support\n- **Input Parser**: &#96;lib/routes/location/v1/inputParser.js&#96; - Uses &#96;RequestDevice&#96; model (line 109)\n- **Documentation**: States \"No Authentication\" in &#96;docs/DELETE_LOCATION_API.md&#96; (line 157)\n- **Swagger**: DeleteLocation endpoint is completely missing from &#96;docs/swagger.yaml&#96;\n- **Tests**: &#96;tests/integration/deleteLocation.tests.js&#96; - No DeviceKey validation tests\n\n## Implementation Plan\n\n### Phase 1: Update Request Model\n\n**File**: &#96;lib/models/RequestDevice.js&#96;\n\n- Add &#96;_deviceKey&#96; property (optional, similar to RequestLocation and RequestVisitorHistory)\n- Add &#96;deviceKey()&#96; method to retrieve the DeviceKey\n- Update constructor to accept &#96;DeviceKey&#96; from data object\n- Keep backward compatibility - DeviceKey is optional\n\n**Pattern**: Follow the same pattern as &#96;RequestLocation.js&#96; (lines 14-15, 52-54) and &#96;RequestVisitorHistory.js&#96; (lines 8-9, 24-26)\n\n### Phase 2: Update DeleteLocation Implementation\n\n**File**: &#96;lib/routes/location/v1/location.js&#96;\n\n- Add DeviceKey validation logic before deletion (similar to &#96;updateLocation&#96; function, lines 342-380)\n- Use &#96;deviceKeyUtils.getDeviceKey()&#96; to check if DeviceKey is set\n- If DeviceKey is set, require it in the request and validate using &#96;deviceKeyUtils.validateDeviceKey()&#96;\n- Return 403 ForbiddenError if DeviceKey is missing when required or doesn't match\n- Maintain backward compatibility - if no DeviceKey is set, proceed normally\n\n**Pattern**: Follow the same validation pattern as &#96;updateLocation()&#96;:\n&#96;&#96;&#96;javascript\nseq()\n    .seq(function() {\n        var done = this;\n        var deviceId = locationRequest.device();\n        var providedDeviceKey = locationRequest.deviceKey();\n        \n        deviceKeyUtils.getDeviceKey(deviceId, function(error, storedKey) {\n            // Validate logic here\n        });\n    })\n    .seq(function() {\n        // Existing deletion logic\n    })\n&#96;&#96;&#96;\n\n### Phase 3: Update Swagger Documentation\n\n**File**: &#96;docs/swagger.yaml&#96;\n\n- Add &#96;/DeleteLocation&#96; endpoint definition (after &#96;/GetVisitorHistory&#96;, before &#96;/setDeviceKey&#96;)\n- Include description mentioning DeviceKey requirement (API 1.1)\n- Add DeviceKey parameter to &#96;MiataruDeleteLocation&#96; schema\n- Add 403 response for DeviceKey mismatch\n- Create &#96;MiataruDeleteLocationRequest&#96; definition\n- Create &#96;MiataruDeleteLocationResponse&#96; definition (references ACK schema)\n\n**Location**: Add after line 174 (after GetVisitorHistory), before line 175 (setDeviceKey)\n\n### Phase 4: Update All Documentation\n\n#### 4.1 DELETE_LOCATION_API.md\n\n**File**: &#96;docs/DELETE_LOCATION_API.md&#96;\n\n- Update \"Security Considerations\" section (line 155-160) - Remove \"No Authentication\" statement\n- Add DeviceKey section explaining when it's required\n- Update request format examples to show DeviceKey parameter\n- Add DeviceKey to parameters table\n- Update cURL and JavaScript examples to include DeviceKey\n- Add error responses for 403 Forbidden (DeviceKey related)\n\n#### 4.2 API_1.1_SECURITY.md\n\n**File**: &#96;docs/API_1.1_SECURITY.md&#96;\n\n- Add DeleteLocation to the list of endpoints requiring DeviceKey (line 72-73)\n- Add \"Using DeviceKey in DeleteLocation\" section (after GetVisitorHistory section, around line 134)\n- Include request/response examples with DeviceKey\n- Update migration checklist to include DeleteLocation\n\n#### 4.3 README.md\n\n**File**: &#96;README.md&#96;\n\n- Update \"Security Features\" section (line 64-66) to include DeleteLocation\n- Update DeleteLocation example (line 151-152) to show DeviceKey when applicable\n- Update \"DeleteLocation API\" section (line 161-195) to mention DeviceKey requirement\n\n#### 4.4 WHATS_NEW_V2.md\n\n**File**: &#96;docs/WHATS_NEW_V2.md&#96;\n\n- Update \"Protected Operations\" section (line 39-43) to include DeleteLocation\n- Add DeleteLocation to the list of operations requiring DeviceKey\n\n#### 4.5 CLIENT_ADOPTION_API_1.1.md\n\n**File**: &#96;docs/CLIENT_ADOPTION_API_1.1.md&#96;\n\n- Add DeleteLocation example with DeviceKey authentication\n- Include error handling for 403 responses\n\n#### 4.6 COMPATIBILITY_ASSESSMENT.md\n\n**File**: &#96;docs/COMPATIBILITY_ASSESSMENT.md&#96;\n\n- Update DeleteLocation entry to mention DeviceKey requirement (if applicable)\n- Note backward compatibility maintained when DeviceKey is not set\n\n### Phase 5: Add Comprehensive Tests\n\n**File**: &#96;tests/integration/deleteLocation.tests.js&#96;\n\nAdd new test suite: &#96;describe('DeleteLocation with DeviceKey', function() { ... })&#96;\n\nTest cases:\n1. **Backward compatibility**: DeleteLocation without DeviceKey when no key is set (should work)\n2. **Valid DeviceKey**: DeleteLocation with correct DeviceKey when key is set (should succeed)\n3. **Missing DeviceKey**: DeleteLocation without DeviceKey when key is set (should return 403)\n4. **Invalid DeviceKey**: DeleteLocation with wrong DeviceKey when key is set (should return 403)\n5. **Empty DeviceKey**: DeleteLocation with empty DeviceKey when key is set (should return 403)\n6. **Complete workflow**: Set DeviceKey → UpdateLocation with DeviceKey → DeleteLocation with DeviceKey → Verify deletion\n\n**Pattern**: Follow the same test structure as &#96;tests/integration/deviceKey.tests.js&#96; (lines 119-209 for UpdateLocation, 211-295 for GetVisitorHistory)\n\n### Phase 6: Scan for Other Missing Operations\n\n**Check all endpoints** in &#96;lib/routes/location/v1/location.js&#96;:\n\n- ✅ UpdateLocation - Has DeviceKey\n- ✅ GetVisitorHistory - Has DeviceKey  \n- ✅ SetAllowedDeviceList - Has DeviceKey\n- ✅ SetDeviceKey - Has its own auth (CurrentDeviceKey)\n- ❌ DeleteLocation - Missing DeviceKey (to be fixed)\n- ✅ GetLocation - Read operation, uses allowed devices list\n- ✅ GetLocationHistory - Read operation, uses allowed devices list\n- ✅ GetLocationGeoJSON - Read operation, blocked when DeviceKey is set\n\n**Conclusion**: DeleteLocation is the only write operation missing DeviceKey protection.\n\n### Phase 7: Update Test Files\n\n**File**: &#96;tests/integration/deleteLocation.tests.js&#96;\n\n- Update existing tests to ensure they still pass (backward compatibility)\n- Ensure test cleanup doesn't break with DeviceKey requirement\n- Update beforeEach to handle DeviceKey cleanup if needed\n\n## Testing Strategy\n\n1. **Unit Tests**: Verify RequestDevice model accepts DeviceKey parameter\n2. **Integration Tests**: \n   - Test backward compatibility (no DeviceKey when none set)\n   - Test DeviceKey validation (required when set, must match)\n   - Test error responses (403 Forbidden)\n   - Test complete workflows\n3. **Run All Tests**: Execute full test suite to ensure no regressions\n   - &#96;npm test&#96; (unit tests)\n   - &#96;npm run test:integration&#96; (integration tests)\n\n## Backward Compatibility\n\n- **Critical**: DeleteLocation must work without DeviceKey when no DeviceKey is set for the device\n- **Optional**: DeviceKey parameter is optional in the request (only required when DeviceKey is set)\n- **Error Handling**: Clear error messages when DeviceKey is required but missing or invalid\n\n## Files to Modify\n\n1. &#96;lib/models/RequestDevice.js&#96; - Add DeviceKey support\n2. &#96;lib/routes/location/v1/location.js&#96; - Add DeviceKey validation to deleteLocation()\n3. &#96;docs/swagger.yaml&#96; - Add DeleteLocation endpoint definition\n4. &#96;docs/DELETE_LOCATION_API.md&#96; - Update security and examples\n5. &#96;docs/API_1.1_SECURITY.md&#96; - Add DeleteLocation to DeviceKey section\n6. &#96;README.md&#96; - Update examples and security features\n7. &#96;docs/WHATS_NEW_V2.md&#96; - Add DeleteLocation to protected operations\n8. &#96;docs/CLIENT_ADOPTION_API_1.1.md&#96; - Add DeleteLocation examples\n9. &#96;docs/COMPATIBILITY_ASSESSMENT.md&#96; - Update DeleteLocation entry\n10. &#96;tests/integration/deleteLocation.tests.js&#96; - Add DeviceKey test suite\n\n## Success Criteria\n\n- ✅ DeleteLocation requires DeviceKey when DeviceKey is set for device\n- ✅ DeleteLocation works without DeviceKey when no DeviceKey is set (backward compatible)\n- ✅ All documentation updated with DeviceKey information\n- ✅ Swagger.yaml includes DeleteLocation endpoint\n- ✅ Comprehensive test coverage for DeviceKey scenarios\n- ✅ All existing tests pass\n- ✅ No other write operations missing DeviceKey protection",
+  "name": "Add DeviceKey to DeleteLocation",
+  "todos": [
+    {
+      "content": "Update RequestDevice model to support optional DeviceKey parameter (lib/models/RequestDevice.js)",
+      "status": "pending",
+      "id": "update-request-model"
+    },
+    {
+      "content": "Add DeviceKey validation logic to deleteLocation function (lib/routes/location/v1/location.js)",
+      "status": "pending",
+      "id": "add-devicekey-validation"
+    },
+    {
+      "content": "Add DeleteLocation endpoint definition to swagger.yaml with DeviceKey support",
+      "status": "pending",
+      "id": "update-swagger"
+    },
+    {
+      "content": "Update DELETE_LOCATION_API.md with DeviceKey authentication information",
+      "status": "pending",
+      "id": "update-delete-location-docs"
+    },
+    {
+      "content": "Update API_1.1_SECURITY.md to include DeleteLocation in DeviceKey section",
+      "status": "pending",
+      "id": "update-security-docs"
+    },
+    {
+      "content": "Update README.md examples and security features section",
+      "status": "pending",
+      "id": "update-readme"
+    },
+    {
+      "content": "Update WHATS_NEW_V2.md protected operations list",
+      "status": "pending",
+      "id": "update-whats-new"
+    },
+    {
+      "content": "Update CLIENT_ADOPTION_API_1.1.md with DeleteLocation examples",
+      "status": "pending",
+      "id": "update-client-adoption"
+    },
+    {
+      "content": "Update COMPATIBILITY_ASSESSMENT.md DeleteLocation entry",
+      "status": "pending",
+      "id": "update-compatibility"
+    },
+    {
+      "content": "Add comprehensive DeviceKey test suite to deleteLocation.tests.js",
+      "status": "pending",
+      "id": "add-devicekey-tests"
+    },
+    {
+      "content": "Run full test suite (unit + integration) to verify all changes",
+      "status": "pending",
+      "id": "run-all-tests"
+    }
+  ],
+  "overview": "Add DeviceKey authentication to DeleteLocation endpoint, update all documentation (README, API docs, swagger.yaml), add comprehensive tests, and scan for any other missing write operations that need DeviceKey protection."
+}
+```
+Additional data:
+
+```json
+{
+  "reviewData": {
+    "status": "Requested",
+    "selectedOption": "none",
+    "isShowingInput": false
+  },
+  "planUri": "file:///Users/bietiekay/.cursor/plans/add_devicekey_to_deletelocation_66b48b2b.plan.md",
+  "hasOpenedEditor": true
+}
+```
+Result:
+
+```json
+{
+  "rejected": {}
+}
+```
+Status: **completed**
+
+
+</details>
+</tool-use>
+
+---
+
+_**User**_
+
+Implement the plan as specified, it is attached for your reference. Do NOT edit the plan file itself.
+
+To-do's from the plan have already been created. Do not create them again. Mark them as in_progress as you work, starting with the first one. Don't stop until you have completed all the to-dos.
+
+---
+
+_**Agent (model default, mode Agent)**_
+
+
+Implementing the plan. Starting with the RequestDevice model, then proceeding through each phase.
+
+
+---
+
+<tool-use data-tool-type="read" data-tool-name="read_file_v2">
+<details><summary>Tool use: **read_file_v2** • Read file: /Users/bietiekay/code/miataru-server/lib/models/RequestDevice.js</summary>
+
+</details>
+</tool-use>
+
+---
+
+<tool-use data-tool-type="read" data-tool-name="read_file_v2">
+<details><summary>Tool use: **read_file_v2** • Read file: /Users/bietiekay/code/miataru-server/lib/routes/location/v1/location.js</summary>
+
+</details>
+</tool-use>
+
+---
+
+<tool-use data-tool-type="read" data-tool-name="read_file_v2">
+<details><summary>Tool use: **read_file_v2** • Read file: /Users/bietiekay/code/miataru-server/lib/routes/location/v1/location.js</summary>
+
+</details>
+</tool-use>
+
+---
+
+
+Updating the RequestDevice model to support DeviceKey:
+
+
+---
+
+<tool-use data-tool-type="task" data-tool-name="todo_write">
+<details><summary>Tool use: **todo_write** • Todo List</summary>
+
+- [-] Update RequestDevice model to support optional DeviceKey parameter (lib/models/RequestDevice.js)
+- [ ] Add DeviceKey validation logic to deleteLocation function (lib/routes/location/v1/location.js)
+- [ ] Add DeleteLocation endpoint definition to swagger.yaml with DeviceKey support
+- [ ] Update DELETE_LOCATION_API.md with DeviceKey authentication information
+- [ ] Update API_1.1_SECURITY.md to include DeleteLocation in DeviceKey section
+- [ ] Update README.md examples and security features section
+- [ ] Update WHATS_NEW_V2.md protected operations list
+- [ ] Update CLIENT_ADOPTION_API_1.1.md with DeleteLocation examples
+- [ ] Update COMPATIBILITY_ASSESSMENT.md DeleteLocation entry
+- [ ] Add comprehensive DeviceKey test suite to deleteLocation.tests.js
+- [ ] Run full test suite (unit + integration) to verify all changes
+
+</details>
+</tool-use>
+
+---
+
+<tool-use data-tool-type="write" data-tool-name="edit_file_v2">
+
+<details><summary>Tool use: **edit_file_v2** • Edit file: /Users/bietiekay/code/miataru-server/lib/models/RequestDevice.js</summary>
+
+</details>
+
+</tool-use>
+
+---
+
+<tool-use data-tool-type="task" data-tool-name="todo_write">
+<details><summary>Tool use: **todo_write** • Todo List</summary>
+
+- [x] Update RequestDevice model to support optional DeviceKey parameter (lib/models/RequestDevice.js)
+- [-] Add DeviceKey validation logic to deleteLocation function (lib/routes/location/v1/location.js)
+- [ ] Add DeleteLocation endpoint definition to swagger.yaml with DeviceKey support
+- [ ] Update DELETE_LOCATION_API.md with DeviceKey authentication information
+- [ ] Update API_1.1_SECURITY.md to include DeleteLocation in DeviceKey section
+- [ ] Update README.md examples and security features section
+- [ ] Update WHATS_NEW_V2.md protected operations list
+- [ ] Update CLIENT_ADOPTION_API_1.1.md with DeleteLocation examples
+- [ ] Update COMPATIBILITY_ASSESSMENT.md DeleteLocation entry
+- [ ] Add comprehensive DeviceKey test suite to deleteLocation.tests.js
+- [ ] Run full test suite (unit + integration) to verify all changes
+
+</details>
+</tool-use>
+
+---
+
+
+Adding DeviceKey validation to the deleteLocation function:
+
+
+---
+
+<tool-use data-tool-type="write" data-tool-name="edit_file_v2">
+
+<details><summary>Tool use: **edit_file_v2** • Edit file: /Users/bietiekay/code/miataru-server/lib/routes/location/v1/location.js</summary>
+
+</details>
+
+</tool-use>
+
+---
+
+<tool-use data-tool-type="task" data-tool-name="todo_write">
+<details><summary>Tool use: **todo_write** • Todo List</summary>
+
+- [x] Update RequestDevice model to support optional DeviceKey parameter (lib/models/RequestDevice.js)
+- [x] Add DeviceKey validation logic to deleteLocation function (lib/routes/location/v1/location.js)
+- [-] Add DeleteLocation endpoint definition to swagger.yaml with DeviceKey support
+- [ ] Update DELETE_LOCATION_API.md with DeviceKey authentication information
+- [ ] Update API_1.1_SECURITY.md to include DeleteLocation in DeviceKey section
+- [ ] Update README.md examples and security features section
+- [ ] Update WHATS_NEW_V2.md protected operations list
+- [ ] Update CLIENT_ADOPTION_API_1.1.md with DeleteLocation examples
+- [ ] Update COMPATIBILITY_ASSESSMENT.md DeleteLocation entry
+- [ ] Add comprehensive DeviceKey test suite to deleteLocation.tests.js
+- [ ] Run full test suite (unit + integration) to verify all changes
+
+</details>
+</tool-use>
+
+---
+
