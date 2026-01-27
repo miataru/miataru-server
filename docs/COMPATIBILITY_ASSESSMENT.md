@@ -16,7 +16,7 @@ Most existing API 1.0 endpoints continue to work as before, with noted exception
 | `/v1/GetLocation` | Works as before | Requires `RequestMiataruDeviceID` (access control optional) | ⚠️ Requires update |
 | `/v1/GetLocationHistory` | Works as before | Requires `RequestMiataruDeviceID` (access control optional) | ⚠️ Requires update |
 | `/v1/GetVisitorHistory` | Works as before | Works as before (DeviceKey optional) | ✅ Yes |
-| `/v1/DeleteLocation` | Works as before | Works as before | ✅ Yes |
+| `/v1/DeleteLocation` | Works as before | Works as before (DeviceKey optional) | ✅ Yes |
 | `/v1/GetLocationGeoJSON` | Works as before | **BREAKING CHANGE** (see below) | ⚠️ Conditional |
 
 ### 2. Optional Parameters
@@ -24,6 +24,7 @@ Most existing API 1.0 endpoints continue to work as before, with noted exception
 All new security parameters are **optional**, but GetLocation/GetLocationHistory require `RequestMiataruDeviceID`:
 
 - **DeviceKey** in `MiataruLocation` - Can be omitted if no DeviceKey is set
+- **DeviceKey** in `MiataruDeleteLocation` - Can be omitted if no DeviceKey is set
 - **DeviceKey** in `MiataruGetVisitorHistory` - Can be omitted if no DeviceKey is set
 - **Allowed Devices List** - Only affects behavior when explicitly set
 - **RequestMiataruDeviceID** - Required in `MiataruConfig` for GetLocation/GetLocationHistory
@@ -149,7 +150,7 @@ These endpoints work exactly as in API 1.0:
 
 - ✅ `/v1/UpdateLocation` - Same behavior (DeviceKey optional)
 - ✅ `/v1/GetVisitorHistory` - Same behavior (DeviceKey optional)
-- ✅ `/v1/DeleteLocation` - Unchanged
+- ✅ `/v1/DeleteLocation` - Same behavior (DeviceKey optional)
 
 ### New Endpoints
 

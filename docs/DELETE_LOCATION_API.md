@@ -22,10 +22,13 @@ The DeleteLocation API endpoint allows you to permanently delete all location da
 ```json
 {
   "MiataruDeleteLocation": {
-    "Device": "device-id-here"
+    "Device": "device-id-here",
+    "DeviceKey": "your-device-key-here"
   }
 }
 ```
+
+**Note**: `DeviceKey` is optional and only required if a DeviceKey has been set for the device via `/v1/setDeviceKey`. See [DeviceKey Authentication](#devicekey-authentication-api-11) section below.
 
 ### Parameters
 
@@ -33,6 +36,7 @@ The DeleteLocation API endpoint allows you to permanently delete all location da
 |-----------|------|----------|-------------|
 | `MiataruDeleteLocation` | Object | Yes | Container object for delete request |
 | `Device` | String | Yes | Unique identifier of the device whose location data should be deleted |
+| `DeviceKey` | String | Conditional | (API 1.1) DeviceKey for authentication. Required if DeviceKey has been set for this device via `/v1/setDeviceKey` |
 
 ## Response Format
 
@@ -54,6 +58,8 @@ The DeleteLocation API endpoint allows you to permanently delete all location da
 | `MiataruDeletedCount` | Number | Number of Redis keys that were deleted (0-3) |
 
 ### Error Response
+
+**Bad Request (400):**
 ```json
 {
   "error": "BadRequestError",
@@ -61,14 +67,36 @@ The DeleteLocation API endpoint allows you to permanently delete all location da
 }
 ```
 
+**Forbidden (403) - DeviceKey Required:**
+```json
+{
+  "error": "ForbiddenError",
+  "message": "DeviceKey is required for this device"
+}
+```
+
+**Forbidden (403) - DeviceKey Mismatch:**
+```json
+{
+  "error": "ForbiddenError",
+  "message": "DeviceKey does not match"
+}
+```
+
 ## Usage Examples
 
 ### cURL Examples
 
-#### Delete location data for a specific device
+#### Delete location data for a specific device (no DeviceKey)
 ```bash
 curl -H 'Content-Type: application/json' -X POST 'http://localhost:8080/v1/DeleteLocation' \
   -d '{"MiataruDeleteLocation":{"Device":"my-device-123"}}'
+```
+
+#### Delete location data with DeviceKey (API 1.1)
+```bash
+curl -H 'Content-Type: application/json' -X POST 'http://localhost:8080/v1/DeleteLocation' \
+  -d '{"MiataruDeleteLocation":{"Device":"my-device-123","DeviceKey":"your-device-key-here"}}'
 ```
 
 #### Delete location data using legacy endpoint
@@ -79,18 +107,32 @@ curl -H 'Content-Type: application/json' -X POST 'http://localhost:8080/DeleteLo
 
 ### JavaScript Example
 ```javascript
-const deleteLocationData = async (deviceId) => {
+const deleteLocationData = async (deviceId, deviceKey = null) => {
+  const requestBody = {
+    MiataruDeleteLocation: {
+      Device: deviceId
+    }
+  };
+  
+  // Include DeviceKey if provided (required when DeviceKey is set for the device)
+  if (deviceKey) {
+    requestBody.MiataruDeleteLocation.DeviceKey = deviceKey;
+  }
+  
   const response = await fetch('http://localhost:8080/v1/DeleteLocation', {
     method: 'POST',
     headers: {
       'Content-Type': 'application/json'
     },
-    body: JSON.stringify({
-      MiataruDeleteLocation: {
-        Device: deviceId
-      }
-    })
+    body: JSON.stringify(requestBody)
   });
+  
+  if (!response.ok) {
+    if (response.status === 403) {
+      throw new Error('DeviceKey authentication failed');
+    }
+    throw new Error(`Delete failed: ${response.status}`);
+  }
   
   const result = await response.json();
   console.log(`Deleted ${result.MiataruDeletedCount} data entries for device ${deviceId}`);
@@ -152,9 +194,55 @@ The DeleteLocation operation removes the following Redis keys for the specified 
    - Only POST requests are accepted
    - GET, PUT, DELETE, etc. return 405 Method Not Supported
 
+4. **DeviceKey Required (403 Forbidden)**
+   ```json
+   {
+     "error": "ForbiddenError",
+     "message": "DeviceKey is required for this device"
+   }
+   ```
+
+5. **DeviceKey Mismatch (403 Forbidden)**
+   ```json
+   {
+     "error": "ForbiddenError",
+     "message": "DeviceKey does not match"
+   }
+   ```
+
+## DeviceKey Authentication (API 1.1)
+
+DeleteLocation supports DeviceKey authentication to protect against unauthorized deletion of location data.
+
+### When DeviceKey is Required
+
+- **DeviceKey is set**: If a DeviceKey has been set for a device via `/v1/setDeviceKey`, the `DeviceKey` parameter must be provided in the request
+- **DeviceKey is not set**: If no DeviceKey has been set, the request works without authentication (backward compatible with API 1.0)
+
+### Using DeviceKey
+
+Include the `DeviceKey` parameter in the `MiataruDeleteLocation` object:
+
+```json
+{
+  "MiataruDeleteLocation": {
+    "Device": "your-device-id",
+    "DeviceKey": "your-secure-key-here"
+  }
+}
+```
+
+**Important**: The DeviceKey must match the key stored for the device. If the keys do not match or the DeviceKey is missing when required, a 403 Forbidden error is returned.
+
+### Error Responses
+
+- **403 Forbidden - DeviceKey Required**: Returned when DeviceKey is set for the device but not provided in the request
+- **403 Forbidden - DeviceKey Mismatch**: Returned when the provided DeviceKey does not match the stored key
+
 ## Security Considerations
 
-- **No Authentication**: The current implementation does not include authentication
+- **DeviceKey Authentication**: When a DeviceKey is set, it must be provided and validated before deletion (API 1.1)
+- **Backward Compatibility**: Devices without DeviceKey set work exactly as before (no authentication required)
 - **Device ID Validation**: Device IDs are not validated for format or ownership
 - **Permanent Deletion**: Deleted data cannot be recovered
 - **No Audit Trail**: Deletion operations are not logged

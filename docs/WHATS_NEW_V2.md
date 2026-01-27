@@ -39,6 +39,7 @@ DeviceKey authentication provides secure, device-level authentication for locati
 The following operations require DeviceKey authentication when a DeviceKey is set for the device:
 
 - **UpdateLocation** - Prevents unauthorized location updates
+- **DeleteLocation** - Prevents unauthorized deletion of location data
 - **GetVisitorHistory** - Protects access to visitor tracking data
 - **SetAllowedDeviceList** - Secures access control configuration
 
