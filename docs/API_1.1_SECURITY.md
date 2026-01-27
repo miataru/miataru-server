@@ -2,7 +2,7 @@
 
 ## Overview
 
-API version 1.1 introduces security and privacy enhancements to the Miataru server while maintaining full backward compatibility with API 1.0 clients. These features include:
+API version 1.1 introduces security and privacy enhancements to the Miataru server while maintaining broad backward compatibility with API 1.0 clients (GetLocation/GetLocationHistory now require `RequestMiataruDeviceID`). These features include:
 
 1. **RequestMiataruDeviceID (Mandatory)** - Required identifier for all GetLocation and GetLocationHistory requests
 2. **DeviceKey Authentication** - Protects write operations and visitor history access
@@ -181,12 +181,12 @@ Use the `/v1/setAllowedDeviceList` endpoint to set or update the allowed devices
 ### Access Control Behavior
 
 **GetLocation:**
-- If allowed devices list is **not enabled**: Returns location data (backward compatible)
+- If allowed devices list is **not enabled**: Returns location data when `RequestMiataruDeviceID` is provided (backward compatible)
 - If allowed devices list is **enabled**: Only devices with `hasCurrentLocationAccess: true` receive location data
 - Devices without permission receive location as `null` (as if device doesn't exist)
 
 **GetLocationHistory:**
-- If allowed devices list is **not enabled**: Returns location history (backward compatible)
+- If allowed devices list is **not enabled**: Returns location history when `RequestMiataruDeviceID` is provided (backward compatible)
 - If allowed devices list is **enabled**: Only devices with `hasHistoryAccess: true` receive location history
 - Devices without permission receive empty history (as if history doesn't exist)
 
