@@ -117,7 +117,7 @@
 - **Validation rules**: `EnableLocationHistory` is coerced to boolean (`true` only when string equals `'true'`, case-insensitive). (Evidence: lib/models/RequestConfig.js; tests/unit/dataHolder.tests.js)
 
 ### 3.4 RequestConfigGetLocation (GetLocation/History)
-- **Schema**: `{ RequestMiataruDeviceID? }`. (Evidence: lib/models/RequestConfigGetLocation.js)
+- **Schema**: `{ RequestMiataruDeviceID }`. (Evidence: lib/models/RequestConfigGetLocation.js)
 - **Invariants**: Empty request device ID may be suppressed based on config; requests where visitor equals target device are suppressed. (Evidence: lib/models/RequestConfigGetLocation.js; tests/integration/visitorHistoryFiltering.tests.js)
 
 ### 3.5 RequestLocationHistory
@@ -152,7 +152,7 @@
 
 ### 4.2 GetLocation
 - **Primary path**:
-  1. Parse devices list and optional `RequestMiataruDeviceID`. (Evidence: lib/routes/location/v1/inputParser.js; lib/models/RequestConfigGetLocation.js)
+  1. Parse devices list and required `RequestMiataruDeviceID`. (Evidence: lib/routes/location/v1/inputParser.js; lib/models/RequestConfigGetLocation.js)
   2. For each device, `GET` `miad:{device}:last`. (Evidence: lib/routes/location/v1/location.js)
   3. Record visitor history if device exists and visitor is allowed. (Evidence: lib/routes/location/v1/location.js; lib/models/RequestConfigGetLocation.js)
   4. Return `MiataruLocation` array with location objects or `null` for unknown devices. (Evidence: lib/models/ResponseLocation.js; tests/integration/unknownDevice.tests.js)
