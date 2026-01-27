@@ -172,6 +172,37 @@ paths:
      description: Forbidden - DeviceKey mismatch or missing when required
      schema:
       $ref: '#/definitions/Error'
+ /DeleteLocation:
+  post:
+   tags:
+   - deleteLocation
+   description: |
+     Deletes all location data (current location, location history, and visitor history) for a specific device.
+     
+     API 1.1: If a DeviceKey has been set for a device (via /setDeviceKey), the DeviceKey parameter must be provided and must match the stored key. If the keys do not match, a 403 Forbidden error is returned.
+   operationId: deleteLocation
+   produces:
+   - application/json
+   parameters:
+   - name: body
+     in: body
+     description: the JSON formatted request to delete all location data for a device
+     required: true
+     schema:
+      $ref: '#/definitions/MiataruDeleteLocationRequest'
+   responses:
+    200:
+     description: Location data deleted successfully
+     schema:
+      $ref: '#/definitions/MiataruDeleteLocationResponse'
+    400:
+     description: Bad Request - Invalid input (missing device)
+     schema:
+      $ref: '#/definitions/Error'
+    403:
+     description: Forbidden - DeviceKey mismatch or missing when required
+     schema:
+      $ref: '#/definitions/Error'
  /setDeviceKey:
   post:
    tags:
@@ -578,3 +609,36 @@ definitions:
    MiataruVerboseResponse:
     type: string
     default: "Allowed devices list updated successfully"
+ MiataruDeleteLocationRequest:
+  required:
+  - MiataruDeleteLocation
+  properties:
+   MiataruDeleteLocation:
+    type: object
+    required:
+    - Device
+    properties:
+     Device:
+      type: string
+      description: the device ID of which all location data should be deleted
+      default: "7b8e6e0ee5296db345162dc2ef652c1350761823"
+     DeviceKey:
+      type: string
+      description: "(API 1.1) Optional DeviceKey for authentication. Required if DeviceKey has been set for this device via /setDeviceKey."
+      maxLength: 256
+ MiataruDeleteLocationResponse:
+  required:
+  - MiataruResponse
+  - MiataruVerboseResponse
+  - MiataruDeletedCount
+  properties:
+   MiataruResponse:
+    type: string
+    default: "ACK"
+   MiataruVerboseResponse:
+    type: string
+    default: "Location data deleted for device: device-id-here"
+   MiataruDeletedCount:
+    type: number
+    description: the number of Redis keys that were deleted (0-3)
+    default: 0

@@ -63,6 +63,7 @@ The Miataru server provides both versioned (v1) and legacy API endpoints for max
 
 DeviceKey provides authentication for write operations and visitor history access. Once set, devices must provide the correct DeviceKey to:
 - Update location data
+- Delete location data
 - Access visitor history
 
 See [API 1.1 Security Documentation](docs/API_1.1_SECURITY.md) for details.
@@ -152,6 +153,12 @@ curl -H 'Content-Type: application/json' -X POST 'http://localhost:8090/v1/Delet
   -d '{"MiataruDeleteLocation":{"Device":"7b8e6e0ee5296db345162dc2ef652c1350761823"}}'
 ```
 
+**Delete location data with DeviceKey (API 1.1):**
+```bash
+curl -H 'Content-Type: application/json' -X POST 'http://localhost:8090/v1/DeleteLocation' \
+  -d '{"MiataruDeleteLocation":{"Device":"7b8e6e0ee5296db345162dc2ef652c1350761823","DeviceKey":"your-device-key-here"}}'
+```
+
 **Get location in GeoJSON format:**
 ```bash
 curl -H 'Content-Type: application/json' -X POST 'http://localhost:8090/v1/GetLocationGeoJSON' \
@@ -162,14 +169,19 @@ curl -H 'Content-Type: application/json' -X POST 'http://localhost:8090/v1/GetLo
 
 The DeleteLocation API allows you to permanently delete all location data associated with a specific device.
 
+**API 1.1 Security**: If a DeviceKey has been set for a device (via `/v1/setDeviceKey`), the `DeviceKey` parameter must be provided in the request. See [API 1.1 Security Documentation](docs/API_1.1_SECURITY.md) for details.
+
 ### Request Format
 ```json
 {
   "MiataruDeleteLocation": {
-    "Device": "device-id-here"
+    "Device": "device-id-here",
+    "DeviceKey": "your-device-key-here"
   }
 }
 ```
+
+**Note**: `DeviceKey` is optional and only required if a DeviceKey has been set for the device.
 
 ### Response Format
 ```json
@@ -187,9 +199,13 @@ The DeleteLocation API allows you to permanently delete all location data associ
 
 ### Example Usage
 ```bash
-# Delete all location data for a device
+# Delete all location data for a device (no DeviceKey)
 curl -H 'Content-Type: application/json' -X POST 'http://localhost:8090/v1/DeleteLocation' \
   -d '{"MiataruDeleteLocation":{"Device":"my-device-123"}}'
+
+# Delete location data with DeviceKey (API 1.1)
+curl -H 'Content-Type: application/json' -X POST 'http://localhost:8090/v1/DeleteLocation' \
+  -d '{"MiataruDeleteLocation":{"Device":"my-device-123","DeviceKey":"your-device-key-here"}}'
 ```
 
 For detailed documentation, see [DELETE_LOCATION_API.md](docs/DELETE_LOCATION_API.md).

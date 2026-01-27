@@ -318,7 +318,7 @@ func getVisitorHistory(deviceID: String, amount: Int, completion: @escaping (Res
 }
 ```
 
-## Step 5: Allowed Devices List Management
+## Step 6: Allowed Devices List Management
 
 ### 5.1 Create AllowedDevice Model
 
@@ -382,7 +382,7 @@ func setAllowedDevicesList(deviceID: String, allowedDevices: [AllowedDevice], co
 }
 ```
 
-## Step 6: User Interface Updates
+## Step 7: User Interface Updates
 
 ### 6.1 DeviceKey Setup Screen
 

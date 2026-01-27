@@ -70,6 +70,7 @@ Include `RequestMiataruDeviceID` in the `MiataruConfig` object:
 The DeviceKey is a 256-character unicode string that acts as a password for a device. Once set, it must be provided for:
 
 - **UpdateLocation** - Writing location data to the server
+- **DeleteLocation** - Deleting all location data for a device
 - **GetVisitorHistory** - Accessing visitor history information
 
 ### Setting a DeviceKey
@@ -118,6 +119,21 @@ When a DeviceKey is set for a device, it must be included in each `MiataruLocati
 ```
 
 **Important:** The DeviceKey parameter should be placed right under the Device parameter in the MiataruLocation array element.
+
+### Using DeviceKey in DeleteLocation
+
+When a DeviceKey is set for a device, it must be included in the request:
+
+```json
+{
+  "MiataruDeleteLocation": {
+    "Device": "your-device-id",
+    "DeviceKey": "your-secure-key-here"
+  }
+}
+```
+
+**Important:** The DeviceKey parameter should be placed right under the Device parameter in the MiataruDeleteLocation object.
 
 ### Using DeviceKey in GetVisitorHistory
 
@@ -320,6 +336,7 @@ curl -X POST http://localhost:3000/v1/GetLocation \
 - [ ] Review existing clients and identify which need DeviceKey protection
 - [ ] Generate secure DeviceKeys for devices that need protection
 - [ ] Update client code to include DeviceKey in UpdateLocation requests
+- [ ] Update client code to include DeviceKey in DeleteLocation requests
 - [ ] Update client code to include DeviceKey in GetVisitorHistory requests
 - [ ] Test DeviceKey validation and error handling
 - [ ] Set up allowed devices lists for devices that need sharing
