@@ -25404,3 +25404,1330 @@ Adding DeviceKey validation to the deleteLocation function:
 
 ---
 
+
+Updating swagger.yaml to add the DeleteLocation endpoint:
+
+
+---
+
+<tool-use data-tool-type="read" data-tool-name="read_file_v2">
+<details><summary>Tool use: **read_file_v2** • Read file: /Users/bietiekay/code/miataru-server/docs/swagger.yaml</summary>
+
+</details>
+</tool-use>
+
+---
+
+
+Checking the ResponseDeleteLocation model to understand the response structure:
+
+
+---
+
+<tool-use data-tool-type="read" data-tool-name="read_file_v2">
+<details><summary>Tool use: **read_file_v2** • Read file: /Users/bietiekay/code/miataru-server/lib/models/ResponseDeleteLocation.js</summary>
+
+</details>
+</tool-use>
+
+---
+
+<tool-use data-tool-type="read" data-tool-name="read_file_v2">
+<details><summary>Tool use: **read_file_v2** • Read file: /Users/bietiekay/code/miataru-server/docs/swagger.yaml</summary>
+
+</details>
+</tool-use>
+
+---
+
+
+Adding the DeleteLocation endpoint to swagger.yaml:
+
+
+---
+
+<tool-use data-tool-type="write" data-tool-name="edit_file_v2">
+
+<details><summary>Tool use: **edit_file_v2** • Edit file: /Users/bietiekay/code/miataru-server/docs/swagger.yaml</summary>
+
+</details>
+
+</tool-use>
+
+---
+
+
+Adding schema definitions for DeleteLocation:
+
+
+---
+
+<tool-use data-tool-type="write" data-tool-name="edit_file_v2">
+
+<details><summary>Tool use: **edit_file_v2** • Edit file: /Users/bietiekay/code/miataru-server/docs/swagger.yaml</summary>
+
+</details>
+
+</tool-use>
+
+---
+
+<tool-use data-tool-type="task" data-tool-name="todo_write">
+<details><summary>Tool use: **todo_write** • Todo List</summary>
+
+- [x] Update RequestDevice model to support optional DeviceKey parameter (lib/models/RequestDevice.js)
+- [x] Add DeviceKey validation logic to deleteLocation function (lib/routes/location/v1/location.js)
+- [x] Add DeleteLocation endpoint definition to swagger.yaml with DeviceKey support
+- [-] Update DELETE_LOCATION_API.md with DeviceKey authentication information
+- [ ] Update API_1.1_SECURITY.md to include DeleteLocation in DeviceKey section
+- [ ] Update README.md examples and security features section
+- [ ] Update WHATS_NEW_V2.md protected operations list
+- [ ] Update CLIENT_ADOPTION_API_1.1.md with DeleteLocation examples
+- [ ] Update COMPATIBILITY_ASSESSMENT.md DeleteLocation entry
+- [ ] Add comprehensive DeviceKey test suite to deleteLocation.tests.js
+- [ ] Run full test suite (unit + integration) to verify all changes
+
+</details>
+</tool-use>
+
+---
+
+
+Updating DELETE_LOCATION_API.md:
+
+
+---
+
+<tool-use data-tool-type="read" data-tool-name="read_file_v2">
+<details><summary>Tool use: **read_file_v2** • Read file: /Users/bietiekay/code/miataru-server/docs/DELETE_LOCATION_API.md</summary>
+
+</details>
+</tool-use>
+
+---
+
+
+Updating DELETE_LOCATION_API.md with DeviceKey information:
+
+
+---
+
+<tool-use data-tool-type="write" data-tool-name="edit_file_v2">
+
+<details><summary>Tool use: **edit_file_v2** • Edit file: /Users/bietiekay/code/miataru-server/docs/DELETE_LOCATION_API.md</summary>
+
+</details>
+
+</tool-use>
+
+---
+
+<tool-use data-tool-type="write" data-tool-name="edit_file_v2">
+
+<details><summary>Tool use: **edit_file_v2** • Edit file: /Users/bietiekay/code/miataru-server/docs/DELETE_LOCATION_API.md</summary>
+
+</details>
+
+</tool-use>
+
+---
+
+<tool-use data-tool-type="write" data-tool-name="edit_file_v2">
+
+<details><summary>Tool use: **edit_file_v2** • Edit file: /Users/bietiekay/code/miataru-server/docs/DELETE_LOCATION_API.md</summary>
+
+</details>
+
+</tool-use>
+
+---
+
+<tool-use data-tool-type="write" data-tool-name="edit_file_v2">
+
+<details><summary>Tool use: **edit_file_v2** • Edit file: /Users/bietiekay/code/miataru-server/docs/DELETE_LOCATION_API.md</summary>
+
+</details>
+
+</tool-use>
+
+---
+
+<tool-use data-tool-type="write" data-tool-name="edit_file_v2">
+
+<details><summary>Tool use: **edit_file_v2** • Edit file: /Users/bietiekay/code/miataru-server/docs/DELETE_LOCATION_API.md</summary>
+
+</details>
+
+</tool-use>
+
+---
+
+<tool-use data-tool-type="task" data-tool-name="todo_write">
+<details><summary>Tool use: **todo_write** • Todo List</summary>
+
+- [x] Update RequestDevice model to support optional DeviceKey parameter (lib/models/RequestDevice.js)
+- [x] Add DeviceKey validation logic to deleteLocation function (lib/routes/location/v1/location.js)
+- [x] Add DeleteLocation endpoint definition to swagger.yaml with DeviceKey support
+- [x] Update DELETE_LOCATION_API.md with DeviceKey authentication information
+- [-] Update API_1.1_SECURITY.md to include DeleteLocation in DeviceKey section
+- [ ] Update README.md examples and security features section
+- [ ] Update WHATS_NEW_V2.md protected operations list
+- [ ] Update CLIENT_ADOPTION_API_1.1.md with DeleteLocation examples
+- [ ] Update COMPATIBILITY_ASSESSMENT.md DeleteLocation entry
+- [ ] Add comprehensive DeviceKey test suite to deleteLocation.tests.js
+- [ ] Run full test suite (unit + integration) to verify all changes
+
+</details>
+</tool-use>
+
+---
+
+
+Updating API_1.1_SECURITY.md:
+
+
+---
+
+<tool-use data-tool-type="read" data-tool-name="read_file_v2">
+<details><summary>Tool use: **read_file_v2** • Read file: /Users/bietiekay/code/miataru-server/docs/API_1.1_SECURITY.md</summary>
+
+</details>
+</tool-use>
+
+---
+
+
+Updating API_1.1_SECURITY.md:
+
+
+---
+
+<tool-use data-tool-type="write" data-tool-name="edit_file_v2">
+
+<details><summary>Tool use: **edit_file_v2** • Edit file: /Users/bietiekay/code/miataru-server/docs/API_1.1_SECURITY.md</summary>
+
+</details>
+
+</tool-use>
+
+---
+
+<tool-use data-tool-type="write" data-tool-name="edit_file_v2">
+
+<details><summary>Tool use: **edit_file_v2** • Edit file: /Users/bietiekay/code/miataru-server/docs/API_1.1_SECURITY.md</summary>
+
+</details>
+
+</tool-use>
+
+---
+
+<tool-use data-tool-type="read" data-tool-name="read_file_v2">
+<details><summary>Tool use: **read_file_v2** • Read file: /Users/bietiekay/code/miataru-server/docs/API_1.1_SECURITY.md</summary>
+
+</details>
+</tool-use>
+
+---
+
+
+Updating the migration checklist:
+
+
+---
+
+<tool-use data-tool-type="read" data-tool-name="read_file_v2">
+<details><summary>Tool use: **read_file_v2** • Read file: /Users/bietiekay/code/miataru-server/docs/API_1.1_SECURITY.md</summary>
+
+</details>
+</tool-use>
+
+---
+
+<tool-use data-tool-type="write" data-tool-name="edit_file_v2">
+
+<details><summary>Tool use: **edit_file_v2** • Edit file: /Users/bietiekay/code/miataru-server/docs/API_1.1_SECURITY.md</summary>
+
+</details>
+
+</tool-use>
+
+---
+
+<tool-use data-tool-type="task" data-tool-name="todo_write">
+<details><summary>Tool use: **todo_write** • Todo List</summary>
+
+- [x] Update RequestDevice model to support optional DeviceKey parameter (lib/models/RequestDevice.js)
+- [x] Add DeviceKey validation logic to deleteLocation function (lib/routes/location/v1/location.js)
+- [x] Add DeleteLocation endpoint definition to swagger.yaml with DeviceKey support
+- [x] Update DELETE_LOCATION_API.md with DeviceKey authentication information
+- [x] Update API_1.1_SECURITY.md to include DeleteLocation in DeviceKey section
+- [-] Update README.md examples and security features section
+- [ ] Update WHATS_NEW_V2.md protected operations list
+- [ ] Update CLIENT_ADOPTION_API_1.1.md with DeleteLocation examples
+- [ ] Update COMPATIBILITY_ASSESSMENT.md DeleteLocation entry
+- [ ] Add comprehensive DeviceKey test suite to deleteLocation.tests.js
+- [ ] Run full test suite (unit + integration) to verify all changes
+
+</details>
+</tool-use>
+
+---
+
+
+Updating README.md:
+
+
+---
+
+<tool-use data-tool-type="read" data-tool-name="read_file_v2">
+<details><summary>Tool use: **read_file_v2** • Read file: /Users/bietiekay/code/miataru-server/README.md</summary>
+
+</details>
+</tool-use>
+
+---
+
+
+Updating README.md:
+
+
+---
+
+<tool-use data-tool-type="write" data-tool-name="edit_file_v2">
+
+<details><summary>Tool use: **edit_file_v2** • Edit file: /Users/bietiekay/code/miataru-server/README.md</summary>
+
+</details>
+
+</tool-use>
+
+---
+
+<tool-use data-tool-type="write" data-tool-name="edit_file_v2">
+
+<details><summary>Tool use: **edit_file_v2** • Edit file: /Users/bietiekay/code/miataru-server/README.md</summary>
+
+</details>
+
+</tool-use>
+
+---
+
+<tool-use data-tool-type="write" data-tool-name="edit_file_v2">
+
+<details><summary>Tool use: **edit_file_v2** • Edit file: /Users/bietiekay/code/miataru-server/README.md</summary>
+
+</details>
+
+</tool-use>
+
+---
+
+<tool-use data-tool-type="task" data-tool-name="todo_write">
+<details><summary>Tool use: **todo_write** • Todo List</summary>
+
+- [x] Update RequestDevice model to support optional DeviceKey parameter (lib/models/RequestDevice.js)
+- [x] Add DeviceKey validation logic to deleteLocation function (lib/routes/location/v1/location.js)
+- [x] Add DeleteLocation endpoint definition to swagger.yaml with DeviceKey support
+- [x] Update DELETE_LOCATION_API.md with DeviceKey authentication information
+- [x] Update API_1.1_SECURITY.md to include DeleteLocation in DeviceKey section
+- [x] Update README.md examples and security features section
+- [-] Update WHATS_NEW_V2.md protected operations list
+- [ ] Update CLIENT_ADOPTION_API_1.1.md with DeleteLocation examples
+- [ ] Update COMPATIBILITY_ASSESSMENT.md DeleteLocation entry
+- [ ] Add comprehensive DeviceKey test suite to deleteLocation.tests.js
+- [ ] Run full test suite (unit + integration) to verify all changes
+
+</details>
+</tool-use>
+
+---
+
+
+Updating WHATS_NEW_V2.md:
+
+
+---
+
+<tool-use data-tool-type="read" data-tool-name="read_file_v2">
+<details><summary>Tool use: **read_file_v2** • Read file: /Users/bietiekay/code/miataru-server/docs/WHATS_NEW_V2.md</summary>
+
+</details>
+</tool-use>
+
+---
+
+<tool-use data-tool-type="write" data-tool-name="edit_file_v2">
+
+<details><summary>Tool use: **edit_file_v2** • Edit file: /Users/bietiekay/code/miataru-server/docs/WHATS_NEW_V2.md</summary>
+
+</details>
+
+</tool-use>
+
+---
+
+<tool-use data-tool-type="task" data-tool-name="todo_write">
+<details><summary>Tool use: **todo_write** • Todo List</summary>
+
+- [x] Update RequestDevice model to support optional DeviceKey parameter (lib/models/RequestDevice.js)
+- [x] Add DeviceKey validation logic to deleteLocation function (lib/routes/location/v1/location.js)
+- [x] Add DeleteLocation endpoint definition to swagger.yaml with DeviceKey support
+- [x] Update DELETE_LOCATION_API.md with DeviceKey authentication information
+- [x] Update API_1.1_SECURITY.md to include DeleteLocation in DeviceKey section
+- [x] Update README.md examples and security features section
+- [x] Update WHATS_NEW_V2.md protected operations list
+- [-] Update CLIENT_ADOPTION_API_1.1.md with DeleteLocation examples
+- [ ] Update COMPATIBILITY_ASSESSMENT.md DeleteLocation entry
+- [ ] Add comprehensive DeviceKey test suite to deleteLocation.tests.js
+- [ ] Run full test suite (unit + integration) to verify all changes
+
+</details>
+</tool-use>
+
+---
+
+
+Updating CLIENT_ADOPTION_API_1.1.md:
+
+
+---
+
+<tool-use data-tool-type="unknown" data-tool-name="ripgrep_raw_search">
+<details>
+<summary>Tool use: **ripgrep_raw_search**</summary>
+
+
+Parameters:
+
+```json
+{
+  "pattern": "DeleteLocation|deleteLocation",
+  "path": "docs/CLIENT_ADOPTION_API_1.1.md",
+  "caseInsensitive": true
+}
+```
+Result:
+
+```json
+{
+  "success": {
+    "pattern": "DeleteLocation|deleteLocation",
+    "path": "docs/CLIENT_ADOPTION_API_1.1.md",
+    "outputMode": "content",
+    "workspaceResults": {
+      "/Users/bietiekay/code/miataru-server": {
+        "content": {}
+      }
+    }
+  }
+}
+```
+Status: **completed**
+
+
+</details>
+</tool-use>
+
+---
+
+<tool-use data-tool-type="read" data-tool-name="read_file_v2">
+<details><summary>Tool use: **read_file_v2** • Read file: /Users/bietiekay/code/miataru-server/docs/CLIENT_ADOPTION_API_1.1.md</summary>
+
+</details>
+</tool-use>
+
+---
+
+
+Adding DeleteLocation to CLIENT_ADOPTION_API_1.1.md:
+
+
+---
+
+<tool-use data-tool-type="read" data-tool-name="read_file_v2">
+<details><summary>Tool use: **read_file_v2** • Read file: /Users/bietiekay/code/miataru-server/docs/CLIENT_ADOPTION_API_1.1.md</summary>
+
+</details>
+</tool-use>
+
+---
+
+The string to replace was not found in the file.
+
+---
+
+<tool-use data-tool-type="write" data-tool-name="edit_file_v2">
+
+<details><summary>Tool use: **edit_file_v2** • Edit file: /Users/bietiekay/code/miataru-server/docs/CLIENT_ADOPTION_API_1.1.md</summary>
+
+</details>
+
+</tool-use>
+
+---
+
+<tool-use data-tool-type="task" data-tool-name="todo_write">
+<details><summary>Tool use: **todo_write** • Todo List</summary>
+
+- [x] Update RequestDevice model to support optional DeviceKey parameter (lib/models/RequestDevice.js)
+- [x] Add DeviceKey validation logic to deleteLocation function (lib/routes/location/v1/location.js)
+- [x] Add DeleteLocation endpoint definition to swagger.yaml with DeviceKey support
+- [x] Update DELETE_LOCATION_API.md with DeviceKey authentication information
+- [x] Update API_1.1_SECURITY.md to include DeleteLocation in DeviceKey section
+- [x] Update README.md examples and security features section
+- [x] Update WHATS_NEW_V2.md protected operations list
+- [x] Update CLIENT_ADOPTION_API_1.1.md with DeleteLocation examples
+- [-] Update COMPATIBILITY_ASSESSMENT.md DeleteLocation entry
+- [ ] Add comprehensive DeviceKey test suite to deleteLocation.tests.js
+- [ ] Run full test suite (unit + integration) to verify all changes
+
+</details>
+</tool-use>
+
+---
+
+
+Fixing step numbering in CLIENT_ADOPTION_API_1.1.md:
+
+
+---
+
+<tool-use data-tool-type="read" data-tool-name="read_file_v2">
+<details><summary>Tool use: **read_file_v2** • Read file: /Users/bietiekay/code/miataru-server/docs/CLIENT_ADOPTION_API_1.1.md</summary>
+
+</details>
+</tool-use>
+
+---
+
+<tool-use data-tool-type="write" data-tool-name="edit_file_v2">
+
+<details><summary>Tool use: **edit_file_v2** • Edit file: /Users/bietiekay/code/miataru-server/docs/CLIENT_ADOPTION_API_1.1.md</summary>
+
+</details>
+
+</tool-use>
+
+---
+
+<tool-use data-tool-type="read" data-tool-name="read_file_v2">
+<details><summary>Tool use: **read_file_v2** • Read file: /Users/bietiekay/code/miataru-server/docs/COMPATIBILITY_ASSESSMENT.md</summary>
+
+</details>
+</tool-use>
+
+---
+
+
+Updating COMPATIBILITY_ASSESSMENT.md:
+
+
+---
+
+<tool-use data-tool-type="write" data-tool-name="edit_file_v2">
+
+<details><summary>Tool use: **edit_file_v2** • Edit file: /Users/bietiekay/code/miataru-server/docs/COMPATIBILITY_ASSESSMENT.md</summary>
+
+</details>
+
+</tool-use>
+
+---
+
+<tool-use data-tool-type="read" data-tool-name="read_file_v2">
+<details><summary>Tool use: **read_file_v2** • Read file: /Users/bietiekay/code/miataru-server/docs/COMPATIBILITY_ASSESSMENT.md</summary>
+
+</details>
+</tool-use>
+
+---
+
+<tool-use data-tool-type="write" data-tool-name="edit_file_v2">
+
+<details><summary>Tool use: **edit_file_v2** • Edit file: /Users/bietiekay/code/miataru-server/docs/COMPATIBILITY_ASSESSMENT.md</summary>
+
+</details>
+
+</tool-use>
+
+---
+
+
+
+
+
+---
+
+<tool-use data-tool-type="write" data-tool-name="edit_file_v2">
+
+<details><summary>Tool use: **edit_file_v2** • Edit file: /Users/bietiekay/code/miataru-server/docs/COMPATIBILITY_ASSESSMENT.md</summary>
+
+</details>
+
+</tool-use>
+
+---
+
+<tool-use data-tool-type="task" data-tool-name="todo_write">
+<details><summary>Tool use: **todo_write** • Todo List</summary>
+
+- [x] Update RequestDevice model to support optional DeviceKey parameter (lib/models/RequestDevice.js)
+- [x] Add DeviceKey validation logic to deleteLocation function (lib/routes/location/v1/location.js)
+- [x] Add DeleteLocation endpoint definition to swagger.yaml with DeviceKey support
+- [x] Update DELETE_LOCATION_API.md with DeviceKey authentication information
+- [x] Update API_1.1_SECURITY.md to include DeleteLocation in DeviceKey section
+- [x] Update README.md examples and security features section
+- [x] Update WHATS_NEW_V2.md protected operations list
+- [x] Update CLIENT_ADOPTION_API_1.1.md with DeleteLocation examples
+- [x] Update COMPATIBILITY_ASSESSMENT.md DeleteLocation entry
+- [-] Add comprehensive DeviceKey test suite to deleteLocation.tests.js
+- [ ] Run full test suite (unit + integration) to verify all changes
+
+</details>
+</tool-use>
+
+---
+
+
+Adding DeviceKey tests to deleteLocation.tests.js:
+
+
+---
+
+<tool-use data-tool-type="read" data-tool-name="read_file_v2">
+<details><summary>Tool use: **read_file_v2** • Read file: /Users/bietiekay/code/miataru-server/tests/integration/deleteLocation.tests.js</summary>
+
+</details>
+</tool-use>
+
+---
+
+<tool-use data-tool-type="read" data-tool-name="read_file_v2">
+<details><summary>Tool use: **read_file_v2** • Read file: /Users/bietiekay/code/miataru-server/tests/integration/deviceKey.tests.js</summary>
+
+</details>
+</tool-use>
+
+---
+
+
+Adding DeviceKey tests to deleteLocation.tests.js:
+
+
+---
+
+<tool-use data-tool-type="write" data-tool-name="edit_file_v2">
+
+<details><summary>Tool use: **edit_file_v2** • Edit file: /Users/bietiekay/code/miataru-server/tests/integration/deleteLocation.tests.js</summary>
+
+</details>
+
+</tool-use>
+
+---
+
+<tool-use data-tool-type="write" data-tool-name="edit_file_v2">
+
+<details><summary>Tool use: **edit_file_v2** • Edit file: /Users/bietiekay/code/miataru-server/tests/integration/deleteLocation.tests.js</summary>
+
+</details>
+
+</tool-use>
+
+---
+
+<tool-use data-tool-type="task" data-tool-name="todo_write">
+<details><summary>Tool use: **todo_write** • Todo List</summary>
+
+- [x] Update RequestDevice model to support optional DeviceKey parameter (lib/models/RequestDevice.js)
+- [x] Add DeviceKey validation logic to deleteLocation function (lib/routes/location/v1/location.js)
+- [x] Add DeleteLocation endpoint definition to swagger.yaml with DeviceKey support
+- [x] Update DELETE_LOCATION_API.md with DeviceKey authentication information
+- [x] Update API_1.1_SECURITY.md to include DeleteLocation in DeviceKey section
+- [x] Update README.md examples and security features section
+- [x] Update WHATS_NEW_V2.md protected operations list
+- [x] Update CLIENT_ADOPTION_API_1.1.md with DeleteLocation examples
+- [x] Update COMPATIBILITY_ASSESSMENT.md DeleteLocation entry
+- [x] Add comprehensive DeviceKey test suite to deleteLocation.tests.js
+- [-] Run full test suite (unit + integration) to verify all changes
+
+</details>
+</tool-use>
+
+---
+
+
+Running the test suite to verify everything works:
+
+
+---
+
+<tool-use data-tool-type="shell" data-tool-name="run_terminal_command_v2">
+<details><summary>Tool use: **run_terminal_command_v2** • Run command: cd /Users/bietiekay/code/miataru-server && npm test</summary>
+
+```bash
+cd /Users/bietiekay/code/miataru-server && npm test
+```
+
+```
+
+&gt; miataru-server@2.0.0 test
+&gt; NODE_ENV=test npx mocha tests/unit/
+
+
+
+  Allowed Devices Utilities
+    isAllowedDeviceEnabled
+      ✔ should return false when allowed devices list is not enabled (51ms)
+      ✔ should return true when allowed devices list is enabled (256ms)
+    setAllowedDevices
+      ✔ should set allowed devices list (284ms)
+      ✔ should replace entire list when updating (519ms)
+      ✔ should remove enabled flag when empty array is provided (296ms)
+      ✔ should return error when array exceeds 256 elements
+    getAllowedDevices
+      ✔ should return empty array when list is not enabled (55ms)
+      ✔ should return allowed devices when list is enabled (418ms)
+    checkAccess
+      ✔ should return true for currentLocation when list is not enabled (backward compatible) (60ms)
+      ✔ should return true for history when list is not enabled (backward compatible) (43ms)
+      ✔ should return true when device has currentLocation access (317ms)
+      ✔ should return false when device does not have currentLocation access (301ms)
+      ✔ should return false when device is not in allowed list (328ms)
+
+  ConcurrencyLimiter
+    ✔ enforces maxConcurrent and maxQueue per key
+    ✔ rejects queued acquires when the timeout elapses
+    ✔ releases slots when scheduled tasks reject asynchronously
+    ✔ releases slots when scheduled tasks throw synchronously
+
+  configLoader
+    ✔ should load the default config
+    ✔ should load the default config, overwritten by the environment config
+    ✔ should load the default config, overwritten by the environment config, overwritten by the user config
+    ✔ should load the default config, overwritten by the environment config, *NOT* overwritten by the user config
+    ✔ should load the default config and should enhance/overwrite it with cliParms
+    ✔ should load the default config and should enhance/overwrite it with deep nested cli Parms
+    ✔ should load the default config and enhance it with an "external" config file
+    ✔ should throw on invalid external file
+
+  dataHolders
+    config
+      ✔ should throw because of invalid data
+      EnableLocationHistory validation
+        ✔ should accept string "True" and convert to boolean true
+        ✔ should accept string "true" and convert to boolean true
+        ✔ should accept string "False" and convert to boolean false
+        ✔ should accept string "false" and convert to boolean false
+        ✔ should accept any non-"true" string and convert to boolean false
+        ✔ should accept null and keep as null
+        ✔ should accept undefined and keep as null
+        ✔ should throw error for numeric input
+        ✔ should throw error for boolean input
+        ✔ should throw error for object input
+        ✔ should throw error for array input
+        ✔ should throw error for function input
+    location
+      RequestLocation with new fields
+        ✔ should handle old format without new fields
+        ✔ should handle new format with all fields
+        ✔ should handle mixed format with some new fields
+        ✔ should exclude fields with -1 values
+        ✔ should handle zero values correctly
+        ✔ should provide getter methods for new fields
+        ✔ should default new fields to -1 when not provided
+        ✔ should handle string and numeric values for new fields
+        RequestLocation with DeviceKey (API 1.1)
+          ✔ should handle location without DeviceKey (backward compatible)
+          ✔ should handle location with DeviceKey
+          ✔ should handle DeviceKey as null
+          ✔ should handle DeviceKey as empty string
+          ✔ should not include DeviceKey in data() output
+
+  db redis compatibility
+    ✔ exposes legacy list helpers when using the modern redis client
+    ✔ schedules redis operations only once even when using camelCase aliases
+
+  DeviceKey Utilities
+    getDeviceKey
+      ✔ should return null when device key does not exist (45ms)
+      ✔ should return the device key when it exists (106ms)
+      ✔ should return error when device ID is missing
+    setDeviceKey
+      ✔ should set a new device key (94ms)
+      ✔ should update an existing device key (154ms)
+      ✔ should return error when device ID is missing
+      ✔ should return error when device key is null
+      ✔ should return error when device key exceeds 256 characters
+      ✔ should accept device key with exactly 256 characters
+      ✔ should accept unicode characters in device key (84ms)
+    validateDeviceKey
+      ✔ should return true when no key is set (backward compatibility) (48ms)
+      ✔ should return true when keys match (99ms)
+      ✔ should return false when keys do not match (75ms)
+      ✔ should return false when provided key is null and stored key exists (86ms)
+      ✔ should return false when provided key is empty string and stored key exists (113ms)
+      ✔ should use constant-time comparison to prevent timing attacks (72ms)
+
+  installRedisRateLimiter
+    ✔ queues operations and rejects when the queue is full
+    ✔ translates queue timeouts into Redis specific errors
+    ✔ leaves client methods untouched when disabled
+
+  RequestDevice
+    constructor
+      ✔ should throw BadRequestError when no arguments provided
+      ✔ should throw BadRequestError when null is passed
+      ✔ should throw BadRequestError when undefined is passed
+      ✔ should throw BadRequestError when empty object is passed
+      ✔ should throw BadRequestError when data object has no Device property
+      ✔ should throw BadRequestError when Device property is null
+      ✔ should throw BadRequestError when Device property is undefined
+      ✔ should throw BadRequestError when Device property is empty string
+      ✔ should create instance successfully when valid Device is provided
+      ✔ should create instance successfully when Device is 0
+      ✔ should create instance successfully when Device is false
+    device method
+      ✔ should return the device value
+
+  RequestLocation Integration Tests
+    End-to-end data flow
+      ✔ should handle complete data flow from request to response
+      ✔ should handle backward compatibility in complete data flow
+      ✔ should handle mixed data scenarios
+      ✔ should handle GeoJSON generation with new fields
+
+  RequestSetAllowedDeviceList
+    constructor
+      ✔ should throw BadRequestError when DeviceID is missing
+      ✔ should throw BadRequestError when DeviceKey is missing
+      ✔ should throw BadRequestError when allowedDevices is missing
+      ✔ should throw BadRequestError when allowedDevices is not an array
+      ✔ should throw BadRequestError when allowedDevices exceeds 256 elements
+      ✔ should accept valid request with all required fields
+      ✔ should set default values for missing boolean fields
+      ✔ should validate DeviceID in allowedDevices
+      ✔ should validate boolean fields in allowedDevices
+      ✔ should accept empty array
+      ✔ should accept array with exactly 256 elements
+
+  RequestSetDeviceKey
+    constructor
+      ✔ should throw BadRequestError when DeviceID is missing
+      ✔ should throw BadRequestError when NewDeviceKey is missing
+      ✔ should throw BadRequestError when NewDeviceKey exceeds 256 characters
+      ✔ should accept valid request with DeviceID and NewDeviceKey
+      ✔ should accept CurrentDeviceKey as null for first-time setup
+      ✔ should accept CurrentDeviceKey as empty string for first-time setup
+      ✔ should accept CurrentDeviceKey when provided
+      ✔ should accept NewDeviceKey with exactly 256 characters
+      ✔ should accept unicode characters in NewDeviceKey
+
+  ResponseDeleteLocation
+    constructor
+      ✔ should create response with device ID and deleted count
+    data method
+      ✔ should return correct response structure
+      ✔ should handle zero deleted count
+      ✔ should handle multiple deleted items
+      ✔ should handle special characters in device ID
+
+  ResponseLocationGeoJSON with new fields
+    GeoJSON generation
+      ✔ should generate GeoJSON with new fields in properties
+      ✔ should handle location without new fields
+      ✔ should handle location with partial new fields
+      ✔ should handle empty location list
+      ✔ should handle location without required coordinates
+      ✔ should handle multiple locations (uses first one)
+
+  server error handling logging
+    ✔ does not log error level messages for 404 responses
+    ✔ does not log error level messages for 405 responses
+
+  stuff
+    keybuilder
+      ✔ should use only the main namespace
+      ✔ should use all the parameters to build a key
+
+
+  123 passing (8s)
+
+
+```
+</details>
+</tool-use>
+
+---
+
+
+Running integration tests, focusing on deleteLocation:
+
+
+---
+
+<tool-use data-tool-type="shell" data-tool-name="run_terminal_command_v2">
+<details><summary>Tool use: **run_terminal_command_v2** • Run command: cd /Users/bietiekay/code/miataru-server && npm run test:integration -- --grep "DeleteLocation"</summary>
+
+```bash
+cd /Users/bietiekay/code/miataru-server && npm run test:integration -- --grep "DeleteLocation"
+```
+
+```
+
+&gt; miataru-server@2.0.0 test:integration
+&gt; NODE_ENV=test npx mocha tests/integration/ --grep DeleteLocation
+
+
+
+  DeleteLocation
+    Basic DeleteLocation functionality
+      ✔ should return ACK when deleting location data for existing device (291ms)
+      ✔ should return ACK even when deleting non-existent device data (101ms)
+      ✔ should delete all location data types (current, history, visitor) (679ms)
+    API endpoint compatibility
+      ✔ should work with v1 API endpoint (97ms)
+      ✔ should work with default API endpoint (no v1 prefix) (105ms)
+      ✔ should reject non-POST methods
+    Error handling
+      ✔ should handle missing device parameter
+      ✔ should handle missing MiataruDeleteLocation object
+      ✔ should handle empty request body
+    Complete workflow test
+      ✔ should handle complete location lifecycle: create -&gt; verify -&gt; delete -&gt; verify (626ms)
+    DeleteLocation with DeviceKey
+      ✔ should accept deleteLocation without DeviceKey when no key is set (backward compatible) (289ms)
+      ✔ should accept deleteLocation with valid DeviceKey (453ms)
+      ✔ should return 403 when DeviceKey does not match (167ms)
+      ✔ should return 403 when DeviceKey is missing but required (86ms)
+      ✔ should return 403 when DeviceKey is empty but required (88ms)
+      ✔ should handle complete workflow: Set DeviceKey -&gt; UpdateLocation -&gt; DeleteLocation -&gt; Verify deletion (723ms)
+
+  Unknown Device ID Handling
+    DeleteLocation endpoint
+      ✔ should return ACK with 0 deleted count for unknown device ID (97ms)
+      ✔ should return ACK with 0 deleted count for unknown device ID (non-versioned endpoint) (86ms)
+
+
+  18 passing (7s)
+
+
+```
+</details>
+</tool-use>
+
+---
+
+
+All DeleteLocation tests pass, including the new DeviceKey tests. Running the full integration test suite to check for regressions:
+
+
+---
+
+<tool-use data-tool-type="shell" data-tool-name="run_terminal_command_v2">
+<details><summary>Tool use: **run_terminal_command_v2** • Run command: cd /Users/bietiekay/code/miataru-server && npm run test:integration 2>&1 | tail -50</summary>
+
+```bash
+cd /Users/bietiekay/code/miataru-server && npm run test:integration 2>&1 | tail -50
+```
+
+```
+      ✔ should return null for unknown device ID (non-versioned endpoint) (87ms)
+      ✔ should handle multiple unknown device IDs (99ms)
+    GetLocationGeoJSON endpoint
+      ✔ should return empty object for unknown device ID (112ms)
+      ✔ should return empty object for unknown device ID (non-versioned endpoint) (111ms)
+      ✔ should handle GET request with unknown device ID (82ms)
+      ✔ should handle GET request with unknown device ID (non-versioned endpoint) (76ms)
+    GetLocationHistory endpoint
+      ✔ should return empty history for unknown device ID (111ms)
+      ✔ should return empty history for unknown device ID (non-versioned endpoint) (98ms)
+    GetVisitorHistory endpoint
+      ✔ should return empty visitor history for unknown device ID (111ms)
+      ✔ should return empty visitor history for unknown device ID (non-versioned endpoint) (99ms)
+    DeleteLocation endpoint
+      ✔ should return ACK with 0 deleted count for unknown device ID (112ms)
+      ✔ should return ACK with 0 deleted count for unknown device ID (non-versioned endpoint) (80ms)
+    UpdateLocation endpoint
+      ✔ should successfully update location for unknown device ID (179ms)
+      ✔ should successfully update location for unknown device ID (non-versioned endpoint) (207ms)
+    Mixed known and unknown devices
+      ✔ should handle mixed known and unknown devices in GetLocation (115ms)
+      ✔ should handle mixed known and unknown devices in GetLocationGeoJSON (131ms)
+    Error handling for malformed data
+      ✔ should handle malformed JSON in Redis gracefully (114ms)
+
+  updateLocation
+    ✔ should answer with ACK to simple update location request (204ms)
+    ✔ should answer with ACK to update location request with multiple locations (316ms)
+    ✔ should answer with ACK to update location request with history enabled (221ms)
+    ✔ should answer with ACK to update location request with new fields (250ms)
+    ✔ should handle malformed update location request
+    ✔ should handle empty update location request
+    ✔ should wait for Redis operations when history is disabled (101ms)
+
+  Visitor History Filtering
+    GetLocation with RequestMiataruDeviceID
+      ✔ should NOT store visitor history when RequestMiataruDeviceID equals target deviceID (276ms)
+      ✔ should store visitor history when RequestMiataruDeviceID differs from target deviceID (489ms)
+    GetLocationHistory with RequestMiataruDeviceID
+      ✔ should NOT store visitor history when RequestMiataruDeviceID equals target deviceID (296ms)
+      ✔ should store visitor history when RequestMiataruDeviceID differs from target deviceID (556ms)
+    GetVisitorHistory filtering
+      ✔ should filter out entries where visitor DeviceID equals requested deviceID (286ms)
+      ✔ should return all entries when visitor DeviceID differs from requested deviceID (259ms)
+      ✔ should return empty array when all entries have DeviceID equal to requested deviceID (268ms)
+      ✔ should work with non-versioned GetVisitorHistory endpoint (193ms)
+
+
+  179 passing (46s)
+
+
+```
+</details>
+</tool-use>
+
+---
+
+
+All 179 integration tests pass. Verifying RequestDevice model tests:
+
+
+---
+
+<tool-use data-tool-type="shell" data-tool-name="run_terminal_command_v2">
+<details><summary>Tool use: **run_terminal_command_v2** • Run command: cd /Users/bietiekay/code/miataru-server && npm test 2>&1 | grep -A 20 "RequestDevice"</summary>
+
+```bash
+cd /Users/bietiekay/code/miataru-server && npm test 2>&1 | grep -A 20 "RequestDevice"
+```
+
+```
+  RequestDevice
+    constructor
+      ✔ should throw BadRequestError when no arguments provided
+      ✔ should throw BadRequestError when null is passed
+      ✔ should throw BadRequestError when undefined is passed
+      ✔ should throw BadRequestError when empty object is passed
+      ✔ should throw BadRequestError when data object has no Device property
+      ✔ should throw BadRequestError when Device property is null
+      ✔ should throw BadRequestError when Device property is undefined
+      ✔ should throw BadRequestError when Device property is empty string
+      ✔ should create instance successfully when valid Device is provided
+      ✔ should create instance successfully when Device is 0
+      ✔ should create instance successfully when Device is false
+    device method
+      ✔ should return the device value
+
+  RequestLocation Integration Tests
+    End-to-end data flow
+      ✔ should handle complete data flow from request to response
+      ✔ should handle backward compatibility in complete data flow
+      ✔ should handle mixed data scenarios
+
+```
+</details>
+</tool-use>
+
+---
+
+<tool-use data-tool-type="task" data-tool-name="todo_write">
+<details><summary>Tool use: **todo_write** • Todo List</summary>
+
+- [x] Update RequestDevice model to support optional DeviceKey parameter (lib/models/RequestDevice.js)
+- [x] Add DeviceKey validation logic to deleteLocation function (lib/routes/location/v1/location.js)
+- [x] Add DeleteLocation endpoint definition to swagger.yaml with DeviceKey support
+- [x] Update DELETE_LOCATION_API.md with DeviceKey authentication information
+- [x] Update API_1.1_SECURITY.md to include DeleteLocation in DeviceKey section
+- [x] Update README.md examples and security features section
+- [x] Update WHATS_NEW_V2.md protected operations list
+- [x] Update CLIENT_ADOPTION_API_1.1.md with DeleteLocation examples
+- [x] Update COMPATIBILITY_ASSESSMENT.md DeleteLocation entry
+- [x] Add comprehensive DeviceKey test suite to deleteLocation.tests.js
+- [x] Run full test suite (unit + integration) to verify all changes
+
+</details>
+</tool-use>
+
+---
+
+
+All tests pass. Summary of changes:
+
+## Implementation complete
+
+### Code changes
+
+1. **RequestDevice Model** (`lib/models/RequestDevice.js`)
+   - Added optional `DeviceKey` support
+   - Added `deviceKey()` method
+   - Maintains backward compatibility
+
+2. **DeleteLocation Function** (`lib/routes/location/v1/location.js`)
+   - Added DeviceKey validation before deletion
+   - Returns 403 Forbidden when DeviceKey is required but missing or invalid
+   - Maintains backward compatibility when no DeviceKey is set
+
+### Documentation updates
+
+3. **Swagger.yaml** — Added DeleteLocation endpoint with:
+   - Endpoint definition
+   - DeviceKey parameter documentation
+   - Request/response schemas
+   - 403 error response
+
+4. **DELETE_LOCATION_API.md** — Updated with:
+   - DeviceKey authentication section
+   - Updated examples with DeviceKey
+   - Security considerations update
+   - Error responses for 403
+
+5. **API_1.1_SECURITY.md** — Added:
+   - DeleteLocation to protected operations list
+   - "Using DeviceKey in DeleteLocation" section
+   - Updated migration checklist
+
+6. **README.md** — Updated:
+   - Security features section
+   - DeleteLocation examples with DeviceKey
+   - API documentation references
+
+7. **WHATS_NEW_V2.md** — Added DeleteLocation to protected operations
+
+8. **CLIENT_ADOPTION_API_1.1.md** — Added:
+   - DeleteLocation implementation example
+   - Error handling for 403 responses
+
+9. **COMPATIBILITY_ASSESSMENT.md** — Updated DeleteLocation entry to mention DeviceKey support
+
+### Tests
+
+10. **deleteLocation.tests.js** — Added DeviceKey test suite:
+    - Backward compatibility (no DeviceKey when none set)
+    - Valid DeviceKey acceptance
+    - Missing DeviceKey rejection (403)
+    - Invalid DeviceKey rejection (403)
+    - Empty DeviceKey rejection (403)
+    - Complete workflow test
+
+### Test results
+
+- All 123 unit tests passing
+- All 179 integration tests passing
+- All 18 DeleteLocation tests passing (including 6 new DeviceKey tests)
+
+### Security verification
+
+- DeleteLocation now requires DeviceKey when DeviceKey is set for the device
+- DeleteLocation works without DeviceKey when none is set (backward compatible)
+- No other write operations are missing DeviceKey protection
+
+Implementation is complete and all tests pass.
+
+---
+
+_**User**_
+
+describe and commit
+
+---
+
+_**Agent (model default, mode Agent)**_
+
+
+Checking git status, then committing with a descriptive message.
+
+
+---
+
+<tool-use data-tool-type="shell" data-tool-name="run_terminal_command_v2">
+<details><summary>Tool use: **run_terminal_command_v2** • Run command: cd /Users/bietiekay/code/miataru-server && git status</summary>
+
+```bash
+cd /Users/bietiekay/code/miataru-server && git status
+```
+
+```
+On branch master
+Your branch is up to date with 'origin/master'.
+
+Changes not staged for commit:
+  (use "git add &lt;file&gt;..." to update what will be committed)
+  (use "git restore &lt;file&gt;..." to discard changes in working directory)
+	modified:   .specstory/history/2026-01-25_18-23Z-deletelocation-method-update-and-documentation.md
+	modified:   README.md
+	modified:   docs/API_1.1_SECURITY.md
+	modified:   docs/CLIENT_ADOPTION_API_1.1.md
+	modified:   docs/COMPATIBILITY_ASSESSMENT.md
+	modified:   docs/DELETE_LOCATION_API.md
+	modified:   docs/WHATS_NEW_V2.md
+	modified:   docs/swagger.yaml
+	modified:   lib/models/RequestDevice.js
+	modified:   lib/routes/location/v1/location.js
+	modified:   tests/integration/deleteLocation.tests.js
+
+Untracked files:
+  (use "git add &lt;file&gt;..." to include in what will be committed)
+	.cursor/plans/add_devicekey_to_deletelocation_66b48b2b.plan.md
+
+no changes added to commit (use "git add" and/or "git commit -a")
+
+```
+</details>
+</tool-use>
+
+---
+
+
+Staging changes and creating a commit with a descriptive message:
+
+
+---
+
+<tool-use data-tool-type="shell" data-tool-name="run_terminal_command_v2">
+<details><summary>Tool use: **run_terminal_command_v2** • Run command: cd /Users/bietiekay/code/miataru-server && git add lib/models/RequestDevice.js lib/routes/location/v1/location.js tests/integration/deleteLocation.tests.js docs/swagger.yaml docs/DELETE_LOCATION_API.md docs/API_1.1_SECURITY.md docs/WHATS_NEW_V2.md docs/CLIENT_ADOPTION_API_1.1.md docs/COMPATIBILITY_ASSESSMENT.md README.md</summary>
+
+```bash
+cd /Users/bietiekay/code/miataru-server && git add lib/models/RequestDevice.js lib/routes/location/v1/location.js tests/integration/deleteLocation.tests.js docs/swagger.yaml docs/DELETE_LOCATION_API.md docs/API_1.1_SECURITY.md docs/WHATS_NEW_V2.md docs/CLIENT_ADOPTION_API_1.1.md docs/COMPATIBILITY_ASSESSMENT.md README.md
+```
+</details>
+</tool-use>
+
+---
+
+<tool-use data-tool-type="shell" data-tool-name="run_terminal_command_v2">
+<details><summary>Tool use: **run_terminal_command_v2** • Run command: cd /Users/bietiekay/code/miataru-server && git commit -m "Add DeviceKey authentication to DeleteLocation endpoint
+
+This commit adds DeviceKey authentication support to the DeleteLocation
+endpoint, closing a security gap where write operations were not fully
+protected. DeleteLocation now requires DeviceKey validation when a
+DeviceKey is set for a device, consistent with other write operations
+like UpdateLocation and SetAllowedDeviceList.
+
+Changes:
+
+Code Implementation:
+- Updated RequestDevice model to support optional DeviceKey parameter
+- Added DeviceKey validation logic to deleteLocation function
+- Returns 403 Forbidden when DeviceKey is required but missing or invalid
+- Maintains full backward compatibility when no DeviceKey is set
+
+Documentation Updates:
+- Added DeleteLocation endpoint to swagger.yaml with DeviceKey support
+- Updated DELETE_LOCATION_API.md with DeviceKey authentication section
+- Added DeleteLocation to API_1.1_SECURITY.md protected operations
+- Updated README.md examples and security features section
+- Added DeleteLocation to WHATS_NEW_V2.md protected operations list
+- Added DeleteLocation implementation example to CLIENT_ADOPTION_API_1.1.md
+- Updated COMPATIBILITY_ASSESSMENT.md to reflect DeviceKey support
+
+Testing:
+- Added comprehensive DeviceKey test suite to deleteLocation.tests.js
+- Tests cover backward compatibility, valid/invalid keys, missing keys
+- Added complete workflow test with DeviceKey authentication
+- All existing tests continue to pass (123 unit + 179 integration tests)
+
+Security:
+- DeleteLocation now requires DeviceKey when DeviceKey is set for device
+- Prevents unauthorized deletion of location data
+- Consistent with security model for other write operations
+- No other write operations missing DeviceKey protection
+
+Backward Compatibility:
+- Fully backward compatible - works without DeviceKey when none is set
+- DeviceKey parameter is optional in requests
+- Existing clients continue to work without modification"</summary>
+
+```bash
+cd /Users/bietiekay/code/miataru-server && git commit -m "Add DeviceKey authentication to DeleteLocation endpoint
+
+This commit adds DeviceKey authentication support to the DeleteLocation
+endpoint, closing a security gap where write operations were not fully
+protected. DeleteLocation now requires DeviceKey validation when a
+DeviceKey is set for a device, consistent with other write operations
+like UpdateLocation and SetAllowedDeviceList.
+
+Changes:
+
+Code Implementation:
+- Updated RequestDevice model to support optional DeviceKey parameter
+- Added DeviceKey validation logic to deleteLocation function
+- Returns 403 Forbidden when DeviceKey is required but missing or invalid
+- Maintains full backward compatibility when no DeviceKey is set
+
+Documentation Updates:
+- Added DeleteLocation endpoint to swagger.yaml with DeviceKey support
+- Updated DELETE_LOCATION_API.md with DeviceKey authentication section
+- Added DeleteLocation to API_1.1_SECURITY.md protected operations
+- Updated README.md examples and security features section
+- Added DeleteLocation to WHATS_NEW_V2.md protected operations list
+- Added DeleteLocation implementation example to CLIENT_ADOPTION_API_1.1.md
+- Updated COMPATIBILITY_ASSESSMENT.md to reflect DeviceKey support
+
+Testing:
+- Added comprehensive DeviceKey test suite to deleteLocation.tests.js
+- Tests cover backward compatibility, valid/invalid keys, missing keys
+- Added complete workflow test with DeviceKey authentication
+- All existing tests continue to pass (123 unit + 179 integration tests)
+
+Security:
+- DeleteLocation now requires DeviceKey when DeviceKey is set for device
+- Prevents unauthorized deletion of location data
+- Consistent with security model for other write operations
+- No other write operations missing DeviceKey protection
+
+Backward Compatibility:
+- Fully backward compatible - works without DeviceKey when none is set
+- DeviceKey parameter is optional in requests
+- Existing clients continue to work without modification"
+```
+
+```
+[master 030d548] Add DeviceKey authentication to DeleteLocation endpoint
+ 10 files changed, 510 insertions(+), 15 deletions(-)
+
+```
+</details>
+</tool-use>
+
+---
+
+
+Committed the changes. Summary:
+
+## Commit Summary
+
+**Commit:** `030d548` - "Add DeviceKey authentication to DeleteLocation endpoint"
+
+**Files Changed:** 10 files
+- **510 insertions**, 15 deletions
+
+### Committed Files:
+
+1. **Code Files:**
+   - `lib/models/RequestDevice.js` - Added DeviceKey support
+   - `lib/routes/location/v1/location.js` - Added DeviceKey validation
+
+2. **Test Files:**
+   - `tests/integration/deleteLocation.tests.js` - Added DeviceKey test suite
+
+3. **Documentation Files:**
+   - `docs/swagger.yaml` - Added DeleteLocation endpoint definition
+   - `docs/DELETE_LOCATION_API.md` - Updated with DeviceKey authentication
+   - `docs/API_1.1_SECURITY.md` - Added DeleteLocation to protected operations
+   - `docs/WHATS_NEW_V2.md` - Updated protected operations list
+   - `docs/CLIENT_ADOPTION_API_1.1.md` - Added DeleteLocation examples
+   - `docs/COMPATIBILITY_ASSESSMENT.md` - Updated compatibility notes
+   - `README.md` - Updated examples and security features
+
+The commit message includes:
+- Overview of the security enhancement
+- Detailed breakdown of code, documentation, and test changes
+- Security and backward compatibility notes
+
+All changes are committed and ready. The implementation adds DeviceKey authentication to DeleteLocation while maintaining full backward compatibility.
+
+---
+
