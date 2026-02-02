@@ -37,21 +37,17 @@ Then visit `http://localhost:3005` and authenticate with `STATS_AUTH_USER` / `ST
 
 ### Connecting to host Redis from docker-compose
 
-If your production Redis runs on the Docker host and is reachable as `redis` on the host network, add a host mapping so containers can resolve that name too. The included compose file already adds:
+When running via docker-compose, the simplest way to reach a Redis instance running on the Docker host is to use host networking so the container shares the host's network stack:
 
 ```yaml
-extra_hosts:
-  - "redis:host-gateway"
+network_mode: host
 ```
 
-This maps the container hostname `redis` to the host gateway (requires Docker 20.10+ and Compose v2). If your environment does not support `host-gateway` (for example compose file version `3.3`), you can either:
+With host networking, set `PROD_REDIS_URL=redis://127.0.0.1:6379` so the container connects to the host Redis on loopback. The included compose file uses host networking and points `PROD_REDIS_URL` at `127.0.0.1`.
 
-- Replace the entry with the host's IP address (e.g. `redis:192.168.1.10`), or
-- Run the stats-ui service with `network_mode: host` and keep `PROD_REDIS_URL=redis://redis:6379`.
+Because host networking bypasses the compose bridge, the bundled stats Redis is exposed on `6380` (`ports: 6380:6379`) and the app uses `STATS_REDIS_URL=redis://127.0.0.1:6380`.
 
-In all cases, ensure `PROD_REDIS_URL` points to the host Redis endpoint.
-
-If you see `ECONNREFUSED 172.17.0.1:6379`, the container can reach the Docker bridge gateway but the host Redis is not accepting connections there. Verify that Redis is bound to `0.0.0.0` (not just `127.0.0.1`), that it listens on port `6379`, and that firewall rules allow connections from the Docker bridge network.
+If you see `ECONNREFUSED 172.17.0.1:6379` (bridge networking) or `ECONNREFUSED 127.0.0.1:6379` (host networking), the host Redis is not accepting connections on that interface. Verify that Redis is bound to `0.0.0.0` (or at least to `127.0.0.1` for host mode), that it listens on port `6379`, and that firewall rules allow local connections.
 
 ## Environment variables
 
