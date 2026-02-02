@@ -1,4 +1,4 @@
-version: '3.8'
+version: '2'
 
 services:
   stats-ui:
@@ -9,7 +9,7 @@ services:
       PORT: 3000
       STATS_AUTH_USER: miataru
       STATS_AUTH_PASS: change-me
-      PROD_REDIS_URL: redis://your-prod-redis:6379
+      PROD_REDIS_URL: redis://redis:6379
       PROD_REDIS_NAMESPACE: miad
       STATS_REDIS_URL: redis://stats-redis:6379
       STATS_REDIS_NAMESPACE: miad:stats
@@ -19,10 +19,10 @@ services:
       - "3005:3000"
     depends_on:
       - stats-redis
+    extra_hosts:
+      - "redis:host-gateway"
   stats-redis:
     image: redis:7-alpine
     command: ["redis-server", "--appendonly", "no", "--save", ""]
     expose:
       - "6379"
-    profiles:
-      - local
