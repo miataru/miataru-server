@@ -9,6 +9,7 @@
   "dependencies": {
     "express": "^4.19.2",
     "express-basic-auth": "^1.2.1",
+    "ioredis": "^5.4.1",
     "redis": "^4.6.13",
     "ws": "^8.17.0"
   }
