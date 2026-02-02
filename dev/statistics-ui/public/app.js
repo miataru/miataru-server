@@ -21,12 +21,17 @@ L.tileLayer('https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png', {
   attribution: '&copy; OpenStreetMap contributors'
 }).addTo(map);
 
+const trailsLayer = L.layerGroup().addTo(map);
 const markersLayer = L.layerGroup().addTo(map);
+const pulseLayer = L.layerGroup().addTo(map);
 const markerByDevice = new Map();
+const trailByDevice = new Map();
+const trailLatLngsByDevice = new Map();
 
 let ws;
 let wsConnected = false;
 let wsToken = null;
+let mapHasLoaded = false;
 
 function formatNumber(value) {
   if (value === null || value === undefined) {
@@ -51,51 +56,168 @@ function updateStatsUI(stats) {
   }
 }
 
-function upsertMarker(device) {
+function buildPopupContent(device) {
+  return `
+    <strong>${device.deviceId}</strong><br />
+    ${new Date(device.timestampMs).toLocaleString()}<br />
+    Accuracy: ${device.accuracy || 'n/a'}m
+  `.trim();
+}
+
+function getLatLng(device) {
   if (!Number.isFinite(device.latitude) || !Number.isFinite(device.longitude)) {
+    return null;
+  }
+  return [device.latitude, device.longitude];
+}
+
+function animateMarkerUpdate(marker, latLng) {
+  if (!marker) {
+    return;
+  }
+
+  const element = marker.getElement();
+  if (element) {
+    element.classList.remove('is-updating');
+    void element.offsetWidth;
+    element.classList.add('is-updating');
+    setTimeout(() => {
+      element.classList.remove('is-updating');
+    }, 1400);
+  }
+
+  const pulseMarker = L.circleMarker(latLng, {
+    radius: 14,
+    className: 'device-update-pulse',
+    interactive: false
+  });
+  pulseMarker.addTo(pulseLayer);
+  setTimeout(() => {
+    pulseLayer.removeLayer(pulseMarker);
+  }, 1400);
+}
+
+function updateTrail(deviceId, latLngs) {
+  if (!latLngs || latLngs.length === 0) {
+    return;
+  }
+
+  const trimmed = latLngs.slice(-50);
+  trailLatLngsByDevice.set(deviceId, trimmed);
+
+  const existingTrail = trailByDevice.get(deviceId);
+  if (existingTrail) {
+    existingTrail.setLatLngs(trimmed);
+    return;
+  }
+
+  const trail = L.polyline(trimmed, {
+    className: 'device-trail',
+    weight: 3,
+    opacity: 0.9
+  });
+  trail.addTo(trailsLayer);
+  trailByDevice.set(deviceId, trail);
+}
+
+function appendTrailPoint(deviceId, latLng) {
+  const latLngs = trailLatLngsByDevice.get(deviceId) || [];
+  latLngs.push(latLng);
+  if (latLngs.length > 50) {
+    latLngs.splice(0, latLngs.length - 50);
+  }
+  updateTrail(deviceId, latLngs);
+}
+
+function upsertMarker(device, { animate = false, replaceTrail = false } = {}) {
+  if (!device || !device.deviceId) {
+    return;
+  }
+
+  const latLng = getLatLng(device);
+  if (!latLng) {
     return;
   }
 
   const existing = markerByDevice.get(device.deviceId);
   if (existing) {
-    existing.setLatLng([device.latitude, device.longitude]);
-    existing.setPopupContent(
-      `
-        <strong>${device.deviceId}</strong><br />
-        ${new Date(device.timestampMs).toLocaleString()}<br />
-        Accuracy: ${device.accuracy || 'n/a'}m
-      `.trim()
-    );
+    const previousLatLng = existing.getLatLng();
+    const hasMoved =
+      previousLatLng.lat !== device.latitude ||
+      previousLatLng.lng !== device.longitude;
+
+    existing.setLatLng(latLng);
+    existing.setPopupContent(buildPopupContent(device));
+
+    if (replaceTrail && Array.isArray(device.trail)) {
+      const trailLatLngs = device.trail
+        .map((point) => (Number.isFinite(point.latitude) && Number.isFinite(point.longitude)
+          ? [point.latitude, point.longitude]
+          : null))
+        .filter(Boolean);
+      updateTrail(device.deviceId, trailLatLngs);
+    } else if (hasMoved) {
+      appendTrailPoint(device.deviceId, latLng);
+    }
+
+    if (hasMoved && animate) {
+      animateMarkerUpdate(existing, latLng);
+    }
+
     return;
   }
 
-  const marker = L.circleMarker([device.latitude, device.longitude], {
-    radius: 5,
-    color: '#1f5fbf',
-    fillColor: '#1f5fbf',
-    fillOpacity: 0.8
+  const marker = L.circleMarker(latLng, {
+    radius: 6,
+    className: 'device-marker'
   });
 
-  const popupContent = `
-    <strong>${device.deviceId}</strong><br />
-    ${new Date(device.timestampMs).toLocaleString()}<br />
-    Accuracy: ${device.accuracy || 'n/a'}m
-  `;
-  marker.bindPopup(popupContent.trim());
+  marker.bindPopup(buildPopupContent(device));
   marker.addTo(markersLayer);
   markerByDevice.set(device.deviceId, marker);
+
+  if (replaceTrail && Array.isArray(device.trail)) {
+    const trailLatLngs = device.trail
+      .map((point) => (Number.isFinite(point.latitude) && Number.isFinite(point.longitude)
+        ? [point.latitude, point.longitude]
+        : null))
+      .filter(Boolean);
+    updateTrail(device.deviceId, trailLatLngs);
+  } else {
+    appendTrailPoint(device.deviceId, latLng);
+  }
 }
 
 function updateMapUI(mapSnapshot) {
-  markersLayer.clearLayers();
-  markerByDevice.clear();
   const devices = mapSnapshot.devices || [];
+  const seenDevices = new Set();
+  const shouldAnimate = mapHasLoaded && !wsConnected;
 
   devices.forEach((device) => {
-    upsertMarker(device);
+    if (!device.deviceId) {
+      return;
+    }
+    seenDevices.add(device.deviceId);
+    upsertMarker(device, { animate: shouldAnimate, replaceTrail: true });
+  });
+
+  markerByDevice.forEach((marker, deviceId) => {
+    if (!seenDevices.has(deviceId)) {
+      markersLayer.removeLayer(marker);
+      markerByDevice.delete(deviceId);
+    }
+  });
+
+  trailByDevice.forEach((trail, deviceId) => {
+    if (!seenDevices.has(deviceId)) {
+      trailsLayer.removeLayer(trail);
+      trailByDevice.delete(deviceId);
+      trailLatLngsByDevice.delete(deviceId);
+    }
   });
 
   mapMetaEl.textContent = `${devices.length} devices shown`;
+  mapHasLoaded = true;
 }
 
 function updateWsStatus(status, detail) {
@@ -171,7 +293,7 @@ function applyWsMessage(message) {
       longitude: message.longitude,
       accuracy: message.accuracy,
       timestampMs: message.timestampMs
-    });
+    }, { animate: true });
   }
 }
 
