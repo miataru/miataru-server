@@ -163,8 +163,8 @@ async function handleMonitorEvent(time, args) {
   broadcastLocationUpdate(deviceId, payload);
 }
 
-async function bootstrapScan() {
-  if (!config.bootstrapScanEnabled) {
+async function bootstrapScan({ force = false } = {}) {
+  if (!config.bootstrapScanEnabled && !force) {
     return;
   }
 
@@ -539,6 +539,18 @@ async function start() {
     });
 
     await Promise.all([prodClient.connect(), statsClient.connect()]);
+
+    if (!config.bootstrapScanEnabled) {
+      try {
+        const existingCount = await statsClient.zCard(statsKeys.lastSeen);
+        if (existingCount === 0) {
+          console.log('Stats cache empty. Running one-time bootstrap scan...');
+          await bootstrapScan({ force: true });
+        }
+      } catch (error) {
+        console.warn('Failed to run bootstrap scan:', error.message);
+      }
+    }
 
     if (config.bootstrapScanEnabled) {
       console.log('Bootstrap scan enabled. Starting initial scan...');
