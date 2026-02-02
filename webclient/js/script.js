@@ -11,6 +11,11 @@ let intervalId = null;
 let defaultIntervalId = null;  // Neuer Timer für Default Device
 let currentDeviceToSave = null;
 let deviceToDelete = null;
+let liveUpdateTimeout = null;
+let liveUpdateLayers = [];
+let liveTrail = null;
+let liveTrailLatLngs = [];
+let liveTrailDeviceId = null;
 
 // Neue globale Variable für den Auto-Center Status
 let autoCenterEnabled = true;
@@ -47,6 +52,8 @@ const DEFAULT_SETTINGS = {
     historyAmount: 100,   // Anzahl der History-Einträge
     requestMiataruDeviceID: 'webclient'  // Default RequestMiataruDeviceID
 };
+
+const MAX_LIVE_TRAIL_POINTS = 50;
 
 // Funktion zum Laden der gespeicherten Devices
 function loadStoredDevices() {
@@ -92,6 +99,93 @@ const pinIcon = L.divIcon({
     iconAnchor: [12, 36],
     popupAnchor: [0, -36]
 });
+
+function clearLiveUpdateHighlight() {
+    liveUpdateLayers.forEach(layer => layer.remove());
+    liveUpdateLayers = [];
+    if (liveUpdateTimeout) {
+        clearTimeout(liveUpdateTimeout);
+        liveUpdateTimeout = null;
+    }
+    if (currentMarker) {
+        const markerElement = currentMarker.getElement();
+        if (markerElement) {
+            markerElement.classList.remove('live-update-marker');
+        }
+        currentMarker.setZIndexOffset(0);
+    }
+}
+
+function showLiveUpdateHighlight(latLng) {
+    clearLiveUpdateHighlight();
+
+    const highlightCircle = L.circleMarker(latLng, {
+        radius: 10,
+        color: '#ff9800',
+        fillColor: '#ff9800',
+        fillOpacity: 0.25,
+        weight: 3,
+        className: 'live-update-highlight'
+    }).addTo(map);
+
+    const pulseCircle = L.circleMarker(latLng, {
+        radius: 18,
+        color: '#ff9800',
+        fillColor: '#ff9800',
+        fillOpacity: 0.15,
+        weight: 2,
+        className: 'live-update-pulse'
+    }).addTo(map);
+
+    highlightCircle.bringToFront();
+    pulseCircle.bringToFront();
+
+    liveUpdateLayers = [highlightCircle, pulseCircle];
+
+    if (currentMarker) {
+        const markerElement = currentMarker.getElement();
+        if (markerElement) {
+            markerElement.classList.add('live-update-marker');
+        }
+        currentMarker.setZIndexOffset(1000);
+    }
+
+    liveUpdateTimeout = setTimeout(() => {
+        clearLiveUpdateHighlight();
+    }, 5000);
+}
+
+function resetLiveTrail() {
+    if (liveTrail) {
+        liveTrail.remove();
+    }
+    liveTrail = null;
+    liveTrailLatLngs = [];
+    liveTrailDeviceId = null;
+}
+
+function updateLiveTrail(deviceId, latLng) {
+    if (liveTrailDeviceId && liveTrailDeviceId !== deviceId) {
+        resetLiveTrail();
+    }
+
+    liveTrailDeviceId = deviceId;
+    liveTrailLatLngs.push(latLng);
+
+    if (liveTrailLatLngs.length > MAX_LIVE_TRAIL_POINTS) {
+        liveTrailLatLngs.shift();
+    }
+
+    if (!liveTrail) {
+        liveTrail = L.polyline(liveTrailLatLngs, {
+            color: '#ff9800',
+            weight: 3,
+            opacity: 0.6
+        }).addTo(map);
+    } else {
+        liveTrail.setLatLngs(liveTrailLatLngs);
+    }
+}
 
 // Funktion zum Löschen eines Devices
 function deleteDevice(deviceId) {
@@ -412,6 +506,7 @@ async function fetchDeviceLocation(deviceId) {
             const latitude = parseFloat(location.Latitude);
             const longitude = parseFloat(location.Longitude);
             const accuracy = parseFloat(location.HorizontalAccuracy);
+            const targetLatLng = [latitude, longitude];
             
             // Bestehenden Marker und Kreis entfernen
             if (currentMarker) {
@@ -437,6 +532,9 @@ async function fetchDeviceLocation(deviceId) {
             });
             
             currentMarker.addTo(map);
+
+            updateLiveTrail(deviceId, targetLatLng);
+            showLiveUpdateHighlight(targetLatLng);
             
             const popupContent = createPopupContent(deviceId, storedName, location);
             currentMarker.bindPopup(popupContent);
@@ -555,6 +653,8 @@ function startTracking(deviceId, isDefault = false) {
     
     // Bei neuem Device den Zoom-Status zurücksetzen
     userHasZoomed = false;
+    resetLiveTrail();
+    clearLiveUpdateHighlight();
     
     // Sofort erste Abfrage durchführen
     fetchDeviceLocation(deviceId);
