@@ -73,6 +73,20 @@ body {
     stroke: #ff9800;
     stroke-width: 2;
     fill: rgba(255, 152, 0, 0.15);
+    transform-origin: center;
+    transform-box: fill-box;
+    animation: liveUpdatePulse 1.5s ease-out infinite;
+}
+
+@keyframes liveUpdatePulse {
+    0% {
+        transform: scale(0.4);
+        opacity: 0.9;
+    }
+    100% {
+        transform: scale(1.6);
+        opacity: 0;
+    }
 }
 
 @media screen and (max-width: 640px) {

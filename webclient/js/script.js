@@ -16,7 +16,6 @@ let liveUpdateLayers = [];
 let liveTrail = null;
 let liveTrailLatLngs = [];
 let liveTrailDeviceId = null;
-let liveUpdateAnimationFrame = null;
 
 // Neue globale Variable für den Auto-Center Status
 let autoCenterEnabled = true;
@@ -55,8 +54,6 @@ const DEFAULT_SETTINGS = {
 };
 
 const MAX_LIVE_TRAIL_POINTS = 50;
-const LIVE_UPDATE_DURATION_MS = 5000;
-const LIVE_UPDATE_PULSE_MS = 1500;
 
 // Funktion zum Laden der gespeicherten Devices
 function loadStoredDevices() {
@@ -106,10 +103,6 @@ const pinIcon = L.divIcon({
 function clearLiveUpdateHighlight() {
     liveUpdateLayers.forEach(layer => layer.remove());
     liveUpdateLayers = [];
-    if (liveUpdateAnimationFrame) {
-        cancelAnimationFrame(liveUpdateAnimationFrame);
-        liveUpdateAnimationFrame = null;
-    }
     if (liveUpdateTimeout) {
         clearTimeout(liveUpdateTimeout);
         liveUpdateTimeout = null;
@@ -136,10 +129,10 @@ function showLiveUpdateHighlight(latLng) {
     }).addTo(map);
 
     const pulseCircle = L.circleMarker(latLng, {
-        radius: 8,
+        radius: 18,
         color: '#ff9800',
         fillColor: '#ff9800',
-        fillOpacity: 0.3,
+        fillOpacity: 0.15,
         weight: 2,
         className: 'live-update-pulse'
     }).addTo(map);
@@ -157,26 +150,9 @@ function showLiveUpdateHighlight(latLng) {
         currentMarker.setZIndexOffset(1000);
     }
 
-    const start = performance.now();
-    const animatePulse = (now) => {
-        const elapsed = now - start;
-        const progress = (elapsed % LIVE_UPDATE_PULSE_MS) / LIVE_UPDATE_PULSE_MS;
-        const radius = 8 + progress * 20;
-        const opacity = Math.max(0, 0.6 * (1 - progress));
-        pulseCircle.setRadius(radius);
-        pulseCircle.setStyle({
-            opacity,
-            fillOpacity: opacity * 0.6
-        });
-        if (elapsed < LIVE_UPDATE_DURATION_MS) {
-            liveUpdateAnimationFrame = requestAnimationFrame(animatePulse);
-        }
-    };
-    liveUpdateAnimationFrame = requestAnimationFrame(animatePulse);
-
     liveUpdateTimeout = setTimeout(() => {
         clearLiveUpdateHighlight();
-    }, LIVE_UPDATE_DURATION_MS);
+    }, 5000);
 }
 
 function resetLiveTrail() {
