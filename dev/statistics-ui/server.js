@@ -2,6 +2,7 @@ const express = require('express');
 const basicAuth = require('express-basic-auth');
 const path = require('path');
 const { createClient } = require('redis');
+const Redis = require('ioredis');
 const http = require('http');
 const WebSocket = require('ws');
 
@@ -47,6 +48,7 @@ let prodClient;
 let statsClient;
 let wsServer;
 let wsAuthToken;
+let monitorClient;
 
 function normalizeTimestamp(value) {
   if (!value) {
@@ -170,11 +172,15 @@ async function bootstrapScan() {
   const matchPattern = `${config.prodNamespace}:*:last`;
 
   do {
-    const [nextCursor, keys] = await prodClient.scan(cursor, {
+    const scanResult = await prodClient.scan(cursor, {
       MATCH: matchPattern,
       COUNT: config.bootstrapScanBatchSize
     });
-    cursor = nextCursor;
+    const nextCursor = Array.isArray(scanResult) ? scanResult[0] : scanResult.cursor;
+    const keys = Array.isArray(scanResult)
+      ? (scanResult[1] || [])
+      : (scanResult.keys || []);
+    cursor = String(nextCursor || '0');
 
     if (keys.length === 0) {
       continue;
@@ -544,8 +550,17 @@ async function start() {
     }
 
     if (config.enableMonitor) {
-      const monitor = await prodClient.monitor();
-      monitor.on('monitor', handleMonitorEvent);
+      monitorClient = new Redis(config.prodRedisUrl);
+      monitorClient.on('error', (error) => {
+        console.error('Monitor Redis error:', error.message);
+      });
+
+      const monitor = await monitorClient.monitor();
+      monitor.on('monitor', (time, args) => {
+        handleMonitorEvent(time, args).catch((error) => {
+          console.warn('Monitor handler failed:', error.message);
+        });
+      });
       monitor.on('error', (error) => {
         console.error('Monitor client error:', error.message);
       });
