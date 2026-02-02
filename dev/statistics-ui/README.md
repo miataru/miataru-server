@@ -44,12 +44,14 @@ extra_hosts:
   - "redis:host-gateway"
 ```
 
-This maps the container hostname `redis` to the host gateway (requires Docker 20.10+). If your environment does not support `host-gateway`, you can either:
+This maps the container hostname `redis` to the host gateway (requires Docker 20.10+ and Compose v2). If your environment does not support `host-gateway` (for example compose file version `3.3`), you can either:
 
 - Replace the entry with the host's IP address (e.g. `redis:192.168.1.10`), or
 - Run the stats-ui service with `network_mode: host` and keep `PROD_REDIS_URL=redis://redis:6379`.
 
 In all cases, ensure `PROD_REDIS_URL` points to the host Redis endpoint.
+
+If you see `ECONNREFUSED 172.17.0.1:6379`, the container can reach the Docker bridge gateway but the host Redis is not accepting connections there. Verify that Redis is bound to `0.0.0.0` (not just `127.0.0.1`), that it listens on port `6379`, and that firewall rules allow connections from the Docker bridge network.
 
 ## Environment variables
 
