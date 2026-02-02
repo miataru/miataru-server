@@ -8,12 +8,18 @@
 body {
   margin: 0;
   padding: 0;
+  min-height: 100vh;
+  display: flex;
+  flex-direction: column;
 }
 
 header {
   background: #0f1f3a;
   color: #fff;
   padding: 24px 32px;
+  display: flex;
+  flex-direction: column;
+  gap: 8px;
 }
 
 header h1 {
@@ -24,6 +30,11 @@ header h1 {
 .subtitle {
   margin: 0;
   opacity: 0.8;
+}
+
+.header-meta {
+  font-size: 13px;
+  color: rgba(255, 255, 255, 0.8);
 }
 
 .stats {
@@ -70,6 +81,10 @@ header h1 {
 
 .map-panel {
   padding: 0 32px 32px;
+  flex: 1 1 auto;
+  display: flex;
+  flex-direction: column;
+  gap: 12px;
 }
 
 .map-header {
@@ -96,14 +111,66 @@ header h1 {
 }
 
 #map {
-  height: 480px;
+  flex: 1 1 auto;
+  min-height: 520px;
   border-radius: 16px;
   box-shadow: 0 12px 28px rgba(15, 31, 58, 0.1);
   overflow: hidden;
 }
 
-footer {
-  padding: 16px 32px 32px;
-  color: #7a8496;
-  font-size: 13px;
+.device-marker {
+  stroke: #1f5fbf;
+  fill: #1f5fbf;
+  fill-opacity: 0.85;
+  stroke-width: 2;
+}
+
+.device-marker.is-updating {
+  animation: markerPulse 1.4s ease-out;
+}
+
+.device-update-pulse {
+  animation: pulseRing 1.4s ease-out;
+  stroke: #ff9f1a;
+  stroke-width: 2;
+  fill: rgba(255, 159, 26, 0.1);
+  fill-opacity: 0.2;
+}
+
+.device-trail {
+  stroke: rgba(255, 159, 26, 0.85);
+  stroke-width: 3;
+  stroke-linecap: round;
+  stroke-linejoin: round;
+  filter: drop-shadow(0 0 4px rgba(255, 159, 26, 0.5));
+}
+
+@keyframes markerPulse {
+  0% {
+    stroke: #ff9f1a;
+    fill: #ff9f1a;
+    fill-opacity: 1;
+  }
+  100% {
+    stroke: #1f5fbf;
+    fill: #1f5fbf;
+    fill-opacity: 0.85;
+  }
+}
+
+@keyframes pulseRing {
+  0% {
+    transform: scale(0.4);
+    opacity: 0.9;
+  }
+  100% {
+    transform: scale(1.8);
+    opacity: 0;
+  }
+}
+
+@media (max-width: 960px) {
+  #map {
+    min-height: 420px;
+  }
 }
