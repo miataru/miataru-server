@@ -1,9 +1,14 @@
+html,
 body {
     margin: 0;
     padding: 0;
-    height: 100vh;
+    height: 100%;
     display: flex;
     flex-direction: column;
+}
+
+body {
+    min-height: 100vh;
 }
 
 .toolbar {
@@ -12,6 +17,7 @@ body {
     display: flex;
     gap: 10px;
     box-shadow: 0 2px 4px rgba(0,0,0,0.1);
+    flex: 0 0 auto;
 }
 
 .toolbar-logo {
@@ -46,13 +52,15 @@ body {
 }
 
 #map {
-    flex-grow: 1;
+    flex: 1 1 auto;
+    min-height: 0;
     width: 100%;
 }
 
 .custom-pin {
     background: none;
     border: none;
+    position: relative;
 }
 
 .custom-pin svg {
@@ -61,6 +69,27 @@ body {
 
 .live-update-marker svg {
     filter: drop-shadow(0 0 6px rgba(255, 152, 0, 0.9));
+    animation: liveUpdateMarkerGlow 1.25s ease-in-out infinite;
+}
+
+.live-update-marker svg path {
+    fill: #ff9800;
+    stroke: #ffffff;
+}
+
+.live-update-marker::after {
+    content: '';
+    position: absolute;
+    left: 50%;
+    top: 70%;
+    width: 22px;
+    height: 22px;
+    border-radius: 50%;
+    border: 2px solid rgba(255, 152, 0, 0.9);
+    transform: translate(-50%, -50%);
+    opacity: 0;
+    animation: liveUpdateMarkerPing 1.25s ease-out infinite;
+    pointer-events: none;
 }
 
 .live-update-highlight {
@@ -76,6 +105,32 @@ body {
     transform-origin: center;
     transform-box: fill-box;
     animation: liveUpdatePulse 1.5s ease-out infinite;
+}
+
+@keyframes liveUpdateMarkerPing {
+    0% {
+        transform: translate(-50%, -50%) scale(0.4);
+        opacity: 0.9;
+    }
+    100% {
+        transform: translate(-50%, -50%) scale(1.8);
+        opacity: 0;
+    }
+}
+
+@keyframes liveUpdateMarkerGlow {
+    0% {
+        filter: drop-shadow(0 0 4px rgba(255, 152, 0, 0.6));
+        transform: translateY(0);
+    }
+    50% {
+        filter: drop-shadow(0 0 10px rgba(255, 152, 0, 1));
+        transform: translateY(-2px);
+    }
+    100% {
+        filter: drop-shadow(0 0 4px rgba(255, 152, 0, 0.6));
+        transform: translateY(0);
+    }
 }
 
 @keyframes liveUpdatePulse {

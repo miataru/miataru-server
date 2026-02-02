@@ -13,9 +13,8 @@ let currentDeviceToSave = null;
 let deviceToDelete = null;
 let liveUpdateTimeout = null;
 let liveUpdateLayers = [];
-let liveTrail = null;
-let liveTrailLatLngs = [];
-let liveTrailDeviceId = null;
+const liveTrails = new Map();
+const liveTrailLatLngs = new Map();
 
 // Neue globale Variable für den Auto-Center Status
 let autoCenterEnabled = true;
@@ -155,35 +154,35 @@ function showLiveUpdateHighlight(latLng) {
     }, 5000);
 }
 
-function resetLiveTrail() {
-    if (liveTrail) {
-        liveTrail.remove();
+function removeLiveTrail(deviceId) {
+    const trail = liveTrails.get(deviceId);
+    if (trail) {
+        trail.remove();
+        liveTrails.delete(deviceId);
     }
-    liveTrail = null;
-    liveTrailLatLngs = [];
-    liveTrailDeviceId = null;
+    liveTrailLatLngs.delete(deviceId);
 }
 
 function updateLiveTrail(deviceId, latLng) {
-    if (liveTrailDeviceId && liveTrailDeviceId !== deviceId) {
-        resetLiveTrail();
+    const existingLatLngs = liveTrailLatLngs.get(deviceId) || [];
+    existingLatLngs.push(latLng);
+
+    if (existingLatLngs.length > MAX_LIVE_TRAIL_POINTS) {
+        existingLatLngs.splice(0, existingLatLngs.length - MAX_LIVE_TRAIL_POINTS);
     }
 
-    liveTrailDeviceId = deviceId;
-    liveTrailLatLngs.push(latLng);
+    liveTrailLatLngs.set(deviceId, existingLatLngs);
 
-    if (liveTrailLatLngs.length > MAX_LIVE_TRAIL_POINTS) {
-        liveTrailLatLngs.shift();
-    }
-
-    if (!liveTrail) {
-        liveTrail = L.polyline(liveTrailLatLngs, {
+    const trail = liveTrails.get(deviceId);
+    if (!trail) {
+        const newTrail = L.polyline(existingLatLngs, {
             color: '#ff9800',
             weight: 3,
             opacity: 0.6
         }).addTo(map);
+        liveTrails.set(deviceId, newTrail);
     } else {
-        liveTrail.setLatLngs(liveTrailLatLngs);
+        trail.setLatLngs(existingLatLngs);
     }
 }
 
@@ -193,6 +192,7 @@ function deleteDevice(deviceId) {
     delete devices[deviceId];
     localStorage.setItem(STORED_DEVICES_KEY, JSON.stringify(devices));
     updateDevicesDropdown();
+    removeLiveTrail(deviceId);
     
     // Pin und Popup aktualisieren
     if (currentMarker) {
