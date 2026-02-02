@@ -39,6 +39,7 @@ app.use(express.static(path.join(__dirname, 'public')));
 const statsKeys = {
   lastSeen: `${config.statsNamespace}:devices:last_seen`,
   lastLocation: `${config.statsNamespace}:devices:last_location`,
+  trailPrefix: `${config.statsNamespace}:devices:trail`,
   updatesTotal: `${config.statsNamespace}:updates:total`,
   updatesMinutePrefix: `${config.statsNamespace}:updates:minute:`,
   uniqueDayPrefix: `${config.statsNamespace}:unique:day:`
@@ -49,6 +50,9 @@ let statsClient;
 let wsServer;
 let wsAuthToken;
 let monitorClient;
+let bootstrapInProgress = false;
+let lastBootstrapAttempt = 0;
+const bootstrapCooldownMs = 5 * 60 * 1000;
 
 function normalizeTimestamp(value) {
   if (!value) {
@@ -69,6 +73,10 @@ function getDeviceIdFromKey(key) {
   const regex = new RegExp(`^${escapeRegex(config.prodNamespace)}:(.+):last$`);
   const match = key.match(regex);
   return match ? match[1] : null;
+}
+
+function getTrailKey(deviceId) {
+  return `${statsKeys.trailPrefix}:${deviceId}`;
 }
 
 async function updateStatsFromLocation(deviceId, payload, source) {
@@ -95,6 +103,15 @@ async function updateStatsFromLocation(deviceId, payload, source) {
   const pipeline = statsClient.multi();
   pipeline.zAdd(statsKeys.lastSeen, [{ score: timestampMs, value: deviceId }]);
   pipeline.hSet(statsKeys.lastLocation, deviceId, JSON.stringify(locationEntry));
+  if (Number.isFinite(locationEntry.latitude) && Number.isFinite(locationEntry.longitude)) {
+    const trailEntry = JSON.stringify({
+      latitude: locationEntry.latitude,
+      longitude: locationEntry.longitude,
+      timestampMs: locationEntry.timestampMs
+    });
+    pipeline.lPush(getTrailKey(deviceId), trailEntry);
+    pipeline.lTrim(getTrailKey(deviceId), 0, 49);
+  }
   pipeline.incr(statsKeys.updatesTotal);
   pipeline.incr(`${statsKeys.updatesMinutePrefix}${minuteBucket}`);
   pipeline.expire(`${statsKeys.updatesMinutePrefix}${minuteBucket}`, 60 * 60 * 2);
@@ -209,6 +226,32 @@ async function bootstrapScan({ force = false } = {}) {
   } while (cursor !== '0');
 }
 
+async function ensureStatsSeeded() {
+  if (config.mockData || config.bootstrapScanEnabled || !statsClient) {
+    return;
+  }
+
+  const now = Date.now();
+  if (bootstrapInProgress || now - lastBootstrapAttempt < bootstrapCooldownMs) {
+    return;
+  }
+
+  const existingCount = await statsClient.zCard(statsKeys.lastSeen);
+  if (existingCount > 0) {
+    return;
+  }
+
+  bootstrapInProgress = true;
+  lastBootstrapAttempt = now;
+  try {
+    await bootstrapScan({ force: true });
+  } catch (error) {
+    console.warn('Bootstrap scan failed:', error.message);
+  } finally {
+    bootstrapInProgress = false;
+  }
+}
+
 function getWindowMillis(windowParam) {
   switch (windowParam) {
     case '7d':
@@ -224,6 +267,7 @@ function getWindowMillis(windowParam) {
 }
 
 async function getStatsSnapshot() {
+  await ensureStatsSeeded();
   const now = Date.now();
   const window24h = now - 24 * 60 * 60 * 1000;
   const window7d = now - 7 * 24 * 60 * 60 * 1000;
@@ -289,6 +333,7 @@ async function getStatsSnapshot() {
 }
 
 async function getMapSnapshot(windowParam) {
+  await ensureStatsSeeded();
   const now = Date.now();
   const windowMs = getWindowMillis(windowParam);
   const minTimestamp = now - windowMs;
@@ -310,17 +355,36 @@ async function getMapSnapshot(windowParam) {
   }
 
   const locations = await statsClient.hmGet(statsKeys.lastLocation, deviceIds);
+  const trailPipeline = statsClient.multi();
+  deviceIds.forEach((deviceId) => {
+    trailPipeline.lRange(getTrailKey(deviceId), 0, 49);
+  });
+  const trailResults = await trailPipeline.exec();
   const devices = [];
 
   for (let i = 0; i < deviceIds.length; i += 1) {
     const value = locations[i];
+    const trailEntries = Array.isArray(trailResults?.[i]?.[1]) ? trailResults[i][1] : [];
     if (!value) {
       continue;
     }
     try {
       const parsed = JSON.parse(value);
       if (Number.isFinite(parsed.latitude) && Number.isFinite(parsed.longitude)) {
-        devices.push(parsed);
+        const trail = trailEntries
+          .map((entry) => {
+            try {
+              return JSON.parse(entry);
+            } catch (error) {
+              return null;
+            }
+          })
+          .filter((entry) => entry && Number.isFinite(entry.latitude) && Number.isFinite(entry.longitude))
+          .reverse();
+        devices.push({
+          ...parsed,
+          trail
+        });
       }
     } catch (error) {
       console.warn('Failed to parse cached location:', error.message);
@@ -366,7 +430,12 @@ function mockMapSnapshot(windowParam) {
         longitude: 13.404954,
         accuracy: 20,
         timestampMs: Date.now() - 1000 * 60 * 15,
-        source: 'mock'
+        source: 'mock',
+        trail: [
+          { latitude: 52.518, longitude: 13.402, timestampMs: Date.now() - 1000 * 60 * 45 },
+          { latitude: 52.519, longitude: 13.403, timestampMs: Date.now() - 1000 * 60 * 30 },
+          { latitude: 52.520008, longitude: 13.404954, timestampMs: Date.now() - 1000 * 60 * 15 }
+        ]
       },
       {
         deviceId: 'demo-device-2',
@@ -374,7 +443,12 @@ function mockMapSnapshot(windowParam) {
         longitude: 11.576124,
         accuracy: 30,
         timestampMs: Date.now() - 1000 * 60 * 45,
-        source: 'mock'
+        source: 'mock',
+        trail: [
+          { latitude: 48.1355, longitude: 11.5735, timestampMs: Date.now() - 1000 * 60 * 90 },
+          { latitude: 48.1362, longitude: 11.5748, timestampMs: Date.now() - 1000 * 60 * 60 },
+          { latitude: 48.137154, longitude: 11.576124, timestampMs: Date.now() - 1000 * 60 * 45 }
+        ]
       }
     ]
   };
