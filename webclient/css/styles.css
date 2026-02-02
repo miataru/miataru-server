@@ -92,6 +92,21 @@ body {
     pointer-events: none;
 }
 
+.live-update-marker::after {
+    content: '';
+    position: absolute;
+    left: 50%;
+    top: 70%;
+    width: 22px;
+    height: 22px;
+    border-radius: 50%;
+    border: 2px solid rgba(255, 152, 0, 0.9);
+    transform: translate(-50%, -50%);
+    opacity: 0;
+    animation: liveUpdateMarkerPing 1.25s ease-out infinite;
+    pointer-events: none;
+}
+
 .live-update-highlight {
     stroke: #ff9800;
     stroke-width: 3;
@@ -115,21 +130,6 @@ body {
     100% {
         transform: translate(-50%, -50%) scale(1.8);
         opacity: 0;
-    }
-}
-
-@keyframes liveUpdateMarkerGlow {
-    0% {
-        filter: drop-shadow(0 0 4px rgba(255, 152, 0, 0.6));
-        transform: translateY(0);
-    }
-    50% {
-        filter: drop-shadow(0 0 10px rgba(255, 152, 0, 1));
-        transform: translateY(-2px);
-    }
-    100% {
-        filter: drop-shadow(0 0 4px rgba(255, 152, 0, 0.6));
-        transform: translateY(0);
     }
 }
 
