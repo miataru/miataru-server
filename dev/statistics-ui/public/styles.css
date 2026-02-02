@@ -1,0 +1,109 @@
+:root {
+  color-scheme: light;
+  font-family: 'Segoe UI', system-ui, sans-serif;
+  background-color: #f6f7fb;
+  color: #1c1f23;
+}
+
+body {
+  margin: 0;
+  padding: 0;
+}
+
+header {
+  background: #0f1f3a;
+  color: #fff;
+  padding: 24px 32px;
+}
+
+header h1 {
+  margin: 0 0 6px;
+  font-size: 24px;
+}
+
+.subtitle {
+  margin: 0;
+  opacity: 0.8;
+}
+
+.stats {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
+  gap: 16px;
+  padding: 24px 32px;
+}
+
+.stat-card {
+  background: #fff;
+  border-radius: 12px;
+  padding: 16px 18px;
+  box-shadow: 0 8px 20px rgba(15, 31, 58, 0.08);
+}
+
+.stat-card h2 {
+  margin: 0 0 8px;
+  font-size: 14px;
+  color: #516079;
+  text-transform: uppercase;
+  letter-spacing: 0.08em;
+}
+
+.stat-card p {
+  margin: 0;
+  font-size: 26px;
+  font-weight: 600;
+  color: #0f1f3a;
+}
+
+.stat-card span {
+  display: inline-block;
+  margin-top: 6px;
+  font-size: 12px;
+  color: #7a8496;
+}
+
+.stat-status p {
+  font-size: 20px;
+  text-transform: uppercase;
+  letter-spacing: 0.08em;
+}
+
+.map-panel {
+  padding: 0 32px 32px;
+}
+
+.map-header {
+  display: flex;
+  flex-wrap: wrap;
+  justify-content: space-between;
+  align-items: center;
+  gap: 12px;
+  margin-bottom: 12px;
+}
+
+.map-controls {
+  display: flex;
+  gap: 12px;
+  align-items: center;
+  font-size: 14px;
+  color: #516079;
+}
+
+.map-controls select {
+  border-radius: 6px;
+  padding: 4px 8px;
+  border: 1px solid #ccd2dd;
+}
+
+#map {
+  height: 480px;
+  border-radius: 16px;
+  box-shadow: 0 12px 28px rgba(15, 31, 58, 0.1);
+  overflow: hidden;
+}
+
+footer {
+  padding: 16px 32px 32px;
+  color: #7a8496;
+  font-size: 13px;
+}

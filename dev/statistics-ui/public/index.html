@@ -1,0 +1,89 @@
+<!DOCTYPE html>
+<html lang="en">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>Miataru Live Statistics</title>
+    <link
+      rel="stylesheet"
+      href="https://unpkg.com/leaflet@1.9.4/dist/leaflet.css"
+      integrity="sha256-p4NxAoJBhIIN+hmNHrzRCf9tD/miZyoHS5obTRR9BMY="
+      crossorigin=""
+    />
+    <link rel="stylesheet" href="styles.css" />
+  </head>
+  <body>
+    <header>
+      <h1>Miataru Live Statistics</h1>
+      <p class="subtitle">Live view based on Redis MONITOR + cached aggregates.</p>
+    </header>
+
+    <section class="stats">
+      <div class="stat-card">
+        <h2>Total devices</h2>
+        <p id="total-devices">–</p>
+      </div>
+      <div class="stat-card">
+        <h2>Active now</h2>
+        <p id="active-current">–</p>
+        <span id="active-window">Last 15 min</span>
+      </div>
+      <div class="stat-card">
+        <h2>Active 24h</h2>
+        <p id="active-24h">–</p>
+      </div>
+      <div class="stat-card">
+        <h2>Active 7d</h2>
+        <p id="active-7d">–</p>
+      </div>
+      <div class="stat-card">
+        <h2>Active 30d</h2>
+        <p id="active-30d">–</p>
+      </div>
+      <div class="stat-card">
+        <h2>Active 365d</h2>
+        <p id="active-365d">–</p>
+      </div>
+      <div class="stat-card">
+        <h2>Updates (last hour)</h2>
+        <p id="updates-hour">–</p>
+      </div>
+      <div class="stat-card">
+        <h2>Unique devices today</h2>
+        <p id="unique-today">–</p>
+      </div>
+      <div class="stat-card stat-status">
+        <h2>Live status</h2>
+        <p id="ws-status">polling</p>
+      </div>
+    </section>
+
+    <section class="map-panel">
+      <div class="map-header">
+        <h2>Live device map</h2>
+        <div class="map-controls">
+          <label for="map-window">Show devices active in:</label>
+          <select id="map-window">
+            <option value="24h">Last 24h</option>
+            <option value="7d">Last 7d</option>
+            <option value="30d">Last 30d</option>
+            <option value="365d">Last 365d</option>
+          </select>
+          <span id="map-meta"></span>
+        </div>
+      </div>
+      <div id="map"></div>
+    </section>
+
+    <footer>
+      <span id="last-updated">Last updated: –</span>
+    </footer>
+
+    <script
+      src="https://unpkg.com/leaflet@1.9.4/dist/leaflet.js"
+      integrity="sha256-20nQCchB9co0qIjJZRGuk2/Z9VM+kNiyxNV1lvTlZBo="
+      crossorigin=""
+    ></script>
+    <script src="app.js"></script>
+  </body>
+</html>
