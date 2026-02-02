@@ -118,28 +118,27 @@ function clearLiveUpdateHighlight() {
 function showLiveUpdateHighlight(latLng) {
     clearLiveUpdateHighlight();
 
-    const highlightCircle = L.circleMarker(latLng, {
-        radius: 10,
-        color: '#ff9800',
-        fillColor: '#ff9800',
-        fillOpacity: 0.25,
-        weight: 3,
-        className: 'live-update-highlight'
+    const burstIcon = L.divIcon({
+        className: '',
+        html: `
+            <div class="live-update-burst-icon">
+                <span class="live-update-burst-ring"></span>
+                <span class="live-update-burst-ring live-update-burst-ring--delay"></span>
+            </div>
+        `,
+        iconSize: [64, 64],
+        iconAnchor: [32, 32]
+    });
+
+    const burstMarker = L.marker(latLng, {
+        icon: burstIcon,
+        interactive: false,
+        keyboard: false,
+        pane: 'markerPane'
     }).addTo(map);
 
-    const pulseCircle = L.circleMarker(latLng, {
-        radius: 18,
-        color: '#ff9800',
-        fillColor: '#ff9800',
-        fillOpacity: 0.15,
-        weight: 2,
-        className: 'live-update-pulse'
-    }).addTo(map);
-
-    highlightCircle.bringToFront();
-    pulseCircle.bringToFront();
-
-    liveUpdateLayers = [highlightCircle, pulseCircle];
+    burstMarker.setZIndexOffset(900);
+    liveUpdateLayers = [burstMarker];
 
     if (currentMarker) {
         const markerElement = currentMarker.getElement();
@@ -151,7 +150,7 @@ function showLiveUpdateHighlight(latLng) {
 
     liveUpdateTimeout = setTimeout(() => {
         clearLiveUpdateHighlight();
-    }, 5000);
+    }, 4000);
 }
 
 function removeLiveTrail(deviceId) {
@@ -176,14 +175,21 @@ function updateLiveTrail(deviceId, latLng) {
     const trail = liveTrails.get(deviceId);
     if (!trail) {
         const newTrail = L.polyline(existingLatLngs, {
-            color: '#ff9800',
-            weight: 3,
-            opacity: 0.6
+            color: '#ff7b00',
+            weight: 4,
+            opacity: 0.75,
+            className: 'live-trail-path'
         }).addTo(map);
         liveTrails.set(deviceId, newTrail);
     } else {
         trail.setLatLngs(existingLatLngs);
     }
+}
+
+function resetLiveTrail() {
+    liveTrails.forEach((trail) => trail.remove());
+    liveTrails.clear();
+    liveTrailLatLngs.clear();
 }
 
 // Funktion zum Löschen eines Devices
@@ -495,13 +501,6 @@ async function fetchDeviceLocation(deviceId) {
                 // Nur die relative Zeit aktualisieren
                 currentLocation = location;  // Timestamp aktualisieren
                 updateRelativeTime();
-                if (currentLocation) {
-                    const latitude = parseFloat(currentLocation.Latitude);
-                    const longitude = parseFloat(currentLocation.Longitude);
-                    if (Number.isFinite(latitude) && Number.isFinite(longitude)) {
-                        showLiveUpdateHighlight([latitude, longitude]);
-                    }
-                }
                 return;
             }
             
