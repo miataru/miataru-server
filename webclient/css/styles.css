@@ -59,6 +59,22 @@ body {
     filter: drop-shadow(0 1px 3px rgba(0,0,0,0.3));
 }
 
+.live-update-marker svg {
+    filter: drop-shadow(0 0 6px rgba(255, 152, 0, 0.9));
+}
+
+.live-update-highlight {
+    stroke: #ff9800;
+    stroke-width: 3;
+    fill: rgba(255, 152, 0, 0.25);
+}
+
+.live-update-pulse {
+    stroke: #ff9800;
+    stroke-width: 2;
+    fill: rgba(255, 152, 0, 0.15);
+}
+
 @media screen and (max-width: 640px) {
     .toolbar {
         display: none;
