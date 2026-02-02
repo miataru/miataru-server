@@ -68,79 +68,86 @@ body {
 }
 
 .live-update-marker svg {
-    filter: drop-shadow(0 0 6px rgba(255, 152, 0, 0.9));
-    animation: liveUpdateMarkerGlow 1.25s ease-in-out infinite;
+    filter: drop-shadow(0 0 10px rgba(255, 123, 0, 0.95));
+    animation: liveUpdateMarkerGlow 0.9s ease-in-out infinite;
 }
 
 .live-update-marker svg path {
-    fill: #ff9800;
+    fill: #ff7b00;
     stroke: #ffffff;
 }
 
-.live-update-marker::after {
-    content: '';
-    position: absolute;
-    left: 50%;
-    top: 70%;
-    width: 22px;
-    height: 22px;
-    border-radius: 50%;
-    border: 2px solid rgba(255, 152, 0, 0.9);
-    transform: translate(-50%, -50%);
-    opacity: 0;
-    animation: liveUpdateMarkerPing 1.25s ease-out infinite;
+.live-update-marker {
+    animation: liveUpdateMarkerFloat 1.4s ease-in-out infinite;
+}
+
+.live-update-burst-icon {
+    position: relative;
+    width: 64px;
+    height: 64px;
     pointer-events: none;
 }
 
-.live-update-marker::after {
+.live-update-burst-icon .live-update-burst-ring {
+    position: absolute;
+    inset: 6px;
+    border-radius: 999px;
+    border: 2px solid rgba(255, 123, 0, 0.95);
+    box-shadow: 0 0 18px rgba(255, 123, 0, 0.55);
+    opacity: 0;
+    animation: liveUpdateBurst 1.4s ease-out infinite;
+}
+
+.live-update-burst-icon .live-update-burst-ring--delay {
+    animation-delay: 0.35s;
+}
+
+.live-update-burst-icon::after {
     content: '';
     position: absolute;
-    left: 50%;
-    top: 70%;
-    width: 22px;
-    height: 22px;
-    border-radius: 50%;
-    border: 2px solid rgba(255, 152, 0, 0.9);
-    transform: translate(-50%, -50%);
-    opacity: 0;
-    animation: liveUpdateMarkerPing 1.25s ease-out infinite;
-    pointer-events: none;
+    inset: 22px;
+    border-radius: 999px;
+    background: rgba(255, 123, 0, 0.4);
+    box-shadow: 0 0 16px rgba(255, 123, 0, 0.65);
 }
 
-.live-update-highlight {
-    stroke: #ff9800;
-    stroke-width: 3;
-    fill: rgba(255, 152, 0, 0.25);
+.live-trail-path {
+    stroke: #ff7b00;
+    stroke-width: 4;
+    opacity: 0.75;
+    stroke-linecap: round;
+    stroke-linejoin: round;
+    filter: drop-shadow(0 0 6px rgba(255, 123, 0, 0.45));
 }
 
-.live-update-pulse {
-    stroke: #ff9800;
-    stroke-width: 2;
-    fill: rgba(255, 152, 0, 0.15);
-    transform-origin: center;
-    transform-box: fill-box;
-    animation: liveUpdatePulse 1.5s ease-out infinite;
-}
-
-@keyframes liveUpdateMarkerPing {
-    0% {
-        transform: translate(-50%, -50%) scale(0.4);
-        opacity: 0.9;
-    }
-    100% {
-        transform: translate(-50%, -50%) scale(1.8);
-        opacity: 0;
-    }
-}
-
-@keyframes liveUpdatePulse {
+@keyframes liveUpdateBurst {
     0% {
         transform: scale(0.4);
         opacity: 0.9;
     }
     100% {
-        transform: scale(1.6);
+        transform: scale(1.8);
         opacity: 0;
+    }
+}
+
+@keyframes liveUpdateMarkerGlow {
+    0%,
+    100% {
+        filter: drop-shadow(0 0 8px rgba(255, 123, 0, 0.65));
+    }
+    50% {
+        filter: drop-shadow(0 0 14px rgba(255, 123, 0, 0.95));
+    }
+}
+
+@keyframes liveUpdateMarkerFloat {
+    0%,
+    100% {
+        transform: translateY(0);
+    }
+    50% {
+        transform: translateY(-4px);
     }
 }
 
