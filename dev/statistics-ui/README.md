@@ -35,6 +35,22 @@ docker compose up --build
 
 Then visit `http://localhost:3005` and authenticate with `STATS_AUTH_USER` / `STATS_AUTH_PASS`.
 
+### Connecting to host Redis from docker-compose
+
+If your production Redis runs on the Docker host and is reachable as `redis` on the host network, add a host mapping so containers can resolve that name too. The included compose file already adds:
+
+```yaml
+extra_hosts:
+  - "redis:host-gateway"
+```
+
+This maps the container hostname `redis` to the host gateway (requires Docker 20.10+). If your environment does not support `host-gateway`, you can either:
+
+- Replace the entry with the host's IP address (e.g. `redis:192.168.1.10`), or
+- Run the stats-ui service with `network_mode: host` and keep `PROD_REDIS_URL=redis://redis:6379`.
+
+In all cases, ensure `PROD_REDIS_URL` points to the host Redis endpoint.
+
 ## Environment variables
 
 - `PORT`: UI port (default `3000`)
