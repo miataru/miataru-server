@@ -261,7 +261,11 @@ async function getStatsSnapshot() {
     uniqueToday
   ] = (await pipeline.exec()).map((item) => item[1]);
 
-  const updatesLastHour = (updatesMinuteValues || [])
+  const safeUpdatesMinuteValues = Array.isArray(updatesMinuteValues)
+    ? updatesMinuteValues
+    : [];
+
+  const updatesLastHour = safeUpdatesMinuteValues
     .map((value) => Number(value || 0))
     .reduce((sum, value) => sum + value, 0);
 
