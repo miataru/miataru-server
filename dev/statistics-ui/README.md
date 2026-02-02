@@ -68,3 +68,9 @@ In all cases, ensure `PROD_REDIS_URL` points to the host Redis endpoint.
 - `STATS_BROADCAST_INTERVAL_MS`: WebSocket stats broadcast cadence (default `5000`)
 - `MAP_BROADCAST_INTERVAL_MS`: WebSocket map broadcast cadence (default `10000`)
 - `MOCK_DATA`: Serve mock data without Redis connections
+
+## Troubleshooting
+
+### `ERROR: client version 1.22 is too old`
+
+This error means the docker-compose client you are using is older than the Docker API version required by your Docker Engine. Update the docker-compose binary (or the Docker Desktop/Engine package) so the client can speak API v1.24+; alternatively, use the newer `docker compose` plugin if it is available on your system. If you are pinned to an old OS package, consider upgrading Docker itself or installing a newer compose binary from Docker's releases.
