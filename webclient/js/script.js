@@ -495,6 +495,13 @@ async function fetchDeviceLocation(deviceId) {
                 // Nur die relative Zeit aktualisieren
                 currentLocation = location;  // Timestamp aktualisieren
                 updateRelativeTime();
+                if (currentLocation) {
+                    const latitude = parseFloat(currentLocation.Latitude);
+                    const longitude = parseFloat(currentLocation.Longitude);
+                    if (Number.isFinite(latitude) && Number.isFinite(longitude)) {
+                        showLiveUpdateHighlight([latitude, longitude]);
+                    }
+                }
                 return;
             }
             
