@@ -217,9 +217,7 @@ refreshStats();
 refreshMap();
 
 setInterval(() => {
-  if (!wsConnected) {
-    refreshStats();
-  }
+  refreshStats();
 }, statsRefreshMs);
 
 setInterval(() => {
