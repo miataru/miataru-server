@@ -14,86 +14,87 @@ body {
 }
 
 header {
-  background: #0f1f3a;
-  color: #fff;
-  padding: 24px 32px;
+  background: transparent;
+  color: #1c1f23;
+  padding: 12px 24px 8px;
   display: flex;
   flex-direction: column;
-  gap: 8px;
+  gap: 6px;
 }
 
 header h1 {
-  margin: 0 0 6px;
-  font-size: 24px;
+  margin: 0;
+  font-size: 18px;
 }
 
 .subtitle {
   margin: 0;
-  opacity: 0.8;
+  font-size: 12px;
+  color: #4b5563;
 }
 
 .header-meta {
-  font-size: 13px;
-  color: rgba(255, 255, 255, 0.8);
+  font-size: 12px;
+  color: #6b7280;
 }
 
 .stats {
   display: grid;
-  grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
-  gap: 16px;
-  padding: 24px 32px;
+  grid-template-columns: repeat(auto-fit, minmax(120px, 1fr));
+  gap: 6px;
+  padding: 6px 16px 10px;
 }
 
 .stat-card {
   background: #fff;
-  border-radius: 12px;
-  padding: 16px 18px;
-  box-shadow: 0 8px 20px rgba(15, 31, 58, 0.08);
+  border-radius: 6px;
+  padding: 6px 8px;
+  box-shadow: 0 3px 10px rgba(15, 31, 58, 0.08);
 }
 
 .stat-card h2 {
-  margin: 0 0 8px;
-  font-size: 14px;
+  margin: 0 0 2px;
+  font-size: 9px;
   color: #516079;
   text-transform: uppercase;
-  letter-spacing: 0.08em;
+  letter-spacing: 0.05em;
 }
 
 .stat-card p {
   margin: 0;
-  font-size: 26px;
+  font-size: 16px;
   font-weight: 600;
   color: #0f1f3a;
 }
 
 .stat-card span {
   display: inline-block;
-  margin-top: 6px;
-  font-size: 12px;
+  margin-top: 1px;
+  font-size: 9px;
   color: #7a8496;
 }
 
 .stat-status p {
-  font-size: 20px;
+  font-size: 12px;
   text-transform: uppercase;
   letter-spacing: 0.08em;
 }
 
 .map-panel {
-  padding: 0 32px 32px;
+  padding: 0 16px 16px;
   flex: 1 1 auto;
   display: flex;
   flex-direction: column;
-  gap: 12px;
+  gap: 6px;
 }
 
 .map-header {
   display: flex;
   flex-wrap: wrap;
-  justify-content: space-between;
+  justify-content: flex-end;
   align-items: center;
-  gap: 12px;
-  margin-bottom: 12px;
+  gap: 8px;
+  margin-bottom: 4px;
 }
 
 .map-controls {
@@ -112,7 +113,7 @@ header h1 {
 
 #map {
   flex: 1 1 auto;
-  min-height: 520px;
+  min-height: 560px;
   border-radius: 16px;
   box-shadow: 0 12px 28px rgba(15, 31, 58, 0.1);
   overflow: hidden;
