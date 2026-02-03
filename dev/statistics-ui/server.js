@@ -51,6 +51,9 @@ const statsKeys = {
   },
   deviceKeys: {
     set: `${config.statsNamespace}:device_keys:set`
+  },
+  allowedDevices: {
+    enabled: `${config.statsNamespace}:allowed_devices:enabled`
   }
 };
 
@@ -151,6 +154,28 @@ async function trackDeviceKey(deviceId) {
   }
 }
 
+async function trackAllowedDevicesEnabled(deviceId) {
+  if (!statsClient || !deviceId) {
+    return;
+  }
+  try {
+    await statsClient.sAdd(statsKeys.allowedDevices.enabled, deviceId);
+  } catch (error) {
+    console.warn('Failed to track allowed devices enablement:', error.message);
+  }
+}
+
+async function clearAllowedDevicesEnabled(deviceId) {
+  if (!statsClient || !deviceId) {
+    return;
+  }
+  try {
+    await statsClient.sRem(statsKeys.allowedDevices.enabled, deviceId);
+  } catch (error) {
+    console.warn('Failed to clear allowed devices enablement:', error.message);
+  }
+}
+
 function extractLocationPayload(args, fallbackValue) {
   if (!Array.isArray(args) || args.length === 0) {
     return fallbackValue;
@@ -210,6 +235,7 @@ async function handleMonitorEvent(time, args) {
   const historyDeviceId = getDeviceIdFromSuffix(key, 'hist');
   const visitDeviceId = getDeviceIdFromSuffix(key, 'visit');
   const keyDeviceId = getDeviceIdFromSuffix(key, 'key');
+  const allowedListDeviceId = getDeviceIdFromSuffix(key, 'allowed:enabled');
 
   if (command === 'SET' || command === 'SETEX' || command === 'PSETEX') {
     if (lastDeviceId) {
@@ -243,6 +269,21 @@ async function handleMonitorEvent(time, args) {
       await trackDeviceKey(keyDeviceId);
     }
 
+    if (allowedListDeviceId) {
+      await trackAllowedDevicesEnabled(allowedListDeviceId);
+    }
+
+    return;
+  }
+
+  if (command === 'DEL' && args.length >= 2) {
+    const keys = args.slice(1);
+    const removals = keys
+      .map((delKey) => getDeviceIdFromSuffix(delKey, 'allowed:enabled'))
+      .filter(Boolean);
+    if (removals.length > 0) {
+      await Promise.all(removals.map((deviceId) => clearAllowedDevicesEnabled(deviceId)));
+    }
     return;
   }
 
@@ -341,6 +382,7 @@ async function bootstrapScan({ force = false } = {}) {
   } while (cursor !== '0');
 
   await scanDeviceKeys();
+  await scanAllowedDevicesEnabled();
 }
 
 async function scanDeviceKeys() {
@@ -391,6 +433,56 @@ async function scanDeviceKeys() {
   }
 
   await statsClient.rename(tempKey, statsKeys.deviceKeys.set);
+}
+
+async function scanAllowedDevicesEnabled() {
+  if (!statsClient || !prodClient) {
+    return;
+  }
+
+  let cursor = '0';
+  const matchPattern = `${config.prodNamespace}:*:allowed:enabled`;
+  const tempKey = `${statsKeys.allowedDevices.enabled}:scan:${Date.now()}`;
+  let totalAdded = 0;
+
+  do {
+    const scanResult = await prodClient.scan(cursor, {
+      MATCH: matchPattern,
+      COUNT: config.bootstrapScanBatchSize
+    });
+    const nextCursor = Array.isArray(scanResult) ? scanResult[0] : scanResult.cursor;
+    const keys = Array.isArray(scanResult)
+      ? (scanResult[1] || [])
+      : (scanResult.keys || []);
+    cursor = String(nextCursor || '0');
+
+    if (keys.length === 0) {
+      continue;
+    }
+
+    const pipeline = statsClient.multi();
+    let batchAdded = 0;
+    keys.forEach((key) => {
+      const deviceId = getDeviceIdFromSuffix(key, 'allowed:enabled');
+      if (!deviceId) {
+        return;
+      }
+      pipeline.sAdd(tempKey, deviceId);
+      batchAdded += 1;
+    });
+
+    if (batchAdded > 0) {
+      await pipeline.exec();
+      totalAdded += batchAdded;
+    }
+  } while (cursor !== '0');
+
+  if (totalAdded === 0) {
+    await statsClient.del(statsKeys.allowedDevices.enabled);
+    return;
+  }
+
+  await statsClient.rename(tempKey, statsKeys.allowedDevices.enabled);
 }
 
 async function ensureStatsSeeded() {
@@ -464,6 +556,7 @@ async function getStatsSnapshot() {
   const dayKey = `${statsKeys.uniqueDayPrefix}${new Date(now).toISOString().slice(0, 10)}`;
   pipeline.pfCount(dayKey);
   pipeline.sCard(statsKeys.deviceKeys.set);
+  pipeline.sCard(statsKeys.allowedDevices.enabled);
 
   const execResults = await pipeline.exec();
   const normalizeExecItem = (item) => {
@@ -487,7 +580,8 @@ async function getStatsSnapshot() {
     getVisitorHistoryRequests,
     updatesMinuteValues,
     uniqueToday,
-    deviceKeysSet
+    deviceKeysSet,
+    allowedDevicesEnabled
   ] = results;
 
   const safeUpdatesMinuteValues = Array.isArray(updatesMinuteValues)
@@ -501,6 +595,7 @@ async function getStatsSnapshot() {
   const totalKnownDevices = Number(totalKnown || 0);
   const devicesWithKeys = Number(deviceKeysSet || 0);
   const devicesWithoutKeys = Math.max(totalKnownDevices - devicesWithKeys, 0);
+  const devicesWithAllowedListEnabled = Number(allowedDevicesEnabled || 0);
 
   return {
     totalKnownDevices,
@@ -521,6 +616,9 @@ async function getStatsSnapshot() {
     deviceKeys: {
       withKey: devicesWithKeys,
       withoutKey: devicesWithoutKeys
+    },
+    allowedDevices: {
+      enabled: devicesWithAllowedListEnabled
     },
     updates: {
       total: Number(updatesTotal || 0),
@@ -625,6 +723,9 @@ function mockStatsSnapshot() {
     deviceKeys: {
       withKey: 3120,
       withoutKey: 9330
+    },
+    allowedDevices: {
+      enabled: 860
     },
     updates: {
       total: 892340,
