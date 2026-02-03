@@ -339,6 +339,58 @@ async function bootstrapScan({ force = false } = {}) {
       }
     }
   } while (cursor !== '0');
+
+  await scanDeviceKeys();
+}
+
+async function scanDeviceKeys() {
+  if (!statsClient || !prodClient) {
+    return;
+  }
+
+  let cursor = '0';
+  const matchPattern = `${config.prodNamespace}:*:key`;
+  const tempKey = `${statsKeys.deviceKeys.set}:scan:${Date.now()}`;
+  let totalAdded = 0;
+
+  do {
+    const scanResult = await prodClient.scan(cursor, {
+      MATCH: matchPattern,
+      COUNT: config.bootstrapScanBatchSize
+    });
+    const nextCursor = Array.isArray(scanResult) ? scanResult[0] : scanResult.cursor;
+    const keys = Array.isArray(scanResult)
+      ? (scanResult[1] || [])
+      : (scanResult.keys || []);
+    cursor = String(nextCursor || '0');
+
+    if (keys.length === 0) {
+      continue;
+    }
+
+    const pipeline = statsClient.multi();
+    let batchAdded = 0;
+    keys.forEach((key) => {
+      const deviceId = getDeviceIdFromSuffix(key, 'key');
+      if (!deviceId) {
+        return;
+      }
+      pipeline.sAdd(tempKey, deviceId);
+      batchAdded += 1;
+    });
+
+    if (batchAdded > 0) {
+      await pipeline.exec();
+      totalAdded += batchAdded;
+    }
+  } while (cursor !== '0');
+
+  if (totalAdded === 0) {
+    await statsClient.del(statsKeys.deviceKeys.set);
+    return;
+  }
+
+  await statsClient.rename(tempKey, statsKeys.deviceKeys.set);
 }
 
 async function ensureStatsSeeded() {
