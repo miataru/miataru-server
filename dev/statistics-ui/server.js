@@ -42,7 +42,16 @@ const statsKeys = {
   trailPrefix: `${config.statsNamespace}:devices:trail`,
   updatesTotal: `${config.statsNamespace}:updates:total`,
   updatesMinutePrefix: `${config.statsNamespace}:updates:minute:`,
-  uniqueDayPrefix: `${config.statsNamespace}:unique:day:`
+  uniqueDayPrefix: `${config.statsNamespace}:unique:day:`,
+  requests: {
+    updateLocation: `${config.statsNamespace}:requests:update_location`,
+    getLocation: `${config.statsNamespace}:requests:get_location`,
+    getLocationHistory: `${config.statsNamespace}:requests:get_location_history`,
+    getVisitorHistory: `${config.statsNamespace}:requests:get_visitor_history`
+  },
+  deviceKeys: {
+    set: `${config.statsNamespace}:device_keys:set`
+  }
 };
 
 let prodClient;
@@ -53,6 +62,8 @@ let monitorClient;
 let bootstrapInProgress = false;
 let lastBootstrapAttempt = 0;
 const bootstrapCooldownMs = 5 * 60 * 1000;
+const recentRequestByTarget = new Map();
+const recentRequestTtlMs = 4000;
 
 function normalizeTimestamp(value) {
   if (!value) {
@@ -71,6 +82,12 @@ function escapeRegex(value) {
 
 function getDeviceIdFromKey(key) {
   const regex = new RegExp(`^${escapeRegex(config.prodNamespace)}:(.+):last$`);
+  const match = key.match(regex);
+  return match ? match[1] : null;
+}
+
+function getDeviceIdFromSuffix(key, suffix) {
+  const regex = new RegExp(`^${escapeRegex(config.prodNamespace)}:(.+):${suffix}$`);
   const match = key.match(regex);
   return match ? match[1] : null;
 }
@@ -112,12 +129,26 @@ async function updateStatsFromLocation(deviceId, payload, source) {
     pipeline.lPush(getTrailKey(deviceId), trailEntry);
     pipeline.lTrim(getTrailKey(deviceId), 0, 49);
   }
+  if (source === 'monitor') {
+    pipeline.incr(statsKeys.requests.updateLocation);
+  }
   pipeline.incr(statsKeys.updatesTotal);
   pipeline.incr(`${statsKeys.updatesMinutePrefix}${minuteBucket}`);
   pipeline.expire(`${statsKeys.updatesMinutePrefix}${minuteBucket}`, 60 * 60 * 2);
   pipeline.pfAdd(`${statsKeys.uniqueDayPrefix}${dayBucket}`, deviceId);
   pipeline.expire(`${statsKeys.uniqueDayPrefix}${dayBucket}`, 60 * 60 * 24 * 400);
   await pipeline.exec();
+}
+
+async function trackDeviceKey(deviceId) {
+  if (!statsClient || !deviceId) {
+    return;
+  }
+  try {
+    await statsClient.sAdd(statsKeys.deviceKeys.set, deviceId);
+  } catch (error) {
+    console.warn('Failed to track device key:', error.message);
+  }
 }
 
 function extractLocationPayload(args, fallbackValue) {
@@ -139,45 +170,129 @@ function extractLocationPayload(args, fallbackValue) {
   return fallbackValue;
 }
 
+function storeRecentRequest(targetDeviceId, requestType) {
+  if (!targetDeviceId || !requestType) {
+    return;
+  }
+  recentRequestByTarget.set(targetDeviceId, {
+    requestType,
+    timestampMs: Date.now()
+  });
+}
+
+function getRecentRequestType(targetDeviceId) {
+  const entry = recentRequestByTarget.get(targetDeviceId);
+  if (!entry) {
+    return null;
+  }
+  if (Date.now() - entry.timestampMs > recentRequestTtlMs) {
+    recentRequestByTarget.delete(targetDeviceId);
+    return null;
+  }
+  return entry.requestType;
+}
+
+function broadcastApiRequest(payload) {
+  broadcast({
+    type: 'api-request',
+    payload
+  });
+}
+
 async function handleMonitorEvent(time, args) {
   if (!args || args.length < 2) {
     return;
   }
 
   const command = String(args[0] || '').toUpperCase();
-  if (command !== 'SET' && command !== 'SETEX' && command !== 'PSETEX') {
-    return;
-  }
-
   const key = args[1];
-  const deviceId = getDeviceIdFromKey(key);
-  if (!deviceId) {
+  const lastDeviceId = getDeviceIdFromSuffix(key, 'last');
+  const historyDeviceId = getDeviceIdFromSuffix(key, 'hist');
+  const visitDeviceId = getDeviceIdFromSuffix(key, 'visit');
+  const keyDeviceId = getDeviceIdFromSuffix(key, 'key');
+
+  if (command === 'SET' || command === 'SETEX' || command === 'PSETEX') {
+    if (lastDeviceId) {
+      let payloadString = extractLocationPayload(args, null);
+      if (!payloadString) {
+        try {
+          payloadString = await prodClient.get(key);
+        } catch (error) {
+          console.warn('Failed to fetch value for key during monitor:', error.message);
+        }
+      }
+
+      if (!payloadString) {
+        return;
+      }
+
+      let payload;
+      try {
+        payload = JSON.parse(payloadString);
+      } catch (error) {
+        console.warn('Failed to parse location payload:', error.message);
+        return;
+      }
+
+      await updateStatsFromLocation(lastDeviceId, payload, 'monitor');
+      broadcastLocationUpdate(lastDeviceId, payload);
+      return;
+    }
+
+    if (keyDeviceId) {
+      await trackDeviceKey(keyDeviceId);
+    }
+
     return;
   }
 
-  let payloadString = extractLocationPayload(args, null);
-  if (!payloadString) {
-    try {
-      payloadString = await prodClient.get(key);
-    } catch (error) {
-      console.warn('Failed to fetch value for key during monitor:', error.message);
+  if (command === 'GET' && lastDeviceId) {
+    storeRecentRequest(lastDeviceId, 'GetLocation');
+    if (statsClient) {
+      await statsClient.incr(statsKeys.requests.getLocation);
+    }
+    return;
+  }
+
+  if (command === 'LRANGE') {
+    if (historyDeviceId) {
+      storeRecentRequest(historyDeviceId, 'GetLocationHistory');
+      if (statsClient) {
+        await statsClient.incr(statsKeys.requests.getLocationHistory);
+      }
+      return;
+    }
+
+    if (visitDeviceId) {
+      storeRecentRequest(visitDeviceId, 'GetVisitorHistory');
+      if (statsClient) {
+        await statsClient.incr(statsKeys.requests.getVisitorHistory);
+      }
+      broadcastApiRequest({
+        requestType: 'GetVisitorHistory',
+        targetDeviceId: visitDeviceId,
+        timestampMs: Date.now()
+      });
     }
   }
 
-  if (!payloadString) {
-    return;
-  }
+  if (command === 'LPUSH' && visitDeviceId && args.length >= 3) {
+    const requestType = getRecentRequestType(visitDeviceId) || 'GetLocation';
+    let requesterDeviceId = null;
+    try {
+      const visitor = JSON.parse(args[2]);
+      requesterDeviceId = visitor.DeviceID || null;
+    } catch (error) {
+      requesterDeviceId = null;
+    }
 
-  let payload;
-  try {
-    payload = JSON.parse(payloadString);
-  } catch (error) {
-    console.warn('Failed to parse location payload:', error.message);
-    return;
+    broadcastApiRequest({
+      requestType,
+      requesterDeviceId,
+      targetDeviceIds: [visitDeviceId],
+      timestampMs: Date.now()
+    });
   }
-
-  await updateStatsFromLocation(deviceId, payload, 'monitor');
-  broadcastLocationUpdate(deviceId, payload);
 }
 
 async function bootstrapScan({ force = false } = {}) {
@@ -289,9 +404,14 @@ async function getStatsSnapshot() {
   pipeline.zCount(statsKeys.lastSeen, window365d, now);
   pipeline.zCount(statsKeys.lastSeen, currentWindow, now);
   pipeline.get(statsKeys.updatesTotal);
+  pipeline.get(statsKeys.requests.updateLocation);
+  pipeline.get(statsKeys.requests.getLocation);
+  pipeline.get(statsKeys.requests.getLocationHistory);
+  pipeline.get(statsKeys.requests.getVisitorHistory);
   pipeline.mGet(minuteKeys);
   const dayKey = `${statsKeys.uniqueDayPrefix}${new Date(now).toISOString().slice(0, 10)}`;
   pipeline.pfCount(dayKey);
+  pipeline.sCard(statsKeys.deviceKeys.set);
 
   const execResults = await pipeline.exec();
   const normalizeExecItem = (item) => {
@@ -309,8 +429,13 @@ async function getStatsSnapshot() {
     active365d,
     activeCurrent,
     updatesTotal,
+    updateLocationRequests,
+    getLocationRequests,
+    getLocationHistoryRequests,
+    getVisitorHistoryRequests,
     updatesMinuteValues,
-    uniqueToday
+    uniqueToday,
+    deviceKeysSet
   ] = results;
 
   const safeUpdatesMinuteValues = Array.isArray(updatesMinuteValues)
@@ -321,8 +446,12 @@ async function getStatsSnapshot() {
     .map((value) => Number(value || 0))
     .reduce((sum, value) => sum + value, 0);
 
+  const totalKnownDevices = Number(totalKnown || 0);
+  const devicesWithKeys = Number(deviceKeysSet || 0);
+  const devicesWithoutKeys = Math.max(totalKnownDevices - devicesWithKeys, 0);
+
   return {
-    totalKnownDevices: Number(totalKnown || 0),
+    totalKnownDevices,
     activeDevices: {
       currentWindowMinutes: config.activeWindowMinutes,
       current: Number(activeCurrent || 0),
@@ -330,6 +459,16 @@ async function getStatsSnapshot() {
       last7d: Number(active7d || 0),
       last30d: Number(active30d || 0),
       last365d: Number(active365d || 0)
+    },
+    requestTotals: {
+      updateLocation: Number(updateLocationRequests || 0),
+      getLocation: Number(getLocationRequests || 0),
+      getLocationHistory: Number(getLocationHistoryRequests || 0),
+      getVisitorHistory: Number(getVisitorHistoryRequests || 0)
+    },
+    deviceKeys: {
+      withKey: devicesWithKeys,
+      withoutKey: devicesWithoutKeys
     },
     updates: {
       total: Number(updatesTotal || 0),
@@ -424,6 +563,16 @@ function mockStatsSnapshot() {
       last7d: 4200,
       last30d: 8900,
       last365d: 12000
+    },
+    requestTotals: {
+      updateLocation: 502340,
+      getLocation: 284510,
+      getLocationHistory: 120400,
+      getVisitorHistory: 45210
+    },
+    deviceKeys: {
+      withKey: 3120,
+      withoutKey: 9330
     },
     updates: {
       total: 892340,
@@ -546,7 +695,8 @@ function broadcastLocationUpdate(deviceId, payload) {
     longitude,
     accuracy: Number.isFinite(accuracy) ? accuracy : null,
     timestampMs,
-    source: 'monitor'
+    source: 'monitor',
+    requestType: 'UpdateLocation'
   });
 }
 
