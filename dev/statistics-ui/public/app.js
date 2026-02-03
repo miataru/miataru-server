@@ -17,6 +17,7 @@ const getLocationHistoryRequestsEl = document.getElementById('requests-get-locat
 const getVisitorHistoryRequestsEl = document.getElementById('requests-get-visitor-history');
 const deviceKeysWithEl = document.getElementById('devices-with-key');
 const deviceKeysWithoutEl = document.getElementById('devices-without-key');
+const allowedDevicesEnabledEl = document.getElementById('devices-with-allowed-list');
 const mapWindowSelect = document.getElementById('map-window');
 const mapMetaEl = document.getElementById('map-meta');
 const wsStatusEl = document.getElementById('ws-status');
@@ -103,6 +104,10 @@ function updateStatsUI(stats) {
   if (stats.deviceKeys) {
     deviceKeysWithEl.textContent = formatNumber(stats.deviceKeys.withKey);
     deviceKeysWithoutEl.textContent = formatNumber(stats.deviceKeys.withoutKey);
+  }
+
+  if (stats.allowedDevices) {
+    allowedDevicesEnabledEl.textContent = formatNumber(stats.allowedDevices.enabled);
   }
 
   if (stats.generatedAt) {
