@@ -126,15 +126,17 @@ header h1 {
 }
 
 .device-marker.is-updating {
-  animation: markerPulse 1.4s ease-out;
+  animation: markerPulse 2s ease-out;
 }
 
 .device-update-pulse {
-  animation: pulseRing 1.4s ease-out;
+  animation: pulseRing 2s ease-out;
   stroke: #ff9f1a;
-  stroke-width: 2;
-  fill: rgba(255, 159, 26, 0.1);
-  fill-opacity: 0.2;
+  stroke-width: 2.5;
+  fill: rgba(255, 159, 26, 0.16);
+  fill-opacity: 0.35;
+  transform-box: fill-box;
+  transform-origin: center;
 }
 
 .device-trail {
@@ -150,21 +152,23 @@ header h1 {
     stroke: #ff9f1a;
     fill: #ff9f1a;
     fill-opacity: 1;
+    filter: drop-shadow(0 0 6px rgba(255, 159, 26, 0.8));
   }
   100% {
     stroke: #1f5fbf;
     fill: #1f5fbf;
     fill-opacity: 0.85;
+    filter: none;
   }
 }
 
 @keyframes pulseRing {
   0% {
-    transform: scale(0.4);
-    opacity: 0.9;
+    transform: scale(0.35);
+    opacity: 0.95;
   }
   100% {
-    transform: scale(1.8);
+    transform: scale(2.2);
     opacity: 0;
   }
 }
