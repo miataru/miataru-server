@@ -293,6 +293,14 @@ async function getStatsSnapshot() {
   const dayKey = `${statsKeys.uniqueDayPrefix}${new Date(now).toISOString().slice(0, 10)}`;
   pipeline.pfCount(dayKey);
 
+  const execResults = await pipeline.exec();
+  const normalizeExecItem = (item) => {
+    if (Array.isArray(item) && item.length === 2 && (item[0] === null || item[0] instanceof Error)) {
+      return item[1];
+    }
+    return item;
+  };
+  const results = execResults.map(normalizeExecItem);
   const [
     totalKnown,
     active24h,
@@ -303,7 +311,7 @@ async function getStatsSnapshot() {
     updatesTotal,
     updatesMinuteValues,
     uniqueToday
-  ] = (await pipeline.exec()).map((item) => item[1]);
+  ] = results;
 
   const safeUpdatesMinuteValues = Array.isArray(updatesMinuteValues)
     ? updatesMinuteValues
@@ -360,11 +368,18 @@ async function getMapSnapshot(windowParam) {
     trailPipeline.lRange(getTrailKey(deviceId), 0, 49);
   });
   const trailResults = await trailPipeline.exec();
+  const normalizeExecItem = (item) => {
+    if (Array.isArray(item) && item.length === 2 && (item[0] === null || item[0] instanceof Error)) {
+      return item[1];
+    }
+    return item;
+  };
   const devices = [];
 
   for (let i = 0; i < deviceIds.length; i += 1) {
     const value = locations[i];
-    const trailEntries = Array.isArray(trailResults?.[i]?.[1]) ? trailResults[i][1] : [];
+    const trailResult = normalizeExecItem(trailResults?.[i]);
+    const trailEntries = Array.isArray(trailResult) ? trailResult : [];
     if (!value) {
       continue;
     }
