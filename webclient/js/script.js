@@ -11,10 +11,6 @@ let intervalId = null;
 let defaultIntervalId = null;  // Neuer Timer für Default Device
 let currentDeviceToSave = null;
 let deviceToDelete = null;
-let liveUpdateTimeout = null;
-let liveUpdateLayers = [];
-const liveTrails = new Map();
-const liveTrailLatLngs = new Map();
 
 // Neue globale Variable für den Auto-Center Status
 let autoCenterEnabled = true;
@@ -51,8 +47,6 @@ const DEFAULT_SETTINGS = {
     historyAmount: 100,   // Anzahl der History-Einträge
     requestMiataruDeviceID: 'webclient'  // Default RequestMiataruDeviceID
 };
-
-const MAX_LIVE_TRAIL_POINTS = 50;
 
 // Funktion zum Laden der gespeicherten Devices
 function loadStoredDevices() {
@@ -99,106 +93,12 @@ const pinIcon = L.divIcon({
     popupAnchor: [0, -36]
 });
 
-function clearLiveUpdateHighlight() {
-    liveUpdateLayers.forEach(layer => layer.remove());
-    liveUpdateLayers = [];
-    if (liveUpdateTimeout) {
-        clearTimeout(liveUpdateTimeout);
-        liveUpdateTimeout = null;
-    }
-    if (currentMarker) {
-        const markerElement = currentMarker.getElement();
-        if (markerElement) {
-            markerElement.classList.remove('live-update-marker');
-        }
-        currentMarker.setZIndexOffset(0);
-    }
-}
-
-function showLiveUpdateHighlight(latLng) {
-    clearLiveUpdateHighlight();
-
-    const burstIcon = L.divIcon({
-        className: '',
-        html: `
-            <div class="live-update-burst-icon">
-                <span class="live-update-burst-ring"></span>
-                <span class="live-update-burst-ring live-update-burst-ring--delay"></span>
-            </div>
-        `,
-        iconSize: [64, 64],
-        iconAnchor: [32, 32]
-    });
-
-    const burstMarker = L.marker(latLng, {
-        icon: burstIcon,
-        interactive: false,
-        keyboard: false,
-        pane: 'markerPane'
-    }).addTo(map);
-
-    burstMarker.setZIndexOffset(900);
-    liveUpdateLayers = [burstMarker];
-
-    if (currentMarker) {
-        const markerElement = currentMarker.getElement();
-        if (markerElement) {
-            markerElement.classList.add('live-update-marker');
-        }
-        currentMarker.setZIndexOffset(1000);
-    }
-
-    liveUpdateTimeout = setTimeout(() => {
-        clearLiveUpdateHighlight();
-    }, 4000);
-}
-
-function removeLiveTrail(deviceId) {
-    const trail = liveTrails.get(deviceId);
-    if (trail) {
-        trail.remove();
-        liveTrails.delete(deviceId);
-    }
-    liveTrailLatLngs.delete(deviceId);
-}
-
-function updateLiveTrail(deviceId, latLng) {
-    const existingLatLngs = liveTrailLatLngs.get(deviceId) || [];
-    existingLatLngs.push(latLng);
-
-    if (existingLatLngs.length > MAX_LIVE_TRAIL_POINTS) {
-        existingLatLngs.splice(0, existingLatLngs.length - MAX_LIVE_TRAIL_POINTS);
-    }
-
-    liveTrailLatLngs.set(deviceId, existingLatLngs);
-
-    const trail = liveTrails.get(deviceId);
-    if (!trail) {
-        const newTrail = L.polyline(existingLatLngs, {
-            color: '#ff7b00',
-            weight: 4,
-            opacity: 0.75,
-            className: 'live-trail-path'
-        }).addTo(map);
-        liveTrails.set(deviceId, newTrail);
-    } else {
-        trail.setLatLngs(existingLatLngs);
-    }
-}
-
-function resetLiveTrail() {
-    liveTrails.forEach((trail) => trail.remove());
-    liveTrails.clear();
-    liveTrailLatLngs.clear();
-}
-
 // Funktion zum Löschen eines Devices
 function deleteDevice(deviceId) {
     const devices = loadStoredDevices();
     delete devices[deviceId];
     localStorage.setItem(STORED_DEVICES_KEY, JSON.stringify(devices));
     updateDevicesDropdown();
-    removeLiveTrail(deviceId);
     
     // Pin und Popup aktualisieren
     if (currentMarker) {
@@ -512,7 +412,6 @@ async function fetchDeviceLocation(deviceId) {
             const latitude = parseFloat(location.Latitude);
             const longitude = parseFloat(location.Longitude);
             const accuracy = parseFloat(location.HorizontalAccuracy);
-            const targetLatLng = [latitude, longitude];
             
             // Bestehenden Marker und Kreis entfernen
             if (currentMarker) {
@@ -538,9 +437,6 @@ async function fetchDeviceLocation(deviceId) {
             });
             
             currentMarker.addTo(map);
-
-            updateLiveTrail(deviceId, targetLatLng);
-            showLiveUpdateHighlight(targetLatLng);
             
             const popupContent = createPopupContent(deviceId, storedName, location);
             currentMarker.bindPopup(popupContent);
@@ -659,8 +555,6 @@ function startTracking(deviceId, isDefault = false) {
     
     // Bei neuem Device den Zoom-Status zurücksetzen
     userHasZoomed = false;
-    resetLiveTrail();
-    clearLiveUpdateHighlight();
     
     // Sofort erste Abfrage durchführen
     fetchDeviceLocation(deviceId);
