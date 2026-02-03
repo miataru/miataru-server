@@ -323,6 +323,10 @@ function showRequestConnectionLine(requesterLatLng, targetLatLng, requestType) {
   }, updateAnimationMs);
 }
 
+function isReadRequest(requestType) {
+  return ['GetLocation', 'GetLocationHistory', 'GetVisitorHistory'].includes(requestType);
+}
+
 function handleApiRequest(payload) {
   if (!payload || !payload.requestType) {
     return;
@@ -348,7 +352,7 @@ function handleApiRequest(payload) {
     }
     const targetLatLng = targetMarker.getLatLng();
     animateMarkerUpdate(targetMarker, targetLatLng, requestType);
-    if (requestType === 'GetLocation' && requesterLatLng) {
+    if (requesterLatLng && isReadRequest(requestType)) {
       showRequestConnectionLine(requesterLatLng, targetLatLng, requestType);
     }
   });
