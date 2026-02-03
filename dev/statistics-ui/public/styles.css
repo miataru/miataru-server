@@ -123,6 +123,8 @@ header h1 {
   fill: #1f5fbf;
   fill-opacity: 0.85;
   stroke-width: 2;
+  --marker-stroke: #1f5fbf;
+  --marker-fill: #1f5fbf;
 }
 
 .device-marker.is-updating {
@@ -131,12 +133,55 @@ header h1 {
 
 .device-update-pulse {
   animation: pulseRing 2s ease-out;
-  stroke: #ff9f1a;
   stroke-width: 2.5;
+  stroke: #ff9f1a;
   fill: rgba(255, 159, 26, 0.16);
   fill-opacity: 0.35;
   transform-box: fill-box;
   transform-origin: center;
+}
+
+.device-update-pulse--update-location {
+  stroke: #1f5fbf;
+  fill: rgba(31, 95, 191, 0.16);
+}
+
+.device-update-pulse--get-location {
+  stroke: #2ea44f;
+  fill: rgba(46, 164, 79, 0.16);
+}
+
+.device-update-pulse--get-location-history {
+  stroke: #7c3aed;
+  fill: rgba(124, 58, 237, 0.16);
+}
+
+.device-update-pulse--get-visitor-history {
+  stroke: #f97316;
+  fill: rgba(249, 115, 22, 0.16);
+}
+
+.device-request-line {
+  fill: none;
+  stroke-width: 2;
+  stroke-dasharray: 6 6;
+  animation: requestLinePulse 2s ease-out;
+}
+
+.device-request-line--get-location {
+  stroke: rgba(46, 164, 79, 0.9);
+}
+
+.device-request-line--update-location {
+  stroke: rgba(31, 95, 191, 0.9);
+}
+
+.device-request-line--get-location-history {
+  stroke: rgba(124, 58, 237, 0.9);
+}
+
+.device-request-line--get-visitor-history {
+  stroke: rgba(249, 115, 22, 0.9);
 }
 
 .device-trail {
@@ -149,16 +194,27 @@ header h1 {
 
 @keyframes markerPulse {
   0% {
-    stroke: #ff9f1a;
-    fill: #ff9f1a;
+    stroke: var(--pulse-stroke, #ff9f1a);
+    fill: var(--pulse-fill, #ff9f1a);
     fill-opacity: 1;
-    filter: drop-shadow(0 0 6px rgba(255, 159, 26, 0.8));
+    filter: drop-shadow(0 0 6px var(--pulse-shadow, rgba(255, 159, 26, 0.8)));
   }
   100% {
-    stroke: #1f5fbf;
-    fill: #1f5fbf;
+    stroke: var(--marker-stroke, #1f5fbf);
+    fill: var(--marker-fill, #1f5fbf);
     fill-opacity: 0.85;
     filter: none;
+  }
+}
+
+@keyframes requestLinePulse {
+  0% {
+    stroke-dashoffset: 12;
+    opacity: 0.95;
+  }
+  100% {
+    stroke-dashoffset: 0;
+    opacity: 0.1;
   }
 }
 
