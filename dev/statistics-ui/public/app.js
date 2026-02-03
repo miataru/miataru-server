@@ -27,6 +27,7 @@ const pulseLayer = L.layerGroup().addTo(map);
 const markerByDevice = new Map();
 const trailByDevice = new Map();
 const trailLatLngsByDevice = new Map();
+const updateAnimationMs = 2000;
 
 let ws;
 let wsConnected = false;
@@ -83,18 +84,18 @@ function animateMarkerUpdate(marker, latLng) {
     element.classList.add('is-updating');
     setTimeout(() => {
       element.classList.remove('is-updating');
-    }, 1400);
+    }, updateAnimationMs);
   }
 
   const pulseMarker = L.circleMarker(latLng, {
-    radius: 14,
+    radius: 18,
     className: 'device-update-pulse',
     interactive: false
   });
   pulseMarker.addTo(pulseLayer);
   setTimeout(() => {
     pulseLayer.removeLayer(pulseMarker);
-  }, 1400);
+  }, updateAnimationMs);
 }
 
 function updateTrail(deviceId, latLngs) {
