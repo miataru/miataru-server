@@ -1,0 +1,25 @@
+version: '3.3'
+
+services:
+  stats-ui:
+    build:
+      context: .
+      dockerfile: Dockerfile
+    environment:
+      PORT: 3000
+      STATS_AUTH_USER: miataru
+      STATS_AUTH_PASS: change-me
+      PROD_REDIS_URL: redis://127.0.0.1:6379
+      PROD_REDIS_NAMESPACE: miad
+      STATS_REDIS_URL: redis://127.0.0.1:6380
+      STATS_REDIS_NAMESPACE: miad:stats
+      MONITOR_ENABLED: 'true'
+      BOOTSTRAP_SCAN_ENABLED: 'false'
+    network_mode: host
+    depends_on:
+      - stats-redis
+  stats-redis:
+    image: redis:7-alpine
+    command: ["redis-server", "--appendonly", "no", "--save", ""]
+    ports:
+      - "6380:6379"

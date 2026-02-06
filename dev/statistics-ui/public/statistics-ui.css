@@ -1,0 +1,237 @@
+:root {
+  color-scheme: light;
+  font-family: 'Segoe UI', system-ui, sans-serif;
+  background-color: #f6f7fb;
+  color: #1c1f23;
+}
+
+body {
+  margin: 0;
+  padding: 0;
+  min-height: 100vh;
+  display: flex;
+  flex-direction: column;
+}
+
+header {
+  background: transparent;
+  color: #1c1f23;
+  padding: 12px 24px 8px;
+  display: flex;
+  flex-direction: column;
+  gap: 6px;
+}
+
+header h1 {
+  margin: 0;
+  font-size: 18px;
+}
+
+.subtitle {
+  margin: 0;
+  font-size: 12px;
+  color: #4b5563;
+}
+
+.header-meta {
+  font-size: 12px;
+  color: #6b7280;
+}
+
+.stats {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(120px, 1fr));
+  gap: 6px;
+  padding: 6px 16px 10px;
+}
+
+.stat-card {
+  background: #fff;
+  border-radius: 6px;
+  padding: 6px 8px;
+  box-shadow: 0 3px 10px rgba(15, 31, 58, 0.08);
+}
+
+.stat-card h2 {
+  margin: 0 0 2px;
+  font-size: 9px;
+  color: #516079;
+  text-transform: uppercase;
+  letter-spacing: 0.05em;
+}
+
+.stat-card p {
+  margin: 0;
+  font-size: 16px;
+  font-weight: 600;
+  color: #0f1f3a;
+}
+
+.stat-card span {
+  display: inline-block;
+  margin-top: 1px;
+  font-size: 9px;
+  color: #7a8496;
+}
+
+.stat-status p {
+  font-size: 12px;
+  text-transform: uppercase;
+  letter-spacing: 0.08em;
+}
+
+.map-panel {
+  padding: 0 16px 16px;
+  flex: 1 1 auto;
+  display: flex;
+  flex-direction: column;
+  gap: 6px;
+}
+
+.map-header {
+  display: flex;
+  flex-wrap: wrap;
+  justify-content: flex-end;
+  align-items: center;
+  gap: 8px;
+  margin-bottom: 4px;
+}
+
+.map-controls {
+  display: flex;
+  gap: 12px;
+  align-items: center;
+  font-size: 14px;
+  color: #516079;
+}
+
+.map-controls select {
+  border-radius: 6px;
+  padding: 4px 8px;
+  border: 1px solid #ccd2dd;
+}
+
+#map {
+  flex: 1 1 auto;
+  min-height: 560px;
+  border-radius: 16px;
+  box-shadow: 0 12px 28px rgba(15, 31, 58, 0.1);
+  overflow: hidden;
+}
+
+.device-marker {
+  stroke: #1f5fbf;
+  fill: #1f5fbf;
+  fill-opacity: 0.85;
+  stroke-width: 2;
+  --marker-stroke: #1f5fbf;
+  --marker-fill: #1f5fbf;
+}
+
+.device-marker.is-updating {
+  animation: markerPulse 2s ease-out;
+}
+
+.device-update-pulse {
+  animation: pulseRing 2s ease-out;
+  stroke-width: 2.5;
+  stroke: #ff9f1a;
+  fill: rgba(255, 159, 26, 0.16);
+  fill-opacity: 0.35;
+  transform-box: fill-box;
+  transform-origin: center;
+}
+
+.device-update-pulse--update-location {
+  stroke: #1f5fbf;
+  fill: rgba(31, 95, 191, 0.16);
+}
+
+.device-update-pulse--get-location {
+  stroke: #2ea44f;
+  fill: rgba(46, 164, 79, 0.16);
+}
+
+.device-update-pulse--get-location-history {
+  stroke: #7c3aed;
+  fill: rgba(124, 58, 237, 0.16);
+}
+
+.device-update-pulse--get-visitor-history {
+  stroke: #f97316;
+  fill: rgba(249, 115, 22, 0.16);
+}
+
+.device-request-line {
+  fill: none;
+  stroke-width: 2;
+  stroke-dasharray: 6 6;
+  animation: requestLinePulse 2s ease-out;
+}
+
+.device-request-line--get-location {
+  stroke: rgba(46, 164, 79, 0.9);
+}
+
+.device-request-line--update-location {
+  stroke: rgba(31, 95, 191, 0.9);
+}
+
+.device-request-line--get-location-history {
+  stroke: rgba(124, 58, 237, 0.9);
+}
+
+.device-request-line--get-visitor-history {
+  stroke: rgba(249, 115, 22, 0.9);
+}
+
+.device-trail {
+  stroke: rgba(255, 159, 26, 0.85);
+  stroke-width: 3;
+  stroke-linecap: round;
+  stroke-linejoin: round;
+  filter: drop-shadow(0 0 4px rgba(255, 159, 26, 0.5));
+}
+
+@keyframes markerPulse {
+  0% {
+    stroke: var(--pulse-stroke, #ff9f1a);
+    fill: var(--pulse-fill, #ff9f1a);
+    fill-opacity: 1;
+    filter: drop-shadow(0 0 6px var(--pulse-shadow, rgba(255, 159, 26, 0.8)));
+  }
+  100% {
+    stroke: var(--marker-stroke, #1f5fbf);
+    fill: var(--marker-fill, #1f5fbf);
+    fill-opacity: 0.85;
+    filter: none;
+  }
+}
+
+@keyframes requestLinePulse {
+  0% {
+    stroke-dashoffset: 12;
+    opacity: 0.95;
+  }
+  100% {
+    stroke-dashoffset: 0;
+    opacity: 0.1;
+  }
+}
+
+@keyframes pulseRing {
+  0% {
+    transform: scale(0.35);
+    opacity: 0.95;
+  }
+  100% {
+    transform: scale(2.2);
+    opacity: 0;
+  }
+}
+
+@media (max-width: 960px) {
+  #map {
+    min-height: 420px;
+  }
+}
