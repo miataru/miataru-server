@@ -67,8 +67,8 @@ paths:
      
      RequestMiataruDeviceID should be the ID of the device the request is sent from (or an identifier like an URL). This is used for access control and visitor history tracking.
      
-     API 1.1: If an allowed devices list has been set for a device (via /setAllowedDeviceList), only devices with hasCurrentLocationAccess permission will receive location data. Devices without permission will receive the location as if the device doesn't exist.
-   operationId: getLocation
+    API 1.1: If an allowed devices list has been set for a device (via /setAllowedDeviceList), only devices with hasCurrentLocationAccess permission will receive location data. Devices without permission will receive the location as if the device doesn't exist. Visitor history is still recorded for the requesting device so the target device owner can see who accessed (or attempted to access) their location in GetVisitorHistory.
+  operationId: getLocation
    produces:
    - application/json
    parameters:

@@ -200,6 +200,7 @@ Use the `/v1/setAllowedDeviceList` endpoint to set or update the allowed devices
 - If allowed devices list is **not enabled**: Returns location data when `RequestMiataruDeviceID` is provided (backward compatible)
 - If allowed devices list is **enabled**: Only devices with `hasCurrentLocationAccess: true` receive location data
 - Devices without permission receive location as `null` (as if device doesn't exist)
+- **Visitor history**: The requesting device is always recorded in the target device's visitor history when the target device exists, regardless of whether the allowed list grants access. The device owner can see all visitors (including those who did not receive location data) via GetVisitorHistory.
 
 **GetLocationHistory:**
 - If allowed devices list is **not enabled**: Returns location history when `RequestMiataruDeviceID` is provided (backward compatible)

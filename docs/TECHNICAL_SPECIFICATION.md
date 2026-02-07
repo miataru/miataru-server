@@ -74,7 +74,7 @@
 - **Interfaces**: Exported handler functions called by route registrations. (Evidence: lib/routes/location/v1/index.js)
 - **Key logic**:
   - **UpdateLocation**: If history enabled, pushes each location into `hist` list and trims; updates `last` on final entry. If history disabled, deletes history list and stores `last` with TTL. (Evidence: lib/routes/location/v1/location.js; config/default.js; tests/integration/api.tests.js)
-  - **GetLocation**: Reads `last` per device and returns null when missing; records visitor history when configured. (Evidence: lib/routes/location/v1/location.js; tests/integration/unknownDevice.tests.js; tests/integration/visitorHistoryFiltering.tests.js)
+  - **GetLocation**: Reads `last` per device and returns null when missing; records visitor history when the device exists (including when access is denied by the allowed devices list). (Evidence: lib/routes/location/v1/location.js; tests/integration/unknownDevice.tests.js; tests/integration/visitorHistoryFiltering.tests.js; tests/integration/allowedDevices.tests.js)
   - **GetLocationHistory**: Reads list length, fetches up to requested amount, skips invalid JSON entries, and optionally records visitor history. (Evidence: lib/routes/location/v1/location.js; tests/integration/getLocationHistoryConfig.tests.js)
   - **GetLocationGeoJSON**: Converts first location into GeoJSON Feature or returns `{}` if missing coordinates. (Evidence: lib/models/ResponseLocationGeoJSON.js; tests/unit/responseLocationGeoJSON.tests.js)
   - **GetVisitorHistory**: Filters out entries where visitor device equals target device. (Evidence: lib/routes/location/v1/location.js; tests/integration/visitorHistoryFiltering.tests.js)
@@ -154,7 +154,7 @@
 - **Primary path**:
   1. Parse devices list and required `RequestMiataruDeviceID`. (Evidence: lib/routes/location/v1/inputParser.js; lib/models/RequestConfigGetLocation.js)
   2. For each device, `GET` `miad:{device}:last`. (Evidence: lib/routes/location/v1/location.js)
-  3. Record visitor history if device exists and visitor is allowed. (Evidence: lib/routes/location/v1/location.js; lib/models/RequestConfigGetLocation.js)
+  3. Record visitor history if device exists (regardless of access control). (Evidence: lib/routes/location/v1/location.js; lib/models/RequestConfigGetLocation.js; tests/integration/allowedDevices.tests.js)
   4. Return `MiataruLocation` array with location objects or `null` for unknown devices. (Evidence: lib/models/ResponseLocation.js; tests/integration/unknownDevice.tests.js)
 - **Alternate paths**: Legacy `/GetLocation` endpoint behaves like `/v1/GetLocation`. (Evidence: lib/routes/location/index.js; tests/integration/backwardCompatibility.tests.js)
 - **Error paths**: Invalid device payloads return 400. (Evidence: lib/models/RequestDevice.js; tests/unit/requestDevice.tests.js)

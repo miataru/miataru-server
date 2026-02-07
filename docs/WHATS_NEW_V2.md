@@ -283,6 +283,7 @@ curl -H 'Content-Type: application/json' -X POST 'http://localhost:8090/v1/setAl
 
 - **Allowed Devices Enabled**: Only devices in the allowed list with `hasCurrentLocationAccess: true` can access location
 - **Not in List**: Devices not in the allowed list receive no location data (as if device doesn't exist)
+- **Visitor History**: The requesting device is still recorded in the target's visitor history (GetVisitorHistory) even when access is denied, so the device owner can see who attempted to access their location
 - **Allowed Devices Not Enabled**: Works as before once `RequestMiataruDeviceID` is provided (backward compatible)
 
 #### Privacy Protection

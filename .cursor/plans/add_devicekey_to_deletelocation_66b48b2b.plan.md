@@ -206,17 +206,14 @@ Test cases:
 ## Testing Strategy
 
 1. **Unit Tests**: Verify RequestDevice model accepts DeviceKey parameter
-2. **Integration Tests**: 
-
-   - Test backward compatibility (no DeviceKey when none set)
-   - Test DeviceKey validation (required when set, must match)
-   - Test error responses (403 Forbidden)
-   - Test complete workflows
-
+2. **Integration Tests**:
+  - Test backward compatibility (no DeviceKey when none set)
+  - Test DeviceKey validation (required when set, must match)
+  - Test error responses (403 Forbidden)
+  - Test complete workflows
 3. **Run All Tests**: Execute full test suite to ensure no regressions
-
-   - `npm test` (unit tests)
-   - `npm run test:integration` (integration tests)
+  - `npm test` (unit tests)
+  - `npm run test:integration` (integration tests)
 
 ## Backward Compatibility
 
@@ -246,3 +243,4 @@ Test cases:
 - ✅ Comprehensive test coverage for DeviceKey scenarios
 - ✅ All existing tests pass
 - ✅ No other write operations missing DeviceKey protection
+

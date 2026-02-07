@@ -74,6 +74,8 @@ The allowed devices list provides granular access control, allowing you to speci
 - Current location (via GetLocation)
 - Location history (via GetLocationHistory)
 
+Devices without permission receive no location data (null or empty). Visitor history still records every device that requests a location (including those without access), so the device owner can see who tried to access their data in GetVisitorHistory.
+
 See [API 1.1 Security Documentation](docs/API_1.1_SECURITY.md) for details.
 
 ## Migration from API 1.0
