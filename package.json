@@ -45,7 +45,7 @@
   },
   "overrides": {
     "diff": "^8.0.3",
-    "glob": "^10.0.0"
+    "glob": "^13.0.0"
   },
   "devDependencies": {
     "chai": "^4.3.10",
