@@ -256,6 +256,94 @@ describe('Allowed Devices Integration Tests', function() {
                 });
             });
         });
+
+        it('should record visitor in GetVisitorHistory when device is not on allowed list (access denied)', function(done) {
+            var DEVICE_NOT_ON_LIST = 'device-not-on-allowed-list-' + Date.now();
+            var visitKey = kb.build(TEST_DEVICE, 'visit');
+
+            // Clean visitor list for TEST_DEVICE so we only see the visitor we add in this test
+            db.del(visitKey, function(cleanErr) {
+                if (cleanErr) return done(cleanErr);
+
+                deviceKeyUtils.setDeviceKey(TEST_DEVICE, TEST_DEVICE_KEY, function(error) {
+                    if (error) return done(error);
+
+                    // Allowed list contains only another device, NOT DEVICE_NOT_ON_LIST
+                    var allowedDevices = [
+                        {
+                            DeviceID: 'other-allowed-device',
+                            hasCurrentLocationAccess: true,
+                            hasHistoryAccess: false
+                        }
+                    ];
+                    allowedDevicesUtils.setAllowedDevices(TEST_DEVICE, allowedDevices, function(error2) {
+                        if (error2) return done(error2);
+
+                        var updateData = calls.locationUpdateCall({
+                            locations: {
+                                Device: TEST_DEVICE,
+                                Timestamp: Date.now().toString(),
+                                Longitude: '10.0',
+                                Latitude: '50.0',
+                                HorizontalAccuracy: '5.0',
+                                DeviceKey: TEST_DEVICE_KEY
+                            }
+                        });
+
+                        request(app)
+                            .post('/v1/UpdateLocation')
+                            .send(updateData)
+                            .expect(200)
+                            .end(function(err) {
+                                if (err) return done(err);
+
+                                var getLocationRequest = {
+                                    MiataruGetLocation: [{ Device: TEST_DEVICE }],
+                                    MiataruConfig: { RequestMiataruDeviceID: DEVICE_NOT_ON_LIST }
+                                };
+
+                                request(app)
+                                    .post('/v1/GetLocation')
+                                    .send(getLocationRequest)
+                                    .expect(200)
+                                    .expect(function(res) {
+                                        expect(res.body.MiataruLocation).to.be.an('array');
+                                        var location = res.body.MiataruLocation.find(function(loc) {
+                                            return loc && loc.Device === TEST_DEVICE;
+                                        });
+                                        expect(location).to.be.undefined;
+                                    })
+                                    .end(function(err2) {
+                                        if (err2) return done(err2);
+
+                                        var getVisitorRequest = {
+                                            MiataruGetVisitorHistory: {
+                                                Device: TEST_DEVICE,
+                                                Amount: '10',
+                                                DeviceKey: TEST_DEVICE_KEY
+                                            }
+                                        };
+
+                                        request(app)
+                                            .post('/v1/GetVisitorHistory')
+                                            .send(getVisitorRequest)
+                                            .expect(200)
+                                            .expect(function(res) {
+                                                expect(res.body.MiataruVisitors).to.be.an('array');
+                                                var visitor = res.body.MiataruVisitors.find(function(v) {
+                                                    return v && v.DeviceID === DEVICE_NOT_ON_LIST;
+                                                });
+                                                expect(visitor).to.not.be.undefined;
+                                                expect(visitor.DeviceID).to.equal(DEVICE_NOT_ON_LIST);
+                                                expect(visitor).to.have.property('TimeStamp');
+                                            })
+                                            .end(done);
+                                    });
+                            });
+                    });
+                });
+            });
+        });
     });
 
     describe('GetLocationGeoJSON with DeviceKey', function() {
