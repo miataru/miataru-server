@@ -43,6 +43,8 @@ The following operations require DeviceKey authentication when a DeviceKey is se
 - **UpdateLocation** - Prevents unauthorized location updates
 - **DeleteLocation** - Prevents unauthorized deletion of location data
 - **GetVisitorHistory** - Protects access to visitor tracking data
+- **setDeviceSlogan** - Requires authenticated device owner to set slogan text
+- **getDeviceSlogan** - Requires authenticated requesting device to read slogan text
 - **SetAllowedDeviceList** - Secures access control configuration
 
 When `strictDeviceKeyCheck` is enabled (default), GetLocation also validates the requesting device (`RequestMiataruDeviceID`) via optional `MiataruConfig.RequestMiataruDeviceKey` if that requester has a configured DeviceKey.
@@ -215,6 +217,36 @@ curl -H 'Content-Type: application/json' -X POST 'http://localhost:8090/v1/setAl
       ]
     }
   }'
+```
+
+### POST `/v1/setDeviceSlogan`
+
+Set or update an optional device slogan. Requires that DeviceKey is configured for the target device and matches in the request.
+
+```json
+{
+  "MiataruSetDeviceSlogan": {
+    "DeviceID": "device-id-here",
+    "DeviceKey": "your-device-key",
+    "Slogan": "up to 40 chars"
+  }
+}
+```
+
+### POST `/v1/getDeviceSlogan`
+
+Read an optional device slogan by target device ID.
+
+Authentication is mandatory for the requester via `RequestDeviceID` + `RequestDeviceKey`. Allowed-device list checks are intentionally skipped for slogan reads. Successful reads of existing slogans are tracked in visitor history (analogous to GetLocation).
+
+```json
+{
+  "MiataruGetDeviceSlogan": {
+    "DeviceID": "target-device-id",
+    "RequestDeviceID": "requesting-device-id",
+    "RequestDeviceKey": "requesting-device-key"
+  }
+}
 ```
 
 #### Important Notes
@@ -392,7 +424,7 @@ Clients using GeoJSON endpoints with DeviceKey-enabled devices should:
 
 API version 1.1 maintains the same endpoint structure as v1.0, with new optional parameters and endpoints. Version is identified through:
 
-- **New Endpoints**: `/v1/setDeviceKey`, `/v1/setAllowedDeviceList`
+- **New Endpoints**: `/v1/setDeviceKey`, `/v1/setAllowedDeviceList`, `/v1/setDeviceSlogan`, `/v1/getDeviceSlogan`
 - **Optional Parameters**: `DeviceKey` field in location and visitor history requests
 - **Response Changes**: New error codes (401, 403) and response fields
 
@@ -589,6 +621,7 @@ Version 2.0 maintains **broad backward compatibility** with v1.0, with `RequestM
 | GetLocation | ⚠️ Requires `RequestMiataruDeviceID` | ✅ Works (with RequestMiataruDeviceID) | ✅ Works (with RequestMiataruDeviceID, access control) |
 | GetLocationHistory | ⚠️ Requires `RequestMiataruDeviceID` | ✅ Works (with RequestMiataruDeviceID) | ✅ Works (with RequestMiataruDeviceID, access control) |
 | GetVisitorHistory | ✅ Works | ✅ Works | ✅ Works (with DeviceKey) |
+| getDeviceSlogan | N/A | ✅ Works (with requester DeviceKey) | ✅ Works (with requester DeviceKey) |
 | GetLocationGeoJSON | ✅ Works | ✅ Works | ❌ 401 (DeviceKey set) |
 | DeleteLocation | ✅ Works | ✅ Works | ✅ Works |
 
@@ -620,6 +653,8 @@ Version 2.0 maintains **broad backward compatibility** with v1.0, with `RequestM
 Existing rate limiting applies to new endpoints:
 - `/v1/setDeviceKey` - Protected by HTTP rate limiting
 - `/v1/setAllowedDeviceList` - Protected by HTTP rate limiting
+- `/v1/setDeviceSlogan` - Protected by HTTP rate limiting
+- `/v1/getDeviceSlogan` - Protected by HTTP rate limiting
 - All endpoints continue to use existing rate limiting configuration
 
 ### Best Practices

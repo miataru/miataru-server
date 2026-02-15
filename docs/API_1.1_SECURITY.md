@@ -9,6 +9,7 @@ API version 1.1 introduces security and privacy enhancements to the Miataru serv
 3. **DeviceKey Authentication** - Protects write operations and visitor history access
 4. **Allowed Devices List** - Granular access control for location data sharing
 5. **strictDeviceKeyCheck (Default: true)** - Enforces strict requester authentication in GetLocation
+6. **Device Slogan Endpoints** - `setDeviceSlogan` and `getDeviceSlogan` with mandatory DeviceKey-based authentication
 
 ## RequestMiataruDeviceID (Mandatory in API 1.1)
 
@@ -81,6 +82,8 @@ The DeviceKey is a 256-character unicode string that acts as a password for a de
 - **UpdateLocation** - Writing location data to the server
 - **DeleteLocation** - Deleting all location data for a device
 - **GetVisitorHistory** - Accessing visitor history information
+- **setDeviceSlogan** - Setting a device slogan
+- **getDeviceSlogan** - Reading a device slogan (authenticated requester pair required)
 
 ## strictDeviceKeyCheck for GetLocation Reads
 
@@ -167,6 +170,36 @@ When a DeviceKey is set for a device, it must be included in the request:
   }
 }
 ```
+
+### Using DeviceKey in setDeviceSlogan
+
+`setDeviceSlogan` requires that the target device already has a configured DeviceKey and that the provided `DeviceKey` matches:
+
+```json
+{
+  "MiataruSetDeviceSlogan": {
+    "DeviceID": "your-device-id",
+    "DeviceKey": "your-secure-key-here",
+    "Slogan": "my slogan up to 40 chars"
+  }
+}
+```
+
+### Using DeviceKey in getDeviceSlogan
+
+`getDeviceSlogan` requires requester authentication with `RequestDeviceID` + `RequestDeviceKey` (both required, requester key must be configured and valid):
+
+```json
+{
+  "MiataruGetDeviceSlogan": {
+    "DeviceID": "target-device-id",
+    "RequestDeviceID": "requesting-device-id",
+    "RequestDeviceKey": "requesting-device-key"
+  }
+}
+```
+
+Allowed devices list is not evaluated for this endpoint. Successful reads on existing slogans are recorded in the target device's visitor history (analogous to GetLocation).
 
 ### Error Responses
 
@@ -290,6 +323,8 @@ This is a security measure to prevent unauthorized access to location data via t
 - **401 Unauthorized** - GetLocationGeoJSON called when DeviceKey is set
 - **403 Forbidden** - DeviceKey mismatch or access denied
   - `RequestMiataruDeviceKey` does not match requester DeviceKey in strict GetLocation mode
+  - `setDeviceSlogan` called without configured DeviceKey on target device
+  - `setDeviceSlogan` or `getDeviceSlogan` called with invalid DeviceKey
 - **500 Internal Server Error** - Server-side error
 
 ## Examples
@@ -363,6 +398,7 @@ curl -X POST http://localhost:3000/v1/GetLocation \
 - [ ] Update GetLocation client code to include `RequestMiataruDeviceKey` when requester devices are protected by DeviceKey
 - [ ] Update client code to include DeviceKey in DeleteLocation requests
 - [ ] Update client code to include DeviceKey in GetVisitorHistory requests
+- [ ] Update client code for set/get device slogan authentication (`DeviceKey` and `RequestDeviceID`/`RequestDeviceKey`)
 - [ ] Test DeviceKey validation and error handling
 - [ ] Set up allowed devices lists for devices that need sharing
 - [ ] Test access control with allowed devices list

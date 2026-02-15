@@ -47,6 +47,8 @@ The Miataru server provides both versioned (v1) and legacy API endpoints for max
 - **POST** `/v1/DeleteLocation` - Delete all location data for a device
 - **POST** `/v1/setDeviceKey` - Set or change device key (API 1.1)
 - **POST** `/v1/setAllowedDeviceList` - Manage allowed devices list (API 1.1)
+- **POST** `/v1/setDeviceSlogan` - Set optional device slogan (API 1.1, max 40 chars)
+- **POST** `/v1/getDeviceSlogan` - Get optional device slogan (API 1.1)
 
 ### Legacy API (Backward Compatibility)
 - **POST** `/UpdateLocation` - Store location data
@@ -58,6 +60,8 @@ The Miataru server provides both versioned (v1) and legacy API endpoints for max
 - **POST** `/DeleteLocation` - Delete all location data for a device
 - **POST** `/setDeviceKey` - Set or change device key (API 1.1)
 - **POST** `/setAllowedDeviceList` - Manage allowed devices list (API 1.1)
+- **POST** `/setDeviceSlogan` - Set optional device slogan (API 1.1, max 40 chars)
+- **POST** `/getDeviceSlogan` - Get optional device slogan (API 1.1)
 
 ## Security Features (API 1.1)
 
@@ -67,7 +71,10 @@ DeviceKey provides authentication for write operations and visitor history acces
 - Update location data
 - Delete location data
 - Access visitor history
+- Set device slogan
 - Access GetLocation as a requesting device (via `MiataruConfig.RequestMiataruDeviceKey` when strict checks are enabled)
+
+`getDeviceSlogan` additionally requires a valid authenticated requesting device pair (`RequestDeviceID` + `RequestDeviceKey`). Allowed-devices restrictions are intentionally not applied to slogan reads. Successful reads are recorded in visitor history of the target device (analogous to `GetLocation`).
 
 See [API 1.1 Security Documentation](docs/API_1.1_SECURITY.md) for details.
 
@@ -179,6 +186,18 @@ curl -H 'Content-Type: application/json' -X POST 'http://localhost:8090/v1/Delet
 ```bash
 curl -H 'Content-Type: application/json' -X POST 'http://localhost:8090/v1/GetLocationGeoJSON' \
   -d '{"MiataruGetLocation":[{"Device":"7b8e6e0ee5296db345162dc2ef652c1350761823"}]}'
+```
+
+**Set device slogan (API 1.1):**
+```bash
+curl -H 'Content-Type: application/json' -X POST 'http://localhost:8090/v1/setDeviceSlogan' \
+  -d '{"MiataruSetDeviceSlogan":{"DeviceID":"7b8e6e0ee5296db345162dc2ef652c1350761823","DeviceKey":"your-device-key-here","Slogan":"hello miataru"}}'
+```
+
+**Get device slogan (API 1.1):**
+```bash
+curl -H 'Content-Type: application/json' -X POST 'http://localhost:8090/v1/getDeviceSlogan' \
+  -d '{"MiataruGetDeviceSlogan":{"DeviceID":"7b8e6e0ee5296db345162dc2ef652c1350761823","RequestDeviceID":"requesting-device-id","RequestDeviceKey":"requesting-device-key"}}'
 ```
 
 ## DeleteLocation API
@@ -562,6 +581,7 @@ make run-all-tests
 - **DeleteLocation Tests**: Data deletion functionality
 - **Error Handling Tests**: Invalid request scenarios
 - **Security Tests**: DeviceKey authentication and allowed devices access control (API 1.1)
+- **Device Slogan Tests**: Validation, authentication and visitor-history behavior for slogan APIs
 
 ### Test Files Structure
 ```
@@ -628,6 +648,8 @@ tests/
 #### New Endpoints
 - **POST** `/v1/setDeviceKey` - Set or change device key
 - **POST** `/v1/setAllowedDeviceList` - Manage allowed devices list
+- **POST** `/v1/setDeviceSlogan` - Set optional device slogan (max 40 chars)
+- **POST** `/v1/getDeviceSlogan` - Retrieve optional device slogan
 
 #### Enhanced Endpoints
 - **UpdateLocation**: Optional DeviceKey parameter for authentication

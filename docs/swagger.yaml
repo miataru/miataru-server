@@ -9,6 +9,7 @@ info:
    - RequestMiataruDeviceID (Mandatory) - Required for all GetLocation and GetLocationHistory requests
    - RequestMiataruDeviceKey (Optional) - Optional requester key for strict GetLocation requester validation
    - DeviceKey authentication for write operations and visitor history access
+   - Device slogan API with mandatory DeviceKey authentication
    - Allowed devices list for granular access control to location data
    - strictDeviceKeyCheck (Default: true) - Enforces requester DeviceKey validation in GetLocation when requester key is configured
    - Broad backward compatibility with API 1.0 clients (GetLocation/GetLocationHistory require RequestMiataruDeviceID)
@@ -273,6 +274,70 @@ paths:
       $ref: '#/definitions/Error'
     403:
      description: Forbidden - DeviceKey does not match
+     schema:
+      $ref: '#/definitions/Error'
+ /setDeviceSlogan:
+  post:
+   tags:
+   - security
+   description: |
+     Sets an optional device slogan (max 40 characters). This endpoint requires that DeviceKey is already configured for the target device and the provided DeviceKey matches.
+     
+     Security validation: slogan content is validated to reject control characters and oversized payloads.
+   operationId: setDeviceSlogan
+   produces:
+   - application/json
+   parameters:
+   - name: body
+     in: body
+     description: the JSON formatted request to set or update a device slogan
+     required: true
+     schema:
+      $ref: '#/definitions/MiataruSetDeviceSloganRequest'
+   responses:
+    200:
+     description: Device slogan set successfully
+     schema:
+      $ref: '#/definitions/MiataruSetDeviceSloganResponse'
+    400:
+     description: Bad Request - Invalid input
+     schema:
+      $ref: '#/definitions/Error'
+    403:
+     description: Forbidden - DeviceKey is missing, not configured, or does not match
+     schema:
+      $ref: '#/definitions/Error'
+ /getDeviceSlogan:
+  post:
+   tags:
+   - getLocation
+   description: |
+     Retrieves a device slogan by DeviceID.
+     
+     Request authentication is mandatory: RequestDeviceID and RequestDeviceKey must represent a valid device/key pair with DeviceKey configured.
+     
+     Allowed-devices list is intentionally not applied for this endpoint. A successful read against an existing slogan is recorded as a visitor entry for the target device, analogous to GetLocation visitor tracking.
+   operationId: getDeviceSlogan
+   produces:
+   - application/json
+   parameters:
+   - name: body
+     in: body
+     description: the JSON formatted request to get a device slogan
+     required: true
+     schema:
+      $ref: '#/definitions/MiataruGetDeviceSloganRequest'
+   responses:
+    200:
+     description: Device slogan response
+     schema:
+      $ref: '#/definitions/MiataruGetDeviceSloganResponse'
+    400:
+     description: Bad Request - Invalid input
+     schema:
+      $ref: '#/definitions/Error'
+    403:
+     description: Forbidden - RequestDevice authentication failed
      schema:
       $ref: '#/definitions/Error'
 
@@ -621,6 +686,76 @@ definitions:
    MiataruVerboseResponse:
     type: string
     default: "Allowed devices list updated successfully"
+ MiataruSetDeviceSloganRequest:
+  required:
+  - MiataruSetDeviceSlogan
+  properties:
+   MiataruSetDeviceSlogan:
+    type: object
+    required:
+    - DeviceID
+    - DeviceKey
+    - Slogan
+    properties:
+     DeviceID:
+      type: string
+      description: the device ID of the calling device
+      default: "7b8e6e0ee5296db345162dc2ef652c1350761823"
+     DeviceKey:
+      type: string
+      description: required DeviceKey for the target device (must be configured and must match)
+      maxLength: 256
+     Slogan:
+      type: string
+      description: optional slogan text up to 40 characters
+      maxLength: 40
+ MiataruSetDeviceSloganResponse:
+  required:
+  - MiataruResponse
+  - MiataruVerboseResponse
+  properties:
+   MiataruResponse:
+    type: string
+    default: "ACK"
+   MiataruVerboseResponse:
+    type: string
+    default: "Device slogan set successfully"
+ MiataruGetDeviceSloganRequest:
+  required:
+  - MiataruGetDeviceSlogan
+  properties:
+   MiataruGetDeviceSlogan:
+    type: object
+    required:
+    - DeviceID
+    - RequestDeviceID
+    - RequestDeviceKey
+    properties:
+     DeviceID:
+      type: string
+      description: target device ID whose slogan is requested
+      default: "7b8e6e0ee5296db345162dc2ef652c1350761823"
+     RequestDeviceID:
+      type: string
+      description: requesting device ID used for authentication (aliases RequestMiataruDeviceID and requestingDeviceID are also accepted)
+     RequestDeviceKey:
+      type: string
+      description: requesting device key used for authentication (aliases RequestMiataruDeviceKey and requestingDeviceKey are also accepted)
+      maxLength: 256
+ MiataruGetDeviceSloganResponse:
+  required:
+  - MiataruDeviceSlogan
+  properties:
+   MiataruDeviceSlogan:
+    type: object
+    required:
+    - DeviceID
+    properties:
+     DeviceID:
+      type: string
+     Slogan:
+      type: string
+      description: slogan value; can be null when no slogan is set for the target device
  MiataruDeleteLocationRequest:
   required:
   - MiataruDeleteLocation

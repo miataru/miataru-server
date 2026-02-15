@@ -55,8 +55,8 @@
 - **Failure modes**: Queue overflow returns configured status (default 429) with rejection/timeout message. (Evidence: lib/middlewares/rateLimiter.js; tests/integration/httpRateLimiter.tests.js)
 
 ### 2.5 Location routes (`lib/routes/location/index.js`)
-- **Responsibility**: Register versioned and legacy endpoints for location CRUD and history. (Evidence: lib/routes/location/index.js; README.md)
-- **Interfaces**: Express route registrations for Update/Get/History/GeoJSON/VisitorHistory/Delete; supports GET `/GetLocationGeoJSON/:id?`. (Evidence: lib/routes/location/index.js)
+- **Responsibility**: Register versioned and legacy endpoints for location CRUD, history, and optional device slogan APIs. (Evidence: lib/routes/location/index.js; README.md)
+- **Interfaces**: Express route registrations for Update/Get/History/GeoJSON/VisitorHistory/Delete plus `setDeviceSlogan`/`getDeviceSlogan`; supports GET `/GetLocationGeoJSON/:id?`. (Evidence: lib/routes/location/index.js)
 - **Key logic**:
   - Non-POST requests return 405 (except OPTIONS returns 204). (Evidence: lib/routes/location/index.js; tests/unit/serverErrorHandling.tests.js; tests/integration/cors.tests.js)
 - **Failure modes**: Method-not-supported errors become 405 JSON error responses. (Evidence: lib/errors.js; server.js)
@@ -70,7 +70,7 @@
 - **Failure modes**: Invalid requests throw `BadRequestError` and return 400. (Evidence: lib/errors.js; tests/integration/updateLocation.tests.js)
 
 ### 2.7 Location handler (`lib/routes/location/v1/location.js`)
-- **Responsibility**: Implement UpdateLocation, GetLocation, GetLocationHistory, GetLocationGeoJSON (POST/GET), GetVisitorHistory, DeleteLocation, and visitor history recording. (Evidence: lib/routes/location/v1/location.js)
+- **Responsibility**: Implement UpdateLocation, GetLocation, GetLocationHistory, GetLocationGeoJSON (POST/GET), GetVisitorHistory, DeleteLocation, `setDeviceSlogan`, `getDeviceSlogan`, and visitor history recording. (Evidence: lib/routes/location/v1/location.js)
 - **Interfaces**: Exported handler functions called by route registrations. (Evidence: lib/routes/location/v1/index.js)
 - **Key logic**:
   - **UpdateLocation**: If history enabled, pushes each location into `hist` list and trims; updates `last` on final entry. If history disabled, deletes history list and stores `last` with TTL. (Evidence: lib/routes/location/v1/location.js; config/default.js; tests/integration/api.tests.js)
@@ -79,6 +79,8 @@
   - **GetLocationGeoJSON**: Converts first location into GeoJSON Feature or returns `{}` if missing coordinates. (Evidence: lib/models/ResponseLocationGeoJSON.js; tests/unit/responseLocationGeoJSON.tests.js)
   - **GetVisitorHistory**: Filters out entries where visitor device equals target device. (Evidence: lib/routes/location/v1/location.js; tests/integration/visitorHistoryFiltering.tests.js)
   - **DeleteLocation**: Deletes `last`, `hist`, and `visit` keys in parallel and returns deleted key count. (Evidence: lib/routes/location/v1/location.js; docs/DELETE_LOCATION_API.md; tests/integration/deleteLocation.tests.js)
+  - **setDeviceSlogan**: Validates DeviceKey (configured + matching), validates slogan input, and stores slogan under `miad:{device}:slogan`. (Evidence: lib/routes/location/v1/location.js; lib/models/RequestSetDeviceSlogan.js; tests/integration/deviceSlogan.tests.js)
+  - **getDeviceSlogan**: Validates requester `RequestDeviceID` + `RequestDeviceKey`, reads slogan, bypasses allowed-devices checks, and records visitor history for successful reads on existing slogans. (Evidence: lib/routes/location/v1/location.js; lib/models/RequestGetDeviceSlogan.js; tests/integration/deviceSlogan.tests.js)
 - **State & lifecycle**: Operates on Redis keys per device ID; location history and visitor history lists are trimmed to configured maxima. (Evidence: lib/routes/location/v1/location.js; config/default.js)
 - **Failure modes**: Redis errors wrap as `InternalServerError`; malformed JSON data yields error responses. (Evidence: lib/routes/location/v1/location.js; lib/errors.js)
 
@@ -136,6 +138,7 @@
 - **ResponseVisitorHistory**: `{ MiataruServerConfig, MiataruVisitors }`. (Evidence: lib/models/ResponseVisitorHistory.js; tests/integration/visitorHistoryFiltering.tests.js)
 - **ResponseUpdateLocation**: ACK with fish-style verbose string. (Evidence: lib/models/ResponseUpdateLocation.js; tests/integration/updateLocation.tests.js)
 - **ResponseDeleteLocation**: ACK with deleted key count. (Evidence: lib/models/ResponseDeleteLocation.js; tests/integration/deleteLocation.tests.js)
+- **ResponseDeviceSlogan / ResponseSetDeviceSlogan**: Slogan payload and ACK response for slogan APIs. (Evidence: lib/models/ResponseDeviceSlogan.js; lib/models/ResponseSetDeviceSlogan.js; tests/integration/deviceSlogan.tests.js)
 
 ## 4. Core Workflows
 
@@ -271,6 +274,7 @@
 - **FR-008 Backward compatibility** → legacy endpoints and payload parsing. (Evidence: lib/routes/location/index.js; lib/routes/location/v1/inputParser.js; tests/integration/backwardCompatibility.tests.js; docs/PRD.md)
 - **FR-009 CORS** → CORS middleware and tests. (Evidence: lib/middlewares/index.js; tests/integration/cors.tests.js; docs/PRD.md)
 - **FR-010 Rate limiting** → HTTP/Redis limiter implementation and tests. (Evidence: lib/middlewares/rateLimiter.js; lib/db.js; tests/integration/httpRateLimiter.tests.js; tests/unit/redisRateLimiter.tests.js; docs/PRD.md)
+- **FR-011 Device slogan APIs** → `setDeviceSlogan`/`getDeviceSlogan` handlers, request/response models, and integration tests. (Evidence: lib/routes/location/v1/location.js; lib/models/RequestSetDeviceSlogan.js; lib/models/RequestGetDeviceSlogan.js; tests/integration/deviceSlogan.tests.js; docs/PRD.md)
 
 ---
 

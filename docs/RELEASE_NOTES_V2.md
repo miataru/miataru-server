@@ -12,12 +12,18 @@ Version 2.0 introduces enterprise-grade security features while maintaining **br
 - Secure device-level authentication using cryptographic keys (up to 256 Unicode characters)
 - Protects location updates, visitor history, and access control configuration
 - New endpoint: `POST /v1/setDeviceKey` for key management
+- New endpoint: `POST /v1/setDeviceSlogan` for authenticated slogan updates
 
 ### Allowed Devices Access Control
 - Fine-grained permissions for location sharing
 - Separate controls for current location and history access
 - Privacy-first design: location hidden from unauthorized devices
 - New endpoint: `POST /v1/setAllowedDeviceList` for access management
+
+### Authenticated Slogan Retrieval
+- New endpoint: `POST /v1/getDeviceSlogan` for requester-authenticated slogan reads
+- Uses `RequestDeviceID` + `RequestDeviceKey` authentication
+- Reads are intentionally independent from allowed-devices list and recorded in visitor history
 
 ## 🔄 Enhanced Endpoints
 
@@ -26,6 +32,7 @@ Version 2.0 introduces enterprise-grade security features while maintaining **br
 - **GetLocation**: Optional `MiataruConfig.RequestMiataruDeviceKey` for strict requester validation (`strictDeviceKeyCheck`, default `true`)
 - **GetLocationHistory**: Requires `RequestMiataruDeviceID` and enforces granular permissions
 - **GetVisitorHistory**: DeviceKey authentication support
+- **getDeviceSlogan**: Requester DeviceKey authentication and visitor logging
 
 ## ⚠️ Breaking Changes
 
