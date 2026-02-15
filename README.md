@@ -9,8 +9,10 @@ This is the source code of a Miataru server side implementation. You can get mor
 Version 2.0 introduces significant security and privacy enhancements while maintaining broad backward compatibility with API 1.0 (with required RequestMiataruDeviceID for GetLocation/GetLocationHistory and the documented GetLocationGeoJSON change):
 
 - **RequestMiataruDeviceID (Mandatory)** - Required identifier for all GetLocation and GetLocationHistory requests
+- **RequestMiataruDeviceKey (Optional)** - Optional key in `MiataruConfig` for strict requester validation in GetLocation
 - **DeviceKey Authentication** - Protect write operations and visitor history access with device-specific keys
 - **Allowed Devices List** - Granular access control for location data sharing
+- **strictDeviceKeyCheck (Default: true)** - Enforces RequestMiataruDeviceKey checks for protected GetLocation requests
 - **Broad Backward Compatibility** - Most API 1.0 clients continue to work (GetLocation/GetLocationHistory require `RequestMiataruDeviceID`)
 
 See [API 1.1 Security Documentation](docs/API_1.1_SECURITY.md) for detailed information.
@@ -61,10 +63,11 @@ The Miataru server provides both versioned (v1) and legacy API endpoints for max
 
 ### DeviceKey Authentication
 
-DeviceKey provides authentication for write operations and visitor history access. Once set, devices must provide the correct DeviceKey to:
+DeviceKey provides authentication for write operations and visitor history access. With `strictDeviceKeyCheck: true` (default), it also protects GetLocation read requests by validating the requesting device identity when that requesting device has a DeviceKey configured. Once set, devices must provide the correct DeviceKey to:
 - Update location data
 - Delete location data
 - Access visitor history
+- Access GetLocation as a requesting device (via `MiataruConfig.RequestMiataruDeviceKey` when strict checks are enabled)
 
 See [API 1.1 Security Documentation](docs/API_1.1_SECURITY.md) for details.
 
@@ -89,7 +92,8 @@ Add `MiataruConfig` with `RequestMiataruDeviceID` to all GetLocation and GetLoca
 ```json
 {
   "MiataruConfig": {
-    "RequestMiataruDeviceID": "your-client-identifier"
+    "RequestMiataruDeviceID": "your-client-identifier",
+    "RequestMiataruDeviceKey": "optional-requester-device-key"
   },
   "MiataruGetLocation": [...]
 }
@@ -100,6 +104,12 @@ The identifier can be:
 - An application identifier  
 - A URL or domain name
 - Any string that identifies the requesting client
+
+`RequestMiataruDeviceKey` is optional in request payloads. For `GetLocation`, the server validates it only when:
+- `strictDeviceKeyCheck` is enabled (`true` by default), and
+- the requesting device (`RequestMiataruDeviceID`) has a DeviceKey configured.
+
+For compatibility, the server also accepts the alias `requestingDeviceKey`.
 
 ### Other Changes
 
@@ -130,6 +140,10 @@ Run the tests:
 Configuration:
 Adjust the configuration in `./config/` or add your own
 
+```javascript
+strictDeviceKeyCheck: true // default, validates MiataruConfig.RequestMiataruDeviceKey in GetLocation when requester has a DeviceKey
+```
+
 Start Server:
 `node server.js`
 
@@ -146,7 +160,7 @@ curl -H 'Content-Type: application/json' -X POST 'http://localhost:8090/v1/Updat
 **Retrieve a location:**
 ```bash
 curl -H 'Content-Type: application/json' -X POST 'http://localhost:8090/v1/GetLocation' \
-  -d '{"MiataruGetLocation":[{"Device":"7b8e6e0ee5296db345162dc2ef652c1350761823"}],"MiataruConfig":{"RequestMiataruDeviceID":"requesting-device-id"}}'
+  -d '{"MiataruGetLocation":[{"Device":"7b8e6e0ee5296db345162dc2ef652c1350761823"}],"MiataruConfig":{"RequestMiataruDeviceID":"requesting-device-id","RequestMiataruDeviceKey":"optional-requester-key"}}'
 ```
 
 **Delete all location data for a device:**
@@ -608,6 +622,7 @@ tests/
 #### Security & Privacy Features
 - **DeviceKey Authentication**: Protect write operations and visitor history access
 - **Allowed Devices List**: Granular access control for location data sharing
+- **strictDeviceKeyCheck (Default: true)**: Enforces requester DeviceKey validation in GetLocation when requester has a configured DeviceKey
 - **Broad Backward Compatibility**: Most API 1.0 clients continue to work (GetLocation/GetLocationHistory require `RequestMiataruDeviceID`)
 
 #### New Endpoints
@@ -617,7 +632,7 @@ tests/
 #### Enhanced Endpoints
 - **UpdateLocation**: Optional DeviceKey parameter for authentication
 - **GetVisitorHistory**: Optional DeviceKey parameter for authentication
-- **GetLocation**: Requires `RequestMiataruDeviceID` and supports access control via allowed devices list
+- **GetLocation**: Requires `RequestMiataruDeviceID`; optional `RequestMiataruDeviceKey` is validated in strict mode before allowed-device checks
 - **GetLocationHistory**: Requires `RequestMiataruDeviceID` and supports access control via allowed devices list
 - **GetLocationGeoJSON**: Returns 401 when DeviceKey is set (security measure)
 

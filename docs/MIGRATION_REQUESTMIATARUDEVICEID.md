@@ -4,6 +4,10 @@
 
 Starting with API 1.1, `RequestMiataruDeviceID` is now **mandatory** for all `GetLocation` and `GetLocationHistory` requests. This change improves security, enables access control, and supports visitor history tracking.
 
+`GetLocation` also supports optional `RequestMiataruDeviceKey` in `MiataruConfig`. With `strictDeviceKeyCheck: true` (default), this key is validated whenever the requesting device already has a DeviceKey configured.
+
+For compatibility, the server parser also accepts `requestingDeviceID` and `requestingDeviceKey`.
+
 ## What Changed?
 
 ### Before (API 1.0)
@@ -21,7 +25,8 @@ Starting with API 1.1, `RequestMiataruDeviceID` is now **mandatory** for all `Ge
 ```json
 {
   "MiataruConfig": {
-    "RequestMiataruDeviceID": "your-client-identifier"
+    "RequestMiataruDeviceID": "your-client-identifier",
+    "RequestMiataruDeviceKey": "optional-requester-device-key"
   },
   "MiataruGetLocation": [
     {
@@ -35,6 +40,7 @@ Starting with API 1.1, `RequestMiataruDeviceID` is now **mandatory** for all `Ge
 
 - **All clients** must update their `GetLocation` and `GetLocationHistory` requests
 - Requests without `RequestMiataruDeviceID` will return **400 Bad Request**
+- With `strictDeviceKeyCheck: true` (default), protected requester devices must include matching `RequestMiataruDeviceKey` in `GetLocation`
 - Other endpoints (UpdateLocation, GetVisitorHistory, DeleteLocation) are **not affected**
 
 ## Error Response
@@ -79,7 +85,8 @@ const response = await fetch('https://service.miataru.com/v1/GetLocation', {
   },
   body: JSON.stringify({
     "MiataruConfig": {
-      "RequestMiataruDeviceID": "your-client-identifier"
+      "RequestMiataruDeviceID": "your-client-identifier",
+      "RequestMiataruDeviceKey": "optional-requester-device-key"
     },
     "MiataruGetLocation": [
       {
@@ -99,11 +106,13 @@ struct GetLocationRequest: Codable {
 
 struct MiataruConfig: Codable {
     let RequestMiataruDeviceID: String
+    let RequestMiataruDeviceKey: String?
 }
 
 let request = GetLocationRequest(
     MiataruConfig: MiataruConfig(
-        RequestMiataruDeviceID: UIDevice.current.identifierForVendor?.uuidString ?? "unknown"
+        RequestMiataruDeviceID: UIDevice.current.identifierForVendor?.uuidString ?? "unknown",
+        RequestMiataruDeviceKey: nil
     ),
     MiataruGetLocation: [
         MiataruGetLocationDevice(Device: targetDeviceID)
@@ -119,7 +128,8 @@ response = requests.post(
     'https://service.miataru.com/v1/GetLocation',
     json={
         "MiataruConfig": {
-            "RequestMiataruDeviceID": "your-client-identifier"
+            "RequestMiataruDeviceID": "your-client-identifier",
+            "RequestMiataruDeviceKey": "optional-requester-device-key"
         },
         "MiataruGetLocation": [
             {
@@ -165,7 +175,8 @@ struct MiataruGetLocationHistory: Codable {
 
 let request = GetLocationHistoryRequest(
     MiataruConfig: MiataruConfig(
-        RequestMiataruDeviceID: UIDevice.current.identifierForVendor?.uuidString ?? "unknown"
+        RequestMiataruDeviceID: UIDevice.current.identifierForVendor?.uuidString ?? "unknown",
+        RequestMiataruDeviceKey: nil
     ),
     MiataruGetLocationHistory: MiataruGetLocationHistory(
         Device: targetDeviceID,
@@ -184,7 +195,8 @@ After updating your code:
 
 1. **Test GetLocation**: Verify requests include `RequestMiataruDeviceID`
 2. **Test GetLocationHistory**: Verify requests include `RequestMiataruDeviceID`
-3. **Test Error Handling**: Verify 400 Bad Request is handled when `RequestMiataruDeviceID` is missing
+3. **Test strict requester validation**: If requester devices use DeviceKey, verify `RequestMiataruDeviceKey` handling for GetLocation
+4. **Test Error Handling**: Verify 400 Bad Request is handled when `RequestMiataruDeviceID` is missing
 
 ## FAQ
 

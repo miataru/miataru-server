@@ -4,10 +4,11 @@ This guide provides step-by-step instructions for updating the iOS client applic
 
 ## Overview
 
-API 1.1 introduces three main changes:
+API 1.1 introduces four main changes:
 1. **RequestMiataruDeviceID (Mandatory)** - Required for all GetLocation and GetLocationHistory requests
-2. **DeviceKey** - Authentication for write operations
-3. **Allowed Devices List** - Access control for location sharing
+2. **RequestMiataruDeviceKey (Optional)** - Optional requester authentication value for GetLocation
+3. **DeviceKey** - Authentication for write operations
+4. **Allowed Devices List** - Access control for location sharing
 
 ## Step 0: Add RequestMiataruDeviceID (Required)
 
@@ -25,6 +26,7 @@ struct GetLocationRequest: Codable {
 
 struct MiataruConfig: Codable {
     let RequestMiataruDeviceID: String
+    let RequestMiataruDeviceKey: String?
 }
 
 struct MiataruGetLocationDevice: Codable {
@@ -34,7 +36,8 @@ struct MiataruGetLocationDevice: Codable {
 // Usage
 let request = GetLocationRequest(
     MiataruConfig: MiataruConfig(
-        RequestMiataruDeviceID: UIDevice.current.identifierForVendor?.uuidString ?? "unknown"
+        RequestMiataruDeviceID: UIDevice.current.identifierForVendor?.uuidString ?? "unknown",
+        RequestMiataruDeviceKey: nil // set requester DeviceKey here if this requester device is protected
     ),
     MiataruGetLocation: [
         MiataruGetLocationDevice(Device: targetDeviceID)
@@ -60,7 +63,8 @@ struct MiataruGetLocationHistory: Codable {
 // Usage
 let request = GetLocationHistoryRequest(
     MiataruConfig: MiataruConfig(
-        RequestMiataruDeviceID: UIDevice.current.identifierForVendor?.uuidString ?? "unknown"
+        RequestMiataruDeviceID: UIDevice.current.identifierForVendor?.uuidString ?? "unknown",
+        RequestMiataruDeviceKey: nil
     ),
     MiataruGetLocationHistory: MiataruGetLocationHistory(
         Device: targetDeviceID,
@@ -70,6 +74,8 @@ let request = GetLocationHistoryRequest(
 ```
 
 **Note:** Without `RequestMiataruDeviceID`, requests will return 400 Bad Request.
+
+`RequestMiataruDeviceKey` is optional. It becomes effectively required for `GetLocation` when server config `strictDeviceKeyCheck` is enabled (default) and the requesting device already has a DeviceKey set on the server.
 
 ## Prerequisites
 

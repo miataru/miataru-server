@@ -50,11 +50,17 @@ function locationUpdate(options) {
     }
 }
 
-function getLocation(deviceName, requestMiataruDeviceID) {
+function getLocation(deviceName, requestMiataruDeviceID, requestMiataruDeviceKey) {
+    var miataruConfig = {
+        "RequestMiataruDeviceID": requestMiataruDeviceID || "test-client"
+    };
+
+    if (requestMiataruDeviceKey !== undefined) {
+        miataruConfig.RequestMiataruDeviceKey = requestMiataruDeviceKey;
+    }
+
     return {
-        "MiataruConfig": {
-            "RequestMiataruDeviceID": requestMiataruDeviceID || "test-client"
-        },
+        "MiataruConfig": miataruConfig,
         "MiataruGetLocation":[
             {
                 "Device": deviceName || "foo"

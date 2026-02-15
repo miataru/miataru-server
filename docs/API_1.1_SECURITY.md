@@ -5,8 +5,10 @@
 API version 1.1 introduces security and privacy enhancements to the Miataru server while maintaining broad backward compatibility with API 1.0 clients (GetLocation/GetLocationHistory now require `RequestMiataruDeviceID`). These features include:
 
 1. **RequestMiataruDeviceID (Mandatory)** - Required identifier for all GetLocation and GetLocationHistory requests
-2. **DeviceKey Authentication** - Protects write operations and visitor history access
-3. **Allowed Devices List** - Granular access control for location data sharing
+2. **RequestMiataruDeviceKey (Optional)** - Optional requester key in GetLocation `MiataruConfig`
+3. **DeviceKey Authentication** - Protects write operations and visitor history access
+4. **Allowed Devices List** - Granular access control for location data sharing
+5. **strictDeviceKeyCheck (Default: true)** - Enforces strict requester authentication in GetLocation
 
 ## RequestMiataruDeviceID (Mandatory in API 1.1)
 
@@ -27,7 +29,8 @@ Include `RequestMiataruDeviceID` in the `MiataruConfig` object:
 ```json
 {
   "MiataruConfig": {
-    "RequestMiataruDeviceID": "your-client-identifier"
+    "RequestMiataruDeviceID": "your-client-identifier",
+    "RequestMiataruDeviceKey": "optional-requester-device-key"
   },
   "MiataruGetLocation": [
     {
@@ -36,6 +39,12 @@ Include `RequestMiataruDeviceID` in the `MiataruConfig` object:
   ]
 }
 ```
+
+`RequestMiataruDeviceKey` is optional in payloads. It is evaluated in `GetLocation` when:
+- `strictDeviceKeyCheck` is enabled (default: `true`)
+- and `RequestMiataruDeviceID` has a DeviceKey configured on the server
+
+For compatibility, alias field names `requestingDeviceID` and `requestingDeviceKey` are also accepted by the server parser.
 
 **GetLocationHistory:**
 ```json
@@ -72,6 +81,16 @@ The DeviceKey is a 256-character unicode string that acts as a password for a de
 - **UpdateLocation** - Writing location data to the server
 - **DeleteLocation** - Deleting all location data for a device
 - **GetVisitorHistory** - Accessing visitor history information
+
+## strictDeviceKeyCheck for GetLocation Reads
+
+The server option `strictDeviceKeyCheck` controls whether `GetLocation` validates the requester's DeviceKey.
+
+- **Default:** `true`
+- **When enabled:** For every `GetLocation` request, the server checks whether `RequestMiataruDeviceID` has a DeviceKey configured.
+- **If requester has a DeviceKey configured:** `MiataruConfig.RequestMiataruDeviceKey` must match that key or the request fails with `403 Forbidden`.
+- **If requester has no DeviceKey configured:** Request proceeds normally.
+- **When disabled (`false`):** `RequestMiataruDeviceKey` is accepted but not validated for `GetLocation`.
 
 ### Setting a DeviceKey
 
@@ -197,6 +216,8 @@ Use the `/v1/setAllowedDeviceList` endpoint to set or update the allowed devices
 ### Access Control Behavior
 
 **GetLocation:**
+- If `strictDeviceKeyCheck` is **enabled** (default): requesting devices that already have a DeviceKey configured must provide matching `MiataruConfig.RequestMiataruDeviceKey`, otherwise response is **403 Forbidden**
+- If `strictDeviceKeyCheck` is **disabled**: `MiataruConfig.RequestMiataruDeviceKey` is ignored for GetLocation validation
 - If allowed devices list is **not enabled**: Returns location data when `RequestMiataruDeviceID` is provided (backward compatible)
 - If allowed devices list is **enabled**: Only devices with `hasCurrentLocationAccess: true` receive location data
 - Devices without permission receive location as `null` (as if device doesn't exist)
@@ -218,7 +239,7 @@ After adding `RequestMiataruDeviceID`, all other features remain backward compat
 - Devices without DeviceKey set work exactly as before
 - Devices without allowed devices list work exactly as before
 - All existing endpoints maintain the same response format
-- Optional parameters (DeviceKey) can be omitted
+- Optional parameters can be omitted (`RequestMiataruDeviceKey` is only required for GetLocation when strict checks are enabled and requester key exists)
 
 ### Migration Path
 
@@ -268,6 +289,7 @@ This is a security measure to prevent unauthorized access to location data via t
   - Invalid request structure
 - **401 Unauthorized** - GetLocationGeoJSON called when DeviceKey is set
 - **403 Forbidden** - DeviceKey mismatch or access denied
+  - `RequestMiataruDeviceKey` does not match requester DeviceKey in strict GetLocation mode
 - **500 Internal Server Error** - Server-side error
 
 ## Examples
@@ -327,7 +349,8 @@ curl -X POST http://localhost:3000/v1/GetLocation \
   -d '{
     "MiataruGetLocation": [{"Device": "device-123"}],
     "MiataruConfig": {
-      "RequestMiataruDeviceID": "friend-device-456"
+      "RequestMiataruDeviceID": "friend-device-456",
+      "RequestMiataruDeviceKey": "friend-device-key-if-configured"
     }
   }'
 ```
@@ -337,6 +360,7 @@ curl -X POST http://localhost:3000/v1/GetLocation \
 - [ ] Review existing clients and identify which need DeviceKey protection
 - [ ] Generate secure DeviceKeys for devices that need protection
 - [ ] Update client code to include DeviceKey in UpdateLocation requests
+- [ ] Update GetLocation client code to include `RequestMiataruDeviceKey` when requester devices are protected by DeviceKey
 - [ ] Update client code to include DeviceKey in DeleteLocation requests
 - [ ] Update client code to include DeviceKey in GetVisitorHistory requests
 - [ ] Test DeviceKey validation and error handling

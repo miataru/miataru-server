@@ -11,6 +11,7 @@ Version 2.0 focuses on giving device owners complete control over who can access
 
 1. **DeviceKey Authentication** - Secure device-level authentication using cryptographic keys
 2. **Allowed Devices Access Control** - Fine-grained permissions for location sharing
+3. **Strict Requester Validation (`strictDeviceKeyCheck`)** - Optional/Configurable DeviceKey validation for GetLocation readers
 
 These features work together to provide enterprise-grade security while maintaining the simplicity and ease of use that Miataru is known for.
 
@@ -21,6 +22,7 @@ These features work together to provide enterprise-grade security while maintain
 - ✅ **Privacy-First Design** - Default behavior prioritizes user privacy
 - ✅ **Simple Migration Path** - Easy adoption for clients that want enhanced security
 - ⚠️ **Breaking Changes** - RequestMiataruDeviceID is required for GetLocation/GetLocationHistory, plus the documented GetLocationGeoJSON behavior change
+- ✅ **Stronger Read Protection** - GetLocation can validate requester DeviceKey via `MiataruConfig.RequestMiataruDeviceKey` (default enabled)
 
 ## New Security Features
 
@@ -43,6 +45,8 @@ The following operations require DeviceKey authentication when a DeviceKey is se
 - **GetVisitorHistory** - Protects access to visitor tracking data
 - **SetAllowedDeviceList** - Secures access control configuration
 
+When `strictDeviceKeyCheck` is enabled (default), GetLocation also validates the requesting device (`RequestMiataruDeviceID`) via optional `MiataruConfig.RequestMiataruDeviceKey` if that requester has a configured DeviceKey.
+
 #### Benefits
 
 - **Prevent Unauthorized Updates**: Only devices with the correct key can update location data
@@ -64,6 +68,7 @@ Allowed Devices provides fine-grained access control, allowing device owners to 
 #### Access Control Behavior
 
 - **GetLocation**: Returns location only if requesting device has `hasCurrentLocationAccess` permission
+- **GetLocation (strict mode)**: Before allowed-list checks, validates `RequestMiataruDeviceKey` for requesting devices that are DeviceKey-protected
 - **GetLocationHistory**: Returns history only if requesting device has `hasHistoryAccess` permission
 - **Default Behavior**: When no allowed devices list is set, behavior matches v1.0 (backward compatible)
 

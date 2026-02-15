@@ -117,7 +117,7 @@
 - **Validation rules**: `EnableLocationHistory` is coerced to boolean (`true` only when string equals `'true'`, case-insensitive). (Evidence: lib/models/RequestConfig.js; tests/unit/dataHolder.tests.js)
 
 ### 3.4 RequestConfigGetLocation (GetLocation/History)
-- **Schema**: `{ RequestMiataruDeviceID }`. (Evidence: lib/models/RequestConfigGetLocation.js)
+- **Schema**: `{ RequestMiataruDeviceID, RequestMiataruDeviceKey? }`. (Evidence: lib/models/RequestConfigGetLocation.js)
 - **Invariants**: Empty request device ID may be suppressed based on config; requests where visitor equals target device are suppressed. (Evidence: lib/models/RequestConfigGetLocation.js; tests/integration/visitorHistoryFiltering.tests.js)
 
 ### 3.5 RequestLocationHistory
@@ -152,10 +152,11 @@
 
 ### 4.2 GetLocation
 - **Primary path**:
-  1. Parse devices list and required `RequestMiataruDeviceID`. (Evidence: lib/routes/location/v1/inputParser.js; lib/models/RequestConfigGetLocation.js)
-  2. For each device, `GET` `miad:{device}:last`. (Evidence: lib/routes/location/v1/location.js)
-  3. Record visitor history if device exists (regardless of access control). (Evidence: lib/routes/location/v1/location.js; lib/models/RequestConfigGetLocation.js; tests/integration/allowedDevices.tests.js)
-  4. Return `MiataruLocation` array with location objects or `null` for unknown devices. (Evidence: lib/models/ResponseLocation.js; tests/integration/unknownDevice.tests.js)
+  1. Parse devices list and required `RequestMiataruDeviceID` (plus optional `RequestMiataruDeviceKey`). (Evidence: lib/routes/location/v1/inputParser.js; lib/models/RequestConfigGetLocation.js)
+  2. If `strictDeviceKeyCheck` is enabled and requester has a configured DeviceKey, validate `RequestMiataruDeviceKey`; fail with 403 on mismatch. (Evidence: lib/routes/location/v1/location.js; config/default.js)
+  3. For each device, `GET` `miad:{device}:last`. (Evidence: lib/routes/location/v1/location.js)
+  4. Record visitor history if device exists (regardless of access control). (Evidence: lib/routes/location/v1/location.js; lib/models/RequestConfigGetLocation.js; tests/integration/allowedDevices.tests.js)
+  5. Return `MiataruLocation` array with location objects or `null` for unknown devices. (Evidence: lib/models/ResponseLocation.js; tests/integration/unknownDevice.tests.js)
 - **Alternate paths**: Legacy `/GetLocation` endpoint behaves like `/v1/GetLocation`. (Evidence: lib/routes/location/index.js; tests/integration/backwardCompatibility.tests.js)
 - **Error paths**: Invalid device payloads return 400. (Evidence: lib/models/RequestDevice.js; tests/unit/requestDevice.tests.js)
 - **Retry/recovery**: Safe to retry; no server-side mutations except visitor history logging. (Evidence: lib/routes/location/v1/location.js)

@@ -40,6 +40,9 @@ module.exports = {
     // controls how visitor history entries are recorded: false = each device recorded once and updated on subsequent accesses, true = every access recorded as separate entry
     recordDetailedVisitorHistory: false,
 
+    // enforce RequestMiataruDeviceKey validation for GetLocation read requests when the requesting device has a DeviceKey configured
+    strictDeviceKeyCheck: true,
+
     //namespacing for redis keys
     redisMiataruNamespace: "miad",
 

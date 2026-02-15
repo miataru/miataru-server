@@ -23,6 +23,7 @@ Version 2.0 introduces enterprise-grade security features while maintaining **br
 
 - **UpdateLocation**: Optional DeviceKey validation when enabled
 - **GetLocation**: Requires `RequestMiataruDeviceID` and supports access control via allowed devices list
+- **GetLocation**: Optional `MiataruConfig.RequestMiataruDeviceKey` for strict requester validation (`strictDeviceKeyCheck`, default `true`)
 - **GetLocationHistory**: Requires `RequestMiataruDeviceID` and enforces granular permissions
 - **GetVisitorHistory**: DeviceKey authentication support
 
@@ -37,6 +38,7 @@ Version 2.0 introduces enterprise-grade security features while maintaining **br
 ## 🔒 Security Improvements
 
 - DeviceKey authentication prevents unauthorized location updates
+- Optional strict requester validation protects GetLocation read access for DeviceKey-protected requesters
 - Fine-grained access control limits who can view location data
 - Privacy-first defaults protect user data
 - Constant-time key comparison prevents timing attacks

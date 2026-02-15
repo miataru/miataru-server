@@ -2,7 +2,7 @@
 
 ## Executive Summary
 
-Miataru Server 2.0 and API 1.1 maintain **broad backward compatibility** with API 1.0 clients. Most existing endpoints continue to work without modification, but GetLocation/GetLocationHistory now require `RequestMiataruDeviceID`, and GetLocationGeoJSON has a documented 401 change when DeviceKey is set.
+Miataru Server 2.0 and API 1.1 maintain **broad backward compatibility** with API 1.0 clients. Most existing endpoints continue to work without modification, but GetLocation/GetLocationHistory now require `RequestMiataruDeviceID`, GetLocation can optionally validate requester identity via `RequestMiataruDeviceKey` (`strictDeviceKeyCheck`, default true), and GetLocationGeoJSON has a documented 401 change when DeviceKey is set.
 
 ## Backward Compatibility Guarantees
 
@@ -13,7 +13,7 @@ Most existing API 1.0 endpoints continue to work as before, with noted exception
 | Endpoint | API 1.0 Behavior | API 1.1 Behavior | Compatible? |
 |----------|------------------|-------------------|-------------|
 | `/v1/UpdateLocation` | Works as before | Works as before (DeviceKey optional) | ✅ Yes |
-| `/v1/GetLocation` | Works as before | Requires `RequestMiataruDeviceID` (access control optional) | ⚠️ Requires update |
+| `/v1/GetLocation` | Works as before | Requires `RequestMiataruDeviceID`; optional strict requester key validation via `RequestMiataruDeviceKey` | ⚠️ Requires update |
 | `/v1/GetLocationHistory` | Works as before | Requires `RequestMiataruDeviceID` (access control optional) | ⚠️ Requires update |
 | `/v1/GetVisitorHistory` | Works as before | Works as before (DeviceKey optional) | ✅ Yes |
 | `/v1/DeleteLocation` | Works as before | Works as before (DeviceKey optional) | ✅ Yes |
@@ -28,6 +28,7 @@ All new security parameters are **optional**, but GetLocation/GetLocationHistory
 - **DeviceKey** in `MiataruGetVisitorHistory` - Can be omitted if no DeviceKey is set
 - **Allowed Devices List** - Only affects behavior when explicitly set
 - **RequestMiataruDeviceID** - Required in `MiataruConfig` for GetLocation/GetLocationHistory
+- **RequestMiataruDeviceKey** in `MiataruConfig` - Optional; enforced for GetLocation when `strictDeviceKeyCheck` is enabled and requester has DeviceKey
 
 ### 3. Default Behavior
 
