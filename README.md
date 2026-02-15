@@ -1,12 +1,12 @@
 # miataru-server
 
-**Version 2.0.0** - Security and privacy enhancements with API 1.1 support
+**Version 2.1.0** - Security and privacy enhancements with API 1.1 support
 
 This is the source code of a Miataru server side implementation. You can get more information [here](http://www.miataru.com).
 
-## What's New in Version 2.0 / API 1.1
+## What's New in Version 2.1 / API 1.1
 
-Version 2.0 introduces significant security and privacy enhancements while maintaining broad backward compatibility with API 1.0 (with required RequestMiataruDeviceID for GetLocation/GetLocationHistory and the documented GetLocationGeoJSON change):
+Version 2.1 introduces significant security and privacy enhancements while maintaining broad backward compatibility with API 1.0 (with required RequestMiataruDeviceID for GetLocation/GetLocationHistory and the documented GetLocationGeoJSON change):
 
 - **RequestMiataruDeviceID (Mandatory)** - Required identifier for all GetLocation and GetLocationHistory requests
 - **RequestMiataruDeviceKey (Optional)** - Optional key in `MiataruConfig` for strict requester validation in GetLocation
