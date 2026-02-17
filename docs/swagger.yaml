@@ -7,11 +7,11 @@ info:
    
    API Version 1.1 introduces security and privacy enhancements:
    - RequestMiataruDeviceID (Mandatory) - Required for all GetLocation and GetLocationHistory requests
-   - RequestMiataruDeviceKey (Optional) - Optional requester key for strict GetLocation requester validation
+   - RequestMiataruDeviceKey (Optional) - Optional requester key for strict GetLocation/GetLocationHistory requester validation
    - DeviceKey authentication for write operations and visitor history access
    - Device slogan API with mandatory DeviceKey authentication
    - Allowed devices list for granular access control to location data
-   - strictDeviceKeyCheck (Default: true) - Enforces requester DeviceKey validation in GetLocation when requester key is configured
+   - strictDeviceKeyCheck (Default: true) - Enforces requester DeviceKey validation in GetLocation/GetLocationHistory when requester key is configured
    - Broad backward compatibility with API 1.0 clients (GetLocation/GetLocationHistory require RequestMiataruDeviceID)
  contact:
   name: Miataru Team
@@ -167,6 +167,8 @@ paths:
      
      RequestMiataruDeviceID should be the ID of the device the request is sent from (or an identifier like an URL). This is used for access control and visitor history tracking.
      
+     API 1.1: If strictDeviceKeyCheck is enabled (default), and the requesting device (RequestMiataruDeviceID) has a configured DeviceKey, MiataruConfig.RequestMiataruDeviceKey must match or the server returns 403 Forbidden.
+     
      API 1.1: If an allowed devices list has been set for a device (via /setAllowedDeviceList), only devices with hasHistoryAccess permission will receive location history data. Devices without permission will receive an empty history (as if history doesn't exist).
    operationId: getLocationHistory
    produces:
@@ -185,6 +187,10 @@ paths:
       $ref: '#/definitions/MiataruGetLocationHistoryResponse'
     400:
      description: Bad Request - RequestMiataruDeviceID is missing or empty
+     schema:
+      $ref: '#/definitions/Error'
+    403:
+     description: Forbidden - RequestMiataruDeviceKey mismatch when strictDeviceKeyCheck is enabled
      schema:
       $ref: '#/definitions/Error'
  /GetVisitorHistory:
@@ -470,7 +476,7 @@ definitions:
   properties:
    MiataruConfig:
     type: object
-    description: the configuration for this request. RequestMiataruDeviceID is mandatory in API 1.1.
+    description: the configuration for this request. RequestMiataruDeviceID is mandatory in API 1.1. RequestMiataruDeviceKey is optional and used for strict requester validation in GetLocation/GetLocationHistory.
     required:
     - RequestMiataruDeviceID
     properties:
@@ -478,6 +484,10 @@ definitions:
       type: string
       description: RequestMiataruDeviceID should be the ID of the device the request is sent from (or an identifier like an URL). This is mandatory in API 1.1. Alias requestingDeviceID is also accepted.
       default: "6140c3c0-4a7d-40d2-99ab-39414cac3509"
+     RequestMiataruDeviceKey:
+      type: string
+      description: Optional requester DeviceKey for GetLocation/GetLocationHistory. If strictDeviceKeyCheck is enabled and the requesting device has a configured DeviceKey, this value must match. Alias requestingDeviceKey is also accepted.
+      maxLength: 256
    MiataruGetLocationHistory:
     type: object
     description: one device id for which the location history should be retrieved.
@@ -509,7 +519,7 @@ definitions:
   properties:
    MiataruConfig:
     type: object
-    description: the configuration for this request. RequestMiataruDeviceID is mandatory in API 1.1. RequestMiataruDeviceKey is optional and used for strict requester validation in GetLocation.
+    description: the configuration for this request. RequestMiataruDeviceID is mandatory in API 1.1. RequestMiataruDeviceKey is optional and used for strict requester validation in GetLocation/GetLocationHistory.
     required:
     - RequestMiataruDeviceID
     properties:
@@ -519,7 +529,7 @@ definitions:
       default: "6140c3c0-4a7d-40d2-99ab-39414cac3509"
      RequestMiataruDeviceKey:
       type: string
-      description: Optional requester DeviceKey for GetLocation. If strictDeviceKeyCheck is enabled and the requesting device has a configured DeviceKey, this value must match. Alias requestingDeviceKey is also accepted.
+      description: Optional requester DeviceKey for GetLocation/GetLocationHistory. If strictDeviceKeyCheck is enabled and the requesting device has a configured DeviceKey, this value must match. Alias requestingDeviceKey is also accepted.
       maxLength: 256
    MiataruGetLocation:
     type: array

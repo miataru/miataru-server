@@ -69,11 +69,17 @@ function getLocation(deviceName, requestMiataruDeviceID, requestMiataruDeviceKey
     };
 }
 
-function getLocationHistory(device, amount, requestMiataruDeviceID) {
+function getLocationHistory(device, amount, requestMiataruDeviceID, requestMiataruDeviceKey) {
+    var miataruConfig = {
+        "RequestMiataruDeviceID": requestMiataruDeviceID || "test-client"
+    };
+
+    if (requestMiataruDeviceKey !== undefined) {
+        miataruConfig.RequestMiataruDeviceKey = requestMiataruDeviceKey;
+    }
+
     return {
-        "MiataruConfig": {
-            "RequestMiataruDeviceID": requestMiataruDeviceID || "test-client"
-        },
+        "MiataruConfig": miataruConfig,
         "MiataruGetLocationHistory": {
             "Device": device || "7b8e6e0ee5296db345162dc2ef652c1350761823",
             "Amount": amount || "25"
