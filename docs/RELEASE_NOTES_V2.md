@@ -1,10 +1,10 @@
-# Release Notes - Version 2.0.0
+# Release Notes - Version 2.1.0
 
-**miataru-server 2.0.0** | **miataru API 1.1.0**
+**miataru-server 2.1.0** | **miataru API 1.1.0**
 
 ## 🎉 Major Release: Security & Privacy Enhancements
 
-Version 2.0 introduces enterprise-grade security features while maintaining **broad backward compatibility** with existing v1.0 clients. Security features remain opt-in, but GetLocation/GetLocationHistory now require `RequestMiataruDeviceID`.
+Version 2.1 introduces enterprise-grade security features while maintaining **broad backward compatibility** with existing v1.0 clients. Security features remain opt-in, but GetLocation/GetLocationHistory now require `RequestMiataruDeviceID`.
 
 ## ✨ New Features
 

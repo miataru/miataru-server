@@ -185,9 +185,13 @@ func setDeviceKey(deviceID: String, currentKey: String?, newKey: String, complet
     
     // Add CurrentDeviceKey only if provided (for key changes)
     if let currentKey = currentKey {
-        requestBody["MiataruSetDeviceKey"]?["CurrentDeviceKey"] = currentKey
+        var payload = requestBody["MiataruSetDeviceKey"] as? [String: Any] ?? [:]
+        payload["CurrentDeviceKey"] = currentKey
+        requestBody["MiataruSetDeviceKey"] = payload
     } else {
-        requestBody["MiataruSetDeviceKey"]?["CurrentDeviceKey"] = NSNull()
+        var payload = requestBody["MiataruSetDeviceKey"] as? [String: Any] ?? [:]
+        payload["CurrentDeviceKey"] = NSNull()
+        requestBody["MiataruSetDeviceKey"] = payload
     }
     
     // Make API call
@@ -258,6 +262,10 @@ func updateLocation(deviceID: String, location: Location, completion: @escaping 
     }
     
     let requestBody: [String: Any] = [
+        "MiataruConfig": [
+            "EnableLocationHistory": "False",
+            "LocationDataRetentionTime": "30"
+        ],
         "MiataruLocation": [locationData]
     ]
     
@@ -303,7 +311,9 @@ func getVisitorHistory(deviceID: String, amount: Int, completion: @escaping (Res
     
     // Add DeviceKey if available (API 1.1)
     if let deviceKey = deviceKey {
-        requestBody["MiataruGetVisitorHistory"]?["DeviceKey"] = deviceKey
+        var payload = requestBody["MiataruGetVisitorHistory"] as? [String: Any] ?? [:]
+        payload["DeviceKey"] = deviceKey
+        requestBody["MiataruGetVisitorHistory"] = payload
     }
     
     makeAPICall(endpoint: "/v1/GetVisitorHistory", method: "POST", body: requestBody) { result in
@@ -324,7 +334,7 @@ func getVisitorHistory(deviceID: String, amount: Int, completion: @escaping (Res
 }
 ```
 
-## Step 6: Allowed Devices List Management
+## Step 5: Allowed Devices List Management
 
 ### 5.1 Create AllowedDevice Model
 
@@ -388,7 +398,7 @@ func setAllowedDevicesList(deviceID: String, allowedDevices: [AllowedDevice], co
 }
 ```
 
-## Step 7: User Interface Updates
+## Step 6: User Interface Updates
 
 ### 6.1 DeviceKey Setup Screen
 

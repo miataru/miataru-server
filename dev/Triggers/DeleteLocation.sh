@@ -3,8 +3,9 @@
 # DeleteLocation API Test Script
 # This script demonstrates the DeleteLocation API functionality
 
-SERVER_URL="http://localhost:8080"
+SERVER_URL="http://localhost:8090"
 DEVICE_ID="test-delete-device-$(date +%s)"
+REQUEST_DEVICE_ID="delete-script-client"
 
 echo "=== DeleteLocation API Test ==="
 echo "Server: $SERVER_URL"
@@ -34,6 +35,9 @@ echo ""
 echo "Step 2: Verifying location data exists..."
 curl -s -H 'Content-Type: application/json' -X POST "$SERVER_URL/v1/GetLocation" \
   -d "{
+    \"MiataruConfig\": {
+      \"RequestMiataruDeviceID\": \"$REQUEST_DEVICE_ID\"
+    },
     \"MiataruGetLocation\": [{
       \"Device\": \"$DEVICE_ID\"
     }]
@@ -56,6 +60,9 @@ echo ""
 echo "Step 4: Verifying data is deleted..."
 curl -s -H 'Content-Type: application/json' -X POST "$SERVER_URL/v1/GetLocation" \
   -d "{
+    \"MiataruConfig\": {
+      \"RequestMiataruDeviceID\": \"$REQUEST_DEVICE_ID\"
+    },
     \"MiataruGetLocation\": [{
       \"Device\": \"$DEVICE_ID\"
     }]

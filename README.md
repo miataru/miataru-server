@@ -41,7 +41,7 @@ The Miataru server provides both versioned (v1) and legacy API endpoints for max
 - **POST** `/v1/UpdateLocation` - Store location data
 - **POST** `/v1/GetLocation` - Retrieve current location
 - **POST** `/v1/GetLocationGeoJSON` - Get location in GeoJSON format
-- **GET** `/v1/GetLocationGeoJSON/:id?` - Get location in GeoJSON format via GET
+- **GET** `/v1/GetLocationGeoJSON/:id` - Get location in GeoJSON format via GET
 - **POST** `/v1/GetLocationHistory` - Retrieve location history
 - **POST** `/v1/GetVisitorHistory` - Retrieve visitor history
 - **POST** `/v1/DeleteLocation` - Delete all location data for a device
@@ -54,7 +54,7 @@ The Miataru server provides both versioned (v1) and legacy API endpoints for max
 - **POST** `/UpdateLocation` - Store location data
 - **POST** `/GetLocation` - Retrieve current location
 - **POST** `/GetLocationGeoJSON` - Get location in GeoJSON format
-- **GET** `/GetLocationGeoJSON/:id?` - Get location in GeoJSON format via GET
+- **GET** `/GetLocationGeoJSON/:id` - Get location in GeoJSON format via GET
 - **POST** `/GetLocationHistory` - Retrieve location history
 - **POST** `/GetVisitorHistory` - Retrieve visitor history
 - **POST** `/DeleteLocation` - Delete all location data for a device
@@ -132,6 +132,7 @@ Security features are opt-in:
 For client migration guidance:
 - **Quick Migration**: [RequestMiataruDeviceID Migration Guide](docs/MIGRATION_REQUESTMIATARUDEVICEID.md)
 - **Full Guide**: [iOS Client Adoption Guide](docs/CLIENT_ADOPTION_API_1.1.md)
+- **Practical End-to-End Examples**: [API 1.1 Practical Examples](docs/PRACTICAL_API_1.1_EXAMPLES.md)
 
 ## Run the Server
 
@@ -623,7 +624,7 @@ tests/
 - **Yargs**: ^17.7.2 (command line argument parsing)
 - **Moment.js**: ^2.29.4 (date/time handling)
 - **EJS**: ^3.1.9 (template engine)
-- **Stylus**: ^0.59.0 (CSS preprocessing)
+- **Stylus**: ^0.64.0 (CSS preprocessing)
 
 ### Development Dependencies
 - **Mocha**: ^10.2.0 (test framework)
@@ -637,7 +638,7 @@ tests/
 
 ## Changelog
 
-### Version 2.0.0 (Latest) - API 1.1
+### Version 2.1.0 (Latest) - API 1.1
 
 #### Security & Privacy Features
 - **DeviceKey Authentication**: Protect write operations and visitor history access

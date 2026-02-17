@@ -96,6 +96,37 @@ paths:
      description: Forbidden - RequestMiataruDeviceKey mismatch when strictDeviceKeyCheck is enabled
      schema:
       $ref: '#/definitions/Error'
+ /GetLocationGeoJSON:
+  post:
+   tags:
+   - getLocation
+   description: |
+     Retrieves one device location in GeoJSON format using a POST request body.
+     
+     API 1.1 BREAKING CHANGE: If a DeviceKey has been set for any requested device, this endpoint returns 401 Unauthorized. Use /GetLocation instead when DeviceKey-protected devices are involved.
+   operationId: getLocationGeoJSONPost
+   produces:
+   - application/json
+   parameters:
+   - name: body
+     in: body
+     description: request body containing MiataruGetLocation array with one or more devices (first entry is used for GeoJSON output)
+     required: true
+     schema:
+      $ref: '#/definitions/MiataruGetLocationRequest'
+   responses:
+    200:
+     description: geoJSON formatted device location
+     schema:
+      $ref: '#/definitions/MiataruGetLocationGeoJSONResponse'
+    400:
+     description: Bad Request - missing or invalid device input
+     schema:
+      $ref: '#/definitions/Error'
+    401:
+     description: Unauthorized - DeviceKey is set for requested device
+     schema:
+      $ref: '#/definitions/Error'
  /GetLocationGeoJSON/{deviceID}:
   get:
    tags:
@@ -104,7 +135,9 @@ paths:
      Retrieves a devices Location in GeoJSON format.
      
      API 1.1 BREAKING CHANGE: If a DeviceKey has been set for the requested device, this endpoint will return a 401 Unauthorized error. This is a security measure to prevent unauthorized access to location data via the public GET endpoint. Use GetLocation POST endpoint instead.
-   operationId: getLocationGeoJSON
+     
+     Note: In this OpenAPI 2.0 contract, {deviceID} is required for compatibility with older Swagger-UI tooling.
+   operationId: getLocationGeoJSONGet
    produces:
    - application/json
    parameters:
@@ -252,7 +285,7 @@ paths:
      
      The client is expected to maintain the full list on the client-side and always sends the complete list to update. Any changes (additions, deletions, updates) are carried out by sending the full updated list.
      
-     Requires valid DeviceKey authentication.
+     Current behavior: if a DeviceKey is configured for DeviceID, the provided DeviceKey must match. If no DeviceKey is configured, the request is accepted for backward compatibility.
    operationId: setAllowedDeviceList
    produces:
    - application/json
@@ -526,12 +559,18 @@ definitions:
     type: string
     description: the accuracy of this location update in meters
     default: "50"
+   Speed:
+    type: string
+    description: optional speed value; string and numeric payloads are accepted
+   BatteryLevel:
+    type: string
+    description: optional battery level value; string and numeric payloads are accepted
+   Altitude:
+    type: string
+    description: optional altitude value; string and numeric payloads are accepted
  MiataruGetLocationGeoJSONResponse:
   type: object
-  required:
-  - geometry
-  - type
-  - properties
+  description: GeoJSON feature response. Returns an empty object when no valid location is available.
   properties:
    geometry:
     type: object
@@ -550,10 +589,18 @@ definitions:
     type: string
    properties:
     type: object
-    required:
-    - name
     properties:
      name:
+      type: string
+     timestamp:
+      type: string
+     horizontalAccuracy:
+      type: string
+     speed:
+      type: string
+     batteryLevel:
+      type: string
+     altitude:
       type: string
  MiataruGetLocationResponse:
   type: object
@@ -649,7 +696,7 @@ definitions:
       default: "7b8e6e0ee5296db345162dc2ef652c1350761823"
      DeviceKey:
       type: string
-      description: the device key matching for the specific DeviceID
+      description: DeviceKey value for DeviceID. Required in payload; if DeviceID has a configured DeviceKey it must match.
       maxLength: 256
      allowedDevices:
       type: array
@@ -661,8 +708,6 @@ definitions:
   type: object
   required:
   - DeviceID
-  - hasCurrentLocationAccess
-  - hasHistoryAccess
   properties:
    DeviceID:
     type: string
@@ -707,7 +752,7 @@ definitions:
       maxLength: 256
      Slogan:
       type: string
-      description: optional slogan text up to 40 characters
+      description: slogan text up to 40 characters (empty string allowed)
       maxLength: 40
  MiataruSetDeviceSloganResponse:
   required:

@@ -1,13 +1,13 @@
-# What's New in Version 2.0
+# What's New in Version 2.1
 
-**miataru-server Version 2.0.0** - Security and Privacy Enhancements  
+**miataru-server Version 2.1.0** - Security and Privacy Enhancements  
 **miataru API Version 1.1.0** - Device Authentication and Access Control
 
-Version 2.0 introduces comprehensive security and privacy enhancements to the Miataru server, including DeviceKey authentication and fine-grained access control through allowed devices lists. Most features remain backward compatible with v1.0 clients, with new requirements for GetLocation/GetLocationHistory and the documented GetLocationGeoJSON behavior change.
+Version 2.1 introduces comprehensive security and privacy enhancements to the Miataru server, including DeviceKey authentication and fine-grained access control through allowed devices lists. Most features remain backward compatible with v1.0 clients, with new requirements for GetLocation/GetLocationHistory and the documented GetLocationGeoJSON behavior change.
 
 ## Overview
 
-Version 2.0 focuses on giving device owners complete control over who can access their location data. The implementation adds two major security features:
+Version 2.1 focuses on giving device owners complete control over who can access their location data. The implementation adds two major security features:
 
 1. **DeviceKey Authentication** - Secure device-level authentication using cryptographic keys
 2. **Allowed Devices Access Control** - Fine-grained permissions for location sharing
@@ -17,7 +17,7 @@ These features work together to provide enterprise-grade security while maintain
 
 ## Key Highlights
 
-- ✅ **Broad Backward Compatibility** - Most existing v1.0 clients continue to work without modification
+- ✅ **Broad Backward Compatibility** - Most existing v1.0 clients continue to work after adding `RequestMiataruDeviceID` to GetLocation/GetLocationHistory
 - ✅ **Optional Security** - Security features are opt-in and don't affect existing deployments
 - ✅ **Privacy-First Design** - Default behavior prioritizes user privacy
 - ✅ **Simple Migration Path** - Easy adoption for clients that want enhanced security
@@ -253,7 +253,7 @@ Authentication is mandatory for the requester via `RequestDeviceID` + `RequestDe
 
 - **Full List Replacement**: Each call replaces the entire allowed devices list. The client must maintain and send the complete list.
 - **Maximum 256 Devices**: The allowed devices list is limited to 256 devices
-- **DeviceKey Required**: This endpoint requires DeviceKey authentication
+- **DeviceKey Payload Required**: `DeviceKey` must be present in payload. If the target device has a configured DeviceKey, it must match; if no DeviceKey is configured yet, request is accepted for backward compatibility.
 - **Empty List**: To disable access control, send an empty array `[]`
 
 ## Modified API Endpoints
@@ -293,7 +293,7 @@ Authentication is mandatory for the requester via `RequestDeviceID` + `RequestDe
 
 ```json
 {
-  "error": "DeviceKey validation failed for device: device-id-here"
+  "error": "Forbidden: DeviceKey does not match"
 }
 ```
 
@@ -352,7 +352,7 @@ When allowed devices list is enabled:
 
 - **Allowed Devices Enabled**: Only devices with `hasHistoryAccess: true` can access history
 - **Not in List**: Devices not in the list or without history permission receive no history
-- **Allowed Devices Not Enabled**: Default behavior is privacy-first (history not returned by default)
+- **Allowed Devices Not Enabled**: Returns history as before once `RequestMiataruDeviceID` is provided (backward compatible)
 - **Backward Compatibility**: Existing behavior preserved when no allowed devices list is set (with `RequestMiataruDeviceID`)
 
 ### POST `/v1/GetVisitorHistory`
@@ -365,6 +365,7 @@ When allowed devices list is enabled:
 {
   "MiataruGetVisitorHistory": {
     "Device": "device-id-here",
+    "Amount": "10",
     "DeviceKey": "your-device-key"
   }
 }
@@ -380,11 +381,11 @@ When allowed devices list is enabled:
 
 ```json
 {
-  "error": "DeviceKey validation failed for device: device-id-here"
+  "error": "Forbidden: DeviceKey does not match"
 }
 ```
 
-### POST `/v1/GetLocationGeoJSON` and GET `/v1/GetLocationGeoJSON/:id?`
+### POST `/v1/GetLocationGeoJSON` and GET `/v1/GetLocationGeoJSON/:id`
 
 **⚠️ BREAKING CHANGE**: These endpoints now return **401 Unauthorized** when a DeviceKey is set for any requested device.
 
@@ -397,7 +398,7 @@ When allowed devices list is enabled:
 
 ```json
 {
-  "error": "GetLocationGeoJSON is not available for devices with DeviceKey authentication enabled"
+  "error": "Unauthorized: GetLocationGeoJSON is not available when DeviceKey is set"
 }
 ```
 
@@ -416,7 +417,7 @@ Clients using GeoJSON endpoints with DeviceKey-enabled devices should:
 
 ### Version Information
 
-- **Server Version**: 2.0.0
+- **Server Version**: 2.1.0
 - **API Version**: 1.1.0
 - **Previous API Version**: 1.0.0
 
@@ -430,9 +431,9 @@ API version 1.1 maintains the same endpoint structure as v1.0, with new optional
 
 ### Backward Compatibility
 
-API v1.1 is **fully backward compatible** with v1.0:
+API v1.1 is **broadly backward compatible** with v1.0 after mandatory request migration for GetLocation/GetLocationHistory:
 
-- ✅ All v1.0 endpoints continue to work unchanged
+- ✅ Most v1.0 endpoints continue to work unchanged
 - ✅ Optional parameters can be omitted
 - ✅ Default behavior unchanged when security features are disabled
 - ✅ Response format remains the same
@@ -440,16 +441,20 @@ API v1.1 is **fully backward compatible** with v1.0:
 
 ### Breaking Changes
 
-Only **one breaking change** in API v1.1:
+There are **two breaking changes** in API v1.1:
 
-1. **GetLocationGeoJSON Endpoints**: Return 401 Unauthorized when DeviceKey is set
+1. **GetLocation / GetLocationHistory**: `MiataruConfig.RequestMiataruDeviceID` is mandatory
+   - **Impact**: Clients must update request payloads for these endpoints
+   - **Mitigation**: Add non-empty `RequestMiataruDeviceID` to all GetLocation/GetLocationHistory requests
+
+2. **GetLocationGeoJSON Endpoints**: Return 401 Unauthorized when DeviceKey is set
    - **Impact**: Clients using GeoJSON with DeviceKey-enabled devices
    - **Mitigation**: Use `/v1/GetLocation` and format as GeoJSON client-side
    - **Workaround**: Disable DeviceKey if GeoJSON access is required
 
 ## Error Codes
 
-Version 2.0 introduces two new HTTP error codes:
+Version 2.1 introduces two new HTTP error codes:
 
 ### 401 Unauthorized
 
@@ -482,7 +487,8 @@ Returned when:
 
 ### For Server Administrators
 
-**No action required** - Version 2.0 is fully backward compatible. Existing deployments will continue to work without any changes.
+**No mandatory server-side config change required** - Existing deployments can run as-is.  
+**Client updates are still required** for GetLocation/GetLocationHistory (`RequestMiataruDeviceID`).
 
 **Optional Steps:**
 1. Review new security features and decide if they should be enabled
@@ -491,9 +497,9 @@ Returned when:
 
 ### For Client Developers
 
-#### Option 1: No Changes (Recommended for Most Clients)
+#### Option 1: Minimal Required Changes (Recommended)
 
-Existing v1.0 clients continue to work without modification. Security features are opt-in and don't affect existing functionality.
+Add `MiataruConfig.RequestMiataruDeviceID` to all GetLocation/GetLocationHistory requests. Security features remain opt-in.
 
 #### Option 2: Adopt DeviceKey Authentication
 
@@ -514,6 +520,10 @@ POST /v1/setDeviceKey
 // Update location with DeviceKey
 POST /v1/UpdateLocation
 {
+  "MiataruConfig": {
+    "EnableLocationHistory": "False",
+    "LocationDataRetentionTime": "30"
+  },
   "MiataruLocation": [{
     "Device": "your-device-id",
     "DeviceKey": "your-secure-key",
@@ -529,6 +539,7 @@ POST /v1/GetVisitorHistory
 {
   "MiataruGetVisitorHistory": {
     "Device": "your-device-id",
+    "Amount": "10",
     "DeviceKey": "your-secure-key"
   }
 }
@@ -605,7 +616,7 @@ POST /v1/GetLocation
 
 ### Compatibility Guarantees
 
-Version 2.0 maintains **broad backward compatibility** with v1.0, with `RequestMiataruDeviceID` required for GetLocation/GetLocationHistory:
+Version 2.1 maintains **broad backward compatibility** with v1.0, with `RequestMiataruDeviceID` required for GetLocation/GetLocationHistory:
 
 1. **Most v1.0 Endpoints Work**: Existing endpoints continue to function with the noted GetLocation/GetLocationHistory requirement
 2. **Optional Parameters**: New parameters (DeviceKey) are optional
@@ -690,7 +701,7 @@ New security features add minimal Redis operations:
 
 ## Testing
 
-Version 2.0 includes comprehensive test coverage:
+Version 2.1 includes comprehensive test coverage:
 
 ### Test Coverage
 
@@ -728,11 +739,12 @@ npm run test:integration
 
 - **API_1.1_SECURITY.md**: Complete security feature documentation
 - **CLIENT_ADOPTION_API_1.1.md**: Step-by-step client migration guide
+- **PRACTICAL_API_1.1_EXAMPLES.md**: Copy-paste migration and fallback examples
 - **WHATS_NEW_V2.md**: This document
 
 ### Updated Documentation
 
-- **README.md**: Updated with version 2.0 information and new endpoints
+- **README.md**: Updated with version 2.1 information and new endpoints
 - **Swagger Specification**: Updated with API v1.1 endpoints and models
 
 ## Deployment
@@ -747,13 +759,13 @@ npm run test:integration
 - [ ] Performance tested
 - [ ] Security reviewed
 - [ ] Documentation reviewed
-- [ ] Version bumped to 2.0.0
+- [ ] Version bumped to 2.1.0
 - [ ] API version documented as 1.1
 
 ### Upgrade Path
 
 1. **Backup**: Backup Redis data (if using persistent Redis)
-2. **Deploy**: Deploy version 2.0 server
+2. **Deploy**: Deploy version 2.1 server
 3. **Verify**: Run backward compatibility tests
 4. **Monitor**: Monitor for any issues with existing clients
 5. **Communicate**: Inform users about new security features
@@ -761,22 +773,22 @@ npm run test:integration
 ### Rollback Plan
 
 If issues occur:
-1. Version 2.0 is backward compatible - existing clients continue to work
+1. Version 2.1 is broadly backward compatible once clients send `RequestMiataruDeviceID` for GetLocation/GetLocationHistory
 2. Security features are opt-in - disabling them restores v1.0 behavior
 3. Can rollback to v1.x if needed (no data migration required)
 
 ## Summary
 
-Version 2.0 brings enterprise-grade security and privacy features to Miataru while maintaining the simplicity and ease of use that makes Miataru great. The implementation is:
+Version 2.1 brings enterprise-grade security and privacy features to Miataru while maintaining the simplicity and ease of use that makes Miataru great. The implementation is:
 
 - **Secure**: DeviceKey authentication and fine-grained access control
 - **Private**: Privacy-first design with no information leakage
-- **Compatible**: Full backward compatibility with v1.0
+- **Compatible**: Broad backward compatibility with v1.0 (plus a small mandatory request migration)
 - **Flexible**: Optional features that don't affect existing deployments
 - **Well-Tested**: Comprehensive test coverage for all features
 - **Well-Documented**: Complete documentation and migration guides
 
-Whether you're running a simple location sharing service or need enterprise-level security, Version 2.0 has you covered.
+Whether you're running a simple location sharing service or need enterprise-level security, Version 2.1 has you covered.
 
 ## Questions?
 

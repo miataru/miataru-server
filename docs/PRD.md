@@ -7,7 +7,7 @@
   - Configuration-driven behavior for retention, visitor history, CORS, and rate limiting. (Evidence: README.md L126-L200, L202-L295, L316-L338; config/default.js L7-L66)
   - Redis-backed storage for last known location, history lists, and visitor history lists. (Evidence: lib/routes/location/v1/location.js L11-L15, L290-L335; docs/DELETE_LOCATION_API.md L101-L115)
 - **Out of Scope / Non-goals**:
-  - Authentication/authorization and device ownership validation. (Evidence: docs/DELETE_LOCATION_API.md L155-L160)
+  - Account-level user authentication/authorization and strong device ownership proofing beyond optional per-device DeviceKey checks. (Evidence: docs/DELETE_LOCATION_API.md L155-L160)
   - Guaranteed disk-backed archival storage in default configuration; default is time-bounded/in-memory orientation. (Evidence: README.md L19-L20; config/default.js L13-L25; lib/routes/location/v1/location.js L320-L335)
 
 ## 2. Personas / Stakeholders (if applicable)
@@ -21,7 +21,7 @@
 ### FR-001: Update location data (current + optional history)
 - **Priority**: Must
 - **Description**: The server shall accept UpdateLocation requests and store the last known location, optionally storing history when enabled.
-- **Inputs / Triggers**: HTTP POST `/v1/UpdateLocation` or `/UpdateLocation` with `MiataruLocation` array and optional `MiataruConfig` containing `EnableLocationHistory` and `LocationDataRetentionTime`. (Evidence: README.md L27-L43, L64-L70; lib/routes/location/index.js L9-L23; lib/routes/location/v1/inputParser.js L48-L62)
+- **Inputs / Triggers**: HTTP POST `/v1/UpdateLocation` or `/UpdateLocation` with `MiataruLocation` array and required `MiataruConfig.LocationDataRetentionTime` (`EnableLocationHistory` remains optional). (Evidence: README.md L27-L43, L64-L70; lib/routes/location/index.js L9-L23; lib/routes/location/v1/inputParser.js L48-L62; lib/models/RequestConfig.js)
 - **Outputs / Effects**: Writes to Redis last location key; when history enabled, appends to history list and trims to configured max; when disabled, deletes history and sets TTL on last location. (Evidence: lib/routes/location/v1/location.js L290-L335; config/default.js L31-L33)
 - **Acceptance Criteria**:
   - When `EnableLocationHistory` is true, history list grows and is trimmed to `maximumNumberOfHistoryItems`. (Evidence: lib/routes/location/v1/location.js L297-L311; config/default.js L31-L33)
@@ -54,8 +54,8 @@
 ### FR-004: Get location as GeoJSON
 - **Priority**: Should
 - **Description**: The server shall return a GeoJSON Feature representation of the requested device’s current location.
-- **Inputs / Triggers**: HTTP POST `/v1/GetLocationGeoJSON` or `/GetLocationGeoJSON` with `MiataruGetLocation` array; HTTP GET `/v1/GetLocationGeoJSON/:id?` or `/GetLocationGeoJSON/:id?` for a single device. (Evidence: README.md L29-L40; lib/routes/location/index.js L11-L26)
-- **Outputs / Effects**: Returns GeoJSON Feature with geometry coordinates and properties (name, timestamp, accuracy, optional fields). (Evidence: lib/models/ResponseLocationGeoJSON.js L9-L29)
+- **Inputs / Triggers**: HTTP POST `/v1/GetLocationGeoJSON` or `/GetLocationGeoJSON` with `MiataruGetLocation` array; HTTP GET `/v1/GetLocationGeoJSON/:id` or `/GetLocationGeoJSON/:id` for a single device (route registration currently accepts optional `:id?`). (Evidence: README.md L29-L40; lib/routes/location/index.js L11-L26)
+- **Outputs / Effects**: Returns GeoJSON Feature with geometry coordinates and properties (name, timestamp, accuracy, optional fields), or 401 when a DeviceKey is configured for the target device. (Evidence: lib/models/ResponseLocationGeoJSON.js L9-L29; lib/routes/location/v1/location.js)
 - **Acceptance Criteria**:
   - When coordinates are present, return a GeoJSON Feature with Point geometry. (Evidence: lib/models/ResponseLocationGeoJSON.js L9-L26)
   - Optional fields (speed, batteryLevel, altitude) are included when present. (Evidence: lib/models/ResponseLocationGeoJSON.js L18-L24; tests/unit/responseLocationGeoJSON.tests.js L7-L44)
@@ -95,7 +95,7 @@
 - **Priority**: Must
 - **Description**: The server shall support legacy endpoints and older request formats.
 - **Inputs / Triggers**: Non-versioned endpoints and single-object UpdateLocation payloads. (Evidence: README.md L36-L43; lib/routes/location/index.js L22-L30; lib/routes/location/v1/inputParser.js L51-L56)
-- **Outputs / Effects**: Requests succeed using legacy endpoints; missing new fields are tolerated. (Evidence: tests/integration/backwardCompatibility.tests.js L12-L88)
+- **Outputs / Effects**: Requests succeed using legacy endpoints; legacy payloads are broadly tolerated except the API-1.1 mandatory `MiataruConfig.RequestMiataruDeviceID` for GetLocation/GetLocationHistory. (Evidence: tests/integration/backwardCompatibility.tests.js L12-L88; tests/integration/missingRequestMiataruDeviceID.tests.js)
 - **Acceptance Criteria**:
   - Legacy `/UpdateLocation` and `/GetLocation` work. (Evidence: tests/integration/backwardCompatibility.tests.js L94-L138)
   - Old-format updates without new fields are accepted. (Evidence: tests/integration/backwardCompatibility.tests.js L12-L37)
@@ -127,7 +127,7 @@
 - **Reliability**:
   - Redis operations shall be guarded by a concurrency limiter; queue timeouts shall produce deterministic error codes. (Evidence: lib/db.js L15-L193; tests/unit/redisRateLimiter.tests.js L70-L106)
 - **Security / Privacy**:
-  - No authentication is provided; deployments must account for this externally. (Reconstruction Assumption; Evidence: docs/DELETE_LOCATION_API.md L155-L160)
+  - Endpoint-level DeviceKey-based controls are optional and not equivalent to full account/session authentication; deployments may still require external perimeter auth. (Evidence: README.md; docs/API_1.1_SECURITY.md)
   - Visitor history shall not include self-requests or optionally empty visitor IDs based on config. (Evidence: lib/models/RequestConfigGetLocation.js L19-L36; config/default.js L37-L38)
 - **Maintainability**:
   - Configuration layering must support default, environment, user, and external overrides. (Evidence: lib/utils/configurationLoader.js L16-L65)
@@ -167,8 +167,8 @@
 - **Data lifecycle**: DeleteLocation removes last/history/visitor keys and returns counts. (Evidence: tests/integration/deleteLocation.tests.js L80-L138)
 
 ## 8. Risks & Mitigations
-- **Risk**: No authentication could expose location data.
-  - **Mitigation**: Deploy behind authentication/authorization or restrict network access. (Reconstruction Assumption; Evidence: docs/DELETE_LOCATION_API.md L155-L160)
+- **Risk**: Optional security controls may be left disabled, exposing location data in permissive deployments.
+  - **Mitigation**: Enforce DeviceKey/allowed-devices where needed and deploy behind authentication/authorization or restricted network access. (Evidence: docs/API_1.1_SECURITY.md; README.md)
 - **Risk**: In-memory/TTL defaults could lead to data loss if retention not configured.
   - **Mitigation**: Document and configure `EnableLocationHistory` and retention times explicitly. (Evidence: README.md L19-L20; lib/models/RequestConfig.js L6-L34)
 - **Risk**: Visitor history may grow unbounded in detailed mode if limits misconfigured.

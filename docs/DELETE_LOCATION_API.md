@@ -62,24 +62,21 @@ The DeleteLocation API endpoint allows you to permanently delete all location da
 **Bad Request (400):**
 ```json
 {
-  "error": "BadRequestError",
-  "message": "missing device"
+  "error": "Bad Request: missing device"
 }
 ```
 
 **Forbidden (403) - DeviceKey Required:**
 ```json
 {
-  "error": "ForbiddenError",
-  "message": "DeviceKey is required for this device"
+  "error": "Forbidden: DeviceKey is required for this device"
 }
 ```
 
 **Forbidden (403) - DeviceKey Mismatch:**
 ```json
 {
-  "error": "ForbiddenError",
-  "message": "DeviceKey does not match"
+  "error": "Forbidden: DeviceKey does not match"
 }
 ```
 
@@ -177,16 +174,14 @@ The DeleteLocation operation removes the following Redis keys for the specified 
 1. **Missing Device Parameter**
    ```json
    {
-     "error": "BadRequestError",
-     "message": "missing device"
+     "error": "Bad Request: missing device"
    }
    ```
 
 2. **Invalid Request Format**
    ```json
    {
-     "error": "BadRequestError",
-     "message": "Invalid request format"
+     "error": "Bad Request: missing device"
    }
    ```
 
@@ -197,16 +192,14 @@ The DeleteLocation operation removes the following Redis keys for the specified 
 4. **DeviceKey Required (403 Forbidden)**
    ```json
    {
-     "error": "ForbiddenError",
-     "message": "DeviceKey is required for this device"
+     "error": "Forbidden: DeviceKey is required for this device"
    }
    ```
 
 5. **DeviceKey Mismatch (403 Forbidden)**
    ```json
    {
-     "error": "ForbiddenError",
-     "message": "DeviceKey does not match"
+     "error": "Forbidden: DeviceKey does not match"
    }
    ```
 

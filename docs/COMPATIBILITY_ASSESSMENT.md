@@ -2,7 +2,7 @@
 
 ## Executive Summary
 
-Miataru Server 2.0 and API 1.1 maintain **broad backward compatibility** with API 1.0 clients. Most existing endpoints continue to work without modification, but GetLocation/GetLocationHistory now require `RequestMiataruDeviceID`, GetLocation can optionally validate requester identity via `RequestMiataruDeviceKey` (`strictDeviceKeyCheck`, default true), and GetLocationGeoJSON has a documented 401 change when DeviceKey is set.
+Miataru Server 2.1 and API 1.1 maintain **broad backward compatibility** with API 1.0 clients. Most existing endpoints continue to work after a small request migration: GetLocation/GetLocationHistory now require `RequestMiataruDeviceID`; GetLocation can optionally validate requester identity via `RequestMiataruDeviceKey` (`strictDeviceKeyCheck`, default true); and GetLocationGeoJSON has a documented 401 change when DeviceKey is set.
 
 ## Backward Compatibility Guarantees
 
@@ -233,13 +233,12 @@ All response formats remain unchanged. New security features don't modify respon
 
 ### For API 1.0 Clients
 
-**No action required** if:
-- You don't use GetLocationGeoJSON with DeviceKey-enabled devices
-- You don't need DeviceKey protection
-- You don't need allowed devices list
+**Action required for all clients using GetLocation or GetLocationHistory:**
+- Add `MiataruConfig.RequestMiataruDeviceID` to every GetLocation request
+- Add `MiataruConfig.RequestMiataruDeviceID` to every GetLocationHistory request
 
-**Action required** if:
-- You use GetLocationGeoJSON and want to enable DeviceKey protection
+**Additional action required if:**
+- You use GetLocationGeoJSON and want DeviceKey protection
   - **Solution**: Switch to GetLocation POST endpoint
 - You want to enable DeviceKey protection
   - **Solution**: Follow [iOS Client Adoption Guide](CLIENT_ADOPTION_API_1.1.md)
@@ -274,9 +273,9 @@ All response formats remain unchanged. New security features don't modify respon
 
 ### Low Risk
 
-- ✅ Existing API 1.0 clients (no changes needed)
+- ✅ Clients that already include `RequestMiataruDeviceID` in GetLocation/GetLocationHistory
 - ✅ Clients not using GetLocationGeoJSON
-- ✅ Clients not enabling security features
+- ✅ Clients not enabling additional security features
 
 ### Medium Risk
 
@@ -289,9 +288,9 @@ All response formats remain unchanged. New security features don't modify respon
 
 ## Conclusion
 
-Miataru Server 2.0 and API 1.1 provide **excellent backward compatibility** with API 1.0. The only breaking change affects a specific use case (GetLocationGeoJSON with DeviceKey), and a clear workaround exists.
+Miataru Server 2.1 and API 1.1 provide **excellent backward compatibility** with API 1.0 after one required migration step: add `RequestMiataruDeviceID` to GetLocation/GetLocationHistory requests. The second breaking change affects a specific use case (GetLocationGeoJSON with DeviceKey), and a clear workaround exists.
 
-**Recommendation:** Existing clients can continue using API 1.0 features without modification. New security features are opt-in and provide enhanced privacy and security when needed.
+**Recommendation:** First complete the mandatory `RequestMiataruDeviceID` migration. Then adopt optional security features (DeviceKey, allowed devices list) as needed.
 
 ## Additional Resources
 

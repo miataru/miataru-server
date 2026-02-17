@@ -56,9 +56,9 @@
 
 ### 2.5 Location routes (`lib/routes/location/index.js`)
 - **Responsibility**: Register versioned and legacy endpoints for location CRUD, history, and optional device slogan APIs. (Evidence: lib/routes/location/index.js; README.md)
-- **Interfaces**: Express route registrations for Update/Get/History/GeoJSON/VisitorHistory/Delete plus `setDeviceSlogan`/`getDeviceSlogan`; supports GET `/GetLocationGeoJSON/:id?`. (Evidence: lib/routes/location/index.js)
+- **Interfaces**: Express route registrations for Update/Get/History/GeoJSON/VisitorHistory/Delete plus `setDeviceSlogan`/`getDeviceSlogan`; public docs use GET `/GetLocationGeoJSON/:id` (route registration accepts optional `:id?`). (Evidence: lib/routes/location/index.js)
 - **Key logic**:
-  - Non-POST requests return 405 (except OPTIONS returns 204). (Evidence: lib/routes/location/index.js; tests/unit/serverErrorHandling.tests.js; tests/integration/cors.tests.js)
+  - Most non-POST requests return 405; supported exceptions are GET `/GetLocationGeoJSON/:id?` and OPTIONS (204). (Evidence: lib/routes/location/index.js; tests/unit/serverErrorHandling.tests.js; tests/integration/cors.tests.js)
 - **Failure modes**: Method-not-supported errors become 405 JSON error responses. (Evidence: lib/errors.js; server.js)
 
 ### 2.6 Input parser (`lib/routes/location/v1/inputParser.js`)
@@ -76,9 +76,9 @@
   - **UpdateLocation**: If history enabled, pushes each location into `hist` list and trims; updates `last` on final entry. If history disabled, deletes history list and stores `last` with TTL. (Evidence: lib/routes/location/v1/location.js; config/default.js; tests/integration/api.tests.js)
   - **GetLocation**: Reads `last` per device and returns null when missing; records visitor history when the device exists (including when access is denied by the allowed devices list). (Evidence: lib/routes/location/v1/location.js; tests/integration/unknownDevice.tests.js; tests/integration/visitorHistoryFiltering.tests.js; tests/integration/allowedDevices.tests.js)
   - **GetLocationHistory**: Reads list length, fetches up to requested amount, skips invalid JSON entries, and optionally records visitor history. (Evidence: lib/routes/location/v1/location.js; tests/integration/getLocationHistoryConfig.tests.js)
-  - **GetLocationGeoJSON**: Converts first location into GeoJSON Feature or returns `{}` if missing coordinates. (Evidence: lib/models/ResponseLocationGeoJSON.js; tests/unit/responseLocationGeoJSON.tests.js)
-  - **GetVisitorHistory**: Filters out entries where visitor device equals target device. (Evidence: lib/routes/location/v1/location.js; tests/integration/visitorHistoryFiltering.tests.js)
-  - **DeleteLocation**: Deletes `last`, `hist`, and `visit` keys in parallel and returns deleted key count. (Evidence: lib/routes/location/v1/location.js; docs/DELETE_LOCATION_API.md; tests/integration/deleteLocation.tests.js)
+  - **GetLocationGeoJSON**: Rejects with 401 when a target device has DeviceKey configured; otherwise converts first location into GeoJSON Feature or returns `{}` if missing coordinates. (Evidence: lib/routes/location/v1/location.js; lib/models/ResponseLocationGeoJSON.js; tests/integration/allowedDevices.tests.js; tests/unit/responseLocationGeoJSON.tests.js)
+  - **GetVisitorHistory**: Validates optional target DeviceKey when configured, then filters out entries where visitor device equals target device. (Evidence: lib/routes/location/v1/location.js; tests/integration/visitorHistoryFiltering.tests.js; tests/integration/deviceKey.tests.js)
+  - **DeleteLocation**: Validates optional target DeviceKey when configured, then deletes `last`, `hist`, and `visit` keys in parallel and returns deleted key count. (Evidence: lib/routes/location/v1/location.js; docs/DELETE_LOCATION_API.md; tests/integration/deleteLocation.tests.js)
   - **setDeviceSlogan**: Validates DeviceKey (configured + matching), validates slogan input, and stores slogan under `miad:{device}:slogan`. (Evidence: lib/routes/location/v1/location.js; lib/models/RequestSetDeviceSlogan.js; tests/integration/deviceSlogan.tests.js)
   - **getDeviceSlogan**: Validates requester `RequestDeviceID` + `RequestDeviceKey`, reads slogan, bypasses allowed-devices checks, and records visitor history for successful reads on existing slogans. (Evidence: lib/routes/location/v1/location.js; lib/models/RequestGetDeviceSlogan.js; tests/integration/deviceSlogan.tests.js)
 - **State & lifecycle**: Operates on Redis keys per device ID; location history and visitor history lists are trimmed to configured maxima. (Evidence: lib/routes/location/v1/location.js; config/default.js)
@@ -110,8 +110,8 @@
 - **Validation rules**: Missing required properties throw `BadRequestError`; `false` values are accepted for backward compatibility. (Evidence: lib/models/RequestLocation.js; tests/integration/newFields.tests.js)
 
 ### 3.2 RequestDevice
-- **Schema**: `{ Device }`. (Evidence: lib/models/RequestDevice.js)
-- **Invariants**: Device must be provided and non-empty string; `0` and `false` are accepted. (Evidence: lib/models/RequestDevice.js; tests/unit/requestDevice.tests.js)
+- **Schema**: `{ Device, DeviceKey? }`. (Evidence: lib/models/RequestDevice.js)
+- **Invariants**: Device must be provided and non-empty string; optional DeviceKey is nullable and only enforced when stored server-side key exists. (Evidence: lib/models/RequestDevice.js; lib/routes/location/v1/location.js; tests/unit/requestDevice.tests.js)
 
 ### 3.3 RequestConfig (UpdateLocation)
 - **Schema**: `{ EnableLocationHistory, LocationDataRetentionTime }`. (Evidence: lib/models/RequestConfig.js)
@@ -128,8 +128,8 @@
 - **Validation rules**: Normalizes key casing, ordering, and payload format before validation. (Evidence: lib/models/RequestLocationHistory.js; tests/integration/backwardCompatibility.tests.js)
 
 ### 3.6 RequestVisitorHistory
-- **Schema**: `{ Device, Amount }`. (Evidence: lib/models/RequestVisitorHistory.js)
-- **Invariants**: Both device and amount are required. (Evidence: lib/models/RequestVisitorHistory.js)
+- **Schema**: `{ Device, Amount, DeviceKey? }`. (Evidence: lib/models/RequestVisitorHistory.js)
+- **Invariants**: Device and amount are required; DeviceKey is conditionally required when the target device has a stored DeviceKey. (Evidence: lib/models/RequestVisitorHistory.js; lib/routes/location/v1/location.js)
 
 ### 3.7 Response models
 - **ResponseLocation**: `{ MiataruLocation: [location|null] }`. (Evidence: lib/models/ResponseLocation.js; tests/integration/unknownDevice.tests.js)
@@ -177,17 +177,19 @@
 
 ### 4.4 GetLocationGeoJSON (POST and GET)
 - **Primary path**:
-  1. Read `miad:{device}:last`. (Evidence: lib/routes/location/v1/location.js)
-  2. When longitude/latitude are present, return GeoJSON Feature with properties including optional fields. (Evidence: lib/models/ResponseLocationGeoJSON.js; tests/unit/responseLocationGeoJSON.tests.js)
-- **Alternate paths**: GET `/GetLocationGeoJSON/:id?` bypasses request body parsing and returns first location only. (Evidence: lib/routes/location/index.js; lib/routes/location/v1/location.js)
-- **Error paths**: Unknown device returns `{}`. (Evidence: tests/integration/unknownDevice.tests.js)
+  1. Validate that no requested target has a configured DeviceKey; if any has one, return 401 Unauthorized. (Evidence: lib/routes/location/v1/location.js; tests/integration/allowedDevices.tests.js)
+  2. Read `miad:{device}:last`. (Evidence: lib/routes/location/v1/location.js)
+  3. When longitude/latitude are present, return GeoJSON Feature with properties including optional fields. (Evidence: lib/models/ResponseLocationGeoJSON.js; tests/unit/responseLocationGeoJSON.tests.js)
+- **Alternate paths**: GET `/GetLocationGeoJSON/:id` bypasses request body parsing and returns first location only (route registration accepts `:id?`). (Evidence: lib/routes/location/index.js; lib/routes/location/v1/location.js)
+- **Error paths**: Returns 401 for DeviceKey-protected targets; unknown device returns `{}`. (Evidence: tests/integration/allowedDevices.tests.js; tests/integration/unknownDevice.tests.js)
 - **Retry/recovery**: Safe to retry; read-only path. (Evidence: lib/routes/location/v1/location.js)
 
 ### 4.5 GetVisitorHistory
 - **Primary path**:
-  1. Parse `Device`/`Amount`. (Evidence: lib/routes/location/v1/inputParser.js; lib/models/RequestVisitorHistory.js)
-  2. Fetch list entries and filter out visitors matching target device ID. (Evidence: lib/routes/location/v1/location.js; tests/integration/visitorHistoryFiltering.tests.js)
-  3. Return `MiataruVisitors` and server config counts. (Evidence: lib/models/ResponseVisitorHistory.js)
+  1. Parse `Device`/`Amount` (optional `DeviceKey`). (Evidence: lib/routes/location/v1/inputParser.js; lib/models/RequestVisitorHistory.js)
+  2. If target device has configured DeviceKey, require and validate request DeviceKey. (Evidence: lib/routes/location/v1/location.js; tests/integration/deviceKey.tests.js)
+  3. Fetch list entries and filter out visitors matching target device ID. (Evidence: lib/routes/location/v1/location.js; tests/integration/visitorHistoryFiltering.tests.js)
+  4. Return `MiataruVisitors` and server config counts. (Evidence: lib/models/ResponseVisitorHistory.js)
 - **Alternate paths**: Legacy `/GetVisitorHistory` behaves like `/v1/GetVisitorHistory`. (Evidence: lib/routes/location/index.js; tests/integration/unknownDevice.tests.js)
 - **Error paths**: Missing device or amount returns 400. (Evidence: lib/models/RequestVisitorHistory.js)
 - **Retry/recovery**: Read-only; safe to retry. (Evidence: lib/routes/location/v1/location.js)
@@ -202,9 +204,10 @@
 
 ### 4.7 DeleteLocation
 - **Primary path**:
-  1. Parse device ID. (Evidence: lib/routes/location/v1/inputParser.js; lib/models/RequestDevice.js)
-  2. Delete `last`, `hist`, and `visit` keys in parallel. (Evidence: lib/routes/location/v1/location.js)
-  3. Return `ACK` with count of deleted keys. (Evidence: lib/models/ResponseDeleteLocation.js; docs/DELETE_LOCATION_API.md)
+  1. Parse device ID (optional `DeviceKey`). (Evidence: lib/routes/location/v1/inputParser.js; lib/models/RequestDevice.js)
+  2. If target device has configured DeviceKey, require and validate request DeviceKey. (Evidence: lib/routes/location/v1/location.js; tests/integration/deleteLocation.tests.js)
+  3. Delete `last`, `hist`, and `visit` keys in parallel. (Evidence: lib/routes/location/v1/location.js)
+  4. Return `ACK` with count of deleted keys. (Evidence: lib/models/ResponseDeleteLocation.js; docs/DELETE_LOCATION_API.md)
 - **Alternate paths**: Legacy `/DeleteLocation` behaves like `/v1/DeleteLocation`. (Evidence: lib/routes/location/index.js; tests/integration/deleteLocation.tests.js)
 - **Error paths**: Missing device yields 400; non-existent device returns ACK with `MiataruDeletedCount: 0`. (Evidence: tests/integration/deleteLocation.tests.js)
 - **Retry/recovery**: Safe to retry; deletions are idempotent. (Evidence: lib/routes/location/v1/location.js)

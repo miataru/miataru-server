@@ -127,6 +127,10 @@ When a DeviceKey is set for a device, it must be included in each `MiataruLocati
 
 ```json
 {
+  "MiataruConfig": {
+    "EnableLocationHistory": "False",
+    "LocationDataRetentionTime": "30"
+  },
   "MiataruLocation": [
     {
       "Device": "your-device-id",
@@ -244,7 +248,7 @@ Use the `/v1/setAllowedDeviceList` endpoint to set or update the allowed devices
 - The client is expected to maintain the full list on the client-side
 - Always send the complete list to update (server replaces the entire list)
 - Maximum 256 devices in the list
-- Requires valid DeviceKey authentication
+- `DeviceKey` is always required in payload. If a DeviceKey is configured for `DeviceID`, it must match; if no DeviceKey is configured yet, the request is accepted for backward compatibility.
 
 ### Access Control Behavior
 
@@ -265,7 +269,7 @@ Use the `/v1/setAllowedDeviceList` endpoint to set or update the allowed devices
 
 ### API 1.0 Clients
 
-**REQUIRED UPDATE:** All clients must add `RequestMiataruDeviceID` to `GetLocation` and `GetLocationHistory` requests. This is the only breaking change.
+**REQUIRED UPDATE:** All clients must add `RequestMiataruDeviceID` to `GetLocation` and `GetLocationHistory` requests. This is one of two breaking changes in API 1.1 (the second is the documented `GetLocationGeoJSON` 401 behavior when DeviceKey is set).
 
 After adding `RequestMiataruDeviceID`, all other features remain backward compatible:
 
@@ -279,6 +283,8 @@ After adding `RequestMiataruDeviceID`, all other features remain backward compat
 1. **Required Update**: Add `RequestMiataruDeviceID` to all GetLocation and GetLocationHistory requests
 2. **Optional Migration**: Clients can opt-in to security features by setting DeviceKey
 3. **Gradual Rollout**: Set DeviceKey for devices that need protection
+
+For copy-paste request examples, see [PRACTICAL_API_1.1_EXAMPLES.md](PRACTICAL_API_1.1_EXAMPLES.md).
 
 ## Breaking Changes
 
@@ -349,6 +355,10 @@ curl -X POST http://localhost:3000/v1/setDeviceKey \
 curl -X POST http://localhost:3000/v1/UpdateLocation \
   -H "Content-Type: application/json" \
   -d '{
+    "MiataruConfig": {
+      "EnableLocationHistory": "False",
+      "LocationDataRetentionTime": "30"
+    },
     "MiataruLocation": [{
       "Device": "device-123",
       "DeviceKey": "my-secure-key-256-chars...",
