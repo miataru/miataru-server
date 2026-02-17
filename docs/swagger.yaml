@@ -343,7 +343,7 @@ paths:
  /getDeviceSlogan:
   post:
    tags:
-   - getLocation
+   - security
    description: |
      Retrieves a device slogan by DeviceID.
      
