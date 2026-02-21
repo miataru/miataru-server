@@ -40,12 +40,16 @@ let historyModeActive = false;
 // Globale Variable für die aktuelle DeviceHistory-Instanz
 let currentDeviceHistory = null;
 
+// Unterdrückt wiederholte 403-Fehlerhinweise im Auto-Refresh
+let hasShownAuthError = false;
+
 // Konstanten für Settings
 const SETTINGS_KEY = 'miataruSettings';
 const DEFAULT_SETTINGS = {
     updateInterval: 5,    // in Sekunden
     historyAmount: 100,   // Anzahl der History-Einträge
-    requestMiataruDeviceID: 'webclient'  // Default RequestMiataruDeviceID
+    requestMiataruDeviceID: 'webclient',  // Default RequestMiataruDeviceID
+    requestMiataruDeviceKey: ''            // Optional RequestMiataruDeviceKey
 };
 
 // Funktion zum Laden der gespeicherten Devices
@@ -361,17 +365,60 @@ async function toggleHistory(deviceId, button) {
     }
 }
 
+function resetAuthErrorState() {
+    hasShownAuthError = false;
+}
+
+async function extractServerErrorMessage(response) {
+    try {
+        const errorData = await response.json();
+        if (errorData && typeof errorData === 'object') {
+            return errorData.ErrorMessage || errorData.error || errorData.message || null;
+        }
+    } catch (e) {
+        // Ignore JSON parse errors and fallback to generic text below
+    }
+    return null;
+}
+
+async function handleForbiddenResponse(response, endpointName) {
+    const serverMessage = await extractServerErrorMessage(response);
+    const defaultMessage = `${endpointName} wurde mit HTTP 403 Forbidden abgelehnt. ` +
+        'Bitte RequestMiataruDeviceID/RequestMiataruDeviceKey und Allowed-Device-Berechtigungen prüfen.';
+
+    const fullMessage = serverMessage ? `${defaultMessage}
+
+Server: ${serverMessage}` : defaultMessage;
+
+    console.warn(`Miataru API ${endpointName} returned 403 Forbidden`, {
+        status: response.status,
+        statusText: response.statusText,
+        serverMessage
+    });
+
+    if (!hasShownAuthError) {
+        hasShownAuthError = true;
+        alert(fullMessage);
+    }
+}
+
 // Funktion zum Abrufen der Position anpassen
 async function fetchDeviceLocation(deviceId) {
     try {
         const settings = loadSettings();
+        const miataruConfig = {
+            RequestMiataruDeviceID: settings.requestMiataruDeviceID
+        };
+
+        if (settings.requestMiataruDeviceKey) {
+            miataruConfig.RequestMiataruDeviceKey = settings.requestMiataruDeviceKey;
+        }
+
         const requestBody = {
-            "MiataruConfig": {
-                "RequestMiataruDeviceID": settings.requestMiataruDeviceID
-            },
-            "MiataruGetLocation": [
+            MiataruConfig: miataruConfig,
+            MiataruGetLocation: [
                 {
-                    "Device": deviceId
+                    Device: deviceId
                 }
             ]
         };
@@ -387,6 +434,16 @@ async function fetchDeviceLocation(deviceId) {
             body: JSON.stringify(requestBody)
         });
         
+        if (response.status === 403) {
+            await handleForbiddenResponse(response, 'GetLocation');
+            return;
+        }
+
+        if (!response.ok) {
+            throw new Error(`GetLocation failed with status ${response.status}`);
+        }
+
+        resetAuthErrorState();
         const data = await response.json();
         
         if (data && data.MiataruLocation && data.MiataruLocation[0]) {
@@ -555,6 +612,7 @@ function startTracking(deviceId, isDefault = false) {
     
     // Bei neuem Device den Zoom-Status zurücksetzen
     userHasZoomed = false;
+    resetAuthErrorState();
     
     // Sofort erste Abfrage durchführen
     fetchDeviceLocation(deviceId);
@@ -765,10 +823,16 @@ class DeviceHistory {
 
     async loadHistory() {
         const settings = loadSettings();
+        const miataruConfig = {
+            RequestMiataruDeviceID: settings.requestMiataruDeviceID
+        };
+
+        if (settings.requestMiataruDeviceKey) {
+            miataruConfig.RequestMiataruDeviceKey = settings.requestMiataruDeviceKey;
+        }
+
         const payload = {
-            MiataruConfig: {
-                RequestMiataruDeviceID: settings.requestMiataruDeviceID
-            },
+            MiataruConfig: miataruConfig,
             MiataruGetLocationHistory: {
                 Device: this.deviceId,
                 Amount: settings.historyAmount.toString()
@@ -784,6 +848,16 @@ class DeviceHistory {
                 body: JSON.stringify(payload)
             });
             
+            if (response.status === 403) {
+                await handleForbiddenResponse(response, 'GetLocationHistory');
+                return;
+            }
+
+            if (!response.ok) {
+                throw new Error(`GetLocationHistory failed with status ${response.status}`);
+            }
+
+            resetAuthErrorState();
             const data = await response.json();
             this.displayHistory(data.MiataruLocation);
         } catch (error) {
@@ -898,6 +972,7 @@ function showSettingsModal() {
     document.getElementById('updateInterval').value = settings.updateInterval;
     document.getElementById('historyAmount').value = settings.historyAmount;
     document.getElementById('requestMiataruDeviceID').value = settings.requestMiataruDeviceID;
+    document.getElementById('requestMiataruDeviceKey').value = settings.requestMiataruDeviceKey || '';
     
     modal.style.display = 'flex';
 }
@@ -916,6 +991,7 @@ document.getElementById('saveSettingsButton').addEventListener('click', () => {
     const updateInterval = parseInt(document.getElementById('updateInterval').value);
     const historyAmount = parseInt(document.getElementById('historyAmount').value);
     const requestMiataruDeviceID = document.getElementById('requestMiataruDeviceID').value.trim();
+    const requestMiataruDeviceKey = document.getElementById('requestMiataruDeviceKey').value.trim();
     
     // Validierung
     if (updateInterval < 1 || updateInterval > 60) {
@@ -934,14 +1010,20 @@ document.getElementById('saveSettingsButton').addEventListener('click', () => {
         alert('RequestMiataruDeviceID darf maximal 256 Zeichen lang sein.');
         return;
     }
+    if (requestMiataruDeviceKey.length > 256) {
+        alert('RequestMiataruDeviceKey darf maximal 256 Zeichen lang sein.');
+        return;
+    }
     
     // Settings speichern - merge with defaults to ensure all properties exist
     const finalSettings = Object.assign({}, DEFAULT_SETTINGS, {
         updateInterval,
         historyAmount,
-        requestMiataruDeviceID: requestMiataruDeviceID || DEFAULT_SETTINGS.requestMiataruDeviceID
+        requestMiataruDeviceID: requestMiataruDeviceID || DEFAULT_SETTINGS.requestMiataruDeviceID,
+        requestMiataruDeviceKey
     });
     saveSettings(finalSettings);
+    resetAuthErrorState();
     
     // Aktuelles Tracking neu starten mit neuem Interval
     if (currentDeviceId) {
