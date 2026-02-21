@@ -42,6 +42,9 @@ let currentDeviceHistory = null;
 
 // Unterdrückt wiederholte 403-Fehlerhinweise im Auto-Refresh
 let hasShownAuthError = false;
+// Unterdrückt wiederholte Hinweise, wenn ein Device nicht auflösbar ist (nicht vorhanden/kein Zugriff)
+let hasShownLocationUnavailableError = false;
+let lastUnavailableDeviceId = null;
 
 // Konstanten für Settings
 const SETTINGS_KEY = 'miataruSettings';
@@ -369,6 +372,44 @@ function resetAuthErrorState() {
     hasShownAuthError = false;
 }
 
+function resetLocationUnavailableState() {
+    hasShownLocationUnavailableError = false;
+    lastUnavailableDeviceId = null;
+}
+
+function clearCurrentLocationDisplay() {
+    if (currentMarker) {
+        map.removeLayer(currentMarker);
+        currentMarker = null;
+    }
+
+    if (accuracyCircle) {
+        map.removeLayer(accuracyCircle);
+        accuracyCircle = null;
+    }
+
+    currentLocation = null;
+    currentDeviceId = null;
+    currentDeviceName = null;
+}
+
+function handleUnavailableLocationResponse(deviceId) {
+    clearCurrentLocationDisplay();
+
+    const message = `Für Device "${deviceId}" sind aktuell keine Standortdaten verfügbar.\n\n` +
+        'Ursache: Device existiert nicht oder Zugriff ist nicht erlaubt.';
+
+    console.warn('Miataru API GetLocation returned no location payload for device', {
+        deviceId
+    });
+
+    if (!hasShownLocationUnavailableError || lastUnavailableDeviceId !== deviceId) {
+        hasShownLocationUnavailableError = true;
+        lastUnavailableDeviceId = deviceId;
+        alert(message);
+    }
+}
+
 async function extractServerErrorMessage(response) {
     try {
         const errorData = await response.json();
@@ -445,83 +486,91 @@ async function fetchDeviceLocation(deviceId) {
 
         resetAuthErrorState();
         const data = await response.json();
-        
-        if (data && data.MiataruLocation && data.MiataruLocation[0]) {
-            const location = data.MiataruLocation[0];
-            const storedDevices = loadStoredDevices();
-            const storedName = storedDevices[deviceId];
-            
-            // Prüfen ob sich nur die Zeit geändert hat
-            if (!hasLocationChanged(currentLocation, location) && 
-                currentDeviceId === deviceId && 
-                currentDeviceName === storedName) {
-                // Nur die relative Zeit aktualisieren
-                currentLocation = location;  // Timestamp aktualisieren
-                updateRelativeTime();
-                return;
-            }
-            
-            // Aktuelle Informationen speichern
-            currentDeviceId = deviceId;
-            currentDeviceName = storedName;
-            currentLocation = location;
-            
-            const latitude = parseFloat(location.Latitude);
-            const longitude = parseFloat(location.Longitude);
-            const accuracy = parseFloat(location.HorizontalAccuracy);
-            
-            // Bestehenden Marker und Kreis entfernen
-            if (currentMarker) {
-                map.removeLayer(currentMarker);
-            }
-            if (accuracyCircle) {
-                map.removeLayer(accuracyCircle);
-            }
-            
-            // Genauigkeitskreis hinzufügen
-            accuracyCircle = L.circle([latitude, longitude], {
-                radius: accuracy,
-                color: '#007bff',
-                fillColor: '#007bff',
-                fillOpacity: 0.1,
-                weight: 1
-            }).addTo(map);
-            
-            // Marker erstellen und hinzufügen
-            currentMarker = L.marker([latitude, longitude], {
-                icon: pinIcon,
-                title: storedName || deviceId
-            });
-            
-            currentMarker.addTo(map);
-            
-            const popupContent = createPopupContent(deviceId, storedName, location);
-            currentMarker.bindPopup(popupContent);
-            
-            // Popup Event-Handler entfernen, da wir jetzt onclick im Button verwenden
-            
-            if (autoCenterEnabled) {
-                currentMarker.openPopup();
-                
-                // Nur Zoom anpassen wenn der Nutzer noch nicht manuell gezoomt hat
-                const targetPos = [latitude, longitude];
-                if (!userHasZoomed) {
-                    const zoomLevel = Math.min(
-                        18, // maximales Zoom-Level
-                        Math.max(
-                            13, // minimales Zoom-Level
-                            19 - Math.log2(accuracy / 10) // Zoom basierend auf Genauigkeit
-                        )
-                    );
-                    map.flyTo(targetPos, zoomLevel, {
-                        duration: 1.5
-                    });
-                } else {
-                    // Nur Position ändern, Zoom-Level beibehalten
-                    map.panTo(targetPos, {
-                        duration: 1.5
-                    });
-                }
+
+        if (!data || !Array.isArray(data.MiataruLocation)) {
+            throw new Error('GetLocation returned invalid response payload');
+        }
+
+        const location = data.MiataruLocation[0];
+        if (!location) {
+            handleUnavailableLocationResponse(deviceId);
+            return;
+        }
+
+        resetLocationUnavailableState();
+        const storedDevices = loadStoredDevices();
+        const storedName = storedDevices[deviceId];
+
+        // Prüfen ob sich nur die Zeit geändert hat
+        if (!hasLocationChanged(currentLocation, location) &&
+            currentDeviceId === deviceId &&
+            currentDeviceName === storedName) {
+            // Nur die relative Zeit aktualisieren
+            currentLocation = location;  // Timestamp aktualisieren
+            updateRelativeTime();
+            return;
+        }
+
+        // Aktuelle Informationen speichern
+        currentDeviceId = deviceId;
+        currentDeviceName = storedName;
+        currentLocation = location;
+
+        const latitude = parseFloat(location.Latitude);
+        const longitude = parseFloat(location.Longitude);
+        const accuracy = parseFloat(location.HorizontalAccuracy);
+
+        // Bestehenden Marker und Kreis entfernen
+        if (currentMarker) {
+            map.removeLayer(currentMarker);
+        }
+        if (accuracyCircle) {
+            map.removeLayer(accuracyCircle);
+        }
+
+        // Genauigkeitskreis hinzufügen
+        accuracyCircle = L.circle([latitude, longitude], {
+            radius: accuracy,
+            color: '#007bff',
+            fillColor: '#007bff',
+            fillOpacity: 0.1,
+            weight: 1
+        }).addTo(map);
+
+        // Marker erstellen und hinzufügen
+        currentMarker = L.marker([latitude, longitude], {
+            icon: pinIcon,
+            title: storedName || deviceId
+        });
+
+        currentMarker.addTo(map);
+
+        const popupContent = createPopupContent(deviceId, storedName, location);
+        currentMarker.bindPopup(popupContent);
+
+        // Popup Event-Handler entfernen, da wir jetzt onclick im Button verwenden
+
+        if (autoCenterEnabled) {
+            currentMarker.openPopup();
+
+            // Nur Zoom anpassen wenn der Nutzer noch nicht manuell gezoomt hat
+            const targetPos = [latitude, longitude];
+            if (!userHasZoomed) {
+                const zoomLevel = Math.min(
+                    18, // maximales Zoom-Level
+                    Math.max(
+                        13, // minimales Zoom-Level
+                        19 - Math.log2(accuracy / 10) // Zoom basierend auf Genauigkeit
+                    )
+                );
+                map.flyTo(targetPos, zoomLevel, {
+                    duration: 1.5
+                });
+            } else {
+                // Nur Position ändern, Zoom-Level beibehalten
+                map.panTo(targetPos, {
+                    duration: 1.5
+                });
             }
         }
     } catch (error) {
@@ -613,6 +662,7 @@ function startTracking(deviceId, isDefault = false) {
     // Bei neuem Device den Zoom-Status zurücksetzen
     userHasZoomed = false;
     resetAuthErrorState();
+    resetLocationUnavailableState();
     
     // Sofort erste Abfrage durchführen
     fetchDeviceLocation(deviceId);

@@ -23,3 +23,24 @@ With it's simple API it allows you to use Miataru to your own needs and practice
 Just copy the webclient to any HTTP server that you like and edit the Miataru Service URL in the index.js file (search for service.miataru.com). 
 
 Please be aware that depending on the URL scheme you're using for your own service you might need to add Custom Headers (e.g. Access-Control-Allow-Origin "*", Access-Control-Allow-Headers "Origin, X-Requested-With, Content-Type, Accept").
+
+## GetLocation Response Handling
+
+The Miataru server can return a `null` entry in `MiataruLocation`, for example:
+
+```json
+{
+  "MiataruLocation": [null]
+}
+```
+
+This response is used when a device has no current location data available, including cases where:
+
+- the requested device does not exist
+- access is denied by allowed-device rules
+
+Webclient behavior:
+
+- shows a clear user-facing message that no location is available and the device might not exist or access is not allowed
+- clears stale map state (marker and accuracy circle), so old coordinates are not shown as if they were current
+- suppresses repeated alerts during auto-refresh for the same device
