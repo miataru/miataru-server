@@ -847,8 +847,8 @@ definitions:
      DeviceID:
       type: string
      Slogan:
-     type: string
-     description: slogan value; can be null when no slogan is set for the target device
+      type: string
+      description: slogan value; can be null when no slogan is set for the target device
  MiataruGetDeviceSecurityStatusRequest:
   required:
   - MiataruGetDeviceSecurityStatus
