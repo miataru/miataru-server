@@ -1,12 +1,12 @@
 # miataru-server
 
-**Version 2.1.0** - Security and privacy enhancements with API 1.1 support
+**Version 2.2.0** - Security and privacy enhancements with API 1.1 support
 
 This is the source code of a Miataru server side implementation. You can get more information [here](http://www.miataru.com).
 
-## What's New in Version 2.1 / API 1.1
+## What's New in Version 2.2 / API 1.1
 
-Version 2.1 introduces significant security and privacy enhancements while maintaining broad backward compatibility with API 1.0 (with required RequestMiataruDeviceID for GetLocation/GetLocationHistory and the documented GetLocationGeoJSON change):
+Version 2.2 introduces significant security and privacy enhancements while maintaining broad backward compatibility with API 1.0 (with required RequestMiataruDeviceID for GetLocation/GetLocationHistory and the documented GetLocationGeoJSON change):
 
 - **RequestMiataruDeviceID (Mandatory)** - Required identifier for all GetLocation and GetLocationHistory requests
 - **RequestMiataruDeviceKey (Optional)** - Optional key in `MiataruConfig` for strict requester validation in GetLocation
@@ -49,6 +49,7 @@ The Miataru server provides both versioned (v1) and legacy API endpoints for max
 - **POST** `/v1/setAllowedDeviceList` - Manage allowed devices list (API 1.1)
 - **POST** `/v1/setDeviceSlogan` - Set optional device slogan (API 1.1, max 40 chars)
 - **POST** `/v1/getDeviceSlogan` - Get optional device slogan (API 1.1)
+- **POST** `/v1/getDeviceSecurityStatus` - Get DeviceKey/ACL status for a target device (API 1.1)
 
 ### Legacy API (Backward Compatibility)
 - **POST** `/UpdateLocation` - Store location data
@@ -62,6 +63,7 @@ The Miataru server provides both versioned (v1) and legacy API endpoints for max
 - **POST** `/setAllowedDeviceList` - Manage allowed devices list (API 1.1)
 - **POST** `/setDeviceSlogan` - Set optional device slogan (API 1.1, max 40 chars)
 - **POST** `/getDeviceSlogan` - Get optional device slogan (API 1.1)
+- **POST** `/getDeviceSecurityStatus` - Get DeviceKey/ACL status for a target device (API 1.1)
 
 ## Security Features (API 1.1)
 
@@ -75,6 +77,7 @@ DeviceKey provides authentication for write operations and visitor history acces
 - Access GetLocation as a requesting device (via `MiataruConfig.RequestMiataruDeviceKey` when strict checks are enabled)
 
 `getDeviceSlogan` additionally requires a valid authenticated requesting device pair (`RequestDeviceID` + `RequestDeviceKey`). Allowed-devices restrictions are intentionally not applied to slogan reads. Successful reads are recorded in visitor history of the target device (analogous to `GetLocation`).
+`getDeviceSecurityStatus` uses the same requester authentication pair and returns `HasDeviceKey` plus `IsAllowedDeviceListEnabled` for the target device.
 
 See [API 1.1 Security Documentation](docs/API_1.1_SECURITY.md) for details.
 
@@ -145,6 +148,11 @@ Install dependencies:
 Run the tests:  
 `npm run test:all` (or `make run-all-tests`)
 
+Local runtime note:
+- Recommended Node.js version for local development/tests: **18.x or 20.x**
+- Docker default runtime in this repository: **node:18-alpine**
+- With very new Node releases (for example Node 25.x), Mocha/Yargs may fail to start due to ESM/CJS compatibility in the test toolchain.
+
 Configuration:
 Adjust the configuration in `./config/` or add your own
 
@@ -199,6 +207,12 @@ curl -H 'Content-Type: application/json' -X POST 'http://localhost:8090/v1/setDe
 ```bash
 curl -H 'Content-Type: application/json' -X POST 'http://localhost:8090/v1/getDeviceSlogan' \
   -d '{"MiataruGetDeviceSlogan":{"DeviceID":"7b8e6e0ee5296db345162dc2ef652c1350761823","RequestDeviceID":"requesting-device-id","RequestDeviceKey":"requesting-device-key"}}'
+```
+
+**Get device security status (API 1.1):**
+```bash
+curl -H 'Content-Type: application/json' -X POST 'http://localhost:8090/v1/getDeviceSecurityStatus' \
+  -d '{"MiataruGetDeviceSecurityStatus":{"DeviceID":"7b8e6e0ee5296db345162dc2ef652c1350761823","RequestDeviceID":"requesting-device-id","RequestDeviceKey":"requesting-device-key"}}'
 ```
 
 ## DeleteLocation API
@@ -638,7 +652,7 @@ tests/
 
 ## Changelog
 
-### Version 2.1.0 (Latest) - API 1.1
+### Version 2.2.0 (Latest) - API 1.1
 
 #### Security & Privacy Features
 - **DeviceKey Authentication**: Protect write operations and visitor history access
@@ -651,6 +665,7 @@ tests/
 - **POST** `/v1/setAllowedDeviceList` - Manage allowed devices list
 - **POST** `/v1/setDeviceSlogan` - Set optional device slogan (max 40 chars)
 - **POST** `/v1/getDeviceSlogan` - Retrieve optional device slogan
+- **POST** `/v1/getDeviceSecurityStatus` - Retrieve DeviceKey/ACL status for a target device
 
 #### Enhanced Endpoints
 - **UpdateLocation**: Optional DeviceKey parameter for authentication

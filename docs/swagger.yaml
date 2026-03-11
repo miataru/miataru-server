@@ -10,6 +10,7 @@ info:
    - RequestMiataruDeviceKey (Optional) - Optional requester key for strict GetLocation/GetLocationHistory requester validation
    - DeviceKey authentication for write operations and visitor history access
    - Device slogan API with mandatory DeviceKey authentication
+   - Device security status API for authenticated DeviceKey/ACL status checks
    - Allowed devices list for granular access control to location data
    - strictDeviceKeyCheck (Default: true) - Enforces requester DeviceKey validation in GetLocation/GetLocationHistory when requester key is configured
    - Broad backward compatibility with API 1.0 clients (GetLocation/GetLocationHistory require RequestMiataruDeviceID)
@@ -371,6 +372,43 @@ paths:
      description: Device slogan response
      schema:
       $ref: '#/definitions/MiataruGetDeviceSloganResponse'
+    400:
+     description: Bad Request - Invalid input
+     schema:
+      $ref: '#/definitions/Error'
+    403:
+     description: Forbidden - RequestDevice authentication failed
+     schema:
+      $ref: '#/definitions/Error'
+ /getDeviceSecurityStatus:
+  post:
+   tags:
+   - security
+   description: |
+     Returns security status metadata for a target device by DeviceID:
+     - HasDeviceKey
+     - IsAllowedDeviceListEnabled
+     
+     Request authentication is mandatory: RequestDeviceID and RequestDeviceKey must represent a valid device/key pair with DeviceKey configured.
+     
+     Unknown target devices return HTTP 200 with both status flags set to false.
+     Allowed-devices list is not applied as an access gate for this endpoint; it is only reported as status.
+     Visitor tracking is recorded only when the target device has a current location entry.
+   operationId: getDeviceSecurityStatus
+   produces:
+   - application/json
+   parameters:
+   - name: body
+     in: body
+     description: the JSON formatted request to get target device security status
+     required: true
+     schema:
+      $ref: '#/definitions/MiataruGetDeviceSecurityStatusRequest'
+   responses:
+    200:
+     description: Device security status response
+     schema:
+      $ref: '#/definitions/MiataruGetDeviceSecurityStatusResponse'
     400:
      description: Bad Request - Invalid input
      schema:
@@ -809,8 +847,49 @@ definitions:
      DeviceID:
       type: string
      Slogan:
+     type: string
+     description: slogan value; can be null when no slogan is set for the target device
+ MiataruGetDeviceSecurityStatusRequest:
+  required:
+  - MiataruGetDeviceSecurityStatus
+  properties:
+   MiataruGetDeviceSecurityStatus:
+    type: object
+    required:
+    - DeviceID
+    - RequestDeviceID
+    - RequestDeviceKey
+    properties:
+     DeviceID:
       type: string
-      description: slogan value; can be null when no slogan is set for the target device
+      description: target device ID whose security status is requested
+      default: "7b8e6e0ee5296db345162dc2ef652c1350761823"
+     RequestDeviceID:
+      type: string
+      description: requesting device ID used for authentication (aliases RequestMiataruDeviceID and requestingDeviceID are also accepted)
+     RequestDeviceKey:
+      type: string
+      description: requesting device key used for authentication (aliases RequestMiataruDeviceKey and requestingDeviceKey are also accepted)
+      maxLength: 256
+ MiataruGetDeviceSecurityStatusResponse:
+  required:
+  - MiataruDeviceSecurityStatus
+  properties:
+   MiataruDeviceSecurityStatus:
+    type: object
+    required:
+    - DeviceID
+    - HasDeviceKey
+    - IsAllowedDeviceListEnabled
+    properties:
+     DeviceID:
+      type: string
+     HasDeviceKey:
+      type: boolean
+      description: true when the target device has a configured DeviceKey
+     IsAllowedDeviceListEnabled:
+      type: boolean
+      description: true when the target device has allowed devices list enabled
  MiataruDeleteLocationRequest:
   required:
   - MiataruDeleteLocation

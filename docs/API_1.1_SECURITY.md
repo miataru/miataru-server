@@ -10,6 +10,7 @@ API version 1.1 introduces security and privacy enhancements to the Miataru serv
 4. **Allowed Devices List** - Granular access control for location data sharing
 5. **strictDeviceKeyCheck (Default: true)** - Enforces strict requester authentication in GetLocation
 6. **Device Slogan Endpoints** - `setDeviceSlogan` and `getDeviceSlogan` with mandatory DeviceKey-based authentication
+7. **Device Security Status Endpoint** - `getDeviceSecurityStatus` for authenticated status checks (`HasDeviceKey`, `IsAllowedDeviceListEnabled`)
 
 ## RequestMiataruDeviceID (Mandatory in API 1.1)
 
@@ -84,6 +85,7 @@ The DeviceKey is a 256-character unicode string that acts as a password for a de
 - **GetVisitorHistory** - Accessing visitor history information
 - **setDeviceSlogan** - Setting a device slogan
 - **getDeviceSlogan** - Reading a device slogan (authenticated requester pair required)
+- **getDeviceSecurityStatus** - Reading target DeviceKey/ACL status (authenticated requester pair required)
 
 ## strictDeviceKeyCheck for GetLocation Reads
 
@@ -204,6 +206,37 @@ When a DeviceKey is set for a device, it must be included in the request:
 ```
 
 Allowed devices list is not evaluated for this endpoint. Successful reads on existing slogans are recorded in the target device's visitor history (analogous to GetLocation).
+
+### Using DeviceKey in getDeviceSecurityStatus
+
+`getDeviceSecurityStatus` requires requester authentication with `RequestDeviceID` + `RequestDeviceKey` (both required, requester key must be configured and valid):
+
+```json
+{
+  "MiataruGetDeviceSecurityStatus": {
+    "DeviceID": "target-device-id",
+    "RequestDeviceID": "requesting-device-id",
+    "RequestDeviceKey": "requesting-device-key"
+  }
+}
+```
+
+Response format:
+
+```json
+{
+  "MiataruDeviceSecurityStatus": {
+    "DeviceID": "target-device-id",
+    "HasDeviceKey": true,
+    "IsAllowedDeviceListEnabled": false
+  }
+}
+```
+
+Behavior notes:
+- Unknown target devices return HTTP 200 with `HasDeviceKey: false` and `IsAllowedDeviceListEnabled: false`
+- Allowed devices list is not used as an access gate for this endpoint; it is only reported as status
+- Visitor history is recorded only when the target device has a current location entry
 
 ### Error Responses
 
@@ -330,7 +363,7 @@ This is a security measure to prevent unauthorized access to location data via t
 - **403 Forbidden** - DeviceKey mismatch or access denied
   - `RequestMiataruDeviceKey` does not match requester DeviceKey in strict GetLocation mode
   - `setDeviceSlogan` called without configured DeviceKey on target device
-  - `setDeviceSlogan` or `getDeviceSlogan` called with invalid DeviceKey
+  - `setDeviceSlogan`, `getDeviceSlogan`, or `getDeviceSecurityStatus` called with invalid DeviceKey
 - **500 Internal Server Error** - Server-side error
 
 ## Examples

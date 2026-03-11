@@ -1,13 +1,13 @@
-# What's New in Version 2.1
+# What's New in Version 2.2
 
-**miataru-server Version 2.1.0** - Security and Privacy Enhancements  
+**miataru-server Version 2.2.0** - Security and Privacy Enhancements  
 **miataru API Version 1.1.0** - Device Authentication and Access Control
 
-Version 2.1 introduces comprehensive security and privacy enhancements to the Miataru server, including DeviceKey authentication and fine-grained access control through allowed devices lists. Most features remain backward compatible with v1.0 clients, with new requirements for GetLocation/GetLocationHistory and the documented GetLocationGeoJSON behavior change.
+Version 2.2 introduces comprehensive security and privacy enhancements to the Miataru server, including DeviceKey authentication and fine-grained access control through allowed devices lists. Most features remain backward compatible with v1.0 clients, with new requirements for GetLocation/GetLocationHistory and the documented GetLocationGeoJSON behavior change.
 
 ## Overview
 
-Version 2.1 focuses on giving device owners complete control over who can access their location data. The implementation adds two major security features:
+Version 2.2 focuses on giving device owners complete control over who can access their location data. The implementation adds two major security features:
 
 1. **DeviceKey Authentication** - Secure device-level authentication using cryptographic keys
 2. **Allowed Devices Access Control** - Fine-grained permissions for location sharing
@@ -417,7 +417,7 @@ Clients using GeoJSON endpoints with DeviceKey-enabled devices should:
 
 ### Version Information
 
-- **Server Version**: 2.1.0
+- **Server Version**: 2.2.0
 - **API Version**: 1.1.0
 - **Previous API Version**: 1.0.0
 
@@ -454,7 +454,7 @@ There are **two breaking changes** in API v1.1:
 
 ## Error Codes
 
-Version 2.1 introduces two new HTTP error codes:
+Version 2.2 introduces two new HTTP error codes:
 
 ### 401 Unauthorized
 
@@ -616,7 +616,7 @@ POST /v1/GetLocation
 
 ### Compatibility Guarantees
 
-Version 2.1 maintains **broad backward compatibility** with v1.0, with `RequestMiataruDeviceID` required for GetLocation/GetLocationHistory:
+Version 2.2 maintains **broad backward compatibility** with v1.0, with `RequestMiataruDeviceID` required for GetLocation/GetLocationHistory:
 
 1. **Most v1.0 Endpoints Work**: Existing endpoints continue to function with the noted GetLocation/GetLocationHistory requirement
 2. **Optional Parameters**: New parameters (DeviceKey) are optional
@@ -701,7 +701,7 @@ New security features add minimal Redis operations:
 
 ## Testing
 
-Version 2.1 includes comprehensive test coverage:
+Version 2.2 includes comprehensive test coverage:
 
 ### Test Coverage
 
@@ -759,7 +759,7 @@ npm run test:integration
 - [ ] Performance tested
 - [ ] Security reviewed
 - [ ] Documentation reviewed
-- [ ] Version bumped to 2.1.0
+- [ ] Version bumped to 2.2.0
 - [ ] API version documented as 1.1
 
 ### Upgrade Path
@@ -773,13 +773,13 @@ npm run test:integration
 ### Rollback Plan
 
 If issues occur:
-1. Version 2.1 is broadly backward compatible once clients send `RequestMiataruDeviceID` for GetLocation/GetLocationHistory
+1. Version 2.2 is broadly backward compatible once clients send `RequestMiataruDeviceID` for GetLocation/GetLocationHistory
 2. Security features are opt-in - disabling them restores v1.0 behavior
 3. Can rollback to v1.x if needed (no data migration required)
 
 ## Summary
 
-Version 2.1 brings enterprise-grade security and privacy features to Miataru while maintaining the simplicity and ease of use that makes Miataru great. The implementation is:
+Version 2.2 brings enterprise-grade security and privacy features to Miataru while maintaining the simplicity and ease of use that makes Miataru great. The implementation is:
 
 - **Secure**: DeviceKey authentication and fine-grained access control
 - **Private**: Privacy-first design with no information leakage
@@ -788,7 +788,7 @@ Version 2.1 brings enterprise-grade security and privacy features to Miataru whi
 - **Well-Tested**: Comprehensive test coverage for all features
 - **Well-Documented**: Complete documentation and migration guides
 
-Whether you're running a simple location sharing service or need enterprise-level security, Version 2.1 has you covered.
+Whether you're running a simple location sharing service or need enterprise-level security, Version 2.2 has you covered.
 
 ## Questions?
 
