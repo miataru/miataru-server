@@ -669,6 +669,11 @@ tests/
 
 ## Changelog
 
+Changelog policy:
+- Keep [`CHANGELOG.md`](CHANGELOG.md) updated for every release-relevant change.
+- Add ongoing work under `## [Unreleased]` and move it into a versioned section when `package.json` is bumped.
+- Keep changelog entries in English.
+
 ### Version 2.2.0 (Latest) - API 1.1
 
 #### Security & Privacy Features
