@@ -152,6 +152,7 @@ Local runtime note:
 - Recommended Node.js version for local development/tests: **18.x or 20.x**
 - Docker default runtime in this repository: **node:18-alpine**
 - With very new Node releases (for example Node 25.x), Mocha/Yargs may fail to start due to ESM/CJS compatibility in the test toolchain.
+- The integration test `recordDetailedVisitorHistory.tests.js` case `should respect maximumNumberOfLocationVistors limit as unique device limit` explicitly uses a 5000ms timeout because it performs multiple sequential HTTP requests plus async Redis writes and can exceed Mocha's default 2000ms in CI.
 
 Configuration:
 Adjust the configuration in `./config/` or add your own

@@ -650,6 +650,10 @@ describe('recordDetailedVisitorHistory Configuration', function() {
         });
 
         it('should respect maximumNumberOfLocationVistors limit as unique device limit', function(done) {
+            // This test performs multiple sequential HTTP calls with async Redis writes
+            // and can exceed Mocha's default 2000ms timeout on slower CI runners.
+            this.timeout(5000);
+
             // Set a small limit for testing
             configuration.maximumNumberOfLocationVistors = 3;
 
