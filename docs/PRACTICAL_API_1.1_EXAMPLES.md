@@ -154,6 +154,23 @@ curl -s -X POST http://localhost:8090/v1/GetLocation \
   }'
 ```
 
+Example response (optional `Slogan`):
+
+```json
+{
+  "MiataruLocation": [
+    {
+      "Device": "target-device-123",
+      "Timestamp": "1376735651302",
+      "Longitude": "10.837502",
+      "Latitude": "49.828925",
+      "HorizontalAccuracy": "50.00",
+      "Slogan": "hello miataru"
+    }
+  ]
+}
+```
+
 ### 4.2 Client-side conversion to GeoJSON
 
 ```javascript
@@ -172,6 +189,7 @@ function toGeoJSON(miataruLocation) {
       name: miataruLocation.Device,
       timestamp: miataruLocation.Timestamp,
       horizontalAccuracy: miataruLocation.HorizontalAccuracy,
+      slogan: miataruLocation.Slogan,
       speed: miataruLocation.Speed,
       batteryLevel: miataruLocation.BatteryLevel,
       altitude: miataruLocation.Altitude

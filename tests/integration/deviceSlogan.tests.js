@@ -8,6 +8,7 @@ var allowedDevicesUtils = require('../../lib/utils/allowedDevices');
 
 describe('DeviceSlogan Integration Tests', function() {
     var TEST_TARGET_DEVICE = 'test-device-slogan-target-' + Date.now();
+    var TEST_TARGET_DEVICE_2 = 'test-device-slogan-target-2-' + Date.now();
     var TEST_TARGET_KEY = 'target-device-key-123';
     var TEST_REQUEST_DEVICE = 'test-device-slogan-request-' + Date.now();
     var TEST_REQUEST_KEY = 'request-device-key-123';
@@ -15,19 +16,37 @@ describe('DeviceSlogan Integration Tests', function() {
     var KEY_SUFFIX = 'key';
     var KEY_SLOGAN = 'slogan';
     var KEY_VISIT = 'visit';
+    var KEY_LAST = 'last';
+    var KEY_HISTORY = 'hist';
     var ALLOWED_SUFFIX = 'allowed';
     var ENABLED_FLAG_SUFFIX = 'allowed:enabled';
 
     function cleanup(done) {
-        db.del(kb.build(TEST_TARGET_DEVICE, KEY_SUFFIX), function() {
-            db.del(kb.build(TEST_REQUEST_DEVICE, KEY_SUFFIX), function() {
-                db.del(kb.build(TEST_TARGET_DEVICE, KEY_SLOGAN), function() {
-                    db.del(kb.build(TEST_TARGET_DEVICE, KEY_VISIT), function() {
-                        db.del(kb.build(TEST_TARGET_DEVICE, ALLOWED_SUFFIX), function() {
-                            db.del(kb.build(TEST_TARGET_DEVICE, ENABLED_FLAG_SUFFIX), done);
-                        });
-                    });
-                });
+        var keys = [
+            kb.build(TEST_TARGET_DEVICE, KEY_SUFFIX),
+            kb.build(TEST_TARGET_DEVICE_2, KEY_SUFFIX),
+            kb.build(TEST_REQUEST_DEVICE, KEY_SUFFIX),
+            kb.build(TEST_TARGET_DEVICE, KEY_SLOGAN),
+            kb.build(TEST_TARGET_DEVICE_2, KEY_SLOGAN),
+            kb.build(TEST_TARGET_DEVICE, KEY_VISIT),
+            kb.build(TEST_TARGET_DEVICE_2, KEY_VISIT),
+            kb.build(TEST_TARGET_DEVICE, KEY_LAST),
+            kb.build(TEST_TARGET_DEVICE_2, KEY_LAST),
+            kb.build(TEST_TARGET_DEVICE, KEY_HISTORY),
+            kb.build(TEST_TARGET_DEVICE_2, KEY_HISTORY),
+            kb.build(TEST_TARGET_DEVICE, ALLOWED_SUFFIX),
+            kb.build(TEST_TARGET_DEVICE_2, ALLOWED_SUFFIX),
+            kb.build(TEST_TARGET_DEVICE, ENABLED_FLAG_SUFFIX),
+            kb.build(TEST_TARGET_DEVICE_2, ENABLED_FLAG_SUFFIX)
+        ];
+
+        var remaining = keys.length;
+        keys.forEach(function(key) {
+            db.del(key, function() {
+                remaining--;
+                if (remaining === 0) {
+                    done();
+                }
             });
         });
     }
@@ -276,6 +295,123 @@ describe('DeviceSlogan Integration Tests', function() {
                                     .end(done);
                             }, 50);
                         });
+                });
+            });
+        });
+    });
+
+    describe('getLocation response', function() {
+        function updateLocations(locations, done) {
+            var index = 0;
+
+            function updateNext(error) {
+                if (error) return done(error);
+                if (index >= locations.length) return done();
+
+                request(app)
+                    .post('/v1/UpdateLocation')
+                    .send({
+                        MiataruConfig: {
+                            EnableLocationHistory: 'False',
+                            LocationDataRetentionTime: '15'
+                        },
+                        MiataruLocation: [locations[index]]
+                    })
+                    .expect(200)
+                    .end(function(requestError) {
+                        index++;
+                        updateNext(requestError);
+                    });
+            }
+
+            updateNext();
+        }
+
+        it('should include the device slogan for a single-device request', function(done) {
+            updateLocations([{
+                Device: TEST_TARGET_DEVICE,
+                Timestamp: '1700000000001',
+                Longitude: '10.100000',
+                Latitude: '50.100000',
+                HorizontalAccuracy: '5.0'
+            }], function(error) {
+                if (error) return done(error);
+
+                db.set(kb.build(TEST_TARGET_DEVICE, KEY_SLOGAN), 'Single device slogan', function(error2) {
+                    if (error2) return done(error2);
+
+                    request(app)
+                        .post('/v1/GetLocation')
+                        .send({
+                            MiataruConfig: {
+                                RequestMiataruDeviceID: TEST_REQUEST_DEVICE
+                            },
+                            MiataruGetLocation: [
+                                { Device: TEST_TARGET_DEVICE }
+                            ]
+                        })
+                        .expect(200)
+                        .expect(function(res) {
+                            expect(res.body.MiataruLocation).to.be.an('array').with.length(1);
+                            expect(res.body.MiataruLocation[0]).to.have.property('Device', TEST_TARGET_DEVICE);
+                            expect(res.body.MiataruLocation[0]).to.have.property('Slogan', 'Single device slogan');
+                        })
+                        .end(done);
+                });
+            });
+        });
+
+        it('should include slogans per device in multi-device requests (or null when not set)', function(done) {
+            updateLocations([
+                {
+                    Device: TEST_TARGET_DEVICE,
+                    Timestamp: '1700000000002',
+                    Longitude: '10.200000',
+                    Latitude: '50.200000',
+                    HorizontalAccuracy: '5.0'
+                },
+                {
+                    Device: TEST_TARGET_DEVICE_2,
+                    Timestamp: '1700000000003',
+                    Longitude: '10.300000',
+                    Latitude: '50.300000',
+                    HorizontalAccuracy: '5.0'
+                }
+            ], function(error) {
+                if (error) return done(error);
+
+                db.set(kb.build(TEST_TARGET_DEVICE, KEY_SLOGAN), 'Primary slogan', function(error2) {
+                    if (error2) return done(error2);
+
+                    request(app)
+                        .post('/v1/GetLocation')
+                        .send({
+                            MiataruConfig: {
+                                RequestMiataruDeviceID: TEST_REQUEST_DEVICE
+                            },
+                            MiataruGetLocation: [
+                                { Device: TEST_TARGET_DEVICE },
+                                { Device: TEST_TARGET_DEVICE_2 }
+                            ]
+                        })
+                        .expect(200)
+                        .expect(function(res) {
+                            expect(res.body.MiataruLocation).to.be.an('array').with.length(2);
+
+                            var byDevice = {};
+                            res.body.MiataruLocation.forEach(function(location) {
+                                if (location && location.Device) {
+                                    byDevice[location.Device] = location;
+                                }
+                            });
+
+                            expect(byDevice).to.have.property(TEST_TARGET_DEVICE);
+                            expect(byDevice[TEST_TARGET_DEVICE]).to.have.property('Slogan', 'Primary slogan');
+
+                            expect(byDevice).to.have.property(TEST_TARGET_DEVICE_2);
+                            expect(byDevice[TEST_TARGET_DEVICE_2]).to.have.property('Slogan', null);
+                        })
+                        .end(done);
                 });
             });
         });

@@ -74,6 +74,8 @@ paths:
      API 1.1: If strictDeviceKeyCheck is enabled (default), and the requesting device (RequestMiataruDeviceID) has a configured DeviceKey, MiataruConfig.RequestMiataruDeviceKey must match or the server returns 403 Forbidden.
      
      API 1.1: If an allowed devices list has been set for a device (via /setAllowedDeviceList), only devices with hasCurrentLocationAccess permission will receive location data. Devices without permission will receive the location as if the device doesn't exist. Visitor history is still recorded for the requesting device so the target device owner can see who accessed (or attempted to access) their location in GetVisitorHistory.
+     
+     GetLocation responses include the current location object per requested device (or null when unavailable). If a device slogan has been set via /setDeviceSlogan, the response includes it as optional field `Slogan`.
    operationId: getLocation
    produces:
    - application/json
@@ -86,7 +88,7 @@ paths:
       $ref: '#/definitions/MiataruGetLocationRequest'
    responses:
     200:
-     description: successful location responses
+     description: successful location responses (each location can include optional Slogan)
      schema:
       $ref: '#/definitions/MiataruGetLocationResponse'
     400:
@@ -576,6 +578,7 @@ definitions:
      $ref: '#/definitions/MiataruGetLocationDevice'
  MiataruLocation:
   type: object
+  description: location payload used in update/history flows; GetLocation responses can additionally include optional Slogan
   required:
   - Device
   - Timestamp
@@ -593,19 +596,19 @@ definitions:
     maxLength: 256
    Timestamp:
     type: string
-    description: the javascript timestamp of this location update
+    description: the javascript timestamp of this location update; string and numeric payloads are accepted and preserved in responses
     default: "1441360863"
    Longitude:
     type: string
-    description: longitude of the position that is reported
+    description: longitude of the position that is reported; string and numeric payloads are accepted and preserved in responses
     default: "-4.394531"
    Latitude:
     type: string
-    description: latitude of the position that is reported
+    description: latitude of the position that is reported; string and numeric payloads are accepted and preserved in responses
     default: "41.079351"
    HorizontalAccuracy:
     type: string
-    description: the accuracy of this location update in meters
+    description: the accuracy of this location update in meters; string and numeric payloads are accepted and preserved in responses
     default: "50"
    Speed:
     type: string
@@ -616,6 +619,10 @@ definitions:
    Altitude:
     type: string
     description: optional altitude value; string and numeric payloads are accepted
+   Slogan:
+    type: string
+    description: optional device slogan returned by GetLocation responses; null when no slogan is set
+    x-nullable: true
  MiataruGetLocationGeoJSONResponse:
   type: object
   description: GeoJSON feature response. Returns an empty object when no valid location is available.
@@ -658,7 +665,12 @@ definitions:
    MiataruLocation:
     type: array
     items: 
-     $ref: '#/definitions/MiataruLocation'
+     $ref: '#/definitions/MiataruNullableLocation'
+ MiataruNullableLocation:
+  description: nullable location entry used by GetLocation (null means unknown device or no access)
+  allOf:
+  - $ref: '#/definitions/MiataruLocation'
+  x-nullable: true
  MiataruUpdateLocationRequest:
   required:
   - MiataruConfig
@@ -668,7 +680,6 @@ definitions:
     type: object
     description: the configuration for this request.
     required:
-    - EnableLocationHistory
     - LocationDataRetentionTime
     properties:
      EnableLocationHistory:

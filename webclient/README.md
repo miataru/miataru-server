@@ -34,6 +34,21 @@ The Miataru server can return a `null` entry in `MiataruLocation`, for example:
 }
 ```
 
+For non-null entries, `GetLocation` may include an optional `Slogan` field:
+
+```json
+{
+  "MiataruLocation": [{
+    "Device": "device-id",
+    "Timestamp": "1376735651302",
+    "Longitude": "10.837502",
+    "Latitude": "49.828925",
+    "HorizontalAccuracy": "50.00",
+    "Slogan": "hello miataru"
+  }]
+}
+```
+
 This response is used when a device has no current location data available, including cases where:
 
 - the requested device does not exist

@@ -74,7 +74,7 @@
 - **Interfaces**: Exported handler functions called by route registrations. (Evidence: lib/routes/location/v1/index.js)
 - **Key logic**:
   - **UpdateLocation**: If history enabled, pushes each location into `hist` list and trims; updates `last` on final entry. If history disabled, deletes history list and stores `last` with TTL. (Evidence: lib/routes/location/v1/location.js; config/default.js; tests/integration/api.tests.js)
-  - **GetLocation**: Reads `last` per device and returns null when missing; records visitor history when the device exists (including when access is denied by the allowed devices list). (Evidence: lib/routes/location/v1/location.js; tests/integration/unknownDevice.tests.js; tests/integration/visitorHistoryFiltering.tests.js; tests/integration/allowedDevices.tests.js)
+  - **GetLocation**: Reads `last` per device, enriches each returned location with optional `Slogan` from `miad:{device}:slogan`, and returns null when missing; records visitor history when the device exists (including when access is denied by the allowed devices list). (Evidence: lib/routes/location/v1/location.js; tests/integration/unknownDevice.tests.js; tests/integration/visitorHistoryFiltering.tests.js; tests/integration/allowedDevices.tests.js; tests/integration/deviceSlogan.tests.js)
   - **GetLocationHistory**: Reads list length, fetches up to requested amount, skips invalid JSON entries, and optionally records visitor history. (Evidence: lib/routes/location/v1/location.js; tests/integration/getLocationHistoryConfig.tests.js)
   - **GetLocationGeoJSON**: Rejects with 401 when a target device has DeviceKey configured; otherwise converts first location into GeoJSON Feature or returns `{}` if missing coordinates. (Evidence: lib/routes/location/v1/location.js; lib/models/ResponseLocationGeoJSON.js; tests/integration/allowedDevices.tests.js; tests/unit/responseLocationGeoJSON.tests.js)
   - **GetVisitorHistory**: Validates optional target DeviceKey when configured, then filters out entries where visitor device equals target device. (Evidence: lib/routes/location/v1/location.js; tests/integration/visitorHistoryFiltering.tests.js; tests/integration/deviceKey.tests.js)
@@ -132,7 +132,7 @@
 - **Invariants**: Device and amount are required; DeviceKey is conditionally required when the target device has a stored DeviceKey. (Evidence: lib/models/RequestVisitorHistory.js; lib/routes/location/v1/location.js)
 
 ### 3.7 Response models
-- **ResponseLocation**: `{ MiataruLocation: [location|null] }`. (Evidence: lib/models/ResponseLocation.js; tests/integration/unknownDevice.tests.js)
+- **ResponseLocation**: `{ MiataruLocation: [location|null] }`, where `location` may contain optional `Slogan`. (Evidence: lib/models/ResponseLocation.js; tests/integration/unknownDevice.tests.js; tests/integration/deviceSlogan.tests.js)
 - **ResponseLocationHistory**: `{ MiataruServerConfig, MiataruLocation }`. (Evidence: lib/models/ResponseLocationHistory.js; tests/integration/api.tests.js)
 - **ResponseLocationGeoJSON**: GeoJSON Feature for first location only; returns `{}` when invalid. (Evidence: lib/models/ResponseLocationGeoJSON.js; tests/unit/responseLocationGeoJSON.tests.js)
 - **ResponseVisitorHistory**: `{ MiataruServerConfig, MiataruVisitors }`. (Evidence: lib/models/ResponseVisitorHistory.js; tests/integration/visitorHistoryFiltering.tests.js)
@@ -159,7 +159,7 @@
   2. If `strictDeviceKeyCheck` is enabled and requester has a configured DeviceKey, validate `RequestMiataruDeviceKey`; fail with 403 on mismatch. (Evidence: lib/routes/location/v1/location.js; config/default.js)
   3. For each device, `GET` `miad:{device}:last`. (Evidence: lib/routes/location/v1/location.js)
   4. Record visitor history if device exists (regardless of access control). (Evidence: lib/routes/location/v1/location.js; lib/models/RequestConfigGetLocation.js; tests/integration/allowedDevices.tests.js)
-  5. Return `MiataruLocation` array with location objects or `null` for unknown devices. (Evidence: lib/models/ResponseLocation.js; tests/integration/unknownDevice.tests.js)
+  5. Return `MiataruLocation` array with location objects (including optional `Slogan`) or `null` for unknown devices. (Evidence: lib/models/ResponseLocation.js; tests/integration/unknownDevice.tests.js; tests/integration/deviceSlogan.tests.js)
 - **Alternate paths**: Legacy `/GetLocation` endpoint behaves like `/v1/GetLocation`. (Evidence: lib/routes/location/index.js; tests/integration/backwardCompatibility.tests.js)
 - **Error paths**: Invalid device payloads return 400. (Evidence: lib/models/RequestDevice.js; tests/unit/requestDevice.tests.js)
 - **Retry/recovery**: Safe to retry; no server-side mutations except visitor history logging. (Evidence: lib/routes/location/v1/location.js)
@@ -259,7 +259,7 @@
 ## 9. Implementation Notes & Gotchas
 - **GeoJSON uses the first location only**: When multiple locations are returned, GeoJSON serialization only uses index 0. (Evidence: lib/models/ResponseLocationGeoJSON.js; tests/unit/responseLocationGeoJSON.tests.js)
 - **GeoJSON requires coordinates**: Missing longitude/latitude yields `{}`. (Evidence: lib/models/ResponseLocationGeoJSON.js; tests/unit/responseLocationGeoJSON.tests.js)
-- **GetLocation returns `null` for unknown devices**: The array preserves request order and includes `null` for missing data. (Evidence: lib/routes/location/v1/location.js; tests/integration/unknownDevice.tests.js)
+- **GetLocation returns `null` for unknown devices**: The array preserves request order, includes `null` for missing data, and enriches known locations with optional `Slogan`. (Evidence: lib/routes/location/v1/location.js; tests/integration/unknownDevice.tests.js; tests/integration/deviceSlogan.tests.js)
 - **History request parsing is tolerant**: Device/Amount can be provided in different orders, casing, or as key/value strings. (Evidence: lib/models/RequestLocationHistory.js; tests/integration/backwardCompatibility.tests.js)
 - **Visitor history filtering**: Entries where visitor equals target device are filtered at read time and suppressed at write time. (Evidence: lib/models/RequestConfigGetLocation.js; lib/routes/location/v1/location.js; tests/integration/visitorHistoryFiltering.tests.js)
 - **Retention behavior**: When history is disabled, only the latest location is stored with TTL derived from `LocationDataRetentionTime` (minutes * 60 seconds). (Evidence: lib/routes/location/v1/location.js)

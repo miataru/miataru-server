@@ -36,7 +36,7 @@ When security features are **not enabled**, behavior is identical to API 1.0 onc
 
 - Devices without DeviceKey set work exactly as before
 - Devices without allowed devices list work exactly as before
-- All response formats remain unchanged
+- Response formats are largely unchanged (`GetLocation` can now include optional `Slogan`)
 - All error codes remain unchanged (except new 401/403 for security features)
 
 ## Breaking Changes
@@ -170,10 +170,10 @@ These endpoints have modified behavior:
 
 ## Response Format Compatibility
 
-All response formats remain unchanged:
+Response formats are largely unchanged:
 
 - **UpdateLocation Response**: Same ACK format
-- **GetLocation Response**: Same MiataruLocation array format
+- **GetLocation Response**: Same MiataruLocation array format, now with optional `Slogan` per location entry
 - **GetLocationHistory Response**: Same format with MiataruServerConfig
 - **GetVisitorHistory Response**: Same format with MiataruVisitors
 - **Error Responses**: Same format (new 401/403 codes added)
@@ -227,7 +227,7 @@ All existing request formats continue to work:
 
 ### Response Formats
 
-All response formats remain unchanged. New security features don't modify response structures.
+Most response formats remain unchanged. `GetLocation` now extends location entries with optional `Slogan` when configured on the target device.
 
 ## Migration Recommendations
 

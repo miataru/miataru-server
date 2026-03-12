@@ -126,7 +126,7 @@ For compatibility, the server also accepts the alias `requestingDeviceKey`.
 Security features are opt-in:
 - Devices without DeviceKey set work exactly as before
 - Devices without allowed devices list work exactly as before
-- All existing endpoints maintain the same response format
+- Response formats are largely unchanged; `GetLocation` responses now include optional `Slogan` per location entry
 
 **Breaking Changes:** 
 - **RequestMiataruDeviceID is mandatory** for GetLocation and GetLocationHistory - See [Migration Guide](docs/MIGRATION_REQUESTMIATARUDEVICEID.md)
@@ -177,6 +177,22 @@ curl -H 'Content-Type: application/json' -X POST 'http://localhost:8090/v1/Updat
 ```bash
 curl -H 'Content-Type: application/json' -X POST 'http://localhost:8090/v1/GetLocation' \
   -d '{"MiataruGetLocation":[{"Device":"7b8e6e0ee5296db345162dc2ef652c1350761823"}],"MiataruConfig":{"RequestMiataruDeviceID":"requesting-device-id","RequestMiataruDeviceKey":"optional-requester-key"}}'
+```
+
+**Typical `GetLocation` response (with optional `Slogan`):**
+```json
+{
+  "MiataruLocation": [
+    {
+      "Device": "7b8e6e0ee5296db345162dc2ef652c1350761823",
+      "Timestamp": "1376735651302",
+      "Longitude": "10.837502",
+      "Latitude": "49.828925",
+      "HorizontalAccuracy": "50.00",
+      "Slogan": "hello miataru"
+    }
+  ]
+}
 ```
 
 **Delete all location data for a device:**
@@ -671,6 +687,7 @@ tests/
 - **UpdateLocation**: Optional DeviceKey parameter for authentication
 - **GetVisitorHistory**: Optional DeviceKey parameter for authentication
 - **GetLocation**: Requires `RequestMiataruDeviceID`; optional `RequestMiataruDeviceKey` is validated in strict mode before allowed-device checks
+- **GetLocation Response**: Returns optional `Slogan` per location entry when configured for the target device
 - **GetLocationHistory**: Requires `RequestMiataruDeviceID` and supports access control via allowed devices list
 - **GetLocationGeoJSON**: Returns 401 when DeviceKey is set (security measure)
 

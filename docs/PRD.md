@@ -33,9 +33,10 @@
 - **Priority**: Must
 - **Description**: The server shall return the last known location for each requested device.
 - **Inputs / Triggers**: HTTP POST `/v1/GetLocation` or `/GetLocation` with `MiataruGetLocation` array; required `MiataruConfig.RequestMiataruDeviceID` for visitor tracking and access control. (Evidence: README.md L27-L43, L72-L76; lib/routes/location/index.js L10-L23; lib/routes/location/v1/inputParser.js L64-L75)
-- **Outputs / Effects**: Returns `MiataruLocation` array with entries or null if missing; may record visitor history per config. (Evidence: lib/routes/location/v1/location.js L354-L398; lib/models/ResponseLocation.js L9-L13)
+- **Outputs / Effects**: Returns `MiataruLocation` array with entries (including optional `Slogan`) or null if missing; may record visitor history per config. (Evidence: lib/routes/location/v1/location.js L354-L398; lib/models/ResponseLocation.js L9-L13; tests/integration/deviceSlogan.tests.js)
 - **Acceptance Criteria**:
   - Returns `MiataruLocation` array matching requested device order. (Evidence: lib/models/ResponseLocation.js L9-L13)
+  - For known devices, location entries include optional `Slogan` when set (otherwise `Slogan: null`). (Evidence: tests/integration/deviceSlogan.tests.js)
   - If a device has no stored location, entry is `null`. (Evidence: lib/routes/location/v1/location.js L380-L388; tests/integration/deleteLocation.tests.js L125-L134)
   - If `RequestMiataruDeviceID` equals target device, visitor history is not recorded. (Evidence: lib/models/RequestConfigGetLocation.js L19-L36; tests/integration/visitorHistoryFiltering.tests.js L44-L99)
 - **Evidence pointers**: lib/routes/location/v1/location.js L354-L398; tests/integration/backwardCompatibility.tests.js L39-L65.
@@ -140,10 +141,11 @@
 ## 5. Data Requirements
 - **Sources**: Client-provided JSON payloads over HTTP (UpdateLocation, GetLocation, History, VisitorHistory, DeleteLocation). (Evidence: README.md L64-L124)
 - **Storage expectations**:
-  - Redis keys: `miad:{device}:last`, `miad:{device}:hist`, `miad:{device}:visit` (namespace configurable). (Evidence: lib/routes/location/v1/location.js L11-L15; lib/utils/keyBuilder.js L1-L9; docs/DELETE_LOCATION_API.md L101-L115)
+  - Redis keys: `miad:{device}:last`, `miad:{device}:hist`, `miad:{device}:visit`, `miad:{device}:slogan` (namespace configurable). (Evidence: lib/routes/location/v1/location.js L11-L15; lib/utils/keyBuilder.js L1-L9; docs/DELETE_LOCATION_API.md L101-L115)
 - **Integrity rules**:
   - Required fields for location: Device, Timestamp, Longitude, Latitude, HorizontalAccuracy. (Evidence: README.md L340-L352; lib/models/RequestLocation.js L6-L70)
   - Optional fields default to -1 and are omitted from response when unset. (Evidence: lib/models/RequestLocation.js L11-L70; tests/unit/requestLocationIntegration.tests.js L115-L159)
+  - GetLocation responses are enriched with optional device `Slogan` fetched from separate slogan storage. (Evidence: lib/routes/location/v1/location.js; tests/integration/deviceSlogan.tests.js)
   - History and visitor requests require device and amount. (Evidence: lib/models/RequestLocationHistory.js L160-L162; lib/models/RequestVisitorHistory.js L9-L11)
 - **Retention**:
   - Location history is capped at `maximumNumberOfHistoryItems`. (Evidence: config/default.js L31-L33; lib/routes/location/v1/location.js L307-L311)

@@ -29,6 +29,7 @@ Version 2.2 introduces enterprise-grade security features while maintaining **br
 
 - **UpdateLocation**: Optional DeviceKey validation when enabled
 - **GetLocation**: Requires `RequestMiataruDeviceID` and supports access control via allowed devices list
+- **GetLocation Response**: Returns optional `Slogan` per location entry when a slogan is configured for the target device
 - **GetLocation**: Optional `MiataruConfig.RequestMiataruDeviceKey` for strict requester validation (`strictDeviceKeyCheck`, default `true`)
 - **GetLocationHistory**: Requires `RequestMiataruDeviceID` and enforces granular permissions
 - **GetVisitorHistory**: DeviceKey authentication support

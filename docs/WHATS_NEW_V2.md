@@ -70,6 +70,7 @@ Allowed Devices provides fine-grained access control, allowing device owners to 
 #### Access Control Behavior
 
 - **GetLocation**: Returns location only if requesting device has `hasCurrentLocationAccess` permission
+- **GetLocation Response**: Includes optional `Slogan` per location entry when configured on the target device
 - **GetLocation (strict mode)**: Before allowed-list checks, validates `RequestMiataruDeviceKey` for requesting devices that are DeviceKey-protected
 - **GetLocationHistory**: Returns history only if requesting device has `hasHistoryAccess` permission
 - **Default Behavior**: When no allowed devices list is set, behavior matches v1.0 (backward compatible)
@@ -322,6 +323,7 @@ Authentication is mandatory for the requester via `RequestDeviceID` + `RequestDe
 - **Not in List**: Devices not in the allowed list receive no location data (as if device doesn't exist)
 - **Visitor History**: The requesting device is still recorded in the target's visitor history (GetVisitorHistory) even when access is denied, so the device owner can see who attempted to access their location
 - **Allowed Devices Not Enabled**: Works as before once `RequestMiataruDeviceID` is provided (backward compatible)
+- **Slogan in Response**: If a slogan exists for the target device, `GetLocation` returns it as optional `Slogan` (otherwise `null`)
 
 #### Privacy Protection
 
@@ -621,7 +623,7 @@ Version 2.2 maintains **broad backward compatibility** with v1.0, with `RequestM
 1. **Most v1.0 Endpoints Work**: Existing endpoints continue to function with the noted GetLocation/GetLocationHistory requirement
 2. **Optional Parameters**: New parameters (DeviceKey) are optional
 3. **Default Behavior**: When security features are disabled, behavior matches v1.0 (with `RequestMiataruDeviceID` provided)
-4. **Response Format**: Response structure remains unchanged
+4. **Response Format**: Response structure remains largely unchanged; `GetLocation` now includes optional `Slogan`
 5. **Legacy Endpoints**: Non-versioned endpoints continue to work
 
 ### Compatibility Matrix

@@ -17,7 +17,7 @@
 | Area / Topic | Expected Coverage (from PRD/SPEC) | Evidence Found (file paths + identifiers) | Coverage Status | Notes |
 | --- | --- | --- | --- | --- |
 | UpdateLocation workflow | FR-001, core workflow | `lib/routes/location/v1/location.js` (UpdateLocation), `tests/integration/updateLocation.tests.js`, `tests/integration/api.tests.js` | Complete | PRD input says `MiataruConfig` optional, but code requires `LocationDataRetentionTime`. (Evidence: `lib/models/RequestConfig.js`, `tests/integration/updateLocation.tests.js`) |
-| GetLocation workflow | FR-002 | `lib/routes/location/v1/location.js` (GetLocation), `tests/integration/unknownDevice.tests.js` | Complete | Behavior for null locations covered by tests. |
+| GetLocation workflow | FR-002 | `lib/routes/location/v1/location.js` (GetLocation), `tests/integration/unknownDevice.tests.js`, `tests/integration/deviceSlogan.tests.js` | Complete | Behavior for null locations and optional `Slogan` enrichment covered by tests. |
 | GetLocationHistory workflow | FR-003 | `lib/routes/location/v1/location.js` (GetLocationHistory), `tests/integration/getLocationHistoryConfig.tests.js`, `tests/integration/getLocationHistoryLarge.tests.js` | Complete | Parsing tolerance for flexible payloads is implemented and tested. |
 | GetLocationGeoJSON workflow | FR-004 | `lib/routes/location/v1/location.js`, `lib/models/ResponseLocationGeoJSON.js`, `tests/unit/responseLocationGeoJSON.tests.js` | Complete | Single-feature GeoJSON behavior documented. |
 | GetVisitorHistory workflow | FR-005 | `lib/routes/location/v1/location.js`, `tests/integration/visitorHistoryFiltering.tests.js` | Complete | Filtering of self requests enforced. |

@@ -308,7 +308,7 @@ After adding `RequestMiataruDeviceID`, all other features remain backward compat
 
 - Devices without DeviceKey set work exactly as before
 - Devices without allowed devices list work exactly as before
-- All existing endpoints maintain the same response format
+- Response formats are largely unchanged; `GetLocation` may include optional `Slogan` per location entry
 - Optional parameters can be omitted (`RequestMiataruDeviceKey` is only required for GetLocation when strict checks are enabled and requester key exists)
 
 ### Migration Path
@@ -431,6 +431,23 @@ curl -X POST http://localhost:3000/v1/GetLocation \
       "RequestMiataruDeviceKey": "friend-device-key-if-configured"
     }
   }'
+```
+
+Example response entry (optional `Slogan`):
+
+```json
+{
+  "MiataruLocation": [
+    {
+      "Device": "device-123",
+      "Timestamp": "1376735651302",
+      "Longitude": "10.837502",
+      "Latitude": "49.828925",
+      "HorizontalAccuracy": "50.00",
+      "Slogan": "hello miataru"
+    }
+  ]
+}
 ```
 
 ## Migration Checklist

@@ -77,6 +77,19 @@ let request = GetLocationHistoryRequest(
 
 `RequestMiataruDeviceKey` is optional. It becomes effectively required for `GetLocation` when server config `strictDeviceKeyCheck` is enabled (default) and the requesting device already has a DeviceKey set on the server.
 
+`GetLocation` responses can now include an optional `Slogan` field per returned location entry. Clients should decode it as optional.
+
+```swift
+struct MiataruLocationResponseEntry: Codable {
+    let Device: String
+    let Timestamp: String
+    let Longitude: String
+    let Latitude: String
+    let HorizontalAccuracy: String
+    let Slogan: String?
+}
+```
+
 ## Prerequisites
 
 - Existing iOS client working with Miataru API 1.0
