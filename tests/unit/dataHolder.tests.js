@@ -371,6 +371,55 @@ describe('dataHolders', function() {
                     var data = request.data();
                     expect(data.DeviceKey).to.be.undefined;
                 });
+
+                it('should reject Device values with colons', function() {
+                    expect(function() {
+                        new RequestLocation({
+                            Device: "test:device",
+                            Timestamp: "1376735651302",
+                            Longitude: "10.837502",
+                            Latitude: "49.828925",
+                            HorizontalAccuracy: "50.00"
+                        });
+                    }).to.throw('Device must not contain ":"');
+                });
+
+                it('should reject out-of-range Latitude values', function() {
+                    expect(function() {
+                        new RequestLocation({
+                            Device: "test-device",
+                            Timestamp: "1376735651302",
+                            Longitude: "10.837502",
+                            Latitude: "95.0",
+                            HorizontalAccuracy: "50.00"
+                        });
+                    }).to.throw('Latitude must be at most 90');
+                });
+
+                it('should reject non-numeric Timestamp values', function() {
+                    expect(function() {
+                        new RequestLocation({
+                            Device: "test-device",
+                            Timestamp: "not-a-number",
+                            Longitude: "10.837502",
+                            Latitude: "49.828925",
+                            HorizontalAccuracy: "50.00"
+                        });
+                    }).to.throw('Timestamp must be numeric');
+                });
+
+                it('should reject invalid DeviceKey types', function() {
+                    expect(function() {
+                        new RequestLocation({
+                            Device: "test-device",
+                            Timestamp: "1376735651302",
+                            Longitude: "10.837502",
+                            Latitude: "49.828925",
+                            HorizontalAccuracy: "50.00",
+                            DeviceKey: 123
+                        });
+                    }).to.throw('DeviceKey must be a string');
+                });
             });
         });
     });

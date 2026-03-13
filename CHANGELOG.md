@@ -6,9 +6,15 @@ This changelog is based on Git history and the version numbers defined in `packa
 
 ### Added
 - `GetLocation` response extended to include `DeviceSlogan` (`0c34009`).
+- New `getAllowedDeviceList` endpoint with request/response models, routing, tests, and documentation.
+
+### Changed
+- Hardened request validation for DeviceIDs, DeviceKeys, `GetLocationHistory` parsing, and `UpdateLocation` numeric bounds without changing existing Redis storage formats.
+- Updated API documentation for the new allowed-device-list read endpoint, DeviceID restrictions, stricter history parsing, and validated location field ranges.
 
 ### Fixed
 - Corrected Swagger schema indentation for slogan fields (`8e03018`).
+- Made allowed-device-list parsing delimiter-safe for Redis hash fields and removed raw request body content from parse-error logs.
 
 ## [2.2.0] - 2026-03-11
 

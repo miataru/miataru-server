@@ -114,6 +114,22 @@ describe('DeviceKey Integration Tests', function() {
                     .end(done);
             });
         });
+
+        it('should return 400 when DeviceID contains a colon', function(done) {
+            request(app)
+                .post('/v1/setDeviceKey')
+                .send({
+                    MiataruSetDeviceKey: {
+                        DeviceID: 'test:device',
+                        NewDeviceKey: TEST_DEVICE_KEY
+                    }
+                })
+                .expect(400)
+                .expect(function(res) {
+                    expect(res.body.error).to.include('DeviceID must not contain ":"');
+                })
+                .end(done);
+        });
     });
 
     describe('updateLocation with DeviceKey', function() {

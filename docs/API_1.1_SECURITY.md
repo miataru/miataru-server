@@ -11,6 +11,7 @@ API version 1.1 introduces security and privacy enhancements to the Miataru serv
 5. **strictDeviceKeyCheck (Default: true)** - Enforces strict requester authentication in GetLocation
 6. **Device Slogan Endpoints** - `setDeviceSlogan` and `getDeviceSlogan` with mandatory DeviceKey-based authentication
 7. **Device Security Status Endpoint** - `getDeviceSecurityStatus` for authenticated status checks (`HasDeviceKey`, `IsAllowedDeviceListEnabled`)
+8. **Allowed Devices List Read Endpoint** - `getAllowedDeviceList` for authenticated owner reads of the stored ACL
 
 ## RequestMiataruDeviceID (Mandatory in API 1.1)
 
@@ -22,6 +23,8 @@ The `RequestMiataruDeviceID` identifies the device making the request. This is u
 - Access control (allowed devices list)
 - Visitor history tracking
 - Security auditing
+
+All incoming DeviceID-style fields must not contain `:`. This applies to target IDs (`Device`, `DeviceID`), requester IDs (`RequestMiataruDeviceID`, `RequestDeviceID`) and allowlist entries. Requests that contain `:` in these identifiers return `400 Bad Request`.
 
 ### Usage
 
@@ -66,8 +69,7 @@ For compatibility, alias field names `requestingDeviceID` and `requestingDeviceK
 **For existing clients:** Update all `GetLocation` and `GetLocationHistory` requests to include `RequestMiataruDeviceID` in the `MiataruConfig` object. The identifier can be:
 - A unique device ID
 - An application identifier
-- A URL or domain name
-- Any string that identifies the requesting client
+- Any opaque string that identifies the requesting client and does not contain `:`
 
 **Error Response:**
 ```json
@@ -86,6 +88,11 @@ The DeviceKey is a 256-character unicode string that acts as a password for a de
 - **setDeviceSlogan** - Setting a device slogan
 - **getDeviceSlogan** - Reading a device slogan (authenticated requester pair required)
 - **getDeviceSecurityStatus** - Reading target DeviceKey/ACL status (authenticated requester pair required)
+- **getAllowedDeviceList** - Reading the current ACL for the target device (owner authentication required)
+
+Validation rules:
+- Required DeviceKey fields must be strings, non-empty, and at most 256 characters
+- Optional DeviceKey fields may be omitted, sent as `null`, or sent as an empty string
 
 ## strictDeviceKeyCheck for GetLocation Reads
 
@@ -238,6 +245,42 @@ Behavior notes:
 - Allowed devices list is not used as an access gate for this endpoint; it is only reported as status
 - Visitor history is recorded only when the target device has a current location entry
 
+### Using DeviceKey in getAllowedDeviceList
+
+`getAllowedDeviceList` requires owner authentication with `DeviceID` + `DeviceKey`. It follows the same compatibility behavior as `setAllowedDeviceList`: the `DeviceKey` field is required in the payload, and if no DeviceKey is configured yet for the target device the request is still accepted.
+
+```json
+{
+  "MiataruGetAllowedDeviceList": {
+    "DeviceID": "target-device-id",
+    "DeviceKey": "target-device-key"
+  }
+}
+```
+
+Response format:
+
+```json
+{
+  "MiataruAllowedDeviceList": {
+    "DeviceID": "target-device-id",
+    "IsAllowedDeviceListEnabled": true,
+    "allowedDevices": [
+      {
+        "DeviceID": "friend-device-id",
+        "hasCurrentLocationAccess": true,
+        "hasHistoryAccess": false
+      }
+    ]
+  }
+}
+```
+
+Behavior notes:
+- Unknown target devices return HTTP 200 with `IsAllowedDeviceListEnabled: false` and `allowedDevices: []`
+- The full stored ACL is returned
+- The endpoint is intended for device owners and is not gated by allowed-devices rules
+
 ### Error Responses
 
 - **403 Forbidden** - Returned when:
@@ -282,6 +325,7 @@ Use the `/v1/setAllowedDeviceList` endpoint to set or update the allowed devices
 - Always send the complete list to update (server replaces the entire list)
 - Maximum 256 devices in the list
 - `DeviceKey` is always required in payload. If a DeviceKey is configured for `DeviceID`, it must match; if no DeviceKey is configured yet, the request is accepted for backward compatibility.
+- All involved DeviceIDs must not contain `:`
 
 ### Access Control Behavior
 
@@ -297,6 +341,8 @@ Use the `/v1/setAllowedDeviceList` endpoint to set or update the allowed devices
 - If allowed devices list is **not enabled**: Returns location history when `RequestMiataruDeviceID` is provided (backward compatible)
 - If allowed devices list is **enabled**: Only devices with `hasHistoryAccess: true` receive location history
 - Devices without permission receive empty history (as if history doesn't exist)
+- JSON request payloads remain the standard format
+- Legacy string payloads are only accepted in the unambiguous form `Device=<id>&Amount=<n>`
 
 ## Backward Compatibility
 
@@ -310,6 +356,7 @@ After adding `RequestMiataruDeviceID`, all other features remain backward compat
 - Devices without allowed devices list work exactly as before
 - Response formats are largely unchanged; `GetLocation` may include optional `Slogan` per location entry
 - Optional parameters can be omitted (`RequestMiataruDeviceKey` is only required for GetLocation when strict checks are enabled and requester key exists)
+- Existing Redis data remains compatible; no stored Redis keys or values are migrated for these changes
 
 ### Migration Path
 
@@ -343,21 +390,36 @@ This is a security measure to prevent unauthorized access to location data via t
    - Use a strong, randomly generated key (256 characters recommended)
    - Store the key securely on the client device
    - Never log or expose the DeviceKey
+   - Keep DeviceKey values at 256 characters or fewer
 
 2. **Allowed Devices Management:**
    - Regularly review and update the allowed devices list
    - Remove access for devices that no longer need it
    - Use granular permissions (separate currentLocation and history access)
+   - Use DeviceIDs without `:` characters
 
 3. **Error Handling:**
    - Handle 403 Forbidden errors gracefully
    - Prompt user to re-enter DeviceKey if validation fails
    - Don't expose DeviceKey in error messages or logs
+   - Expect malformed requests with invalid DeviceIDs, invalid DeviceKeys, or ambiguous history payloads to fail with `400 Bad Request`
+
+4. **Location Validation:**
+   - `UpdateLocation` accepts numeric strings and numbers
+   - `Timestamp` must be an integer greater than `0`
+   - `Latitude` must be within `-90..90`
+   - `Longitude` must be within `-180..180`
+   - `HorizontalAccuracy` must be within `0..10000`
+   - Optional `Speed`, `BatteryLevel`, and `Altitude` values are validated when provided
 
 ## Error Codes
 
 - **400 Bad Request** - Invalid input (missing required fields, invalid format)
   - Missing or empty `RequestMiataruDeviceID` in GetLocation or GetLocationHistory
+  - DeviceID-style fields containing `:`
+  - Invalid DeviceKey type, emptiness, or overlength
+  - Ambiguous legacy `GetLocationHistory` string payloads
+  - Invalid or out-of-range `UpdateLocation` numeric values
   - Invalid request structure
 - **401 Unauthorized** - GetLocationGeoJSON called when DeviceKey is set
 - **403 Forbidden** - DeviceKey mismatch or access denied
@@ -420,7 +482,19 @@ curl -X POST http://localhost:3000/v1/setAllowedDeviceList \
   }'
 ```
 
-4. **Get Location (with access control):**
+4. **Read Allowed Devices:**
+```bash
+curl -X POST http://localhost:3000/v1/getAllowedDeviceList \
+  -H "Content-Type: application/json" \
+  -d '{
+    "MiataruGetAllowedDeviceList": {
+      "DeviceID": "device-123",
+      "DeviceKey": "my-secure-key-256-chars..."
+    }
+  }'
+```
+
+5. **Get Location (with access control):**
 ```bash
 curl -X POST http://localhost:3000/v1/GetLocation \
   -H "Content-Type: application/json" \
@@ -461,6 +535,7 @@ Example response entry (optional `Slogan`):
 - [ ] Update client code for set/get device slogan authentication (`DeviceKey` and `RequestDeviceID`/`RequestDeviceKey`)
 - [ ] Test DeviceKey validation and error handling
 - [ ] Set up allowed devices lists for devices that need sharing
+- [ ] Add `getAllowedDeviceList` if your client needs to inspect the saved ACL
 - [ ] Test access control with allowed devices list
 - [ ] Update error handling for 403 Forbidden responses
 - [ ] Document DeviceKey storage and management in client app

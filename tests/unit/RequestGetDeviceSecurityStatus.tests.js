@@ -48,6 +48,26 @@ describe('RequestGetDeviceSecurityStatus', function() {
             }).to.throw(errors.BadRequestError, '256');
         });
 
+        it('should reject DeviceID values with colons', function() {
+            expect(function() {
+                new RequestGetDeviceSecurityStatus({
+                    DeviceID: 'target:device',
+                    RequestDeviceID: 'request-device',
+                    RequestDeviceKey: 'request-key'
+                });
+            }).to.throw(errors.BadRequestError, 'DeviceID must not contain ":"');
+        });
+
+        it('should reject RequestDeviceID values with colons', function() {
+            expect(function() {
+                new RequestGetDeviceSecurityStatus({
+                    DeviceID: 'target-device',
+                    RequestDeviceID: 'request:device',
+                    RequestDeviceKey: 'request-key'
+                });
+            }).to.throw(errors.BadRequestError, 'RequestDeviceID must not contain ":"');
+        });
+
         it('should accept valid request', function() {
             var request = new RequestGetDeviceSecurityStatus({
                 DeviceID: 'target-device',

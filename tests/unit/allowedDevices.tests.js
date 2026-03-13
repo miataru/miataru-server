@@ -152,6 +152,33 @@ describe('Allowed Devices Utilities', function() {
                 });
             });
         });
+
+        it('should parse existing Redis fields with additional colons in the device ID portion', function(done) {
+            var hashKey = kb.build(TEST_DEVICE_ID, KEY_SUFFIX);
+            var flagKey = kb.build(TEST_DEVICE_ID, ENABLED_FLAG_SUFFIX);
+
+            db.hset(hashKey, 'legacy:device:history:currentLocation', 'true', function(error) {
+                if (error) return done(error);
+
+                db.hset(hashKey, 'legacy:device:history:history', 'false', function(error2) {
+                    if (error2) return done(error2);
+
+                    db.set(flagKey, '1', function(error3) {
+                        if (error3) return done(error3);
+
+                        allowedDevicesUtils.getAllowedDevices(TEST_DEVICE_ID, function(error4, devices) {
+                            if (error4) return done(error4);
+
+                            expect(devices).to.have.length(1);
+                            expect(devices[0].DeviceID).to.equal('legacy:device:history');
+                            expect(devices[0].hasCurrentLocationAccess).to.equal(true);
+                            expect(devices[0].hasHistoryAccess).to.equal(false);
+                            done();
+                        });
+                    });
+                });
+            });
+        });
     });
 
     describe('checkAccess', function() {

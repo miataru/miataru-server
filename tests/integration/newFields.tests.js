@@ -432,7 +432,7 @@ describe('New Fields Integration Tests', function() {
             }).to.not.throw();
         });
 
-        it('should not throw error when Timestamp property is explicitly false (backward compatibility)', function() {
+        it('should reject boolean Timestamp values', function() {
             var data = {
                 Device: 'test-device',
                 Timestamp: false,
@@ -443,10 +443,10 @@ describe('New Fields Integration Tests', function() {
 
             expect(function() {
                 new RequestLocation(data);
-            }).to.not.throw();
+            }).to.throw('Timestamp must be numeric');
         });
 
-        it('should not throw error when Longitude property is explicitly false (backward compatibility)', function() {
+        it('should reject boolean Longitude values', function() {
             var data = {
                 Device: 'test-device',
                 Timestamp: '1234567890',
@@ -457,10 +457,10 @@ describe('New Fields Integration Tests', function() {
 
             expect(function() {
                 new RequestLocation(data);
-            }).to.not.throw();
+            }).to.throw('Longitude must be numeric');
         });
 
-        it('should not throw error when Latitude property is explicitly false (backward compatibility)', function() {
+        it('should reject boolean Latitude values', function() {
             var data = {
                 Device: 'test-device',
                 Timestamp: '1234567890',
@@ -471,10 +471,10 @@ describe('New Fields Integration Tests', function() {
 
             expect(function() {
                 new RequestLocation(data);
-            }).to.not.throw();
+            }).to.throw('Latitude must be numeric');
         });
 
-        it('should not throw error when HorizontalAccuracy property is explicitly false (backward compatibility)', function() {
+        it('should reject boolean HorizontalAccuracy values', function() {
             var data = {
                 Device: 'test-device',
                 Timestamp: '1234567890',
@@ -485,7 +485,7 @@ describe('New Fields Integration Tests', function() {
 
             expect(function() {
                 new RequestLocation(data);
-            }).to.not.throw();
+            }).to.throw('HorizontalAccuracy must be numeric');
         });
 
         it('should not throw error when all required properties are provided', function() {

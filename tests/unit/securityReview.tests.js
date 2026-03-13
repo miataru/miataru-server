@@ -61,7 +61,7 @@ describe('security review coverage', function() {
                     return done(err);
                 }
 
-                expect(res.body.error).to.match(/missing device or amount/i);
+                expect(res.body.error).to.match(/Amount must be at least 1|missing device or amount/i);
                 done();
             });
     });

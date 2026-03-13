@@ -70,6 +70,12 @@ describe('RequestDevice', function() {
             expect(requestDevice).to.be.an.instanceof(RequestDevice);
             expect(requestDevice.device()).to.equal(false);
         });
+
+        it('should reject string Device values with colons', function() {
+            expect(function() {
+                new RequestDevice({ Device: 'test:device' });
+            }).to.throw(errors.BadRequestError, 'Device must not contain ":"');
+        });
     });
 
     describe('device method', function() {

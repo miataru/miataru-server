@@ -47,6 +47,7 @@ The Miataru server provides both versioned (v1) and legacy API endpoints for max
 - **POST** `/v1/DeleteLocation` - Delete all location data for a device
 - **POST** `/v1/setDeviceKey` - Set or change device key (API 1.1)
 - **POST** `/v1/setAllowedDeviceList` - Manage allowed devices list (API 1.1)
+- **POST** `/v1/getAllowedDeviceList` - Read allowed devices list (API 1.1)
 - **POST** `/v1/setDeviceSlogan` - Set optional device slogan (API 1.1, max 40 chars)
 - **POST** `/v1/getDeviceSlogan` - Get optional device slogan (API 1.1)
 - **POST** `/v1/getDeviceSecurityStatus` - Get DeviceKey/ACL status for a target device (API 1.1)
@@ -61,6 +62,7 @@ The Miataru server provides both versioned (v1) and legacy API endpoints for max
 - **POST** `/DeleteLocation` - Delete all location data for a device
 - **POST** `/setDeviceKey` - Set or change device key (API 1.1)
 - **POST** `/setAllowedDeviceList` - Manage allowed devices list (API 1.1)
+- **POST** `/getAllowedDeviceList` - Read allowed devices list (API 1.1)
 - **POST** `/setDeviceSlogan` - Set optional device slogan (API 1.1, max 40 chars)
 - **POST** `/getDeviceSlogan` - Get optional device slogan (API 1.1)
 - **POST** `/getDeviceSecurityStatus` - Get DeviceKey/ACL status for a target device (API 1.1)
@@ -78,6 +80,7 @@ DeviceKey provides authentication for write operations and visitor history acces
 
 `getDeviceSlogan` additionally requires a valid authenticated requesting device pair (`RequestDeviceID` + `RequestDeviceKey`). Allowed-devices restrictions are intentionally not applied to slogan reads. Successful reads are recorded in visitor history of the target device (analogous to `GetLocation`).
 `getDeviceSecurityStatus` uses the same requester authentication pair and returns `HasDeviceKey` plus `IsAllowedDeviceListEnabled` for the target device.
+`getAllowedDeviceList` uses the target device owner pair (`DeviceID` + `DeviceKey`) and returns the current ACL contents plus `IsAllowedDeviceListEnabled`.
 
 See [API 1.1 Security Documentation](docs/API_1.1_SECURITY.md) for details.
 
@@ -88,6 +91,7 @@ The allowed devices list provides granular access control, allowing you to speci
 - Location history (via GetLocationHistory)
 
 Devices without permission receive no location data (null or empty). Visitor history still records every device that requests a location (including those without access), so the device owner can see who tried to access their data in GetVisitorHistory.
+The owner can read the stored ACL via `/v1/getAllowedDeviceList`.
 
 See [API 1.1 Security Documentation](docs/API_1.1_SECURITY.md) for details.
 
@@ -111,13 +115,18 @@ Add `MiataruConfig` with `RequestMiataruDeviceID` to all GetLocation and GetLoca
 
 The identifier can be:
 - A unique device ID
-- An application identifier  
-- A URL or domain name
-- Any string that identifies the requesting client
+- An application identifier
+- Any opaque client identifier that does not contain `:`
+
+All incoming DeviceID-style fields (`Device`, `DeviceID`, `RequestDeviceID`, `RequestMiataruDeviceID`, allowlist `DeviceID`) must not contain `:`. Requests with `:` in those identifiers return `400 Bad Request`.
 
 `RequestMiataruDeviceKey` is optional in request payloads. For `GetLocation`, the server validates it only when:
 - `strictDeviceKeyCheck` is enabled (`true` by default), and
 - the requesting device (`RequestMiataruDeviceID`) has a DeviceKey configured.
+
+DeviceKey validation is consistent across API 1.1 endpoints:
+- required DeviceKey fields must be strings, non-empty, and at most 256 characters
+- optional DeviceKey fields may be omitted, sent as `null`, or sent as `""`
 
 For compatibility, the server also accepts the alias `requestingDeviceKey`.
 
@@ -127,6 +136,13 @@ Security features are opt-in:
 - Devices without DeviceKey set work exactly as before
 - Devices without allowed devices list work exactly as before
 - Response formats are largely unchanged; `GetLocation` responses now include optional `Slogan` per location entry
+- `GetLocationHistory` continues to support JSON payloads and also accepts the legacy `Device=<id>&Amount=<n>` string form
+
+Input validation is stricter for malformed requests:
+- DeviceIDs containing `:` are rejected with `400 Bad Request`
+- invalid DeviceKey types/oversized values are rejected with `400 Bad Request`
+- `UpdateLocation` rejects invalid numeric values outside supported bounds
+- `GetLocationHistory` rejects ambiguous legacy string separators such as `;`, `,`, or `:`
 
 **Breaking Changes:** 
 - **RequestMiataruDeviceID is mandatory** for GetLocation and GetLocationHistory - See [Migration Guide](docs/MIGRATION_REQUESTMIATARUDEVICEID.md)
@@ -230,6 +246,12 @@ curl -H 'Content-Type: application/json' -X POST 'http://localhost:8090/v1/getDe
 ```bash
 curl -H 'Content-Type: application/json' -X POST 'http://localhost:8090/v1/getDeviceSecurityStatus' \
   -d '{"MiataruGetDeviceSecurityStatus":{"DeviceID":"7b8e6e0ee5296db345162dc2ef652c1350761823","RequestDeviceID":"requesting-device-id","RequestDeviceKey":"requesting-device-key"}}'
+```
+
+**Get allowed devices list (API 1.1):**
+```bash
+curl -H 'Content-Type: application/json' -X POST 'http://localhost:8090/v1/getAllowedDeviceList' \
+  -d '{"MiataruGetAllowedDeviceList":{"DeviceID":"7b8e6e0ee5296db345162dc2ef652c1350761823","DeviceKey":"your-device-key-here"}}'
 ```
 
 ## DeleteLocation API
