@@ -49,6 +49,16 @@ describe('RequestSetDeviceSlogan', function() {
             }).to.throw(errors.BadRequestError, 'control characters');
         });
 
+        it('should reject DeviceID values with colons', function() {
+            expect(function() {
+                new RequestSetDeviceSlogan({
+                    DeviceID: 'test:device',
+                    DeviceKey: 'test-key',
+                    Slogan: 'hello'
+                });
+            }).to.throw(errors.BadRequestError, 'DeviceID must not contain ":"');
+        });
+
         it('should accept valid request', function() {
             var request = new RequestSetDeviceSlogan({
                 DeviceID: 'test-device',

@@ -11,6 +11,7 @@ info:
    - DeviceKey authentication for write operations and visitor history access
    - Device slogan API with mandatory DeviceKey authentication
    - Device security status API for authenticated DeviceKey/ACL status checks
+   - Allowed devices list read API for authenticated owner access to the stored ACL
    - Allowed devices list for granular access control to location data
    - strictDeviceKeyCheck (Default: true) - Enforces requester DeviceKey validation in GetLocation/GetLocationHistory when requester key is configured
    - Broad backward compatibility with API 1.0 clients (GetLocation/GetLocationHistory require RequestMiataruDeviceID)
@@ -41,6 +42,8 @@ paths:
      This method is used to update the location of a device. The device does not need to be known already to the Miataru server but it rather creates a unique identifier for itself in the client application. This unique identifier, or device ID is then used to address this particular device.
      
      API 1.1: If a DeviceKey has been set for a device (via /setDeviceKey), the DeviceKey parameter must be provided in each MiataruLocation element and must match the stored key. If the keys do not match, a 403 Forbidden error is returned.
+
+     Input validation: Device IDs must not contain ":" and numeric fields are validated before persistence. Accepted ranges are Timestamp > 0 (integer), Latitude -90..90, Longitude -180..180, HorizontalAccuracy 0..10000, Speed 0..1000, BatteryLevel 0..100, Altitude -1000..100000. Numeric strings are accepted.
    operationId: updateLocation
    produces:
    - application/json
@@ -56,6 +59,10 @@ paths:
      description: successful request
      schema:
       $ref: '#/definitions/ACK'
+    400:
+     description: Bad Request - Invalid input, invalid Device ID, invalid DeviceKey, or invalid numeric field ranges
+     schema:
+      $ref: '#/definitions/Error'
     403:
      description: Forbidden - DeviceKey mismatch or missing when required
      schema:
@@ -69,7 +76,7 @@ paths:
      
      API 1.1 BREAKING CHANGE: RequestMiataruDeviceID is now mandatory. Requests without RequestMiataruDeviceID will return 400 Bad Request.
      
-     RequestMiataruDeviceID should be the ID of the device the request is sent from (or an identifier like an URL). This is used for access control and visitor history tracking.
+     RequestMiataruDeviceID should be the ID of the device the request is sent from. It is used for access control and visitor history tracking and must not contain ":".
      
      API 1.1: If strictDeviceKeyCheck is enabled (default), and the requesting device (RequestMiataruDeviceID) has a configured DeviceKey, MiataruConfig.RequestMiataruDeviceKey must match or the server returns 403 Forbidden.
      
@@ -92,7 +99,7 @@ paths:
      schema:
       $ref: '#/definitions/MiataruGetLocationResponse'
     400:
-     description: Bad Request - RequestMiataruDeviceID is missing or empty
+     description: Bad Request - RequestMiataruDeviceID is missing, empty, or contains an invalid Device ID
      schema:
       $ref: '#/definitions/Error'
     403:
@@ -168,11 +175,13 @@ paths:
      
      API 1.1 BREAKING CHANGE: RequestMiataruDeviceID is now mandatory. Requests without RequestMiataruDeviceID will return 400 Bad Request.
      
-     RequestMiataruDeviceID should be the ID of the device the request is sent from (or an identifier like an URL). This is used for access control and visitor history tracking.
-     
+     RequestMiataruDeviceID should be the ID of the device the request is sent from. It is used for access control and visitor history tracking and must not contain ":".
+
      API 1.1: If strictDeviceKeyCheck is enabled (default), and the requesting device (RequestMiataruDeviceID) has a configured DeviceKey, MiataruConfig.RequestMiataruDeviceKey must match or the server returns 403 Forbidden.
      
      API 1.1: If an allowed devices list has been set for a device (via /setAllowedDeviceList), only devices with hasHistoryAccess permission will receive location history data. Devices without permission will receive an empty history (as if history doesn't exist).
+
+     Request format: JSON is the standard request format. For compatibility, the server still accepts the unambiguous legacy string form `Device=<id>&Amount=<n>`. Ambiguous legacy separators such as `;`, `,`, or `:` are rejected with 400 Bad Request.
    operationId: getLocationHistory
    produces:
    - application/json
@@ -189,7 +198,7 @@ paths:
      schema:
       $ref: '#/definitions/MiataruGetLocationHistoryResponse'
     400:
-     description: Bad Request - RequestMiataruDeviceID is missing or empty
+     description: Bad Request - RequestMiataruDeviceID is missing, empty, contains an invalid Device ID, or the history request format is invalid
      schema:
       $ref: '#/definitions/Error'
     403:
@@ -219,6 +228,10 @@ paths:
      description: visitor history response
      schema:
       $ref: '#/definitions/MiataruGetVisitorHistoryResponse'
+    400:
+     description: Bad Request - Invalid input, including invalid Device ID or invalid DeviceKey
+     schema:
+      $ref: '#/definitions/Error'
     403:
      description: Forbidden - DeviceKey mismatch or missing when required
      schema:
@@ -247,7 +260,7 @@ paths:
      schema:
       $ref: '#/definitions/MiataruDeleteLocationResponse'
     400:
-     description: Bad Request - Invalid input (missing device)
+     description: Bad Request - Invalid input, including invalid Device ID or invalid DeviceKey
      schema:
       $ref: '#/definitions/Error'
     403:
@@ -278,7 +291,7 @@ paths:
      schema:
       $ref: '#/definitions/MiataruSetDeviceKeyResponse'
     400:
-     description: Bad Request - Invalid input
+     description: Bad Request - Invalid input, including invalid Device ID or invalid DeviceKey
      schema:
       $ref: '#/definitions/Error'
     403:
@@ -311,7 +324,40 @@ paths:
      schema:
       $ref: '#/definitions/MiataruSetAllowedDeviceListResponse'
     400:
-     description: Bad Request - Invalid input
+     description: Bad Request - Invalid input, including invalid Device ID, invalid allowlist entry Device ID, or invalid DeviceKey
+     schema:
+      $ref: '#/definitions/Error'
+    403:
+     description: Forbidden - DeviceKey does not match
+     schema:
+      $ref: '#/definitions/Error'
+ /getAllowedDeviceList:
+  post:
+   tags:
+   - security
+   description: |
+     Returns the stored allowed devices list for a target device.
+     
+     Owner authentication is required: DeviceID and DeviceKey identify the target device. This endpoint follows the same compatibility behavior as /setAllowedDeviceList. The DeviceKey field is required in the payload; if no DeviceKey is configured yet for DeviceID, the request is accepted for backward compatibility.
+     
+     The response always returns the full stored ACL and the `IsAllowedDeviceListEnabled` flag. Device IDs must not contain ":".
+   operationId: getAllowedDeviceList
+   produces:
+   - application/json
+   parameters:
+   - name: body
+     in: body
+     description: the JSON formatted request to read the allowed devices list
+     required: true
+     schema:
+      $ref: '#/definitions/MiataruGetAllowedDeviceListRequest'
+   responses:
+    200:
+     description: Allowed devices list response
+     schema:
+      $ref: '#/definitions/MiataruGetAllowedDeviceListResponse'
+    400:
+     description: Bad Request - Invalid input, including invalid Device ID or invalid DeviceKey
      schema:
       $ref: '#/definitions/Error'
     403:
@@ -342,7 +388,7 @@ paths:
      schema:
       $ref: '#/definitions/MiataruSetDeviceSloganResponse'
     400:
-     description: Bad Request - Invalid input
+     description: Bad Request - Invalid input, including invalid Device ID or invalid DeviceKey
      schema:
       $ref: '#/definitions/Error'
     403:
@@ -375,7 +421,7 @@ paths:
      schema:
       $ref: '#/definitions/MiataruGetDeviceSloganResponse'
     400:
-     description: Bad Request - Invalid input
+     description: Bad Request - Invalid input, including invalid Device ID or invalid requester DeviceKey
      schema:
       $ref: '#/definitions/Error'
     403:
@@ -412,7 +458,7 @@ paths:
      schema:
       $ref: '#/definitions/MiataruGetDeviceSecurityStatusResponse'
     400:
-     description: Bad Request - Invalid input
+     description: Bad Request - Invalid input, including invalid Device ID or invalid requester DeviceKey
      schema:
       $ref: '#/definitions/Error'
     403:
@@ -437,7 +483,7 @@ definitions:
   properties:
    DeviceID:
     type: string
-    description: the device id of the visiting device. If this is an empty string the deviceID is unknown/was not reported.
+    description: the device id of the visiting device. If this is an empty string the deviceID is unknown/was not reported. When present, it must not contain ":".
    TimeStamp:
     type: string
     description: the javascript timestamp of the visit
@@ -453,7 +499,7 @@ definitions:
     properties:
      Device:
       type: string
-      description: the device id of which the visitor history is requested
+      description: the device id of which the visitor history is requested. Must not contain ":".
       default: "7b8e6e0ee5296db345162dc2ef652c1350761823"
      Amount:
       type: string
@@ -522,11 +568,11 @@ definitions:
     properties:
      RequestMiataruDeviceID:
       type: string
-      description: RequestMiataruDeviceID should be the ID of the device the request is sent from (or an identifier like an URL). This is mandatory in API 1.1. Alias requestingDeviceID is also accepted.
+      description: RequestMiataruDeviceID should be the ID of the device the request is sent from. This is mandatory in API 1.1, must not contain ":", and alias requestingDeviceID is also accepted.
       default: "6140c3c0-4a7d-40d2-99ab-39414cac3509"
      RequestMiataruDeviceKey:
       type: string
-      description: Optional requester DeviceKey for GetLocation/GetLocationHistory. If strictDeviceKeyCheck is enabled and the requesting device has a configured DeviceKey, this value must match. Alias requestingDeviceKey is also accepted.
+      description: Optional requester DeviceKey for GetLocation/GetLocationHistory. If strictDeviceKeyCheck is enabled and the requesting device has a configured DeviceKey, this value must match. Alias requestingDeviceKey is also accepted. Optional values may be omitted, null, or an empty string.
       maxLength: 256
    MiataruGetLocationHistory:
     type: object
@@ -537,7 +583,7 @@ definitions:
     properties:
      Device:
       type: string
-      description: the device id of which the location history shall be requested
+      description: the device id of which the location history shall be requested. Must not contain ":".
       default: "7b8e6e0ee5296db345162dc2ef652c1350761823"
      Amount:
       type: string
@@ -550,7 +596,7 @@ definitions:
   properties:
    Device:
     type: string
-    description: the unique device id of a device.
+    description: the unique device id of a device. Must not contain ":".
     default: "7b8e6e0ee5296db345162dc2ef652c1350761823"
  MiataruGetLocationRequest:
   required:
@@ -565,11 +611,11 @@ definitions:
     properties:
      RequestMiataruDeviceID:
       type: string
-      description: RequestMiataruDeviceID should be the ID of the device the request is sent from (or an identifier like an URL). This is mandatory in API 1.1. Alias requestingDeviceID is also accepted.
+      description: RequestMiataruDeviceID should be the ID of the device the request is sent from. This is mandatory in API 1.1, must not contain ":", and alias requestingDeviceID is also accepted.
       default: "6140c3c0-4a7d-40d2-99ab-39414cac3509"
      RequestMiataruDeviceKey:
       type: string
-      description: Optional requester DeviceKey for GetLocation/GetLocationHistory. If strictDeviceKeyCheck is enabled and the requesting device has a configured DeviceKey, this value must match. Alias requestingDeviceKey is also accepted.
+      description: Optional requester DeviceKey for GetLocation/GetLocationHistory. If strictDeviceKeyCheck is enabled and the requesting device has a configured DeviceKey, this value must match. Alias requestingDeviceKey is also accepted. Optional values may be omitted, null, or an empty string.
       maxLength: 256
    MiataruGetLocation:
     type: array
@@ -588,37 +634,37 @@ definitions:
   properties:
    Device:
     type: string
-    description: the unique id of this device. This needs to be unique as it is the only piece of information directly pointing towards this one device. Generating a GUID per device is recommended.
+    description: the unique id of this device. This needs to be unique as it is the only piece of information directly pointing towards this one device. Generating a GUID per device is recommended. Device IDs must not contain ":".
     default: "7b8e6e0ee5296db345162dc2ef652c1350761823"
    DeviceKey:
     type: string
-    description: "(API 1.1) Optional DeviceKey for authentication. Required if DeviceKey has been set for this device via /setDeviceKey. Must be placed right under the Device parameter."
+    description: "(API 1.1) Optional DeviceKey for authentication. Required if DeviceKey has been set for this device via /setDeviceKey. Must be placed right under the Device parameter. Optional values may be omitted, null, or an empty string."
     maxLength: 256
    Timestamp:
     type: string
-    description: the javascript timestamp of this location update; string and numeric payloads are accepted and preserved in responses
+    description: the javascript timestamp of this location update; string and numeric payloads are accepted and preserved in responses. Must be an integer greater than 0.
     default: "1441360863"
    Longitude:
     type: string
-    description: longitude of the position that is reported; string and numeric payloads are accepted and preserved in responses
+    description: "longitude of the position that is reported; string and numeric payloads are accepted and preserved in responses. Valid range: -180..180."
     default: "-4.394531"
    Latitude:
     type: string
-    description: latitude of the position that is reported; string and numeric payloads are accepted and preserved in responses
+    description: "latitude of the position that is reported; string and numeric payloads are accepted and preserved in responses. Valid range: -90..90."
     default: "41.079351"
    HorizontalAccuracy:
     type: string
-    description: the accuracy of this location update in meters; string and numeric payloads are accepted and preserved in responses
+    description: "the accuracy of this location update in meters; string and numeric payloads are accepted and preserved in responses. Valid range: 0..10000."
     default: "50"
    Speed:
     type: string
-    description: optional speed value; string and numeric payloads are accepted
+    description: "optional speed value; string and numeric payloads are accepted. Valid range when provided: 0..1000."
    BatteryLevel:
     type: string
-    description: optional battery level value; string and numeric payloads are accepted
+    description: "optional battery level value; string and numeric payloads are accepted. Valid range when provided: 0..100."
    Altitude:
     type: string
-    description: optional altitude value; string and numeric payloads are accepted
+    description: "optional altitude value; string and numeric payloads are accepted. Valid range when provided: -1000..100000."
    Slogan:
     type: string
     description: optional device slogan returned by GetLocation responses; null when no slogan is set
@@ -717,15 +763,15 @@ definitions:
     properties:
      DeviceID:
       type: string
-      description: the device ID of the calling device
+      description: the device ID of the calling device. Must not contain ":".
       default: "7b8e6e0ee5296db345162dc2ef652c1350761823"
      CurrentDeviceKey:
       type: string
-      description: the current device key (required when changing an existing key, omit or provide empty string for first-time setup)
+      description: the current device key (required when changing an existing key, omit, null, or provide empty string for first-time setup)
       maxLength: 256
      NewDeviceKey:
       type: string
-      description: the new device key to set (up to 256 characters unicode)
+      description: the new device key to set (required, non-empty string, up to 256 characters unicode)
       maxLength: 256
  MiataruSetDeviceKeyResponse:
   required:
@@ -751,11 +797,11 @@ definitions:
     properties:
      DeviceID:
       type: string
-      description: the device ID of the calling device
+      description: the device ID of the calling device. Must not contain ":".
       default: "7b8e6e0ee5296db345162dc2ef652c1350761823"
      DeviceKey:
       type: string
-      description: DeviceKey value for DeviceID. Required in payload; if DeviceID has a configured DeviceKey it must match.
+      description: DeviceKey value for DeviceID. Required in payload, must be a non-empty string up to 256 characters; if DeviceID has a configured DeviceKey it must match.
       maxLength: 256
      allowedDevices:
       type: array
@@ -770,7 +816,7 @@ definitions:
   properties:
    DeviceID:
     type: string
-    description: the DeviceID of the device that is allowed access
+    description: the DeviceID of the device that is allowed access. Must not contain ":".
    hasCurrentLocationAccess:
     type: boolean
     description: true if this device has permission to access current location
@@ -790,6 +836,46 @@ definitions:
    MiataruVerboseResponse:
     type: string
     default: "Allowed devices list updated successfully"
+ MiataruGetAllowedDeviceListRequest:
+  required:
+  - MiataruGetAllowedDeviceList
+  properties:
+   MiataruGetAllowedDeviceList:
+    type: object
+    required:
+    - DeviceID
+    - DeviceKey
+    properties:
+     DeviceID:
+      type: string
+      description: the device ID of the calling device. Must not contain ":".
+      default: "7b8e6e0ee5296db345162dc2ef652c1350761823"
+     DeviceKey:
+      type: string
+      description: DeviceKey value for DeviceID. Required in payload, must be a non-empty string up to 256 characters; if DeviceID has a configured DeviceKey it must match.
+      maxLength: 256
+ MiataruGetAllowedDeviceListResponse:
+  required:
+  - MiataruAllowedDeviceList
+  properties:
+   MiataruAllowedDeviceList:
+    type: object
+    required:
+    - DeviceID
+    - IsAllowedDeviceListEnabled
+    - allowedDevices
+    properties:
+     DeviceID:
+      type: string
+      description: target device ID
+     IsAllowedDeviceListEnabled:
+      type: boolean
+      description: true when the target device has allowed devices list enabled
+     allowedDevices:
+      type: array
+      description: full stored allowed devices list for the target device
+      items:
+       $ref: '#/definitions/MiataruAllowedDevice'
  MiataruSetDeviceSloganRequest:
   required:
   - MiataruSetDeviceSlogan
@@ -803,11 +889,11 @@ definitions:
     properties:
      DeviceID:
       type: string
-      description: the device ID of the calling device
+      description: the device ID of the calling device. Must not contain ":".
       default: "7b8e6e0ee5296db345162dc2ef652c1350761823"
      DeviceKey:
       type: string
-      description: required DeviceKey for the target device (must be configured and must match)
+      description: required DeviceKey for the target device (must be configured, non-empty, and must match)
       maxLength: 256
      Slogan:
       type: string
@@ -837,14 +923,14 @@ definitions:
     properties:
      DeviceID:
       type: string
-      description: target device ID whose slogan is requested
+      description: target device ID whose slogan is requested. Must not contain ":".
       default: "7b8e6e0ee5296db345162dc2ef652c1350761823"
      RequestDeviceID:
       type: string
-      description: requesting device ID used for authentication (aliases RequestMiataruDeviceID and requestingDeviceID are also accepted)
+      description: requesting device ID used for authentication (aliases RequestMiataruDeviceID and requestingDeviceID are also accepted). Must not contain ":".
      RequestDeviceKey:
       type: string
-      description: requesting device key used for authentication (aliases RequestMiataruDeviceKey and requestingDeviceKey are also accepted)
+      description: requesting device key used for authentication (aliases RequestMiataruDeviceKey and requestingDeviceKey are also accepted). Must be a non-empty string up to 256 characters.
       maxLength: 256
  MiataruGetDeviceSloganResponse:
   required:
@@ -873,14 +959,14 @@ definitions:
     properties:
      DeviceID:
       type: string
-      description: target device ID whose security status is requested
+      description: target device ID whose security status is requested. Must not contain ":".
       default: "7b8e6e0ee5296db345162dc2ef652c1350761823"
      RequestDeviceID:
       type: string
-      description: requesting device ID used for authentication (aliases RequestMiataruDeviceID and requestingDeviceID are also accepted)
+      description: requesting device ID used for authentication (aliases RequestMiataruDeviceID and requestingDeviceID are also accepted). Must not contain ":".
      RequestDeviceKey:
       type: string
-      description: requesting device key used for authentication (aliases RequestMiataruDeviceKey and requestingDeviceKey are also accepted)
+      description: requesting device key used for authentication (aliases RequestMiataruDeviceKey and requestingDeviceKey are also accepted). Must be a non-empty string up to 256 characters.
       maxLength: 256
  MiataruGetDeviceSecurityStatusResponse:
   required:
@@ -912,11 +998,11 @@ definitions:
     properties:
      Device:
       type: string
-      description: the device ID of which all location data should be deleted
+      description: the device ID of which all location data should be deleted. Must not contain ":".
       default: "7b8e6e0ee5296db345162dc2ef652c1350761823"
      DeviceKey:
       type: string
-      description: "(API 1.1) Optional DeviceKey for authentication. Required if DeviceKey has been set for this device via /setDeviceKey."
+      description: "(API 1.1) Optional DeviceKey for authentication. Required if DeviceKey has been set for this device via /setDeviceKey. Optional values may be omitted, null, or an empty string."
       maxLength: 256
  MiataruDeleteLocationResponse:
   required:

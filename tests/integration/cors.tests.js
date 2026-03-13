@@ -72,7 +72,7 @@ describe('CORS middleware', function() {
                     },
                     "MiataruLocation": [{
                         "Device": "test-device",
-                        "Timestamp": "2013-06-22T19:56:35.000Z",
+                        "Timestamp": "1371930995000",
                         "Longitude": "13.404954",
                         "Latitude": "52.520008",
                         "HorizontalAccuracy": "50.00"

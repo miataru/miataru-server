@@ -17,6 +17,16 @@ describe('RequestSetAllowedDeviceList', function() {
             }).to.throw(errors.BadRequestError, 'missing DeviceKey');
         });
 
+        it('should throw BadRequestError when DeviceKey is not a string', function() {
+            expect(function() {
+                new RequestSetAllowedDeviceList({
+                    DeviceID: 'test-device',
+                    DeviceKey: 123,
+                    allowedDevices: []
+                });
+            }).to.throw(errors.BadRequestError, 'DeviceKey must be a string');
+        });
+
         it('should throw BadRequestError when allowedDevices is missing', function() {
             expect(function() {
                 new RequestSetAllowedDeviceList({
@@ -86,6 +96,28 @@ describe('RequestSetAllowedDeviceList', function() {
                     ]
                 });
             }).to.throw(errors.BadRequestError, 'DeviceID');
+        });
+
+        it('should reject DeviceID values with colons', function() {
+            expect(function() {
+                new RequestSetAllowedDeviceList({
+                    DeviceID: 'test:device',
+                    DeviceKey: 'test-key',
+                    allowedDevices: []
+                });
+            }).to.throw(errors.BadRequestError, 'DeviceID must not contain ":"');
+        });
+
+        it('should reject allowed device IDs with colons', function() {
+            expect(function() {
+                new RequestSetAllowedDeviceList({
+                    DeviceID: 'test-device',
+                    DeviceKey: 'test-key',
+                    allowedDevices: [
+                        { DeviceID: 'device:1', hasCurrentLocationAccess: true }
+                    ]
+                });
+            }).to.throw(errors.BadRequestError, 'allowedDevices[0].DeviceID must not contain ":"');
         });
 
         it('should validate boolean fields in allowedDevices', function() {

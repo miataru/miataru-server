@@ -1,4 +1,5 @@
 var expect = require('chai').expect;
+var errors = require('../../lib/errors');
 
 var RequestConfigGetLocation = require('../../lib/models/RequestConfigGetLocation');
 
@@ -29,5 +30,22 @@ describe('RequestConfigGetLocation', function() {
 
         expect(config.requestMiataruDeviceID()).to.equal('requesting-device-id-alias');
         expect(config.requestMiataruDeviceKey()).to.equal('requesting-device-key-alias');
+    });
+
+    it('should reject RequestMiataruDeviceID values with colons', function() {
+        expect(function() {
+            new RequestConfigGetLocation({
+                RequestMiataruDeviceID: 'requesting:device-id'
+            });
+        }).to.throw(errors.BadRequestError, 'RequestMiataruDeviceID must not contain ":"');
+    });
+
+    it('should reject non-string RequestMiataruDeviceKey values', function() {
+        expect(function() {
+            new RequestConfigGetLocation({
+                RequestMiataruDeviceID: 'requesting-device-id',
+                RequestMiataruDeviceKey: 123
+            });
+        }).to.throw(errors.BadRequestError, 'RequestMiataruDeviceKey must be a string');
     });
 });

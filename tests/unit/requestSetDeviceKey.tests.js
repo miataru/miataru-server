@@ -27,6 +27,25 @@ describe('RequestSetDeviceKey', function() {
             }).to.throw(errors.BadRequestError, '256 characters');
         });
 
+        it('should reject DeviceID values with colons', function() {
+            expect(function() {
+                new RequestSetDeviceKey({
+                    DeviceID: 'test:device',
+                    NewDeviceKey: 'test-key-123'
+                });
+            }).to.throw(errors.BadRequestError, 'DeviceID must not contain ":"');
+        });
+
+        it('should throw BadRequestError when CurrentDeviceKey is not a string', function() {
+            expect(function() {
+                new RequestSetDeviceKey({
+                    DeviceID: 'test-device',
+                    CurrentDeviceKey: 123,
+                    NewDeviceKey: 'test-key-123'
+                });
+            }).to.throw(errors.BadRequestError, 'CurrentDeviceKey must be a string');
+        });
+
         it('should accept valid request with DeviceID and NewDeviceKey', function() {
             var request = new RequestSetDeviceKey({
                 DeviceID: 'test-device',

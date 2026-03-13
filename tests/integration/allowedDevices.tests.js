@@ -102,6 +102,133 @@ describe('Allowed Devices Integration Tests', function() {
                     .end(done);
             });
         });
+
+        it('should return 400 when DeviceID contains a colon', function(done) {
+            var setAllowedRequest = {
+                MiataruSetAllowedDeviceList: {
+                    DeviceID: 'test:device',
+                    DeviceKey: TEST_DEVICE_KEY,
+                    allowedDevices: []
+                }
+            };
+
+            request(app)
+                .post('/v1/setAllowedDeviceList')
+                .send(setAllowedRequest)
+                .expect(400)
+                .expect(function(res) {
+                    expect(res.body.error).to.include('DeviceID must not contain ":"');
+                })
+                .end(done);
+        });
+    });
+
+    describe('getAllowedDeviceList endpoint', function() {
+        it('should return disabled flag and empty list when nothing is configured', function(done) {
+            request(app)
+                .post('/v1/getAllowedDeviceList')
+                .send({
+                    MiataruGetAllowedDeviceList: {
+                        DeviceID: TEST_DEVICE,
+                        DeviceKey: TEST_DEVICE_KEY
+                    }
+                })
+                .expect(200)
+                .expect(function(res) {
+                    expect(res.body.MiataruAllowedDeviceList).to.deep.equal({
+                        DeviceID: TEST_DEVICE,
+                        IsAllowedDeviceListEnabled: false,
+                        allowedDevices: []
+                    });
+                })
+                .end(done);
+        });
+
+        it('should return the configured allow list', function(done) {
+            var allowedDevices = [
+                {
+                    DeviceID: TEST_REQUESTING_DEVICE,
+                    hasCurrentLocationAccess: true,
+                    hasHistoryAccess: false
+                }
+            ];
+
+            allowedDevicesUtils.setAllowedDevices(TEST_DEVICE, allowedDevices, function(error) {
+                if (error) return done(error);
+
+                request(app)
+                    .post('/v1/getAllowedDeviceList')
+                    .send({
+                        MiataruGetAllowedDeviceList: {
+                            DeviceID: TEST_DEVICE,
+                            DeviceKey: TEST_DEVICE_KEY
+                        }
+                    })
+                    .expect(200)
+                    .expect(function(res) {
+                        expect(res.body.MiataruAllowedDeviceList.DeviceID).to.equal(TEST_DEVICE);
+                        expect(res.body.MiataruAllowedDeviceList.IsAllowedDeviceListEnabled).to.equal(true);
+                        expect(res.body.MiataruAllowedDeviceList.allowedDevices).to.deep.equal(allowedDevices);
+                    })
+                    .end(done);
+            });
+        });
+
+        it('should return 403 when DeviceKey does not match', function(done) {
+            deviceKeyUtils.setDeviceKey(TEST_DEVICE, TEST_DEVICE_KEY, function(error) {
+                if (error) return done(error);
+
+                request(app)
+                    .post('/v1/getAllowedDeviceList')
+                    .send({
+                        MiataruGetAllowedDeviceList: {
+                            DeviceID: TEST_DEVICE,
+                            DeviceKey: 'wrong-key'
+                        }
+                    })
+                    .expect(403)
+                    .expect(function(res) {
+                        expect(res.body.error).to.include('DeviceKey does not match');
+                    })
+                    .end(done);
+            });
+        });
+
+        it('should return 400 when DeviceID contains a colon', function(done) {
+            request(app)
+                .post('/v1/getAllowedDeviceList')
+                .send({
+                    MiataruGetAllowedDeviceList: {
+                        DeviceID: 'test:device',
+                        DeviceKey: TEST_DEVICE_KEY
+                    }
+                })
+                .expect(400)
+                .expect(function(res) {
+                    expect(res.body.error).to.include('DeviceID must not contain ":"');
+                })
+                .end(done);
+        });
+
+        it('should support the non-versioned endpoint', function(done) {
+            request(app)
+                .post('/getAllowedDeviceList')
+                .send({
+                    MiataruGetAllowedDeviceList: {
+                        DeviceID: TEST_DEVICE,
+                        DeviceKey: TEST_DEVICE_KEY
+                    }
+                })
+                .expect(200)
+                .end(done);
+        });
+
+        it('should reject non-POST methods', function(done) {
+            request(app)
+                .get('/v1/getAllowedDeviceList')
+                .expect(405)
+                .end(done);
+        });
     });
 
     describe('GetLocation with allowed devices', function() {

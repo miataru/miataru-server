@@ -115,4 +115,34 @@ describe('updateLocation', function() {
             })
             .end(done);
     });
+
+    it('should reject Device values with colons', function(done) {
+        var updateData = calls.locationUpdateCall({
+            locations: calls.location({ device: 'test:device' })
+        });
+
+        request(app)
+            .post('/v1/UpdateLocation')
+            .send(updateData)
+            .expect(400)
+            .expect(function(res) {
+                expect(res.body.error).to.include('Device must not contain ":"');
+            })
+            .end(done);
+    });
+
+    it('should reject out-of-range latitude values', function(done) {
+        var updateData = calls.locationUpdateCall({
+            locations: calls.location({ device: 'bounds-device', latitude: '95.0' })
+        });
+
+        request(app)
+            .post('/v1/UpdateLocation')
+            .send(updateData)
+            .expect(400)
+            .expect(function(res) {
+                expect(res.body.error).to.include('Latitude');
+            })
+            .end(done);
+    });
 });

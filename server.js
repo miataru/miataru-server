@@ -1,5 +1,6 @@
 var http = require('http');
 var path = require('path');
+var crypto = require('crypto');
 
 var express = require('express');
 var bodyParser = require('body-parser');
@@ -48,15 +49,6 @@ function handleError(error, req, res, next) {
             req.path || req.url, 
             req.headers && req.headers['content-type'],
             req.headers && req.headers['content-length']);
-        
-        // If we have rawBody, log it for debugging
-        if (req.rawBody !== undefined) {
-            logger.error('Raw body that failed to parse (length=%d): %s', 
-                req.rawBody.length, 
-                req.rawBody.substring(0, 500));
-        } else {
-            logger.error('Raw body was not captured before parse failure');
-        }
     }
     
     var logContext = buildErrorLogContext(error, req);
@@ -148,25 +140,17 @@ function buildErrorLogContext(error, req) {
     var rawBody = (error && error.body) || (req && req.rawBody);
 
     if (rawBody !== undefined) {
-        var maxLength = 500; // Increased from 200 to capture more context
         var length;
-        var preview;
 
         if (Buffer.isBuffer(rawBody)) {
             length = rawBody.length;
-            preview = rawBody.toString('utf8', 0, Math.min(maxLength, length));
         } else {
             var stringValue = typeof rawBody === 'string' ? rawBody : String(rawBody);
             length = stringValue.length;
-            preview = stringValue.slice(0, Math.min(maxLength, length));
-        }
-
-        if (length > maxLength) {
-            preview += '…';
         }
 
         details.push('rawBodyLength=' + length);
-        details.push('rawBodyPreview=' + preview.replace(/\s+/g, ' '));
+        details.push('rawBodyFingerprint=' + buildRawBodyFingerprint(rawBody));
         
         // If body seems truncated, log a warning
         if (req && req.headers && req.headers['content-length']) {
@@ -182,4 +166,9 @@ function buildErrorLogContext(error, req) {
     }
 
     return ' (' + details.join(', ') + ')';
+}
+
+function buildRawBodyFingerprint(rawBody) {
+    var buffer = Buffer.isBuffer(rawBody) ? rawBody : Buffer.from(String(rawBody), 'utf8');
+    return crypto.createHash('sha256').update(buffer).digest('hex').slice(0, 16);
 }
