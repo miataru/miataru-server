@@ -1,12 +1,12 @@
 # miataru-server
 
-**Version 2.2.0** - Security and privacy enhancements with API 1.1 support
+**Version 2.3.0** - Security and privacy enhancements with API 1.1 support
 
 This is the source code of a Miataru server side implementation. You can get more information [here](http://www.miataru.com).
 
-## What's New in Version 2.2 / API 1.1
+## What's New in Version 2.3 / API 1.1
 
-Version 2.2 introduces significant security and privacy enhancements while maintaining broad backward compatibility with API 1.0 (with required RequestMiataruDeviceID for GetLocation/GetLocationHistory and the documented GetLocationGeoJSON change):
+Version 2.3 introduces significant security and privacy enhancements while maintaining broad backward compatibility with API 1.0 (with required RequestMiataruDeviceID for GetLocation/GetLocationHistory and the documented GetLocationGeoJSON change):
 
 - **RequestMiataruDeviceID (Mandatory)** - Required identifier for all GetLocation and GetLocationHistory requests
 - **RequestMiataruDeviceKey (Optional)** - Optional key in `MiataruConfig` for strict requester validation in GetLocation
@@ -675,7 +675,7 @@ tests/
 - **CORS**: ^2.8.5 (cross-origin resource sharing)
 - **Body-Parser**: ^1.20.2 (request parsing)
 - **Yargs**: ^17.7.2 (command line argument parsing)
-- **Moment.js**: ^2.29.4 (date/time handling)
+- **Moment.js**: ^2.39.4 (date/time handling)
 - **EJS**: ^3.1.9 (template engine)
 - **Stylus**: ^0.64.0 (CSS preprocessing)
 
@@ -696,7 +696,7 @@ Changelog policy:
 - Add ongoing work under `## [Unreleased]` and move it into a versioned section when `package.json` is bumped.
 - Keep changelog entries in English.
 
-### Version 2.2.0 (Latest) - API 1.1
+### Version 2.3.0 (Latest) - API 1.1
 
 #### Security & Privacy Features
 - **DeviceKey Authentication**: Protect write operations and visitor history access
