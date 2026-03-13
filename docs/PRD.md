@@ -1,5 +1,7 @@
 # PROJECT REQUIREMENTS DOCUMENT (PRD)
 
+Historical note: this PRD is retained as product/planning context. It is not the primary source of truth for the current implementation; use [`README.md`](../README.md), [`docs/README.md`](README.md), and the code/tests for current behavior.
+
 ## 1. Overview
 - **Purpose**: Provide a self-hostable Miataru server that stores and serves device location data (current, history, GeoJSON) with configurable retention and visitor history tracking while maintaining backward compatibility with legacy clients. (Evidence: README.md L9-L43, L340-L433; lib/routes/location/index.js L9-L30)
 - **Scope**:

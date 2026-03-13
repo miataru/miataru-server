@@ -165,22 +165,90 @@ Run the tests:
 `npm run test:all` (or `make run-all-tests`)
 
 Local runtime note:
-- Recommended Node.js version for local development/tests: **18.x or 20.x**
-- Docker default runtime in this repository: **node:18-alpine**
+- `package.json` requires **Node.js >= 20.0.0**
+- Recommended Node.js version for local development/tests: **20.x**
+- Docker default runtime in this repository: **node:20-alpine**
 - With very new Node releases (for example Node 25.x), Mocha/Yargs may fail to start due to ESM/CJS compatibility in the test toolchain.
 - The integration test `recordDetailedVisitorHistory.tests.js` case `should respect maximumNumberOfLocationVistors limit as unique device limit` explicitly uses a 5000ms timeout because it performs multiple sequential HTTP requests plus async Redis writes and can exceed Mocha's default 2000ms in CI.
 
-Configuration:
-Adjust the configuration in `./config/` or add your own
+## Configuration
+
+Configuration files live in `./config/` and are merged in this order:
+
+1. `config/default.js`
+2. `config/{NODE_ENV}.js` if `NODE_ENV` is set and the file exists
+3. `config/user.{USER}.js` only when `NODE_ENV=development`
+4. `--externalconfig=/absolute/path/to/config.js`
+5. Additional CLI flags such as `--port=9000`
+
+Example:
+
+```bash
+NODE_ENV=development node server.js --externalconfig=/etc/miataru/config.js --port=9000
+```
+
+Minimal custom config:
 
 ```javascript
-strictDeviceKeyCheck: true // default, validates MiataruConfig.RequestMiataruDeviceKey in GetLocation when requester has a DeviceKey
+module.exports = {
+    port: 8090,
+    listenip: '0.0.0.0',
+    database: {
+        type: 'real',
+        host: '127.0.0.1',
+        port: 6379
+    }
+};
 ```
 
 Start Server:
 `node server.js`
 
 The server will, in the default configuration, listen on localhost port 8090. To do some test requests on the commandline, do this:
+
+### Configuration Reference
+
+| Key | Default | Description |
+| --- | --- | --- |
+| `port` | `8090` | TCP port used by the HTTP server. |
+| `listenip` | `0.0.0.0` | Bind address for the HTTP server. |
+| `database.type` | `'mock'` | `'mock'` uses in-memory `fakeredis`, `'real'` uses a Redis server. |
+| `database.host` | `'localhost'` | Redis host used when `database.type` is `'real'`. |
+| `database.port` | `6379` | Redis port used when `database.type` is `'real'`. |
+| `database.userName` | `''` | Present in sample configs, but the current Redis client setup does not read this field yet. |
+| `database.password` | `''` | Present in sample configs, but the current Redis client setup does not read this field yet. |
+| `logging.logLevel` | `'info'` | Logger threshold. Accepts strings such as `info`, `warn`, `error` or numeric levels. |
+| `maximumNumberOfHistoryItems` | `1023` | Maximum number of stored location-history entries per device. |
+| `maximumNumberOfLocationVistors` | `10` | Maximum stored visitor-history entries or unique visitors, depending on `recordDetailedVisitorHistory`. |
+| `addEmptyVisitorDeviceIDtoVisitorHistory` | `false` | Controls whether empty requester IDs are still written to visitor history. |
+| `recordDetailedVisitorHistory` | `false` | `false` keeps only the newest entry per requester; `true` stores every access as a separate event. |
+| `strictDeviceKeyCheck` | `true` | Validates `MiataruConfig.RequestMiataruDeviceKey` for `GetLocation` and `GetLocationHistory` when the requesting device has a configured DeviceKey. |
+| `redisMiataruNamespace` | `'miad'` | Prefix for all Redis keys created by the server. |
+| `cors.allowedOrigins` | `["http://localhost:3000", "http://localhost:8080", "https://miataru.com"]` | Allowed browser origins. Requests without an `Origin` header, such as `curl` or native apps, are still accepted. |
+| `rateLimiting.http.enabled` | `true` | Enables the per-IP HTTP concurrency limiter middleware. |
+| `rateLimiting.http.maxConcurrentPerIp` | `10` | Maximum in-flight HTTP requests per client IP. |
+| `rateLimiting.http.maxQueuePerIp` | `50` | Maximum queued HTTP requests per client IP. |
+| `rateLimiting.http.queueTimeoutMs` | `0` | Queue timeout for waiting HTTP requests. `0` means no timeout. |
+| `rateLimiting.http.rejectionStatusCode` | `429` | HTTP status returned when the HTTP limiter rejects a request. |
+| `rateLimiting.http.rejectionMessage` | `'Too Many Requests'` | Error body used when the HTTP limiter queue is full. |
+| `rateLimiting.http.timeoutMessage` | `'Request timed out while waiting in rate limit queue'` | Error body used when an enqueued request times out. |
+| `rateLimiting.redis.enabled` | `true` | Enables the global Redis concurrency limiter. |
+| `rateLimiting.redis.maxConcurrent` | `50` | Maximum simultaneous Redis commands. |
+| `rateLimiting.redis.maxQueue` | `100` | Maximum queued Redis commands. |
+| `rateLimiting.redis.queueTimeoutMs` | `30000` | Timeout for queued Redis commands in milliseconds. |
+
+### Request-Level Config (`MiataruConfig`)
+
+The runtime configuration above controls the server itself. Some API behavior is additionally controlled per request through `MiataruConfig`:
+
+| Field | Used by | Description |
+| --- | --- | --- |
+| `EnableLocationHistory` | `UpdateLocation` | String flag. `"true"` stores the new point in history and also updates the last-known location. Any other value disables history for that request. |
+| `LocationDataRetentionTime` | `UpdateLocation` | Retention in minutes for the last-known location when history is disabled. |
+| `RequestMiataruDeviceID` | `GetLocation`, `GetLocationHistory` | Mandatory requester identifier in API 1.1. Also used for visitor history and allowed-device checks. |
+| `RequestMiataruDeviceKey` | `GetLocation`, `GetLocationHistory` | Optional requester key. Enforced when `strictDeviceKeyCheck` is enabled and the requesting device has a stored DeviceKey. |
+
+All DeviceID-like values must not contain `:`. DeviceKey values must be strings up to 256 characters. The server also accepts `requestingDeviceID` / `requestingDeviceKey` as compatibility aliases on read requests.
 
 ### Basic Examples
 
@@ -253,6 +321,155 @@ curl -H 'Content-Type: application/json' -X POST 'http://localhost:8090/v1/getDe
 curl -H 'Content-Type: application/json' -X POST 'http://localhost:8090/v1/getAllowedDeviceList' \
   -d '{"MiataruGetAllowedDeviceList":{"DeviceID":"7b8e6e0ee5296db345162dc2ef652c1350761823","DeviceKey":"your-device-key-here"}}'
 ```
+
+## Endpoint Behavior Reference
+
+This section fills in the operational details that are easy to miss when only looking at the short endpoint list above.
+
+### UpdateLocation
+
+- Request wrapper: `MiataruLocation` plus optional `MiataruConfig`
+- Accepts a single location object or an array of locations
+- Required location fields: `Device`, `Timestamp`, `Longitude`, `Latitude`, `HorizontalAccuracy`
+- Optional location fields: `Speed`, `BatteryLevel`, `Altitude`, `DeviceKey`
+- If the target device already has a DeviceKey configured, `DeviceKey` becomes mandatory for writes
+- With `MiataruConfig.EnableLocationHistory = "true"`, every submitted point is pushed into history and trimmed to `maximumNumberOfHistoryItems`
+- Without history, only the most recent point is stored and expires after `LocationDataRetentionTime` minutes
+- Response: `MiataruResponse: "ACK"` plus a fish-style `MiataruVerboseResponse`
+
+### GetLocation
+
+- Request wrapper: `MiataruGetLocation` plus mandatory `MiataruConfig.RequestMiataruDeviceID`
+- Accepts an array of target devices and returns one entry per requested device
+- If an allowed-devices list is enabled and the requester is not allowed, the response entry is `null`
+- Successful reads against an existing target record visitor history unless the requester ID is empty or equal to the target device ID
+- If the target device has a slogan, the returned location object includes `Slogan`
+
+### GetLocationHistory
+
+- Request wrapper: `MiataruGetLocationHistory` plus mandatory `MiataruConfig.RequestMiataruDeviceID`
+- Supported request formats:
+  - JSON object such as `{ "Device": "abc", "Amount": 50 }`
+  - Legacy string form such as `"Device=abc&Amount=50"`
+- `Amount` must be an integer greater than or equal to `1`
+- Access control follows the history permission in the allowed-devices list
+- When access is denied, the server returns an empty `MiataruLocation` array instead of a permission-specific payload
+- Response metadata lives in `MiataruServerConfig.MaximumNumberOfLocationUpdates` and `MiataruServerConfig.AvailableDeviceLocationUpdates`
+
+### GetVisitorHistory
+
+- Request wrapper: `MiataruGetVisitorHistory`
+- Requires `Device` and `Amount`; `DeviceKey` is required only when the target device has a stored DeviceKey
+- Returns `MiataruVisitors`
+- Entries where `visitor.DeviceID` equals the target device are filtered out of the response
+- The meaning of `maximumNumberOfLocationVistors` depends on `recordDetailedVisitorHistory`
+
+### GetLocationGeoJSON
+
+- Available as `POST /v1/GetLocationGeoJSON` and `GET /v1/GetLocationGeoJSON/:id`
+- Returns a single GeoJSON `Feature`
+- If the target device has a configured DeviceKey, the endpoint returns `401 Unauthorized`
+- This endpoint does not use allowed-devices logic or visitor-history recording
+
+### DeviceKey Management
+
+#### setDeviceKey
+
+- Request wrapper: `MiataruSetDeviceKey`
+- Required fields: `DeviceID`, `NewDeviceKey`
+- Optional field: `CurrentDeviceKey`
+- First-time setup works without `CurrentDeviceKey`
+- Rotating an existing key requires the correct `CurrentDeviceKey`
+
+#### Example
+
+```json
+{
+  "MiataruSetDeviceKey": {
+    "DeviceID": "my-device-123",
+    "CurrentDeviceKey": "old-key-if-one-exists",
+    "NewDeviceKey": "new-secret"
+  }
+}
+```
+
+### Allowed Devices List
+
+#### setAllowedDeviceList
+
+- Request wrapper: `MiataruSetAllowedDeviceList`
+- Requires owner authentication with `DeviceID` and `DeviceKey`
+- `allowedDevices` must be an array with at most 256 entries
+- Each entry uses:
+  - `DeviceID`
+  - `hasCurrentLocationAccess`
+  - `hasHistoryAccess`
+- Missing boolean flags default to `false`
+- Sending an empty array disables the ACL for that device completely
+
+#### getAllowedDeviceList
+
+- Request wrapper: `MiataruGetAllowedDeviceList`
+- Uses the same owner authentication pair (`DeviceID` + `DeviceKey`)
+- Returns `MiataruAllowedDeviceList.DeviceID`
+- Returns `MiataruAllowedDeviceList.IsAllowedDeviceListEnabled`
+- Returns `MiataruAllowedDeviceList.allowedDevices`
+
+#### Example
+
+```json
+{
+  "MiataruSetAllowedDeviceList": {
+    "DeviceID": "owner-device",
+    "DeviceKey": "owner-secret",
+    "allowedDevices": [
+      {
+        "DeviceID": "friend-1",
+        "hasCurrentLocationAccess": true,
+        "hasHistoryAccess": false
+      },
+      {
+        "DeviceID": "friend-2",
+        "hasCurrentLocationAccess": true,
+        "hasHistoryAccess": true
+      }
+    ]
+  }
+}
+```
+
+### Device Slogan And Security Status
+
+#### setDeviceSlogan
+
+- Request wrapper: `MiataruSetDeviceSlogan`
+- Requires `DeviceID`, `DeviceKey`, `Slogan`
+- The target device must already have a DeviceKey configured
+- `Slogan` must be a string with a maximum of 40 characters and no control characters
+
+#### getDeviceSlogan
+
+- Request wrapper: `MiataruGetDeviceSlogan`
+- Requires `DeviceID`, `RequestDeviceID`, `RequestDeviceKey`
+- The requesting device must itself have a configured DeviceKey and provide the correct key
+- Reads are independent from the allowed-devices list
+- Successful reads on existing slogans are recorded in visitor history
+
+#### getDeviceSecurityStatus
+
+- Request wrapper: `MiataruGetDeviceSecurityStatus`
+- Requires `DeviceID`, `RequestDeviceID`, `RequestDeviceKey`
+- Returns whether the target device has a stored DeviceKey
+- Returns whether the target device currently has an enabled allowed-devices list
+- Successful reads are recorded in visitor history only when the target device has a current location entry
+
+### Other HTTP Behavior
+
+- `GET /` returns a plain-text service banner
+- `GET /robots.txt` returns a permissive robots file
+- Unsupported methods on API endpoints return `405 Method Not Supported`
+- `OPTIONS` requests on API endpoints return `204`
+- Invalid JSON and other request parsing problems are logged with body fingerprints to help operational debugging
 
 ## DeleteLocation API
 
@@ -666,7 +883,7 @@ tests/
 ## Dependencies
 
 ### Core Dependencies
-- **Node.js**: >= 18.0.0 (modernized for current LTS)
+- **Node.js**: >= 20.0.0
 - **Express.js**: ^4.18.2 (web framework)
 - **Redis**: ^4.6.10 (data storage with modern Redis v4+ compatibility)
 - **FakeRedis**: ^2.0.0 (testing and development)
@@ -675,7 +892,7 @@ tests/
 - **CORS**: ^2.8.5 (cross-origin resource sharing)
 - **Body-Parser**: ^1.20.2 (request parsing)
 - **Yargs**: ^17.7.2 (command line argument parsing)
-- **Moment.js**: ^2.39.4 (date/time handling)
+- **Moment.js**: ^2.29.4 (date/time handling)
 - **EJS**: ^3.1.9 (template engine)
 - **Stylus**: ^0.64.0 (CSS preprocessing)
 
@@ -741,7 +958,7 @@ Changelog policy:
 - **Modern Redis Support**: Updated Redis client for Redis v4+ compatibility
 
 #### Improvements
-- **Node.js 18+ Support**: Modernized for current LTS version
+- **Node.js 20+ Support**: Modernized for current runtime baseline
 - **Enhanced Testing**: Comprehensive test suite with 500+ tests
 - **Better Error Handling**: Improved validation and error responses
 - **Security Updates**: Fixed critical vulnerabilities in dependencies

@@ -1,5 +1,7 @@
 # INTENT & PROBLEM RECONSTRUCTION
 
+Historical note: this document reconstructs original project intent and is preserved for context. For the current shipped behavior, prefer [`README.md`](../README.md), [`docs/README.md`](README.md), and [`docs/TECHNICAL_SPECIFICATION.md`](TECHNICAL_SPECIFICATION.md).
+
 ## 1. One-Sentence Purpose (Final Form)
 Provide a self-hostable Miataru server that lets clients store and retrieve device locations (current, history, GeoJSON) while keeping data ownership and operational control in the hands of the user. (Evidence: README.md L9-L43, L64-L88; lib/routes/location/index.js L4-L53)
 

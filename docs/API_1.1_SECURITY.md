@@ -434,7 +434,7 @@ This is a security measure to prevent unauthorized access to location data via t
 
 1. **Set DeviceKey (first time):**
 ```bash
-curl -X POST http://localhost:3000/v1/setDeviceKey \
+curl -X POST http://localhost:8090/v1/setDeviceKey \
   -H "Content-Type: application/json" \
   -d '{
     "MiataruSetDeviceKey": {
@@ -447,7 +447,7 @@ curl -X POST http://localhost:3000/v1/setDeviceKey \
 
 2. **Update Location with DeviceKey:**
 ```bash
-curl -X POST http://localhost:3000/v1/UpdateLocation \
+curl -X POST http://localhost:8090/v1/UpdateLocation \
   -H "Content-Type: application/json" \
   -d '{
     "MiataruConfig": {
@@ -467,7 +467,7 @@ curl -X POST http://localhost:3000/v1/UpdateLocation \
 
 3. **Set Allowed Devices:**
 ```bash
-curl -X POST http://localhost:3000/v1/setAllowedDeviceList \
+curl -X POST http://localhost:8090/v1/setAllowedDeviceList \
   -H "Content-Type: application/json" \
   -d '{
     "MiataruSetAllowedDeviceList": {
@@ -484,7 +484,7 @@ curl -X POST http://localhost:3000/v1/setAllowedDeviceList \
 
 4. **Read Allowed Devices:**
 ```bash
-curl -X POST http://localhost:3000/v1/getAllowedDeviceList \
+curl -X POST http://localhost:8090/v1/getAllowedDeviceList \
   -H "Content-Type: application/json" \
   -d '{
     "MiataruGetAllowedDeviceList": {
@@ -496,7 +496,7 @@ curl -X POST http://localhost:3000/v1/getAllowedDeviceList \
 
 5. **Get Location (with access control):**
 ```bash
-curl -X POST http://localhost:3000/v1/GetLocation \
+curl -X POST http://localhost:8090/v1/GetLocation \
   -H "Content-Type: application/json" \
   -d '{
     "MiataruGetLocation": [{"Device": "device-123"}],

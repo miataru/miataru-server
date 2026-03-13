@@ -1,5 +1,7 @@
 # DECISION LOG (ADR-STYLE)
 
+Historical note: this ADR log records design decisions and pivots during the refactoring/hardening cycle. It provides context, but current runtime behavior is documented in [`README.md`](../README.md), [`docs/README.md`](README.md), and the code under `lib/`.
+
 ## 1. Decision Summary Index
 - **ADR-001**: Self-hosted Miataru server prioritizing user control and privacy — **Accepted**. Evidence: README.md; docs/INTENT_AND_PROBLEM_RECONSTRUCTION.md.
 - **ADR-002**: Support both v1 and legacy endpoints for backward compatibility — **Accepted**. Evidence: README.md; lib/routes/location/index.js; tests/integration/backwardCompatibility.tests.js.
@@ -12,7 +14,7 @@
 - **ADR-009**: Enforce CORS by allowed origins; allow no-origin requests — **Accepted**. Evidence: README.md; lib/middlewares/index.js; tests/integration/cors.tests.js.
 - **ADR-010**: Add HTTP and Redis concurrency rate limiting with queueing — **Accepted**. Evidence: README.md; lib/middlewares/rateLimiter.js; lib/db.js; tests/integration/httpRateLimiter.tests.js; tests/unit/redisRateLimiter.tests.js.
 - **ADR-011**: Expand JSON parse error logging with raw body capture — **Accepted**. Evidence: .specstory/history/2026-01-19_20-26Z-miataru-getlocationhistory-json-error.md; server.js; tests/integration/getLocationHistoryParsingError.tests.js.
-- **ADR-012**: Modernize Docker build base to Node 18 — **Accepted**. Evidence: .specstory/history/2026-01-19_20-01Z-npm-engine-warnings-in-docker-build.md; Dockerfile; package.json.
+- **ADR-012**: Modernize Docker build base to Node 20 — **Accepted**. Evidence: .specstory/history/2026-01-19_20-01Z-npm-engine-warnings-in-docker-build.md; Dockerfile; package.json.
 - **ADR-013**: Reduce dependency warnings via upgraded Stylus and npm overrides — **Accepted**. Evidence: .specstory/history/2026-01-19_20-04Z-npm-warnings-in-docker-build.md; package.json.
 - **ADR-014**: Keep Redis compatibility by bridging legacy callbacks and modern v4 API — **Accepted**. Evidence: lib/db.js; tests/unit/db.redisCompatibility.tests.js.
 
@@ -91,7 +93,7 @@
 - **Why alternatives were rejected**: Incomplete deletion and higher operational burden. (Evidence: docs/DELETE_LOCATION_API.md)
 - **Consequences**:
   - **Positive**: API-level deletion for all data types. (Evidence: tests/integration/deleteLocation.tests.js)
-  - **Negative**: No authentication is enforced. (Evidence: docs/DELETE_LOCATION_API.md)
+  - **Negative**: Deletion semantics span multiple Redis keys and still rely on per-device DeviceKey protection rather than a broader user/account model. (Evidence: docs/DELETE_LOCATION_API.md; lib/routes/location/v1/location.js)
 - **Follow-ups**: Document deletion semantics and counts. (Evidence: docs/DELETE_LOCATION_API.md)
 - **Evidence pointers**: docs/DELETE_LOCATION_API.md; lib/routes/location/v1/location.js; tests/integration/deleteLocation.tests.js.
 
@@ -139,14 +141,14 @@
 - **Follow-ups**: Ensure body size limits and redaction policies if needed. (Evidence: server.js)
 - **Evidence pointers**: .specstory/history/2026-01-19_20-26Z-miataru-getlocationhistory-json-error.md; server.js; tests/integration/getLocationHistoryParsingError.tests.js.
 
-### ADR-012: Docker base image moved to Node 18
+### ADR-012: Docker base image moved to Node 20
 - **Context**: Docker builds showed engine warnings due to old Node version. (Evidence: .specstory/history/2026-01-19_20-01Z-npm-engine-warnings-in-docker-build.md)
-- **Decision**: Use `node:18-alpine` base image to satisfy engine requirements. (Evidence: Dockerfile; package.json)
+- **Decision**: Use `node:20-alpine` base image to satisfy engine requirements. (Evidence: Dockerfile; package.json)
 - **Alternatives considered**: Keep `node:alpine` (latest but unpinned); use lower Node version.
 - **Why alternatives were rejected**: Engine incompatibilities and warnings. (Evidence: .specstory/history/2026-01-19_20-01Z-npm-engine-warnings-in-docker-build.md)
 - **Consequences**:
-  - **Positive**: Aligns with `engines.node` >= 18. (Evidence: package.json)
-  - **Negative**: Requires Node 18 runtime in Docker. (Evidence: Dockerfile)
+  - **Positive**: Aligns with `engines.node` >= 20. (Evidence: package.json)
+  - **Negative**: Requires Node 20 runtime in Docker. (Evidence: Dockerfile)
 - **Follow-ups**: Keep engine requirements documented. (Evidence: package.json)
 - **Evidence pointers**: Dockerfile; package.json; .specstory/history/2026-01-19_20-01Z-npm-engine-warnings-in-docker-build.md.
 
@@ -176,7 +178,7 @@
 - **Visitor history recording behavior**: Always-detailed logging → configurable detailed/summary modes. Impact: storage efficiency vs. audit trail tradeoff, additional logic and tests. (Evidence: .specstory/history/2026-01-22_13-59Z-visitor-history-recording-configuration.md; config/default.js; tests/integration/recordDetailedVisitorHistory.tests.js)
 - **Visitor history inclusion rules**: Record all visitors → exclude self-requests and optionally empty visitor IDs. Impact: cleaner visitor history and aligned with stated requirements. (Evidence: .specstory/history/2026-01-19_19-52Z-visitor-history-self-request-exclusion.md; lib/models/RequestConfigGetLocation.js; tests/integration/visitorHistoryFiltering.tests.js)
 - **Error observability**: Minimal body-parser diagnostics → raw body capture and expanded JSON parse logging. Impact: improved debugging for payload errors. (Evidence: .specstory/history/2026-01-19_20-26Z-miataru-getlocationhistory-json-error.md; server.js)
-- **Docker runtime**: Unpinned `node:alpine` → pinned `node:18-alpine`. Impact: reduced engine warnings and aligned runtime requirements. (Evidence: .specstory/history/2026-01-19_20-01Z-npm-engine-warnings-in-docker-build.md; Dockerfile; package.json)
+- **Docker runtime**: Unpinned `node:alpine` → pinned `node:20-alpine`. Impact: reduced engine warnings and aligned runtime requirements. (Evidence: .specstory/history/2026-01-19_20-01Z-npm-engine-warnings-in-docker-build.md; Dockerfile; package.json)
 - **Dependency hygiene**: Deprecated `glob/inflight` warnings → upgrades and overrides to newer `glob`. Impact: cleaner npm output; potential transitive changes. (Evidence: .specstory/history/2026-01-19_20-04Z-npm-warnings-in-docker-build.md; package.json)
 
 ---

@@ -1,5 +1,7 @@
 # COMPLETENESS AUDIT
 
+Historical note: this audit captures a point-in-time review during the API 1.1 hardening work. For the current implementation state, start with [`README.md`](../README.md), [`docs/README.md`](README.md), and [`docs/TECHNICAL_SPECIFICATION.md`](TECHNICAL_SPECIFICATION.md).
+
 ## 1. Audit Scope & Method
 - **What was checked**:
   - Documentation set: `docs/INTENT_AND_PROBLEM_RECONSTRUCTION.md`, `docs/PRD.md`, `docs/TECHNICAL_SPECIFICATION.md`, `docs/DECISION_LOG.md`, `docs/REIMPLEMENTATION_ROADMAP_AND_EVOLUTION.md`.

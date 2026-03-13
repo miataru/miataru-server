@@ -11,6 +11,8 @@ This changelog is based on Git history and the version numbers defined in `packa
 ### Changed
 - Hardened request validation for DeviceIDs, DeviceKeys, `GetLocationHistory` parsing, and `UpdateLocation` numeric bounds without changing existing Redis storage formats.
 - Updated API documentation for the new allowed-device-list read endpoint, DeviceID restrictions, stricter history parsing, and validated location field ranges.
+- Reworked repository documentation to match the current implementation state, including configuration coverage, endpoint behavior notes, runtime/version corrections, and clearer separation between current reference docs and historical planning material.
+- Removed the obsolete top-level `TODO.md`.
 
 ### Fixed
 - Corrected Swagger schema indentation for slogan fields (`8e03018`).

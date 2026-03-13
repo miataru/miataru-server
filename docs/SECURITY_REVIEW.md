@@ -1,5 +1,7 @@
 # Miataru Server Security Review
 
+Historical note: this review captures security posture and follow-up ideas from an earlier review pass. Some findings have since been addressed in code. For the current implementation and operator-facing behavior, prefer [`README.md`](../README.md), [`docs/API_1.1_SECURITY.md`](API_1.1_SECURITY.md), and [`docs/TECHNICAL_SPECIFICATION.md`](TECHNICAL_SPECIFICATION.md).
+
 Date: 2025-09-15
 
 ## Scope

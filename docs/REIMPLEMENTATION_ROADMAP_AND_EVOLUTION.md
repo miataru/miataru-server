@@ -1,5 +1,7 @@
 # REIMPLEMENTATION ROADMAP & EVOLUTION GUIDE
 
+Historical note: this roadmap documents the evolution path taken by the project. Treat it as design history; for the current state, see [`README.md`](../README.md), [`docs/README.md`](README.md), and [`docs/TECHNICAL_SPECIFICATION.md`](TECHNICAL_SPECIFICATION.md).
+
 ## 1. Reimplementation Strategy
 
 ### Behavioral compatibility contract

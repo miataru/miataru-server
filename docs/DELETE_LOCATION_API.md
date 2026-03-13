@@ -86,19 +86,19 @@ The DeleteLocation API endpoint allows you to permanently delete all location da
 
 #### Delete location data for a specific device (no DeviceKey)
 ```bash
-curl -H 'Content-Type: application/json' -X POST 'http://localhost:8080/v1/DeleteLocation' \
+curl -H 'Content-Type: application/json' -X POST 'http://localhost:8090/v1/DeleteLocation' \
   -d '{"MiataruDeleteLocation":{"Device":"my-device-123"}}'
 ```
 
 #### Delete location data with DeviceKey (API 1.1)
 ```bash
-curl -H 'Content-Type: application/json' -X POST 'http://localhost:8080/v1/DeleteLocation' \
+curl -H 'Content-Type: application/json' -X POST 'http://localhost:8090/v1/DeleteLocation' \
   -d '{"MiataruDeleteLocation":{"Device":"my-device-123","DeviceKey":"your-device-key-here"}}'
 ```
 
 #### Delete location data using legacy endpoint
 ```bash
-curl -H 'Content-Type: application/json' -X POST 'http://localhost:8080/DeleteLocation' \
+curl -H 'Content-Type: application/json' -X POST 'http://localhost:8090/DeleteLocation' \
   -d '{"MiataruDeleteLocation":{"Device":"my-device-123"}}'
 ```
 
@@ -116,7 +116,7 @@ const deleteLocationData = async (deviceId, deviceKey = null) => {
     requestBody.MiataruDeleteLocation.DeviceKey = deviceKey;
   }
   
-  const response = await fetch('http://localhost:8080/v1/DeleteLocation', {
+  const response = await fetch('http://localhost:8090/v1/DeleteLocation', {
     method: 'POST',
     headers: {
       'Content-Type': 'application/json'
@@ -163,9 +163,9 @@ The DeleteLocation operation removes the following Redis keys for the specified 
 - If only some data types exist (e.g., only current location but no history), only existing keys are deleted
 - `MiataruDeletedCount` reflects the actual number of keys removed
 
-### Atomic Operation
-- All deletions are performed in parallel for efficiency
-- The operation is atomic - either all deletions succeed or none do
+### Parallel Deletion Behavior
+- The three Redis keys are deleted in parallel for efficiency
+- The endpoint is best described as a coordinated multi-delete, not a Redis transaction
 
 ## Error Handling
 

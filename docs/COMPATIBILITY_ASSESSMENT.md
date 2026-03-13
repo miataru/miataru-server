@@ -2,7 +2,7 @@
 
 ## Executive Summary
 
-Miataru Server 2.1 and API 1.1 maintain **broad backward compatibility** with API 1.0 clients. Most existing endpoints continue to work after a small request migration: GetLocation/GetLocationHistory now require `RequestMiataruDeviceID`; GetLocation can optionally validate requester identity via `RequestMiataruDeviceKey` (`strictDeviceKeyCheck`, default true); and GetLocationGeoJSON has a documented 401 change when DeviceKey is set.
+Miataru Server 2.3 and API 1.1 maintain **broad backward compatibility** with API 1.0 clients. Most existing endpoints continue to work after a small request migration: GetLocation/GetLocationHistory now require `RequestMiataruDeviceID`; GetLocation can optionally validate requester identity via `RequestMiataruDeviceKey` (`strictDeviceKeyCheck`, default true); and GetLocationGeoJSON has a documented 401 change when DeviceKey is set.
 
 ## Backward Compatibility Guarantees
 
