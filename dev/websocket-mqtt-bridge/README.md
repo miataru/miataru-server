@@ -14,6 +14,7 @@ Demo CLI that subscribes to Miataru live location updates over `/v1/ws/location`
 - Publishes every non-null initial snapshot and live update to MQTT.
 - Publishes the raw Miataru location object as JSON without changing the payload shape.
 - Does not buffer location updates while MQTT is disconnected.
+- Logs subscription acknowledgements, null/unavailable targets, received live updates, and successful MQTT publishes.
 
 ## MQTT Topic And Payload
 
@@ -121,3 +122,4 @@ docker run --rm \
 - MQTT QoS is fixed to `0`, retain is fixed to `false`.
 - Location updates received while MQTT is disconnected are dropped.
 - The bridge forwards only current-location WebSocket events, not location history.
+- A `null` subscription snapshot means the target is denied, unknown, or currently has no stored location; the server intentionally does not reveal which case applies.

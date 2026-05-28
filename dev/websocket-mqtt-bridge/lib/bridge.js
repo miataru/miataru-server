@@ -116,7 +116,7 @@ function createBridge(options) {
         ws.on('open', function() {
             state.reconnectDelayMs = config.reconnect.initialDelayMs;
             ws.send(JSON.stringify(buildSubscribeMessage(config)));
-            logger.info('Subscribed to ' + config.subscriptions.deviceIds.length + ' Miataru device(s).');
+            logger.info('Sent subscription request for ' + config.subscriptions.deviceIds.length + ' Miataru device(s).');
         });
 
         ws.on('message', function(message) {
@@ -162,9 +162,33 @@ function createBridge(options) {
             return;
         }
 
+        logWebSocketMessage(parsed);
+
         extractLocations(parsed).forEach(function(location) {
             publishLocation(location);
         });
+    }
+
+    function logWebSocketMessage(message) {
+        if (message && message.type === 'subscription' && Array.isArray(message.MiataruLocation)) {
+            var nonNullLocations = message.MiataruLocation.filter(Boolean).length;
+            var nullLocations = message.MiataruLocation.length - nonNullLocations;
+
+            logger.info('Miataru subscription acknowledged: ' + nonNullLocations + ' initial location(s), ' + nullLocations + ' null/unavailable target(s).');
+
+            if (nullLocations > 0) {
+                logger.warn('Some subscribed targets returned null. They may be unknown, unavailable, or not authorized for the bridge device.');
+            }
+
+            return;
+        }
+
+        if (message && message.Device) {
+            logger.info('Received Miataru location update for device ' + message.Device + ' with timestamp ' + (message.Timestamp || 'unknown') + '.');
+            return;
+        }
+
+        logger.warn('Ignoring unsupported Miataru WebSocket message.');
     }
 
     function publishLocation(location) {
@@ -185,7 +209,10 @@ function createBridge(options) {
             function(error) {
                 if (error) {
                     logger.warn('MQTT publish failed for ' + mqttTopic + ': ' + error.message);
+                    return;
                 }
+
+                logger.info('Published Miataru location for device ' + location.Device + ' to MQTT topic ' + mqttTopic + '.');
             }
         );
     }

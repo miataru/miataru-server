@@ -221,6 +221,11 @@ describe('websocket MQTT bridge demo', function() {
                 'miataru/target-a/location',
                 'miataru/target-b/location'
             ]);
+            expect(logs.infos.join('\n')).to.include('Miataru subscription acknowledged: 1 initial location(s), 1 null/unavailable target(s).');
+            expect(logs.warns.join('\n')).to.include('Some subscribed targets returned null');
+            expect(logs.infos.join('\n')).to.include('Received Miataru location update for device target-b with timestamp 2000.');
+            expect(logs.infos.join('\n')).to.include('Published Miataru location for device target-a to MQTT topic miataru/target-a/location.');
+            expect(logs.infos.join('\n')).to.include('Published Miataru location for device target-b to MQTT topic miataru/target-b/location.');
 
             wsInstances[0].emit('close', 1006, Buffer.from('lost'));
             await delay(20);
