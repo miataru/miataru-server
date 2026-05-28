@@ -15,6 +15,7 @@ Demo CLI that subscribes to Miataru live location updates over `/v1/ws/location`
 - Publishes the raw Miataru location object as JSON without changing the payload shape.
 - Does not buffer location updates while MQTT is disconnected.
 - Logs subscription acknowledgements, null/unavailable targets, received live updates, and successful MQTT publishes.
+- Supports `--errors-only` to suppress info/warning runtime logs and print only errors.
 
 ## MQTT Topic And Payload
 
@@ -92,6 +93,12 @@ npm install
 node bridge.js --config ./config.json
 ```
 
+Only print errors:
+
+```bash
+node bridge.js --config ./config.json --errors-only
+```
+
 ## Docker
 
 Build:
@@ -106,6 +113,14 @@ Run with a mounted config file:
 docker run --rm \
   -v "$PWD/config.json:/config/config.json:ro" \
   miataru-ws-mqtt-bridge --config /config/config.json
+```
+
+Docker with only error output:
+
+```bash
+docker run --rm \
+  -v "$PWD/config.json:/config/config.json:ro" \
+  miataru-ws-mqtt-bridge --config /config/config.json --errors-only
 ```
 
 ## Security Notes

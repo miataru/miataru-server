@@ -7,6 +7,7 @@ var configUtils = require('../../dev/websocket-mqtt-bridge/lib/config');
 var topicUtils = require('../../dev/websocket-mqtt-bridge/lib/topic');
 var miataruHttp = require('../../dev/websocket-mqtt-bridge/lib/miataruHttp');
 var bridgeModule = require('../../dev/websocket-mqtt-bridge/lib/bridge');
+var loggerUtils = require('../../dev/websocket-mqtt-bridge/lib/logger');
 
 describe('websocket MQTT bridge demo', function() {
     describe('config', function() {
@@ -42,6 +43,24 @@ describe('websocket MQTT bridge demo', function() {
             expect(topicUtils.normalizeTopicPrefix('/miataru/demo/')).to.equal('miataru/demo');
             expect(topicUtils.sanitizeDeviceIdForTopic('a/b+c#d\u0000e')).to.equal('a-b-c-d-e');
             expect(topicUtils.buildLocationTopic('/miataru/', 'a/b+c#d\u0000e')).to.equal('miataru/a-b-c-d-e/location');
+        });
+    });
+
+    describe('logging', function() {
+        it('suppresses info and warn output in errors-only mode', function() {
+            var output = captureOutput();
+            var logger = loggerUtils.createLogger({
+                output: output,
+                errorsOnly: true
+            });
+
+            logger.info('info message');
+            logger.warn('warn message');
+            logger.error('error message');
+
+            expect(output.infos).to.deep.equal([]);
+            expect(output.warns).to.deep.equal([]);
+            expect(output.errors).to.deep.equal(['error message']);
         });
     });
 
@@ -345,11 +364,32 @@ function captureLogger() {
     return {
         infos: [],
         warns: [],
+        errors: [],
         info: function(message) {
             this.infos.push(message);
         },
         warn: function(message) {
             this.warns.push(message);
+        },
+        error: function(message) {
+            this.errors.push(message);
+        }
+    };
+}
+
+function captureOutput() {
+    return {
+        infos: [],
+        warns: [],
+        errors: [],
+        info: function(message) {
+            this.infos.push(message);
+        },
+        warn: function(message) {
+            this.warns.push(message);
+        },
+        error: function(message) {
+            this.errors.push(message);
         }
     };
 }

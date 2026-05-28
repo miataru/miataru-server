@@ -4,6 +4,9 @@ This changelog is based on Git history and the version numbers defined in `packa
 
 ## [Unreleased]
 
+### Added
+- WebSocket-to-MQTT bridge CLI `--errors-only` logging mode for suppressing non-error output.
+
 ## [2.4.0] - 2026-05-28
 
 ### Added

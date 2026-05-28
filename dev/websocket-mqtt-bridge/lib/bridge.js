@@ -94,6 +94,12 @@ function createBridge(options) {
                 }
             });
 
+            client.on('error', function(error) {
+                if (state.mqttConnected) {
+                    logError('MQTT broker error: ' + error.message);
+                }
+            });
+
             client.on('connect', function() {
                 state.mqttConnected = true;
             });
@@ -133,7 +139,7 @@ function createBridge(options) {
         });
 
         ws.on('error', function(error) {
-            logger.warn('Miataru WebSocket error: ' + error.message);
+            logError('Miataru WebSocket error: ' + error.message);
         });
     }
 
@@ -208,13 +214,22 @@ function createBridge(options) {
             { qos: 0, retain: false },
             function(error) {
                 if (error) {
-                    logger.warn('MQTT publish failed for ' + mqttTopic + ': ' + error.message);
+                    logError('MQTT publish failed for ' + mqttTopic + ': ' + error.message);
                     return;
                 }
 
                 logger.info('Published Miataru location for device ' + location.Device + ' to MQTT topic ' + mqttTopic + '.');
             }
         );
+    }
+
+    function logError(message) {
+        if (logger && typeof logger.error === 'function') {
+            logger.error(message);
+            return;
+        }
+
+        logger.warn(message);
     }
 
     return {
