@@ -1,6 +1,6 @@
 {
   "name": "miataru-server",
-  "version": "2.3.0",
+  "version": "2.4.0",
   "description": "this is the reference implementation of a miataru.com server",
   "homepage": "http://www.miataru.com",
   "bugs": "https://github.com/miataru/miataru-server/issues",
@@ -38,6 +38,7 @@
     "seq": "^0.3.5",
     "serve-favicon": "^2.5.0",
     "stylus": "^0.64.0",
+    "ws": "^8.21.0",
     "yargs": "^17.7.2"
   },
   "engines": {

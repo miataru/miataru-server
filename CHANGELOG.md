@@ -4,7 +4,14 @@ This changelog is based on Git history and the version numbers defined in `packa
 
 ## [Unreleased]
 
+### Changed
+- Documented the WebSocket location subscription endpoint and message schemas in the Swagger 2.0 API specification.
+
+## [2.4.0] - 2026-05-28
+
 ### Added
+- WebSocket current-location subscriptions at `/v1/ws/location`, including multi-device subscribe support, allowed-device authorization, bulk update forwarding, visitor-history presence refreshes, and hardening limits.
+- Demo WebSocket-to-MQTT bridge CLI with JSON configuration, DeviceKey bootstrap, Docker support, tests, and documentation.
 - `GetLocation` response extended to include `DeviceSlogan` (`0c34009`).
 - New `getAllowedDeviceList` endpoint with request/response models, routing, tests, and documentation.
 

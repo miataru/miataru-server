@@ -1,0 +1,23 @@
+{
+  "miataru": {
+    "baseUrl": "https://service.miataru.com",
+    "webSocketUrl": "wss://service.miataru.com/v1/ws/location",
+    "deviceId": "mqtt-bridge-device-id",
+    "deviceKey": "replace-with-a-strong-device-key",
+    "slogan": "MQTT bridge"
+  },
+  "subscriptions": {
+    "deviceIds": [
+      "target-device-a",
+      "target-device-b"
+    ]
+  },
+  "mqtt": {
+    "brokerAddress": "mqtt.example.com",
+    "port": 1883,
+    "username": "optional-user",
+    "password": "optional-password",
+    "topicPrefix": "miataru",
+    "clientId": "miataru-websocket-mqtt-bridge"
+  }
+}

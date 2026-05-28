@@ -1,10 +1,10 @@
-# Release Notes - Version 2.3.0
+# Release Notes - Version 2.4.0
 
-**miataru-server 2.3.0** | **miataru API 1.1**
+**miataru-server 2.4.0** | **miataru API 1.1**
 
 ## Summary
 
-Version 2.3.0 consolidates the API 1.1 security/privacy work and documents the current runtime baseline used by this repository. The server remains broadly backward compatible with API 1.0 clients after the required `RequestMiataruDeviceID` migration for `GetLocation` and `GetLocationHistory`.
+Version 2.4.0 consolidates the API 1.1 security/privacy work and documents the current runtime baseline used by this repository. The server remains broadly backward compatible with API 1.0 clients after the required `RequestMiataruDeviceID` migration for `GetLocation` and `GetLocationHistory`.
 
 ## Highlights
 

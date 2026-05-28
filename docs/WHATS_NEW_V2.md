@@ -1,10 +1,10 @@
-# What's New in Version 2.3
+# What's New in Version 2.4
 
 This file is the short release-oriented companion to the main documentation. For full current details, prefer [`../README.md`](../README.md) and the docs listed in [`README.md`](README.md).
 
-## miataru-server 2.3.0
+## miataru-server 2.4.0
 
-Version 2.3.0 reflects the current API 1.1 implementation in this repository:
+Version 2.4.0 reflects the current API 1.1 implementation in this repository:
 
 - `RequestMiataruDeviceID` is mandatory for `GetLocation` and `GetLocationHistory`
 - `RequestMiataruDeviceKey` is supported for strict requester validation

@@ -337,6 +337,23 @@ Use the `/v1/setAllowedDeviceList` endpoint to set or update the allowed devices
 - Devices without permission receive location as `null` (as if device doesn't exist)
 - **Visitor history**: The requesting device is always recorded in the target device's visitor history when the target device exists, regardless of whether the allowed list grants access. The device owner can see all visitors (including those who did not receive location data) via GetVisitorHistory.
 
+**WebSocket Location Subscriptions (`/v1/ws/location`):**
+- WebSocket clients subscribe with the same `MiataruConfig` and `MiataruGetLocation` shape as `GetLocation`.
+- One connection can subscribe to multiple target devices.
+- Requester `DeviceKey` validation follows `strictDeviceKeyCheck`, exactly like `GetLocation`.
+- Target authorization uses the target device's allowed-devices list and `hasCurrentLocationAccess`.
+- Denied, unknown, and unavailable targets are returned as `null` in the subscription response to avoid target enumeration.
+- DeviceKeys are rejected in WebSocket URL query strings; send them only inside the JSON subscription message over `wss://`.
+- Access is rechecked before every pushed update, so ACL revocation stops future updates without requiring a reconnect.
+- When `UpdateLocation` sends multiple location points in one request, every validated point is forwarded to authorized subscribers in request order with the original Miataru location fields and `Timestamp`.
+- Active subscriptions periodically touch visitor history for existing targets so the target owner can see the active watcher. These touches update the requester's visitor entry rather than creating detailed-mode refresh spam.
+- The WebSocket server enforces message-size, per-IP connection, per-socket subscription, heartbeat, slow-client, origin, and production TLS safeguards through the `websocket.*` configuration block.
+
+Threat-model notes for operators:
+- Live streaming increases the impact of requester DeviceID spoofing. For sensitive deployments, keep `strictDeviceKeyCheck` enabled and set DeviceKeys for devices that are allowed to subscribe.
+- Treat reverse-proxy logs as sensitive. Do not log WebSocket payloads, and never place DeviceKeys in URLs.
+- If running multiple Node.js instances, use a shared publication mechanism such as Redis Pub/Sub so `UpdateLocation` events on one instance reach subscribers connected to another instance.
+
 **GetLocationHistory:**
 - If allowed devices list is **not enabled**: Returns location history when `RequestMiataruDeviceID` is provided (backward compatible)
 - If allowed devices list is **enabled**: Only devices with `hasHistoryAccess: true` receive location history

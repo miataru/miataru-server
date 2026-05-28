@@ -1,12 +1,12 @@
 # miataru-server
 
-**Version 2.3.0** - Security and privacy enhancements with API 1.1 support
+**Version 2.4.0** - Security and privacy enhancements with API 1.1 support
 
 This is the source code of a Miataru server side implementation. You can get more information [here](http://www.miataru.com).
 
-## What's New in Version 2.3 / API 1.1
+## What's New in Version 2.4 / API 1.1
 
-Version 2.3 introduces significant security and privacy enhancements while maintaining broad backward compatibility with API 1.0 (with required RequestMiataruDeviceID for GetLocation/GetLocationHistory and the documented GetLocationGeoJSON change):
+Version 2.4 introduces significant security and privacy enhancements while maintaining broad backward compatibility with API 1.0 (with required RequestMiataruDeviceID for GetLocation/GetLocationHistory and the documented GetLocationGeoJSON change):
 
 - **RequestMiataruDeviceID (Mandatory)** - Required identifier for all GetLocation and GetLocationHistory requests
 - **RequestMiataruDeviceKey (Optional)** - Optional key in `MiataruConfig` for strict requester validation in GetLocation
@@ -51,6 +51,7 @@ The Miataru server provides both versioned (v1) and legacy API endpoints for max
 - **POST** `/v1/setDeviceSlogan` - Set optional device slogan (API 1.1, max 40 chars)
 - **POST** `/v1/getDeviceSlogan` - Get optional device slogan (API 1.1)
 - **POST** `/v1/getDeviceSecurityStatus` - Get DeviceKey/ACL status for a target device (API 1.1)
+- **WS/WSS** `/v1/ws/location` - Subscribe to current-location updates for one or more devices
 
 ### Legacy API (Backward Compatibility)
 - **POST** `/UpdateLocation` - Store location data
@@ -236,6 +237,14 @@ The server will, in the default configuration, listen on localhost port 8090. To
 | `rateLimiting.redis.maxConcurrent` | `50` | Maximum simultaneous Redis commands. |
 | `rateLimiting.redis.maxQueue` | `100` | Maximum queued Redis commands. |
 | `rateLimiting.redis.queueTimeoutMs` | `30000` | Timeout for queued Redis commands in milliseconds. |
+| `websocket.maxMessageBytes` | `16384` | Maximum inbound WebSocket message size in bytes. |
+| `websocket.maxSubscriptionsPerSocket` | `50` | Maximum target devices in one WebSocket subscription message. |
+| `websocket.maxConnectionsPerIp` | `20` | Maximum concurrent WebSocket connections per client IP. |
+| `websocket.heartbeatIntervalSeconds` | `30` | WebSocket ping interval; connections missing a pong are terminated. |
+| `websocket.authTimeoutSeconds` | `10` | Time allowed for the first valid subscription message after connect. |
+| `websocket.visitorRefreshIntervalSeconds` | `60` | How often active WebSocket subscriptions refresh visitor-history presence. |
+| `websocket.maxBufferedBytes` | `1048576` | Maximum queued outbound data before a slow WebSocket client is closed. |
+| `websocket.requireTlsInProduction` | `true` | Requires TLS or `X-Forwarded-Proto: https` for WebSocket upgrades in production. |
 
 ### Request-Level Config (`MiataruConfig`)
 
@@ -245,8 +254,8 @@ The runtime configuration above controls the server itself. Some API behavior is
 | --- | --- | --- |
 | `EnableLocationHistory` | `UpdateLocation` | String flag. `"true"` stores the new point in history and also updates the last-known location. Any other value disables history for that request. |
 | `LocationDataRetentionTime` | `UpdateLocation` | Retention in minutes for the last-known location when history is disabled. |
-| `RequestMiataruDeviceID` | `GetLocation`, `GetLocationHistory` | Mandatory requester identifier in API 1.1. Also used for visitor history and allowed-device checks. |
-| `RequestMiataruDeviceKey` | `GetLocation`, `GetLocationHistory` | Optional requester key. Enforced when `strictDeviceKeyCheck` is enabled and the requesting device has a stored DeviceKey. |
+| `RequestMiataruDeviceID` | `GetLocation`, `GetLocationHistory`, WebSocket subscriptions | Mandatory requester identifier in API 1.1. Also used for visitor history and allowed-device checks. |
+| `RequestMiataruDeviceKey` | `GetLocation`, `GetLocationHistory`, WebSocket subscriptions | Optional requester key. Enforced when `strictDeviceKeyCheck` is enabled and the requesting device has a stored DeviceKey. |
 
 All DeviceID-like values must not contain `:`. DeviceKey values must be strings up to 256 characters. The server also accepts `requestingDeviceID` / `requestingDeviceKey` as compatibility aliases on read requests.
 
@@ -278,6 +287,24 @@ curl -H 'Content-Type: application/json' -X POST 'http://localhost:8090/v1/GetLo
     }
   ]
 }
+```
+
+**Subscribe to live current-location updates:**
+```javascript
+const socket = new WebSocket('wss://service.miataru.com/v1/ws/location');
+
+socket.addEventListener('open', () => {
+  socket.send(JSON.stringify({
+    type: 'subscribe',
+    MiataruConfig: {
+      RequestMiataruDeviceID: 'requesting-device-id',
+      RequestMiataruDeviceKey: 'optional-requester-key'
+    },
+    MiataruGetLocation: [
+      { Device: 'target-device-id' }
+    ]
+  }));
+});
 ```
 
 **Delete all location data for a device:**
@@ -344,6 +371,20 @@ This section fills in the operational details that are easy to miss when only lo
 - If an allowed-devices list is enabled and the requester is not allowed, the response entry is `null`
 - Successful reads against an existing target record visitor history unless the requester ID is empty or equal to the target device ID
 - If the target device has a slogan, the returned location object includes `Slogan`
+
+### WebSocket Location Subscriptions
+
+- Endpoint: `/v1/ws/location`
+- Clients send a JSON `subscribe` message with `MiataruConfig` and `MiataruGetLocation`, matching the `GetLocation` request shape.
+- One WebSocket connection can subscribe to multiple target devices.
+- Authorization matches `GetLocation`: requester key validation follows `strictDeviceKeyCheck`, and each target uses the allowed-devices `hasCurrentLocationAccess` permission.
+- The subscription response is `{ "type": "subscription", "MiataruLocation": [...] }`, preserving request order and using `null` for denied, unknown, or unavailable targets.
+- Future location update messages are the Miataru location object itself with no wrapper metadata.
+- When `UpdateLocation` receives a bulk `MiataruLocation` array, every validated point is forwarded in request order with its original `Timestamp`, even when history is disabled and only the final point is stored as last-known location.
+- Access is rechecked before every pushed update, so allowed-device revocation stops future messages.
+- Active subscriptions refresh the target device's visitor-history entry periodically so owners can see that a requester is currently watching.
+- Browser WebSocket upgrades use the same configured origin allowlist as CORS; native clients without an `Origin` header are accepted.
+- DeviceKeys must be sent inside the subscription JSON payload, never in the WebSocket URL query string.
 
 ### GetLocationHistory
 
@@ -730,6 +771,11 @@ In addition a external configuration can be speciefied via a command line parame
 
 All other command line parameters get merged into the configuration.
 
+## Demo Tools
+
+- `dev/extractMiataruGPX` fetches Miataru location history and exports it as GPX.
+- `dev/websocket-mqtt-bridge` subscribes to `/v1/ws/location` and forwards live location updates to MQTT. It includes a JSON config file format, DeviceKey bootstrap for the bridge client, local run instructions, and a Dockerfile for containerized use.
+
 ## RequestLocation Validation
 
 The Miataru server validates all location data through the `RequestLocation` model to ensure data integrity and proper API usage.
@@ -913,7 +959,7 @@ Changelog policy:
 - Add ongoing work under `## [Unreleased]` and move it into a versioned section when `package.json` is bumped.
 - Keep changelog entries in English.
 
-### Version 2.3.0 (Latest) - API 1.1
+### Version 2.4.0 (Latest) - API 1.1
 
 #### Security & Privacy Features
 - **DeviceKey Authentication**: Protect write operations and visitor history access

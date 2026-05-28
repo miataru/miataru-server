@@ -1,0 +1,18 @@
+{
+  "name": "miataru-websocket-mqtt-bridge",
+  "version": "1.0.0",
+  "description": "Demo bridge that forwards Miataru WebSocket location updates to MQTT",
+  "private": true,
+  "main": "bridge.js",
+  "license": "BSD-2-Clause",
+  "dependencies": {
+    "mqtt": "^5.15.1",
+    "ws": "^8.21.0"
+  },
+  "engines": {
+    "node": ">= 20.0.0"
+  },
+  "scripts": {
+    "start": "node bridge.js --config /config/config.json"
+  }
+}

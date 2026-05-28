@@ -67,6 +67,17 @@ module.exports = {
             maxQueue: 100,
             queueTimeoutMs: 30000
         }
+    },
+
+    websocket: {
+        maxMessageBytes: 16384,
+        maxSubscriptionsPerSocket: 50,
+        maxConnectionsPerIp: 20,
+        heartbeatIntervalSeconds: 30,
+        authTimeoutSeconds: 10,
+        visitorRefreshIntervalSeconds: 60,
+        maxBufferedBytes: 1048576,
+        requireTlsInProduction: true
     }
 
 };

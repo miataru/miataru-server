@@ -11,6 +11,7 @@ var routes = require('./lib/routes');
 var middlewares = require('./lib/middlewares');
 var logger = require('./lib/logger');
 var errors = require('./lib/errors');
+var websocket = require('./lib/websocket');
 
 var app = express();
 
@@ -32,9 +33,13 @@ app.use(handleError);
 
 // Only start the server if this file is run directly (not required for testing)
 if (require.main === module) {
-    app.listen(configuration.port, configuration.listenip);
+    var server = http.createServer(app);
+    websocket.install(server);
+    server.listen(configuration.port, configuration.listenip);
     logger.info('miataru server is listening to: %d on %s', configuration.port,configuration.listenip);
 }
+
+app.installWebSocket = websocket.install;
 
 module.exports = app;
 
