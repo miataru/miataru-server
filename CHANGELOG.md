@@ -4,11 +4,6 @@ This changelog is based on Git history and the version numbers defined in `packa
 
 ## [Unreleased]
 
-### Changed
-- Documented the WebSocket location subscription endpoint and message schemas in the Swagger 2.0 API specification.
-- Improved WebSocket-to-MQTT bridge startup diagnostics and require DeviceKey verification to confirm an active configured key.
-- Added WebSocket-to-MQTT bridge runtime logs for subscription acknowledgements, live updates, null targets, and successful MQTT publishes.
-
 ## [2.4.0] - 2026-05-28
 
 ### Added
@@ -18,6 +13,9 @@ This changelog is based on Git history and the version numbers defined in `packa
 - New `getAllowedDeviceList` endpoint with request/response models, routing, tests, and documentation.
 
 ### Changed
+- Documented the WebSocket location subscription endpoint and message schemas in the Swagger 2.0 API specification.
+- Improved WebSocket-to-MQTT bridge startup diagnostics and require DeviceKey verification to confirm an active configured key.
+- Added WebSocket-to-MQTT bridge runtime logs for subscription acknowledgements, live updates, null targets, and successful MQTT publishes.
 - Hardened request validation for DeviceIDs, DeviceKeys, `GetLocationHistory` parsing, and `UpdateLocation` numeric bounds without changing existing Redis storage formats.
 - Updated API documentation for the new allowed-device-list read endpoint, DeviceID restrictions, stricter history parsing, and validated location field ranges.
 - Reworked repository documentation to match the current implementation state, including configuration coverage, endpoint behavior notes, runtime/version corrections, and clearer separation between current reference docs and historical planning material.
