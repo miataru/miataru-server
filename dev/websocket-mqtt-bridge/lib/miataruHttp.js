@@ -39,15 +39,16 @@ async function verifyOrSetDeviceKey(config, options) {
     var logger = options.logger || console;
 
     var verifyResult = await verifyDeviceKey(config, fetchImpl);
-    if (verifyResult.ok) {
+    if (isVerifiedDeviceKeyResult(verifyResult)) {
+        logger.info('Bridge DeviceKey verified for device ' + config.miataru.deviceId + '.');
         return { verified: true, setupPerformed: false };
     }
 
     if (verifyResult.status !== 403) {
-        throw new Error('Could not verify bridge DeviceKey: HTTP ' + verifyResult.status);
+        throw new Error('Could not verify bridge DeviceKey: ' + describeHttpResult(verifyResult));
     }
 
-    logger.warn('Bridge DeviceKey could not be verified; trying first-time DeviceKey setup.');
+    logger.warn('Bridge DeviceKey could not be verified (' + describeHttpResult(verifyResult) + '); trying first-time DeviceKey setup for device ' + config.miataru.deviceId + '.');
     var setupResult = await postMiataru(config.miataru.baseUrl, '/v1/setDeviceKey', {
         MiataruSetDeviceKey: {
             DeviceID: config.miataru.deviceId,
@@ -57,13 +58,17 @@ async function verifyOrSetDeviceKey(config, options) {
     }, fetchImpl);
 
     if (!setupResult.ok) {
-        throw new Error('Could not set configured bridge DeviceKey. The device may already have a different key. HTTP ' + setupResult.status);
+        throw new Error('Could not set configured bridge DeviceKey. The device may already have a different key. ' + describeHttpResult(setupResult));
     }
 
+    logger.info('Configured bridge DeviceKey was accepted by /v1/setDeviceKey; verifying it now.');
+
     var secondVerifyResult = await verifyDeviceKey(config, fetchImpl);
-    if (!secondVerifyResult.ok) {
-        throw new Error('Configured bridge DeviceKey was set but verification still failed. HTTP ' + secondVerifyResult.status);
+    if (!isVerifiedDeviceKeyResult(secondVerifyResult)) {
+        throw new Error('Configured bridge DeviceKey was set but verification still failed. ' + describeHttpResult(secondVerifyResult));
     }
+
+    logger.info('Bridge DeviceKey setup and verification succeeded for device ' + config.miataru.deviceId + '.');
 
     return { verified: true, setupPerformed: true };
 }
@@ -83,10 +88,11 @@ async function setSloganBestEffort(config, options) {
         }, options.fetch);
 
         if (!result.ok) {
-            logger.warn('Could not set bridge slogan; continuing. HTTP ' + result.status);
+            logger.warn('Could not set bridge slogan; continuing. ' + describeHttpResult(result));
             return false;
         }
 
+        logger.info('Bridge slogan set for device ' + config.miataru.deviceId + '.');
         return true;
     } catch (error) {
         logger.warn('Could not set bridge slogan; continuing. ' + error.message);
@@ -108,8 +114,35 @@ function buildUrl(baseUrl, path) {
     return baseUrl.replace(/\/+$/, '') + path;
 }
 
+function isVerifiedDeviceKeyResult(result) {
+    if (!result || !result.ok) {
+        return false;
+    }
+
+    return !!(result.body &&
+        result.body.MiataruDeviceSecurityStatus &&
+        result.body.MiataruDeviceSecurityStatus.HasDeviceKey === true);
+}
+
+function describeHttpResult(result) {
+    if (!result) {
+        return 'no HTTP response';
+    }
+
+    var message = 'HTTP ' + result.status;
+    var errorMessage = result.body && result.body.error;
+
+    if (errorMessage) {
+        message += ' - ' + errorMessage;
+    }
+
+    return message;
+}
+
 module.exports = {
     postMiataru: postMiataru,
     verifyOrSetDeviceKey: verifyOrSetDeviceKey,
-    setSloganBestEffort: setSloganBestEffort
+    setSloganBestEffort: setSloganBestEffort,
+    _isVerifiedDeviceKeyResult: isVerifiedDeviceKeyResult,
+    _describeHttpResult: describeHttpResult
 };

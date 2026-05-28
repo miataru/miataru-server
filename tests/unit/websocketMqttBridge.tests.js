@@ -48,16 +48,18 @@ describe('websocket MQTT bridge demo', function() {
     describe('device key bootstrap', function() {
         it('continues when the configured key verifies', async function() {
             var calls = [];
+            var logs = captureLogger();
             var result = await miataruHttp.verifyOrSetDeviceKey(configUtils.normalizeConfig(baseConfig()), {
                 fetch: fakeFetch(calls, [
                     fakeResponse(200, { MiataruDeviceSecurityStatus: { HasDeviceKey: true } })
                 ]),
-                logger: silentLogger()
+                logger: logs
             });
 
             expect(result).to.deep.equal({ verified: true, setupPerformed: false });
             expect(calls).to.have.length(1);
             expect(calls[0].url).to.equal('https://service.miataru.com/v1/getDeviceSecurityStatus');
+            expect(logs.infos.join('\n')).to.include('Bridge DeviceKey verified');
         });
 
         it('sets the configured key when verification fails with 403 and then verifies again', async function() {
@@ -75,6 +77,41 @@ describe('websocket MQTT bridge demo', function() {
             expect(calls).to.have.length(3);
             expect(calls[1].url).to.equal('https://service.miataru.com/v1/setDeviceKey');
             expect(JSON.parse(calls[1].options.body).MiataruSetDeviceKey.CurrentDeviceKey).to.equal(null);
+        });
+
+        it('fails when verification returns 200 but the bridge key is still inactive', async function() {
+            var calls = [];
+
+            try {
+                await miataruHttp.verifyOrSetDeviceKey(configUtils.normalizeConfig(baseConfig()), {
+                    fetch: fakeFetch(calls, [
+                        fakeResponse(200, { MiataruDeviceSecurityStatus: { HasDeviceKey: false } })
+                    ]),
+                    logger: silentLogger()
+                });
+                throw new Error('unexpected success');
+            } catch (error) {
+                expect(error.message).to.include('Could not verify bridge DeviceKey');
+                expect(calls).to.have.length(1);
+            }
+        });
+
+        it('includes server error details when first-time setup is rejected', async function() {
+            var calls = [];
+
+            try {
+                await miataruHttp.verifyOrSetDeviceKey(configUtils.normalizeConfig(baseConfig()), {
+                    fetch: fakeFetch(calls, [
+                        fakeResponse(403, { error: 'DeviceKey must be set for this device' }),
+                        fakeResponse(403, { error: 'CurrentDeviceKey does not match' })
+                    ]),
+                    logger: silentLogger()
+                });
+                throw new Error('unexpected success');
+            } catch (error) {
+                expect(error.message).to.include('HTTP 403 - CurrentDeviceKey does not match');
+                expect(calls).to.have.length(2);
+            }
         });
 
         it('fails startup when an existing wrong key prevents setup', async function() {
@@ -149,7 +186,7 @@ describe('websocket MQTT bridge demo', function() {
                 mqtt: fakeMqttModule(mqttClient),
                 WebSocket: fakeWebSocketFactory(wsInstances),
                 fetch: fakeFetch(calls, [
-                    fakeResponse(200, {}),
+                    fakeResponse(200, { MiataruDeviceSecurityStatus: { HasDeviceKey: true } }),
                     fakeResponse(403, { error: 'slogan failed' })
                 ]),
                 logger: logs

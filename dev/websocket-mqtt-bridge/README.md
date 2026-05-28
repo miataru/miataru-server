@@ -7,6 +7,7 @@ Demo CLI that subscribes to Miataru live location updates over `/v1/ws/location`
 - Reads a JSON configuration file passed with `--config`.
 - Verifies the bridge device identity before subscribing.
 - If the configured bridge device has no `DeviceKey` yet, tries first-time setup with the configured key.
+- Treats verification as successful only when `/v1/getDeviceSecurityStatus` confirms `HasDeviceKey: true`.
 - Fails startup when the configured key cannot be verified or an existing different key prevents setup.
 - Sends the configured slogan with `/v1/setDeviceSlogan` after key verification. Slogan failures are warnings only.
 - Subscribes to all configured target DeviceIDs on one WebSocket connection.
@@ -112,6 +113,7 @@ docker run --rm \
 - Use `wss://` for production Miataru WebSocket connections.
 - Use TLS-enabled MQTT transport when crossing untrusted networks.
 - The bridge can only set its key during first-time setup. If a different key already exists, startup fails because the current key is required to rotate it.
+- Startup logs explicitly report whether the configured key was verified, set for the first time, or rejected by the server.
 
 ## Limitations
 

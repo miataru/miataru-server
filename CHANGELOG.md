@@ -6,6 +6,7 @@ This changelog is based on Git history and the version numbers defined in `packa
 
 ### Changed
 - Documented the WebSocket location subscription endpoint and message schemas in the Swagger 2.0 API specification.
+- Improved WebSocket-to-MQTT bridge startup diagnostics and require DeviceKey verification to confirm an active configured key.
 
 ## [2.4.0] - 2026-05-28
 
