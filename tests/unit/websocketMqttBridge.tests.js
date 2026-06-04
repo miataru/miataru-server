@@ -258,6 +258,41 @@ describe('websocket MQTT bridge demo', function() {
 
             bridge.stop();
         });
+
+        it('reconnects when the WebSocket stops receiving activity without closing', async function() {
+            var config = configUtils.normalizeConfig(baseConfig({
+                reconnect: {
+                    initialDelayMs: 1,
+                    maxDelayMs: 1,
+                    inactivityTimeoutMs: 1
+                }
+            }));
+            var calls = [];
+            var mqttClient = fakeMqttClient();
+            var wsInstances = [];
+            var logs = captureLogger();
+            var bridge = bridgeModule.createBridge({
+                config: config,
+                mqtt: fakeMqttModule(mqttClient),
+                WebSocket: fakeWebSocketFactory(wsInstances),
+                fetch: fakeFetch(calls, [
+                    fakeResponse(200, { MiataruDeviceSecurityStatus: { HasDeviceKey: true } }),
+                    fakeResponse(200, { MiataruResponse: 'ACK' })
+                ]),
+                logger: logs
+            });
+
+            await bridge.start();
+            wsInstances[0].emit('open');
+            await delay(20);
+
+            expect(wsInstances).to.have.length(2);
+            expect(wsInstances[0].terminated).to.equal(true);
+            expect(logs.warns.join('\n')).to.include('Miataru WebSocket inactive for 1ms; reconnecting.');
+            expect(logs.warns.join('\n')).to.include('Reconnecting Miataru WebSocket in 1ms.');
+
+            bridge.stop();
+        });
     });
 });
 
@@ -349,6 +384,9 @@ function fakeWebSocketFactory(instances) {
         this.sent.push(message);
     };
     FakeWebSocket.prototype.close = function() {};
+    FakeWebSocket.prototype.terminate = function() {
+        this.terminated = true;
+    };
 
     return FakeWebSocket;
 }

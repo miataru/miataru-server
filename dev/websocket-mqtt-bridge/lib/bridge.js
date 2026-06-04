@@ -32,7 +32,8 @@ function createBridge(options) {
         mqttConnected: false,
         stopped: false,
         reconnectDelayMs: config.reconnect.initialDelayMs,
-        reconnectTimer: null
+        reconnectTimer: null,
+        activityTimer: null
     };
 
     async function start() {
@@ -50,9 +51,12 @@ function createBridge(options) {
             state.reconnectTimer = null;
         }
 
+        clearActivityTimer();
+
         if (state.ws && typeof state.ws.close === 'function') {
             state.ws.close();
         }
+        state.ws = null;
 
         if (state.mqttClient && typeof state.mqttClient.end === 'function') {
             state.mqttClient.end();
@@ -121,25 +125,47 @@ function createBridge(options) {
 
         ws.on('open', function() {
             state.reconnectDelayMs = config.reconnect.initialDelayMs;
+            resetActivityTimer(ws);
             ws.send(JSON.stringify(buildSubscribeMessage(config)));
             logger.info('Sent subscription request for ' + config.subscriptions.deviceIds.length + ' Miataru device(s).');
         });
 
         ws.on('message', function(message) {
+            resetActivityTimer(ws);
             handleWebSocketMessage(message);
         });
 
+        ws.on('ping', function() {
+            resetActivityTimer(ws);
+        });
+
+        ws.on('pong', function() {
+            resetActivityTimer(ws);
+        });
+
         ws.on('close', function(code, reason) {
+            if (state.ws !== ws) {
+                return;
+            }
+
+            clearActivityTimer();
+            state.ws = null;
+
             if (state.stopped) {
                 return;
             }
 
-            logger.warn('Miataru WebSocket closed: ' + code + ' ' + reason.toString());
+            logger.warn('Miataru WebSocket closed: ' + code + ' ' + formatCloseReason(reason));
             scheduleReconnect();
         });
 
         ws.on('error', function(error) {
+            if (state.ws !== ws || state.stopped) {
+                return;
+            }
+
             logError('Miataru WebSocket error: ' + error.message);
+            reconnectWebSocket(ws, 'Miataru WebSocket error; reconnecting.');
         });
     }
 
@@ -156,6 +182,48 @@ function createBridge(options) {
             state.reconnectTimer = null;
             connectWebSocket();
         }, delay);
+    }
+
+    function resetActivityTimer(ws) {
+        if (state.stopped || state.ws !== ws) {
+            return;
+        }
+
+        clearActivityTimer();
+        state.activityTimer = setTimeout(function() {
+            if (state.stopped || state.ws !== ws) {
+                return;
+            }
+
+            reconnectWebSocket(ws, 'Miataru WebSocket inactive for ' + config.reconnect.inactivityTimeoutMs + 'ms; reconnecting.');
+        }, config.reconnect.inactivityTimeoutMs);
+    }
+
+    function clearActivityTimer() {
+        if (!state.activityTimer) {
+            return;
+        }
+
+        clearTimeout(state.activityTimer);
+        state.activityTimer = null;
+    }
+
+    function reconnectWebSocket(ws, message) {
+        if (state.stopped || state.ws !== ws) {
+            return;
+        }
+
+        logger.warn(message);
+        clearActivityTimer();
+        state.ws = null;
+
+        if (typeof ws.terminate === 'function') {
+            ws.terminate();
+        } else if (typeof ws.close === 'function') {
+            ws.close();
+        }
+
+        scheduleReconnect();
     }
 
     function handleWebSocketMessage(message) {
@@ -268,6 +336,14 @@ function extractLocations(message) {
     }
 
     return [];
+}
+
+function formatCloseReason(reason) {
+    if (!reason) {
+        return '';
+    }
+
+    return reason.toString();
 }
 
 function createFakeMqttClient() {

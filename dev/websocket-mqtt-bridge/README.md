@@ -14,6 +14,7 @@ Demo CLI that subscribes to Miataru live location updates over `/v1/ws/location`
 - Publishes every non-null initial snapshot and live update to MQTT.
 - Publishes the raw Miataru location object as JSON without changing the payload shape.
 - Does not buffer location updates while MQTT is disconnected.
+- Reconnects the Miataru WebSocket after close/error events or when the connection stops receiving activity.
 - Logs subscription acknowledgements, null/unavailable targets, received live updates, and successful MQTT publishes.
 - Supports `--errors-only` to suppress info/warning runtime logs and print only errors.
 
@@ -64,6 +65,11 @@ Copy `config.example.json` and edit it:
     "password": "optional-password",
     "topicPrefix": "miataru",
     "clientId": "miataru-websocket-mqtt-bridge"
+  },
+  "reconnect": {
+    "initialDelayMs": 1000,
+    "maxDelayMs": 30000,
+    "inactivityTimeoutMs": 90000
   }
 }
 ```
@@ -84,6 +90,7 @@ Optional fields:
 - `miataru.webSocketUrl`: explicit WebSocket URL. If omitted, it is derived from `baseUrl`.
 - `mqtt.username`, `mqtt.password`, `mqtt.clientId`: MQTT connection options.
 - `reconnect.initialDelayMs`, `reconnect.maxDelayMs`: WebSocket reconnect backoff.
+- `reconnect.inactivityTimeoutMs`: WebSocket activity watchdog. The bridge reconnects when no messages, pings, or pongs are received before this timeout. Default: `90000`.
 
 ## Local Run
 

@@ -7,6 +7,9 @@ This changelog is based on Git history and the version numbers defined in `packa
 ### Added
 - WebSocket-to-MQTT bridge CLI `--errors-only` logging mode for suppressing non-error output.
 
+### Fixed
+- WebSocket-to-MQTT bridge now reconnects when the Miataru WebSocket connection silently stops receiving activity.
+
 ## [2.4.0] - 2026-05-28
 
 ### Added

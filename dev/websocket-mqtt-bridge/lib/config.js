@@ -57,7 +57,8 @@ function normalizeConfig(config) {
         },
         reconnect: {
             initialDelayMs: optionalPositiveInteger(config.reconnect && config.reconnect.initialDelayMs, 1000, 'reconnect.initialDelayMs'),
-            maxDelayMs: optionalPositiveInteger(config.reconnect && config.reconnect.maxDelayMs, 30000, 'reconnect.maxDelayMs')
+            maxDelayMs: optionalPositiveInteger(config.reconnect && config.reconnect.maxDelayMs, 30000, 'reconnect.maxDelayMs'),
+            inactivityTimeoutMs: optionalPositiveInteger(config.reconnect && config.reconnect.inactivityTimeoutMs, 90000, 'reconnect.inactivityTimeoutMs')
         }
     };
 

@@ -19,5 +19,10 @@
     "password": "optional-password",
     "topicPrefix": "miataru",
     "clientId": "miataru-websocket-mqtt-bridge"
+  },
+  "reconnect": {
+    "initialDelayMs": 1000,
+    "maxDelayMs": 30000,
+    "inactivityTimeoutMs": 90000
   }
 }
