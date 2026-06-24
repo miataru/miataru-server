@@ -4,10 +4,14 @@ This changelog is based on Git history and the version numbers defined in `packa
 
 ## [Unreleased]
 
+## [2.4.1] - 2026-06-24
+
 ### Added
 - WebSocket-to-MQTT bridge CLI `--errors-only` logging mode for suppressing non-error output.
 
 ### Fixed
+- Statistics UI `ws` dependency upgraded to address a Dependabot alert.
+- Main server dependencies and overrides updated to clear npm audit findings.
 - WebSocket-to-MQTT bridge now reconnects when the Miataru WebSocket connection silently stops receiving activity.
 
 ## [2.4.0] - 2026-05-28
