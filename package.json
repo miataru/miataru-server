@@ -26,33 +26,33 @@
   },
   "license": "BSD-2-Clause",
   "dependencies": {
-    "body-parser": "^1.20.5",
+    "body-parser": "^2.4.0",
     "cloneextend": "^0.0.3",
-    "cors": "^2.8.5",
-    "ejs": "^3.1.9",
-    "express": "^4.22.2",
+    "cors": "^2.8.6",
+    "ejs": "^7.0.2",
+    "express": "^5.3.0",
     "fakeredis": "^2.0.0",
-    "moment": "^2.29.4",
-    "redis": "^4.6.10",
+    "moment": "^2.31.0",
+    "redis": "^6.3.0",
     "require-directory": "^2.1.1",
     "seq": "^0.3.5",
-    "serve-favicon": "^2.5.0",
+    "serve-favicon": "^2.5.1",
     "stylus": "^0.64.0",
-    "ws": "^8.21.0",
-    "yargs": "^17.7.3"
+    "ws": "^8.22.0",
+    "yargs": "^18.2.0"
   },
   "engines": {
-    "node": ">= 20.0.0"
+    "node": ">=26.0.0"
   },
   "overrides": {
-    "diff": "^8.0.3",
-    "glob": "^13.0.0",
-    "serialize-javascript": "^7.0.6"
+    "diff": "^9.0.0",
+    "glob": "^13.0.6",
+    "serialize-javascript": "^7.1.2"
   },
   "devDependencies": {
-    "chai": "^4.3.10",
-    "mocha": "^11.7.6",
-    "supertest": "^7.1.4"
+    "chai": "^6.3.0",
+    "mocha": "^12.0.3",
+    "supertest": "^7.3.1"
   },
   "files": [
     "server.js"
@@ -60,8 +60,8 @@
   "main": "./server.js",
   "scripts": {
     "start": "node server.js",
-    "test": "NODE_ENV=test npx mocha tests/unit/",
-    "test:integration": "NODE_ENV=test npx mocha tests/integration/",
-    "test:all": "NODE_ENV=test npx mocha 'tests/**/*.tests.js'"
+    "test": "NODE_ENV=test mocha tests/unit/",
+    "test:integration": "NODE_ENV=test mocha tests/integration/",
+    "test:all": "NODE_ENV=test mocha 'tests/**/*.tests.js'"
   }
 }

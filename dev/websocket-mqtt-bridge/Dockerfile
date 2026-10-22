@@ -1,9 +1,9 @@
-FROM node:20-alpine
+FROM node:26-alpine
 
 WORKDIR /usr/src/bridge
 
 COPY package*.json ./
-RUN npm install --omit=dev
+RUN npm ci --omit=dev
 
 COPY . .
 

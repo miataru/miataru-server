@@ -25,7 +25,7 @@ app.use(favicon(__dirname + '/favicon.ico'));
 middlewares.install(app);
 routes.install(app);
 
-app.all('*', function(req, res, next) {
+app.all('/{*splat}', function(req, res, next) {
     next(new errors.NotFoundError(req.path));
 });
 

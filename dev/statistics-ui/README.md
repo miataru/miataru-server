@@ -72,3 +72,13 @@ If you see `ECONNREFUSED 172.17.0.1:6379` (bridge networking) or `ECONNREFUSED 1
 ### `ERROR: client version 1.22 is too old`
 
 This error means the docker-compose client you are using is older than the Docker API version required by your Docker Engine. Update the docker-compose binary (or the Docker Desktop/Engine package) so the client can speak API v1.24+; alternatively, use the newer `docker compose` plugin if it is available on your system. If you are pinned to an old OS package, consider upgrading Docker itself or installing a newer compose binary from Docker's releases.
+
+Runtime: Node.js 26 or newer. The bundled Redis server uses `redis:8.10.1-alpine`.
+
+### Redis authentication
+
+The bundled Redis requires a password. Set `STATS_REDIS_PASSWORD` in your environment or a local `.env` file before running `docker compose up --build`. Compose refuses to start if this value is missing. The cache port is bound to loopback only.
+
+The UI reads `STATS_REDIS_PASSWORD` separately, so special characters in this password do not need URL encoding. For the production Redis connection, set `PROD_REDIS_URL=redis://username:password@host:6379`; URL-encode credentials in URLs. This URL is used by both node-redis and the ioredis MONITOR connection. `STATS_REDIS_URL` also supports credentials in its URL when no separate password is supplied.
+
+The main Miataru server uses `database.userName` and `database.password` from its configuration. For password-only authentication, leave `userName` empty or set it to `default`.
