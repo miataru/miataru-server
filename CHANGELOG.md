@@ -4,6 +4,8 @@ This changelog is based on Git history and the version numbers defined in `packa
 
 ## [Unreleased]
 
+## [3.0.0] - 2026-10-22
+
 ### Changed
 - Require Node.js 26 or newer across the server, Statistics UI, and WebSocket-to-MQTT bridge; align Docker images, CI, and local development guidance.
 - Upgrade the bundled Statistics UI Redis server from Redis 7 to Redis 8.10.1 and document the deployment version.
