@@ -1,5 +1,7 @@
 # What's New in Version 2.4
 
+> Historical 2.x release documentation. For the current release, see [Version 3.0 release notes](RELEASE_NOTES_V3.md) and the [3.0 migration guide](MIGRATION_V3.md).
+
 This file is the short release-oriented companion to the main documentation. For full current details, prefer [`../README.md`](../README.md) and the docs listed in [`README.md`](README.md).
 
 ## miataru-server 2.4.0

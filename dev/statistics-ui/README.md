@@ -12,11 +12,13 @@ This Node.js app listens to Redis MONITOR output from a productive Miataru insta
 - Separate Redis namespace for cached stats
 - Optional bootstrap scan to seed stats from existing `:last` keys
 
+Requires Node.js 26 or newer. Docker uses `node:26-alpine` and `redis:8.10.1-alpine`. See the [server 3.0 migration guide](../../docs/MIGRATION_V3.md).
+
 ## Running locally
 
 ```bash
 cd dev/statistics-ui
-npm install
+npm ci
 PORT=3000 \
 STATS_AUTH_USER=miataru \
 STATS_AUTH_PASS=change-me \
@@ -30,10 +32,11 @@ Use `MOCK_DATA=true` to run the UI without Redis connections for preview work.
 ## Docker (app + local-only stats redis)
 
 ```bash
+export STATS_REDIS_PASSWORD="$(openssl rand -hex 32)"
 docker compose up --build
 ```
 
-Then visit `http://localhost:3005` and authenticate with `STATS_AUTH_USER` / `STATS_AUTH_PASS`.
+Then visit `http://localhost:3000` and authenticate with `STATS_AUTH_USER` / `STATS_AUTH_PASS`.
 
 ### Connecting to host Redis from docker-compose
 
@@ -45,9 +48,9 @@ network_mode: host
 
 With host networking, set `PROD_REDIS_URL=redis://127.0.0.1:6379` so the container connects to the host Redis on loopback. The included compose file uses host networking and points `PROD_REDIS_URL` at `127.0.0.1`.
 
-Because host networking bypasses the compose bridge, the bundled stats Redis is exposed on `6380` (`ports: 6380:6379`) and the app uses `STATS_REDIS_URL=redis://127.0.0.1:6380`.
+Because host networking bypasses the compose bridge, the bundled stats Redis is exposed on `6380` (`ports: 127.0.0.1:6380:6379`) and the app uses `STATS_REDIS_URL=redis://127.0.0.1:6380`.
 
-If you see `ECONNREFUSED 172.17.0.1:6379` (bridge networking) or `ECONNREFUSED 127.0.0.1:6379` (host networking), the host Redis is not accepting connections on that interface. Verify that Redis is bound to `0.0.0.0` (or at least to `127.0.0.1` for host mode), that it listens on port `6379`, and that firewall rules allow local connections.
+If you see `ECONNREFUSED 172.17.0.1:6379` (bridge networking) or `ECONNREFUSED 127.0.0.1:6379` (host networking), the host Redis is not accepting connections on that interface. For the included host-network setup, verify that Redis listens on `127.0.0.1:6379` and that local connections are allowed.
 
 ## Environment variables
 
@@ -56,6 +59,7 @@ If you see `ECONNREFUSED 172.17.0.1:6379` (bridge networking) or `ECONNREFUSED 1
 - `PROD_REDIS_URL`: Redis URL for the productive Miataru instance
 - `PROD_REDIS_NAMESPACE`: Namespace prefix (default `miad`)
 - `STATS_REDIS_URL`: Redis URL for the stats cache
+- `STATS_REDIS_PASSWORD`: Separate cache password; required by the included Compose file
 - `STATS_REDIS_NAMESPACE`: Prefix for cached stats (default `miad:stats`)
 - `MONITOR_ENABLED`: Enable Redis MONITOR (`true` by default)
 - `BOOTSTRAP_SCAN_ENABLED`: Scan `:last` keys on startup (`false` by default)
@@ -73,9 +77,7 @@ If you see `ECONNREFUSED 172.17.0.1:6379` (bridge networking) or `ECONNREFUSED 1
 
 This error means the docker-compose client you are using is older than the Docker API version required by your Docker Engine. Update the docker-compose binary (or the Docker Desktop/Engine package) so the client can speak API v1.24+; alternatively, use the newer `docker compose` plugin if it is available on your system. If you are pinned to an old OS package, consider upgrading Docker itself or installing a newer compose binary from Docker's releases.
 
-Runtime: Node.js 26 or newer. The bundled Redis server uses `redis:8.10.1-alpine`.
-
-### Redis authentication
+## Redis authentication
 
 The bundled Redis requires a password. Set `STATS_REDIS_PASSWORD` in your environment or a local `.env` file before running `docker compose up --build`. Compose refuses to start if this value is missing. The cache port is bound to loopback only.
 

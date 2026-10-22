@@ -1,5 +1,7 @@
 # Miataru WebSocket MQTT Bridge
 
+Requires Node.js 26 or newer (Docker: `node:26-alpine`). Compatible with miataru-server 3.0 and its API 1.1 WebSocket endpoint; the bridge package retains its own version number.
+
 Demo CLI that subscribes to Miataru live location updates over `/v1/ws/location` and publishes each non-null location update to MQTT.
 
 ## Behavior
@@ -96,7 +98,7 @@ Optional fields:
 
 ```bash
 cd dev/websocket-mqtt-bridge
-npm install
+npm ci
 node bridge.js --config ./config.json
 ```
 

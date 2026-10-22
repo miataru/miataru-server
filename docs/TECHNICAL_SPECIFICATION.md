@@ -1,5 +1,7 @@
 # TECHNICAL SPECIFICATION
 
+Current baseline: miataru-server 3.0.0, API 1.1, Node.js >= 26.0.0, Express 5, and Redis npm client 6. See the [3.0 release notes](RELEASE_NOTES_V3.md) and [migration guide](MIGRATION_V3.md).
+
 ## 1. Architectural Overview
 
 ### Logical architecture
@@ -11,6 +13,7 @@
 - **Response models**: Response objects format API output for location, history, GeoJSON, visitor history, update ACKs, and delete ACKs. (Evidence: lib/models/ResponseLocation*.js; lib/models/ResponseUpdateLocation.js; lib/models/ResponseDeleteLocation.js; tests/unit/responseLocationGeoJSON.tests.js)
 
 ### Runtime/deployment model
+- **Redis connection**: The real backend uses RESP2, configured ACL username/password, legacy callback hash and transaction helpers, and promise-aware rate-limited command wrappers. The Redis server is managed separately; application upgrades do not restore persistence files. (Evidence: lib/db.js)
 - **Node.js server**: The application runs as a Node.js process using Express and starts listening only when `server.js` is executed directly. (Evidence: server.js)
 - **Config layering**: `config/default.js` is always loaded, with environment, user, external config, and CLI overrides merged in that order. (Evidence: lib/utils/configurationLoader.js; README.md)
 - **Port binding**: Defaults are `0.0.0.0:8090` and can be overridden via config. (Evidence: config/default.js)

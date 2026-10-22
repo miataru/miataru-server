@@ -7,6 +7,8 @@ This repository contains both current reference documentation and historical pla
 Use these files for the current implementation state:
 
 - `README.md` - getting started, configuration, endpoint overview, runtime notes
+- `docs/RELEASE_NOTES_V3.md` - server 3.0.0 release notes; protocol remains API 1.1
+- `docs/MIGRATION_V3.md` - Node.js 26, Redis authentication, persistence and deployment migration
 - `docs/swagger.yaml` - API schema
 - `docs/API_1.1_SECURITY.md` - DeviceKey, ACL, slogan and requester-authentication behavior
 - `docs/MIGRATION_REQUESTMIATARUDEVICEID.md` - migration notes for `RequestMiataruDeviceID`

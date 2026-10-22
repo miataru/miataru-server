@@ -1,5 +1,7 @@
 # Release Notes - Version 2.4.0
 
+> Historical 2.x release documentation. For the current release, see [Version 3.0 release notes](RELEASE_NOTES_V3.md) and the [3.0 migration guide](MIGRATION_V3.md).
+
 **miataru-server 2.4.0** | **miataru API 1.1**
 
 ## Summary

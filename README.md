@@ -1,21 +1,22 @@
 # miataru-server
 
-**Version 2.4.0** - Security and privacy enhancements with API 1.1 support
+**Version 3.0.0** - Node.js 26, updated dependencies, and authenticated Redis support
 
 This is the source code of a Miataru server side implementation. You can get more information [here](http://www.miataru.com).
 
-## What's New in Version 2.4 / API 1.1
+## What's New in Version 3.0
 
-Version 2.4 introduces significant security and privacy enhancements while maintaining broad backward compatibility with API 1.0 (with required RequestMiataruDeviceID for GetLocation/GetLocationHistory and the documented GetLocationGeoJSON change):
+Version 3.0 updates the runtime and dependencies while retaining miataru API 1.1 and the existing `/v1/` and legacy endpoints.
 
-- **RequestMiataruDeviceID (Mandatory)** - Required identifier for all GetLocation and GetLocationHistory requests
-- **RequestMiataruDeviceKey (Optional)** - Optional key in `MiataruConfig` for strict requester validation in GetLocation
-- **DeviceKey Authentication** - Protect write operations and visitor history access with device-specific keys
-- **Allowed Devices List** - Granular access control for location data sharing
-- **strictDeviceKeyCheck (Default: true)** - Enforces RequestMiataruDeviceKey checks for protected GetLocation requests
-- **Broad Backward Compatibility** - Most API 1.0 clients continue to work (GetLocation/GetLocationHistory require `RequestMiataruDeviceID`)
+- **Node.js 26 or newer** is required for the server and both Node.js tools under `dev/`; Docker and CI use Node.js 26.
+- **Express 5 and Redis client 6** replace the previous major versions. Route patterns, empty-body validation, callback commands, and Redis transactions have been adapted.
+- **Redis authentication** now uses `database.userName` and `database.password`. Existing populated fields that were previously ignored now affect connections.
+- **Statistics UI** bundles Redis 8.10.1, requires `STATS_REDIS_PASSWORD` in Compose, and binds the cache port to loopback only.
+- **Reproducible installs** use the committed lockfiles and `npm ci`. Development dependencies include Mocha 12 and Chai 6.
 
-See [API 1.1 Security Documentation](docs/API_1.1_SECURITY.md) for detailed information.
+The server release number is separate from the protocol version: clients continue to use API 1.1. Existing `RequestMiataruDeviceID`, DeviceKey, and allowed-device requirements still apply.
+
+Read the [3.0 release notes](docs/RELEASE_NOTES_V3.md) and [upgrade guide](docs/MIGRATION_V3.md) before updating a deployment with existing Redis data. See [API 1.1 Security Documentation](docs/API_1.1_SECURITY.md) for protocol authentication.
 
 ## What is Miataru?
 
@@ -160,7 +161,7 @@ Check out the repo:
 `git clone git@github.com:miataru/miataru-server.git`
 
 Install dependencies:  
-`npm install`
+`npm ci`
 
 Run the tests:  
 `npm run test:all` (or `make run-all-tests`)
@@ -169,7 +170,8 @@ Local runtime note:
 - `package.json` requires **Node.js >= 26.0.0**
 - Recommended Node.js version for local development/tests: **26.x**
 - Docker default runtime in this repository: **node:26-alpine**
-- With very new Node releases (for example Node 25.x), Mocha/Yargs may fail to start due to ESM/CJS compatibility in the test toolchain.
+- Select Node.js 26 with `nvm use` if you use nvm; `.nvmrc` is included.
+- Start the server with `npm start`; the default configuration uses in-memory FakeRedis. Use `database.type: 'real'` for persistent deployments.
 - The integration test `recordDetailedVisitorHistory.tests.js` case `should respect maximumNumberOfLocationVistors limit as unique device limit` explicitly uses a 5000ms timeout because it performs multiple sequential HTTP requests plus async Redis writes and can exceed Mocha's default 2000ms in CI.
 
 ## Configuration
@@ -731,7 +733,7 @@ Example: A security monitoring system where you need to log every access attempt
 
 You can use the included Dockerfile to build your own docker image for running a miataru server.
 
-It is based upon the current alpine version of the official nodejs image and will build itself to approx. 80mbyte of size.
+It uses the official `node:26-alpine` image and installs the dependencies recorded in `package-lock.json` with `npm ci`.
 
 To use run the docker build:
 ```bash
@@ -928,30 +930,22 @@ tests/
 
 ## Dependencies
 
-### Core Dependencies
-- **Node.js**: >= 26.0.0
-- **Redis server**: Redis 8.10.1 recommended for deployments; the bundled Statistics UI uses `redis:8.10.1-alpine`.
-- **Express.js**: ^4.18.2 (web framework)
-- **Redis**: ^4.6.10 (data storage with modern Redis v4+ compatibility)
-- **FakeRedis**: ^2.0.0 (testing and development)
+### Runtime and Core Dependencies
 
-### Additional Dependencies
-- **CORS**: ^2.8.5 (cross-origin resource sharing)
-- **Body-Parser**: ^1.20.2 (request parsing)
-- **Yargs**: ^17.7.2 (command line argument parsing)
-- **Moment.js**: ^2.29.4 (date/time handling)
-- **EJS**: ^3.1.9 (template engine)
-- **Stylus**: ^0.64.0 (CSS preprocessing)
+| Component | Version | Purpose |
+| --- | --- | --- |
+| Node.js | >= 26.0.0 | Server and development-tool runtime |
+| Express | ^5.3.0 | HTTP framework |
+| Redis npm client | ^6.3.0 | Redis access with RESP2 and callback compatibility |
+| FakeRedis | ^2.0.0 | In-memory development and test backend |
+| WebSocket (`ws`) | ^8.22.0 | Location subscriptions |
+| Body-parser | ^2.4.0 | Request parsing |
+| Yargs | ^18.2.0 | Command-line configuration |
+| Mocha / Chai / Supertest | ^12.0.3 / ^6.3.0 / ^7.3.1 | Test tooling |
 
-### Development Dependencies
-- **Mocha**: ^10.2.0 (test framework)
-- **Chai**: ^4.3.10 (assertion library)
-- **Supertest**: ^7.1.4 (HTTP testing)
+The bundled Statistics UI Redis image is `redis:8.10.1-alpine`. The main server's Dockerfile does not start a Redis server; configure an external Redis instance for production. See [package.json](package.json) for all dependency ranges and the lockfiles for resolved versions.
 
-### Security Updates
-- **Replaced Optimist**: Critical security vulnerabilities fixed by replacing with Yargs
-- **Redis v4+ Support**: Updated Redis client for modern Redis versions
-- **Dependency Updates**: All dependencies updated to latest secure versions
+Redis server versions and the Redis npm client have independent version numbers. For existing RDB/AOF files, follow the [3.0 migration guide](docs/MIGRATION_V3.md); upgrading the client does not migrate the Redis server or its data.
 
 ## Changelog
 
@@ -960,7 +954,11 @@ Changelog policy:
 - Add ongoing work under `## [Unreleased]` and move it into a versioned section when `package.json` is bumped.
 - Keep changelog entries in English.
 
-### Version 2.4.0 (Latest) - API 1.1
+### Version 3.0.0 (Latest) - 2026-10-22
+
+Node.js 26 baseline, current dependencies including Express 5 and Redis client 6, Redis credentials support, and password-protected Statistics UI cache. The protocol remains API 1.1. See the [release notes](docs/RELEASE_NOTES_V3.md) and [full changelog](CHANGELOG.md).
+
+### Version 2.4.0 - API 1.1
 
 #### Security & Privacy Features
 - **DeviceKey Authentication**: Protect write operations and visitor history access

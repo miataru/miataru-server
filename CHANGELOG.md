@@ -4,6 +4,9 @@ This changelog is based on Git history and the version numbers defined in `packa
 
 ## [Unreleased]
 
+### Documentation
+- Align the README and tool setup instructions with server 3.0.0; add release notes and a migration guide covering Node.js 26, Redis credentials, and RDB/AOF restoration.
+
 ## [3.0.0] - 2026-10-22
 
 ### Changed
