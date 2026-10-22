@@ -3,6 +3,7 @@
 var expect = require('chai').expect;
 
 var configuration = require('../../lib/configuration');
+var realRedis = require('redis');
 
 describe('db redis compatibility', function() {
     var redisPath = require.resolve('redis');
@@ -75,12 +76,16 @@ describe('db redis compatibility', function() {
         configuration.database.type = 'real';
         configuration.database.host = '127.0.0.1';
         configuration.database.port = 6379;
+        configuration.database.userName = 'miataru';
+        configuration.database.password = 'test-password';
         configuration.rateLimiting = { redis: { enabled: false } };
 
         var db = require('../../lib/db');
 
         expect(createClientCalls).to.have.lengthOf(1);
-        expect(createClientCalls[0]).to.have.property('legacyMode', true);
+        expect(createClientCalls[0]).to.have.property('RESP', 2);
+        expect(createClientCalls[0]).to.have.property('username', 'miataru');
+        expect(createClientCalls[0]).to.have.property('password', 'test-password');
 
         db.llen('history:key', function(err, length) {
             try {
@@ -102,6 +107,37 @@ describe('db redis compatibility', function() {
                 done(assertLenErr);
             }
         });
+    });
+
+    it('preserves hash callbacks and lowercase transaction commands with the actual Redis 6 facade', async function() {
+        var client = realRedis.createClient({ RESP: 2 });
+        var commands = [];
+        client.connect = function() { return Promise.resolve(); };
+        client.sendCommand = function(args) {
+            commands.push(args);
+            return Promise.resolve(args[0] === 'hGetAll' ? ['device', 'key'] : 1);
+        };
+        client._executeMulti = function(queue) {
+            commands.push.apply(commands, queue.map(function(entry) { return entry.args; }));
+            return Promise.resolve([1, 1, 'OK']);
+        };
+        require.cache[redisPath] = { exports: { createClient: function() { return client; } } };
+        configuration.database.type = 'real';
+        configuration.rateLimiting = { redis: { enabled: false } };
+        var db = require('../../lib/db');
+        await new Promise(function(resolve, reject) {
+            db.hset('allowed', 'device', 'key', function(err) { err ? reject(err) : resolve(); });
+        });
+        var hash = await new Promise(function(resolve, reject) {
+            db.hgetall('allowed', function(err, result) { err ? reject(err) : resolve(result); });
+        });
+        expect(Object.assign({}, hash)).to.deep.equal({ device: 'key' });
+        await new Promise(function(resolve, reject) {
+            db.multi().lrem('visitors', 0, 'old').lpush('visitors', 'new').ltrim('visitors', 0, 9)
+                .exec(function(err) { err ? reject(err) : resolve(); });
+        });
+        expect(commands.map(function(args) { return args[0].toLowerCase(); }))
+            .to.deep.equal(['hset', 'hgetall', 'lrem', 'lpush', 'ltrim']);
     });
 
     it('schedules redis operations only once even when using camelCase aliases', function() {
@@ -200,13 +236,15 @@ function createModernStub() {
 }
 
 function createClientStub(modernApi) {
-    return {
-        v4: modernApi,
+    return Object.assign({}, modernApi, {
+        legacy: function() {
+            return { hGet: function() {}, hSet: function() {}, hGetAll: function() {}, multi: function() {} };
+        },
         connect: function() {
             return Promise.resolve();
         },
         on: function() {}
-    };
+    });
 }
 
 function createLimiterStub(scheduleCalls) {

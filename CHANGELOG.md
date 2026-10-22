@@ -4,6 +4,18 @@ This changelog is based on Git history and the version numbers defined in `packa
 
 ## [Unreleased]
 
+### Changed
+- Require Node.js 26 or newer across the server, Statistics UI, and WebSocket-to-MQTT bridge; align Docker images, CI, and local development guidance.
+- Upgrade the bundled Statistics UI Redis server from Redis 7 to Redis 8.10.1 and document the deployment version.
+- Update all npm dependencies and development dependencies to their latest stable releases, including Express 5, Redis 6, Chai 6, and Mocha 12.
+- Migrate Express route patterns and preserve empty-body request validation with Express 5.
+- Use the Redis legacy facade for callback commands and transactions, retaining RESP2 reply compatibility and promise-aware rate-limited helpers.
+- Track the main server lockfile and use reproducible npm ci installations.
+
+### Fixed
+- Honor configured Redis ACL usernames and passwords in the main server; require a password for the bundled Statistics UI Redis and support it through a separate environment variable.
+- Update the bridge's transitive ip-address dependency to resolve npm audit findings.
+
 ## [2.4.1] - 2026-06-24
 
 ### Added

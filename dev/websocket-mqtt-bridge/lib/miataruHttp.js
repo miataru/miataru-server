@@ -4,7 +4,7 @@ async function postMiataru(baseUrl, path, payload, fetchImpl) {
     fetchImpl = fetchImpl || global.fetch;
 
     if (typeof fetchImpl !== 'function') {
-        throw new Error('No fetch implementation available. Node.js 20 or newer is required.');
+        throw new Error('No fetch implementation available. Node.js 26 or newer is required.');
     }
 
     var response = await fetchImpl(buildUrl(baseUrl, path), {

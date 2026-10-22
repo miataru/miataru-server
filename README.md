@@ -166,9 +166,9 @@ Run the tests:
 `npm run test:all` (or `make run-all-tests`)
 
 Local runtime note:
-- `package.json` requires **Node.js >= 20.0.0**
-- Recommended Node.js version for local development/tests: **20.x**
-- Docker default runtime in this repository: **node:20-alpine**
+- `package.json` requires **Node.js >= 26.0.0**
+- Recommended Node.js version for local development/tests: **26.x**
+- Docker default runtime in this repository: **node:26-alpine**
 - With very new Node releases (for example Node 25.x), Mocha/Yargs may fail to start due to ESM/CJS compatibility in the test toolchain.
 - The integration test `recordDetailedVisitorHistory.tests.js` case `should respect maximumNumberOfLocationVistors limit as unique device limit` explicitly uses a 5000ms timeout because it performs multiple sequential HTTP requests plus async Redis writes and can exceed Mocha's default 2000ms in CI.
 
@@ -216,8 +216,8 @@ The server will, in the default configuration, listen on localhost port 8090. To
 | `database.type` | `'mock'` | `'mock'` uses in-memory `fakeredis`, `'real'` uses a Redis server. |
 | `database.host` | `'localhost'` | Redis host used when `database.type` is `'real'`. |
 | `database.port` | `6379` | Redis port used when `database.type` is `'real'`. |
-| `database.userName` | `''` | Present in sample configs, but the current Redis client setup does not read this field yet. |
-| `database.password` | `''` | Present in sample configs, but the current Redis client setup does not read this field yet. |
+| `database.userName` | `''` | Redis ACL username; leave empty to use the default user. |
+| `database.password` | `''` | Redis password for ACL or requirepass authentication; leave empty only for servers without authentication. |
 | `logging.logLevel` | `'info'` | Logger threshold. Accepts strings such as `info`, `warn`, `error` or numeric levels. |
 | `maximumNumberOfHistoryItems` | `1023` | Maximum number of stored location-history entries per device. |
 | `maximumNumberOfLocationVistors` | `10` | Maximum stored visitor-history entries or unique visitors, depending on `recordDetailedVisitorHistory`. |
@@ -929,7 +929,8 @@ tests/
 ## Dependencies
 
 ### Core Dependencies
-- **Node.js**: >= 20.0.0
+- **Node.js**: >= 26.0.0
+- **Redis server**: Redis 8.10.1 recommended for deployments; the bundled Statistics UI uses `redis:8.10.1-alpine`.
 - **Express.js**: ^4.18.2 (web framework)
 - **Redis**: ^4.6.10 (data storage with modern Redis v4+ compatibility)
 - **FakeRedis**: ^2.0.0 (testing and development)

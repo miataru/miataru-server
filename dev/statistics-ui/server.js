@@ -12,6 +12,7 @@ const config = {
   authPass: process.env.STATS_AUTH_PASS || 'change-me',
   prodRedisUrl: process.env.PROD_REDIS_URL || 'redis://localhost:6379',
   statsRedisUrl: process.env.STATS_REDIS_URL || 'redis://localhost:6380',
+  statsRedisPassword: process.env.STATS_REDIS_PASSWORD || undefined,
   prodNamespace: process.env.PROD_REDIS_NAMESPACE || 'miad',
   statsNamespace: process.env.STATS_REDIS_NAMESPACE || 'miad:stats',
   mapMaxDevices: Number(process.env.MAP_MAX_DEVICES || 2000),
@@ -921,7 +922,7 @@ async function start() {
 
   if (!config.mockData) {
     prodClient = createClient({ url: config.prodRedisUrl });
-    statsClient = createClient({ url: config.statsRedisUrl });
+    statsClient = createClient({ url: config.statsRedisUrl, password: config.statsRedisPassword });
 
     prodClient.on('error', (error) => {
       console.error('Prod Redis error:', error.message);
